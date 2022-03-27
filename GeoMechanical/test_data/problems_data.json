@@ -1,0 +1,74 @@
+{
+	"0": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 0,
+		"formal_languages": [
+			"Circle(O)"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"1": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 0,
+		"formal_languages": [
+			"Point(A)",
+			"Line(BC)",
+			"Angle(DEF)",
+			"Arc(AB)",
+			"Shape(ABCD)",
+			"Circle(O)",
+			"Sector(OAB)",
+			"Triangle(ABC)",
+			"RightTriangle(ABC)",
+			"IsoscelesTriangle(ABC)",
+			"RegularTriangle(ABC)",
+			"Quadrilateral(ABCD)",
+			"Trapezoid(ABCD)",
+			"IsoscelesTrapezoid(ABCD)",
+			"Parallelogram(ABCD)",
+			"Rectangle(ABCD)",
+			"Rhombus(ABCD)",
+			"Kite(ABCD)",
+			"Square(ABCD)",
+			"Polygon(ABCDE)",
+			"RegularPolygon(ABCDE)",
+			"Equal(Length(Line(AB)),Length(Arc(AB)))",
+			"Equal(Degree(Angle(ABC)),Degree(Sector(OAB)))",
+			"Equal(Radius(Circle(O)), 16)",
+			"Equal(Radius(Sector(OAB)), r)",
+			"Find(Diameter(Circle(O)))",
+			"Find(Area(Quadrilateral(ABCD)))",
+			"PointOn(Point(A),Line(AB))",
+			"PointOn(Point(A),Arc(AB))",
+			"PointOn(Point(A),Circle(O))",
+			"Midpoint(Point(M),Line(AB))",
+			"Circumcenter(Point(A),Triangle(ABC))",
+			"Incenter(Point(A),Triangle(ABC))",
+			"Centroid(Point(A),Triangle(ABC))",
+			"Orthocenter(Point(A),Triangle(ABC))",
+			"Parallel(Line(A),Line(B))",
+			"Intersect(Point(M),Line(AB),Line(CD))",
+			"Perpendicular(Point(N),Line(AB),Line(CD))",
+			"PerpendicularBisector(Point(N),Line(AB),Line(CD))",
+			"BisectsAngle(Line(AB),Angle(ABC))",
+			"Disjoint(Line(AB),Angle(ABC))",
+			"Tangent(Line(AB),Angle(ABC))",
+			"Intersect(Line(AB),Angle(ABC))",
+			"Median(Line(AB),Triangle(ABC))",
+			"Height(Line(AB),Triangle(ABC))",
+			"Height(Line(AB),Parallelogram(ABCD))",
+			"InternallyTangent(Circle(O),Circle(O))",
+			"Contain(Circle(O),Circle(O))",
+			"CircumscribedToTriangle(Circle(O),Triangle(ABC))",
+			"Similar(Polygon(ABC),Polygon(ABC))",
+			"Expression(a^2+b^2=c^2)"
+		],
+		"theorem_seqs": [
+			1,
+			2,
+			3
+		]
+	}
+}
