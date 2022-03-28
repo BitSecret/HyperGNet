@@ -86,6 +86,7 @@ class ProblemLogic:
         self.target = None  # 解题目标
 
     """------------define Entity------------"""
+
     def define_point(self, point, premise=-1, theorem=-1):  # 点
         return self.point.add(point, premise, theorem)
 
@@ -316,26 +317,27 @@ class ProblemLogic:
         return False
 
     """------------define Relation------------"""
-    def define_point_on_line(self, point, line, premise=-1, theorem=-1, root=True):    # 点在线上
+
+    def define_point_on_line(self, point, line, premise=-1, theorem=-1, root=True):  # 点在线上
         if self.point_on_line.add((point, line), premise, theorem):
             if root:
                 premise = self.point_on_line.indexes[(point, line)]
-            self.point_on_line.add((point, line[::-1]), premise, theorem)    # 点在线上两种表示
-            self.point.add(point, premise, -2)    # 定义点和线
+            self.point_on_line.add((point, line[::-1]), premise, theorem)  # 点在线上两种表示
+            self.point.add(point, premise, -2)  # 定义点和线
             self.define_line(line, premise, -2, False)
             return True
         return False
 
-    def define_point_on_arc(self, point, arc, premise=-1, theorem=-1, root=True):    # 点在弧上
+    def define_point_on_arc(self, point, arc, premise=-1, theorem=-1, root=True):  # 点在弧上
         if self.point_on_arc.add((point, arc), premise, theorem):
             if root:
                 premise = self.point_on_arc.indexes[(point, arc)]
-            self.point.add(point, premise, -2)    # 定义点和弧
+            self.point.add(point, premise, -2)  # 定义点和弧
             self.define_arc(arc, premise, -2, False)
             return True
         return False
 
-    def define_point_on_circle(self, point, circle, premise=-1, theorem=-1, root=True):    # 点在圆上
+    def define_point_on_circle(self, point, circle, premise=-1, theorem=-1, root=True):  # 点在圆上
         if self.point_on_circle.add((point, circle), premise, theorem):
             if root:
                 premise = self.point_on_circle.indexes[(point, circle)]
@@ -344,82 +346,86 @@ class ProblemLogic:
             return True
         return False
 
-    def define_midpoint(self, point, line, premise=-1, theorem=-1, root=True):    # 中点
+    def define_midpoint(self, point, line, premise=-1, theorem=-1, root=True):  # 中点
         if self.midpoint.add((point, line), premise, theorem):
             if root:
                 premise = self.midpoint.indexes[(point, line)]
-            self.midpoint.add((point, line[::-1]), premise, -2)    # 中点有两中表示形式
+            self.midpoint.add((point, line[::-1]), premise, -2)  # 中点有两中表示形式
             self.point.add(point, premise, -2)  # 定义点和弧
             self.define_line(line, premise, -2, False)
             return True
         return False
 
-    def define_circumcenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 外心
+    def define_circumcenter(self, point, triangle, premise=-1, theorem=-1, root=True):  # 外心
         if self.circumcenter.add((point, triangle), premise, theorem):
             if root:
                 premise = self.circumcenter.indexes[(point, triangle)]
-            self.circumcenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)    # 三种表示
-            self.circumcenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
-            self.point.add(point, premise, -2)      # 定义点和三角形
+            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            for triangle in triangle_all:
+                self.circumcenter.add((point, triangle_all), premise, -2)
+            self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
         return False
 
-    def define_incenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 内心
+    def define_incenter(self, point, triangle, premise=-1, theorem=-1, root=True):  # 内心
         if self.incenter.add((point, triangle), premise, theorem):
             if root:
                 premise = self.incenter.indexes[(point, triangle)]
-            self.incenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
-            self.incenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            for triangle in triangle_all:
+                self.incenter.add((point, triangle_all), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
         return False
 
-    def define_centroid(self, point, triangle, premise=-1, theorem=-1, root=True):    # 重心
+    def define_centroid(self, point, triangle, premise=-1, theorem=-1, root=True):  # 重心
         if self.centroid.add((point, triangle), premise, theorem):
             if root:
                 premise = self.centroid.indexes[(point, triangle)]
-            self.centroid.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
-            self.centroid.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            for triangle in triangle_all:
+                self.centroid.add((point, triangle_all), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
         return False
 
-    def define_orthocenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 垂心
+    def define_orthocenter(self, point, triangle, premise=-1, theorem=-1, root=True):  # 垂心
         if self.orthocenter.add((point, triangle), premise, theorem):
             if root:
                 premise = self.orthocenter.indexes[(point, triangle)]
-            self.orthocenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
-            self.orthocenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            for triangle in triangle_all:
+                self.orthocenter.add((point, triangle_all), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
         return False
 
-    def define_parallel(self, line1, line2, premise=-1, theorem=-1, root=True):    # 线平行
+    def define_parallel(self, line1, line2, premise=-1, theorem=-1, root=True):  # 线平行
         if self.parallel.add((line1, line2), premise, theorem):
             if root:
                 premise = self.parallel.indexes[(line1, line2)]
             self.parallel.add((line2, line1), premise, theorem)  # 平行有4种表示
             self.parallel.add((line1[::-1], line2[::-1]), premise, theorem)
             self.parallel.add((line2[::-1], line1[::-1]), premise, theorem)
-            self.define_line(line1, premise, -2, False)    # 定义线
+            self.define_line(line1, premise, -2, False)  # 定义线
             self.define_line(line2, premise, -2, False)
             return True
         return False
 
-    def define_intersect(self, point, line1, line2, premise=-1, theorem=-1, root=True):    # 线相交
+    def define_intersect(self, point, line1, line2, premise=-1, theorem=-1, root=True):  # 线相交
         if self.intersect.add((point, line1, line2), premise, theorem):
             if root:
                 premise = self.intersect.indexes[(point, line1, line2)]
-            self.intersect.add((point, line2[::-1], line1), premise, -2)    # 相交有4种表示
+            self.intersect.add((point, line2[::-1], line1), premise, -2)  # 相交有4种表示
             self.intersect.add((point, line1[::-1], line2[::-1]), premise, -2)
             self.intersect.add((point, line2, line1[::-1]), premise, -2)
-            self.define_line(line1, premise, -2, False)    # 定义线
+            self.define_line(line1, premise, -2, False)  # 定义线
             self.define_line(line2, premise, -2, False)
-            if point != "$":    # 如果给出交点
+            if point != "$":  # 如果给出交点
                 self.point.add(point, premise, -2)
                 self.define_point_on_line(point, line1, premise, -2, False)
                 self.define_point_on_line(point, line2, premise, -2, False)
@@ -433,11 +439,11 @@ class ProblemLogic:
             self.perpendicular.add((point, line2[::-1], line1), premise, -2)  # 垂直有4种表示
             self.perpendicular.add((point, line1[::-1], line2[::-1]), premise, -2)
             self.perpendicular.add((point, line2, line1[::-1]), premise, -2)
-            self.define_intersect(point, line1, line2, premise, -2, False)    # 垂直也是相交
+            self.define_intersect(point, line1, line2, premise, -2, False)  # 垂直也是相交
             return True
         return False
 
-    def define_perpendicular_bisector(self, point, line1, line2, premise=-1, theorem=-1, root=True):    # 垂直平分
+    def define_perpendicular_bisector(self, point, line1, line2, premise=-1, theorem=-1, root=True):  # 垂直平分
         if self.perpendicular_bisector.add((point, line1, line2), premise, theorem):
             if root:
                 premise = self.perpendicular_bisector.indexes[(point, line1, line2)]
@@ -446,25 +452,25 @@ class ProblemLogic:
             return True
         return False
 
-    def define_bisects_angle(self, line, angle, premise=-1, theorem=-1, root=True):    # 角平分线
+    def define_bisects_angle(self, line, angle, premise=-1, theorem=-1, root=True):  # 角平分线
         if self.bisects_angle.add((line, angle), premise, theorem):
             if root:
                 premise = self.bisects_angle.indexes[(line, angle)]
-            self.define_angle(angle, premise, -2, False)    # 定义角和线
+            self.define_angle(angle, premise, -2, False)  # 定义角和线
             self.define_line(line, premise, -2, False)
             return True
         return False
 
-    def define_disjoint_line_circle(self, line, circle, premise=-1, theorem=-1, root=True):    # 线圆相离
+    def define_disjoint_line_circle(self, line, circle, premise=-1, theorem=-1, root=True):  # 线圆相离
         if self.disjoint_line_circle.add((line, circle), premise, theorem):
             if root:
                 premise = self.disjoint_line_circle.indexes[(line, circle)]
-            self.define_line(line, premise, -2, False)   # 定义和线圆
+            self.define_line(line, premise, -2, False)  # 定义和线圆
             self.define_circle(circle, premise, -2, False)
             return True
         return False
 
-    def define_disjoint_circle_circle(self, circle1, circle2, premise=-1, theorem=-1, root=True):   # 圆圆相离
+    def define_disjoint_circle_circle(self, circle1, circle2, premise=-1, theorem=-1, root=True):  # 圆圆相离
         if self.disjoint_circle_circle.add((circle1, circle2), premise, theorem):
             if root:
                 premise = self.disjoint_circle_circle.indexes[(circle1, circle2)]
@@ -474,20 +480,20 @@ class ProblemLogic:
             return True
         return False
 
-    def define_tangent_line_circle(self, point, line, circle, premise=-1, theorem=-1, root=True):    # 相切
+    def define_tangent_line_circle(self, point, line, circle, premise=-1, theorem=-1, root=True):  # 相切
         if self.tangent_line_circle.add((point, line, circle), premise, theorem):
             if root:
                 premise = self.tangent_line_circle.indexes[(point, line, circle)]
             self.define_line(line, premise, -2, False)  # 定义线和圆
             self.define_circle(circle, premise, -2, False)
-            if point != "$":    # 如果给出切点
+            if point != "$":  # 如果给出切点
                 self.point.add(point, premise, -2)
                 self.define_point_on_line(point, line, premise, -2, False)
                 self.define_point_on_circle(point, circle, premise, -2, False)
             return True
         return False
 
-    def define_tangent_circle_circle(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):    # 相切
+    def define_tangent_circle_circle(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 相切
         if self.tangent_circle_circle.add((point, circle1, circle2), premise, theorem):
             if root:
                 premise = self.tangent_line_circle.indexes[(point, circle1, circle2)]
@@ -536,13 +542,13 @@ class ProblemLogic:
             return True
         return False
 
-    def define_median(self, line, triangle, premise=-1, theorem=-1, root=True):   # 中线
+    def define_median(self, line, triangle, premise=-1, theorem=-1, root=True):  # 中线
         if self.median.add((line, triangle), premise, theorem):
             if root:
                 premise = self.median.indexes[(line, triangle)]
-            self.define_line(line, premise, -2)    # 定义实体
+            self.define_line(line, premise, -2)  # 定义实体
             self.define_triangle(triangle, premise, -2)
-            self.define_point_on_line(line[1], triangle[1:3], premise, -2, False)   # 子关系
+            self.define_point_on_line(line[1], triangle[1:3], premise, -2, False)  # 子关系
             return True
         return False
 
@@ -586,7 +592,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_circumscribed_to_triangle(self, circle, triangle, premise=-1, theorem=-1, root=True):
+    def define_circumscribed_to_triangle(self, circle, triangle, premise=-1, theorem=-1, root=True):  # 外接圆
         if self.circumscribed_to_triangle.add((circle, triangle), premise, theorem):
             if root:
                 premise = self.circumscribed_to_triangle.indexes[(circle, triangle)]
@@ -620,11 +626,11 @@ class ProblemLogic:
         if self.congruent.add((triangle1, triangle2), premise, theorem):
             if root:
                 premise = self.congruent.indexes[(triangle1, triangle2)]
-            triangle1_all = get_all_representation_of_shape(triangle1)   # 6种
+            triangle1_all = get_all_representation_of_shape(triangle1)  # 6种
             triangle2_all = get_all_representation_of_shape(triangle2)
             for i in range(len(triangle1_all)):
                 self.congruent.add((triangle1_all[i], triangle2_all[i]), premise, -2)
-            self.define_triangle(triangle1, premise, -2, False)   # 定义实体
+            self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
             return True
         return False
