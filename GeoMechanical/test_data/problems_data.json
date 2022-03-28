@@ -3,7 +3,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 0,
 		"formal_languages": [
-			"Square(ABCD)"
+			"PointOn(Point(A),Line(AB))"
 		],
 		"theorem_seqs": [
 			1

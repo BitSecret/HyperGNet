@@ -87,7 +87,6 @@ class ProblemLogic:
         self.target = None  # 解题目标
 
     """------------define Entity------------"""
-
     def define_point(self, point, premise=-1, theorem=-1):  # 点
         return self.point.add(point, premise, theorem)
 
@@ -119,9 +118,15 @@ class ProblemLogic:
             return True
         return False
 
-    # shape这个后期再扩展，现在不知道有什么用
     def define_shape(self, shape, premise=-1, theorem=-1, root=True):
-        pass
+        if self.shape.add(shape, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
+            if root:
+                premise = self.shape.indexes[shape]
+            for point in shape:
+                # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
+                self.point.add(point, premise, -2)
+            return True
+        return False
 
     def define_circle(self, circle, premise=-1, theorem=-1, root=True):  # 圆
         if self.circle.add(circle, premise, theorem):
@@ -321,97 +326,254 @@ class ProblemLogic:
         return False
 
     """------------define Relation------------"""
-
-    def define_point_on_line(self, *test, premise=-1, theorem=-1):
-        pass
-
-    def define_point_on_arc(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_point_on_circle(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_midpoint(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_circumcenter(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_incenter(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_centroid(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_orthocenter(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_parallel(self, line1, line2, premise=-1, theorem=-1):
-        if self.parallel.add((line1, line2), premise, theorem):
-            self.parallel.add((line1, line2[1] + line2[0]), premise, theorem)  # 线的四种排列组合
-            self.parallel.add((line1[1] + line1[0], line2), premise, theorem)
-            self.parallel.add((line1[1] + line1[0], line2[1] + line2[0]), premise, theorem)
+    def define_point_on_line(self, point, line, premise=-1, theorem=-1, root=True):    # 点在线上
+        if self.point_on_line.add((point, line), premise, theorem):
+            if root:
+                premise = self.point_on_line.indexes[(point, line)]
+            self.point_on_line.add((point, line[::-1]), premise, theorem)    # 点在线上两种表示
+            self.point.add(point, premise, -2)    # 定义点和线
+            self.define_line(line, premise, -2, False)
             return True
         return False
 
-    def define_intersect(self, triangle, premise=-1, theorem=-1):
+    def define_point_on_arc(self, point, arc, premise=-1, theorem=-1, root=True):    # 点在弧上
+        if self.point_on_arc.add((point, arc), premise, theorem):
+            if root:
+                premise = self.point_on_arc.indexes[(point, arc)]
+            self.point.add(point, premise, -2)    # 定义点和弧
+            self.define_arc(arc, premise, -2, False)
+            return True
+        return False
+
+    def define_point_on_circle(self, point, circle, premise=-1, theorem=-1, root=True):    # 点在圆上
+        if self.point_on_circle.add((point, circle), premise, theorem):
+            if root:
+                premise = self.point_on_circle.indexes[(point, circle)]
+            self.point.add(point, premise, -2)  # 定义点和弧
+            self.define_circle(circle, premise, -2, False)
+            return True
+        return False
+
+    def define_midpoint(self, point, line, premise=-1, theorem=-1, root=True):    # 中点
+        if self.midpoint.add((point, line), premise, theorem):
+            if root:
+                premise = self.midpoint.indexes[(point, line)]
+            self.midpoint.add((point, line[::-1]), premise, -2)    # 中点有两中表示形式
+            self.point.add(point, premise, -2)  # 定义点和弧
+            self.define_line(line, premise, -2, False)
+            return True
+        return False
+
+    def define_circumcenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 外心
+        if self.circumcenter.add((point, triangle), premise, theorem):
+            if root:
+                premise = self.circumcenter.indexes[(point, triangle)]
+            self.circumcenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)    # 三种表示
+            self.circumcenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            self.point.add(point, premise, -2)      # 定义点和三角形
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
+
+    def define_incenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 内心
+        if self.incenter.add((point, triangle), premise, theorem):
+            if root:
+                premise = self.incenter.indexes[(point, triangle)]
+            self.incenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
+            self.incenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            self.point.add(point, premise, -2)  # 定义点和三角形
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
+
+    def define_centroid(self, point, triangle, premise=-1, theorem=-1, root=True):    # 重心
+        if self.centroid.add((point, triangle), premise, theorem):
+            if root:
+                premise = self.centroid.indexes[(point, triangle)]
+            self.centroid.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
+            self.centroid.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            self.point.add(point, premise, -2)  # 定义点和三角形
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
+
+    def define_orthocenter(self, point, triangle, premise=-1, theorem=-1, root=True):    # 垂心
+        if self.orthocenter.add((point, triangle), premise, theorem):
+            if root:
+                premise = self.orthocenter.indexes[(point, triangle)]
+            self.orthocenter.add((point, triangle[1] + triangle[2] + triangle[0]), premise, -2)  # 三种表示
+            self.orthocenter.add((point, triangle[2] + triangle[0] + triangle[1]), premise, -2)
+            self.point.add(point, premise, -2)  # 定义点和三角形
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
+
+    def define_parallel(self, line1, line2, premise=-1, theorem=-1, root=True):    # 线平行
+        if self.parallel.add((line1, line2), premise, theorem):
+            if root:
+                premise = self.parallel.indexes[(line1, line2)]
+            self.parallel.add((line2, line1), premise, theorem)  # 平行有4种表示
+            self.parallel.add((line1[::-1], line2[::-1]), premise, theorem)
+            self.parallel.add((line2[::-1], line1[::-1]), premise, theorem)
+            self.define_line(line1, premise, -2, False)    # 定义线
+            self.define_line(line2, premise, -2, False)
+            return True
+        return False
+
+    def define_intersect(self, point, line1, line2, premise=-1, theorem=-1, root=True):    # 线相交
+        if self.intersect.add((point, line1, line2), premise, theorem):
+            if root:
+                premise = self.intersect.indexes[(point, line1, line2)]
+            self.intersect.add((point, line2[::-1], line1), premise, -2)    # 相交有4种表示
+            self.intersect.add((point, line1[::-1], line2[::-1]), premise, -2)
+            self.intersect.add((point, line2, line1[::-1]), premise, -2)
+            self.define_line(line1, premise, -2, False)    # 定义线
+            self.define_line(line2, premise, -2, False)
+            if point != "$":    # 如果给出交点
+                self.point.add(point, premise, -2)
+                self.define_point_on_line(point, line1, premise, -2, False)
+                self.define_point_on_line(point, line2, premise, -2, False)
+            return True
+        return False
+
+    def define_perpendicular(self, point, line1, line2, premise=-1, theorem=-1, root=True):
+        if self.perpendicular.add((point, line1, line2), premise, theorem):
+            if root:
+                premise = self.perpendicular.indexes[(point, line1, line2)]
+            self.perpendicular.add((point, line2[::-1], line1), premise, -2)  # 垂直有4种表示
+            self.perpendicular.add((point, line1[::-1], line2[::-1]), premise, -2)
+            self.perpendicular.add((point, line2, line1[::-1]), premise, -2)
+            self.define_intersect(point, line1, line2, premise, -2, False)    # 垂直也是相交
+            return True
+        return False
+
+    def define_perpendicular_bisector(self, point, line1, line2, premise=-1, theorem=-1, root=True):    # 垂直平分
+        if self.perpendicular_bisector.add((point, line1, line2), premise, theorem):
+            if root:
+                premise = self.perpendicular_bisector.indexes[(point, line1, line2)]
+            self.perpendicular_bisector.add((point, line1[::-1], line2[::-1]), premise, -2)  # 垂直平分有2种表示
+            self.define_perpendicular(point, line1, line2, premise, -2, False)  # 垂直平分也是垂直
+            return True
+        return False
+
+    def define_bisects_angle(self, line, angle, premise=-1, theorem=-1, root=True):    # 角平分线
+        if self.bisects_angle.add((line, angle), premise, theorem):
+            if root:
+                premise = self.bisects_angle.indexes[(line, angle)]
+            self.define_angle(angle, premise, -2, False)    # 定义角和线
+            self.define_line(line, premise, -2, False)
+            return True
+        return False
+
+    def define_disjoint_line_circle(self, line, circle, premise=-1, theorem=-1, root=True):    # 线圆相离
+        if self.disjoint_line_circle.add((line, circle), premise, theorem):
+            if root:
+                premise = self.disjoint_line_circle.indexes[(line, circle)]
+            self.define_line(line, premise, -2, False)   # 定义和线圆
+            self.define_circle(circle, premise, -2, False)
+            return True
+        return False
+
+    def define_disjoint_circle_circle(self, circle1, circle2, premise=-1, theorem=-1, root=True):   # 圆圆相离
+        if self.disjoint_circle_circle.add((circle1, circle2), premise, theorem):
+            if root:
+                premise = self.disjoint_circle_circle.indexes[(circle1, circle2)]
+            self.disjoint_circle_circle.add((circle2, circle1), premise, -2)  # 2种表示
+            self.define_circle(circle1, premise, -2, False)  # 定义圆
+            self.define_circle(circle2, premise, -2, False)
+            return True
+        return False
+
+    def define_tangent_line_circle(self, point, line, circle, premise=-1, theorem=-1, root=True):    # 相切
+        if self.tangent_line_circle.add((point, line, circle), premise, theorem):
+            if root:
+                premise = self.tangent_line_circle.indexes[(point, line, circle)]
+            self.define_line(line, premise, -2, False)  # 定义线和圆
+            self.define_circle(circle, premise, -2, False)
+            if point != "$":    # 如果给出切点
+                self.point.add(point, premise, -2)
+                self.define_point_on_line(point, line, premise, -2, False)
+                self.define_point_on_circle(point, circle, premise, -2, False)
+            return True
+        return False
+
+    def define_tangent_circle_circle(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):    # 相切
+        if self.tangent_circle_circle.add((point, circle1, circle2), premise, theorem):
+            if root:
+                premise = self.tangent_line_circle.indexes[(point, circle1, circle2)]
+            self.tangent_line_circle.add((point, circle2, circle1), premise, -2)  # 2种表示
+            self.define_circle(circle1, premise, -2, False)  # 定义圆
+            self.define_circle(circle2, premise, -2, False)
+            if point != "$":  # 如果给出切点
+                self.point.add(point, premise, -2)
+                self.define_point_on_circle(point, circle1, premise, -2, False)
+                self.define_point_on_circle(point, circle2, premise, -2, False)
+            return True
+        return False
+
+    def define_intersect_line_circle(self, point1, point2, line, circle, premise=-1, theorem=-1, root=True):  # 相交
+        if self.intersect_line_circle.add((point1, point2, line, circle), premise, theorem):
+            if root:
+                premise = self.intersect_line_circle.indexes[(point1, point2, line, circle)]
+            self.define_line(line, premise, -2, False)  # 定义线
+            self.define_circle(circle, premise, -2, False)  # 定义圆
+            if point1 != "$":  # 如果给出交点
+                self.point.add(point1, premise, -2)
+                self.define_point_on_line(point1, line, premise, -2, False)
+                self.define_point_on_circle(point1, circle, premise, -2, False)
+            if point2 != "$":  # 如果给出交点
+                self.point.add(point2, premise, -2)
+                self.define_point_on_line(point2, line, premise, -2, False)
+                self.define_point_on_circle(point2, circle, premise, -2, False)
+            return True
+        return False
+
+    def define_intersect_circle_circle(self, point1, point2, circle1, circle2, premise=-1, theorem=-1, root=True):  # 相交
+        if self.intersect_circle_circle.add((point1, point2, circle1, circle2), premise, theorem):
+            if root:
+                premise = self.intersect_line_circle.indexes[(point1, point2, circle1, circle2)]
+            self.intersect_line_circle.add((point2, point1, circle2, circle1), premise, -2)  # 2种表示
+            self.define_circle(circle1, premise, -2, False)  # 定义圆
+            self.define_circle(circle2, premise, -2, False)
+            if point1 != "$":  # 如果给出交点
+                self.point.add(point1, premise, -2)
+                self.define_point_on_circle(point1, circle1, premise, -2, False)
+                self.define_point_on_circle(point1, circle2, premise, -2, False)
+            if point2 != "$":  # 如果给出交点
+                self.point.add(point2, premise, -2)
+                self.define_point_on_circle(point2, circle1, premise, -2, False)
+                self.define_point_on_circle(point2, circle2, premise, -2, False)
+            return True
+        return False
+
+    def define_median(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_perpendicular(self, triangle, premise=-1, theorem=-1):
+    def define_height_triangle(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_perpendicular_bisector(self, triangle, premise=-1, theorem=-1):
+    def define_height_trapezoid(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_bisects_angle(self, triangle, premise=-1, theorem=-1):
+    def define_height_parallelogram(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_disjoint_line_circle(self, triangle, premise=-1, theorem=-1):
+    def define_internally_tangent(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_disjoint_circle_circle(self, triangle, premise=-1, theorem=-1):
+    def define_contain(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_tangent_line_circle(self, triangle, premise=-1, theorem=-1):
+    def define_circumscribed_to_triangle(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_tangent_circle_circle(self, triangle, premise=-1, theorem=-1):
+    def define_inscribed_in_triangle(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_intersect_line_circle(self, triangle, premise=-1, theorem=-1):
+    def define_congruent(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
-    def define_intersect_circle_circle(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_median(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_height_triangle(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_height_trapezoid(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_height_parallelogram(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_internally_tangent(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_contain(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_circumscribed_to_triangle(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_inscribed_in_triangle(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_congruent(self, triangle, premise=-1, theorem=-1):
-        pass
-
-    def define_similar(self, triangle, premise=-1, theorem=-1):
+    def define_similar(self, triangle, premise=-1, theorem=-1, root=True):
         pass
 
     """------------Expression related------------"""
