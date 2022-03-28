@@ -87,8 +87,7 @@ class Solver:
 
     def solve(self):
         Theorem.theorem_1_xxxx(self.problem)  # 应用定理
-        self.problem.show_formal()  # 展示结果
-        self.problem.show_logic()
+        self.problem.show_problem()    # 展示结果
 
     """------------auxiliary function------------"""
     def show_result(self):    # 输出求解结果

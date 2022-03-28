@@ -29,17 +29,6 @@ class Condition:  # 条件
             return True
         return False
 
-    def show(self):
-        if len(self.items) > 0:
-            print("{}: {}".format(self.type.name, self.name))
-            for item in self.items:
-                if self.type is ConditionType.Entity:
-                    print("{0:^4}{1:^9}{2:^4}{3:^4}".format(self.indexes[item], item, self.premises[item],
-                                                            self.theorems[item]))
-                else:
-                    print("{0:^4}{1:^20}{2:^4}{3:^4}".format(self.indexes[item], str(item), self.premises[item],
-                                                             self.theorems[item]))
-
 
 class AttributionType(Enum):  # 属性的类型
     LengthOfLine = 1  # 线长度
@@ -76,13 +65,6 @@ class AttributionSymbol:    # 与属性对应的符号
             self.sym[sym] = []
         self.attr[attr].append(sym)
         self.sym[sym].append(attr)
-
-    def show(self):
-        if len(self.attr) > 0:
-            print("Attr's Symbol: {}".format(self.type.name))
-            for key in self.attr.keys():
-                print(key, end=": ")
-                print(self.attr[key])
 
 
 class TargetType(Enum):    # 解题目标类型

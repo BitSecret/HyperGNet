@@ -82,7 +82,7 @@ class ProblemLogic:
         self.area_of_quadrilateral = AttributionSymbol(AttributionType.AreaOfQuadrilateral)
         self.area_of_polygon = AttributionSymbol(AttributionType.AreaOfPolygon)
 
-        """----------Target----------"""
+        """----------汇总----------"""
         self.target_type = None  # 解题目标的类型
         self.target = None  # 解题目标
 
@@ -148,9 +148,9 @@ class ProblemLogic:
         if self.triangle.add(triangle, premise, theorem):
             if root:
                 premise = self.triangle.indexes[triangle]
-            self.triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)    # 一个三角形三种表示
+            self.triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)  # 一个三角形三种表示
             self.triangle.add(triangle[2] + triangle[0] + triangle[1], premise, -2)
-            self.define_angle(triangle, premise, -2, False)    # 三角形的三个角
+            self.define_angle(triangle, premise, -2, False)  # 三角形的三个角
             self.define_angle(triangle[1] + triangle[2] + triangle[0], premise, -2, False)
             self.define_angle(triangle[2] + triangle[0] + triangle[1], premise, -2, False)
             return True
@@ -184,7 +184,7 @@ class ProblemLogic:
         if self.regular_triangle.add(triangle, premise, theorem):
             if root:
                 premise = self.regular_triangle.indexes[triangle]
-            self.regular_triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)    # 一个正三角形3种表示
+            self.regular_triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)  # 一个正三角形3种表示
             self.regular_triangle.add(triangle[2] + triangle[0] + triangle[1], premise, -2)
             self.define_isosceles_triangle(triangle, premise, -2, False)  # 等边也是等腰
             self.define_isosceles_triangle(triangle[1] + triangle[2] + triangle[0], premise, -2, False)
@@ -205,17 +205,17 @@ class ProblemLogic:
             return True
         return False
 
-    def define_trapezoid(self, shape, premise=-1, theorem=-1, root=True):    # 梯形
+    def define_trapezoid(self, shape, premise=-1, theorem=-1, root=True):  # 梯形
         if self.trapezoid.add(shape, premise, theorem):
             if root:
                 premise = self.trapezoid.indexes[shape]
-            self.trapezoid.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)    # 一个梯形两种表示
-            self.define_quadrilateral(shape, premise, -2, False)    # 梯形也是四边形
+            self.trapezoid.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)  # 一个梯形两种表示
+            self.define_quadrilateral(shape, premise, -2, False)  # 梯形也是四边形
             # self.define_parallel(shape[0] + shape[1], shape[2] + shape[3], premise, -2)   # 平行边
             return True
         return False
 
-    def define_isosceles_trapezoid(self, shape, premise=-1, theorem=-1, root=True):    # 等腰梯形
+    def define_isosceles_trapezoid(self, shape, premise=-1, theorem=-1, root=True):  # 等腰梯形
         if self.isosceles_trapezoid.add(shape, premise, theorem):
             if root:
                 premise = self.isosceles_trapezoid.indexes[shape]
@@ -233,7 +233,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_parallelogram(self, shape, premise=-1, theorem=-1, root=True):    # 平行四边形
+    def define_parallelogram(self, shape, premise=-1, theorem=-1, root=True):  # 平行四边形
         if self.parallelogram.add(shape, premise, theorem):
             if root:
                 premise = self.parallelogram.indexes[shape]
@@ -245,68 +245,68 @@ class ProblemLogic:
             return True
         return False
 
-    def define_rectangle(self, shape, premise=-1, theorem=-1, root=True):    # 长方形
+    def define_rectangle(self, shape, premise=-1, theorem=-1, root=True):  # 长方形
         if self.rectangle.add(shape, premise, theorem):
             if root:
                 premise = self.rectangle.indexes[shape]
-            self.rectangle.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)    # 4种表示
+            self.rectangle.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
             self.rectangle.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
             self.rectangle.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
-            self.define_parallelogram(shape, premise, -2, False)   # 长方形也是平行四边形
+            self.define_parallelogram(shape, premise, -2, False)  # 长方形也是平行四边形
             self.define_isosceles_trapezoid(shape, premise, -2, False)  # 长方形也是等腰梯形
             self.define_isosceles_trapezoid(shape[1] + shape[2] + shape[3] + shape[0], premise, -2, False)
             return True
         return False
 
-    def define_kite(self, shape, premise=-1, theorem=-1, root=True):    # 风筝形
+    def define_kite(self, shape, premise=-1, theorem=-1, root=True):  # 风筝形
         if self.kite.add(shape, premise, theorem):
             if root:
                 premise = self.kite.indexes[shape]
-            self.kite.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)   # 2种表示
-            self.define_quadrilateral(shape, premise, -2, False)    # Kite也是四边形
+            self.kite.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)  # 2种表示
+            self.define_quadrilateral(shape, premise, -2, False)  # Kite也是四边形
             return True
         return False
 
-    def define_rhombus(self, shape, premise=-1, theorem=-1, root=True):    # 菱形
+    def define_rhombus(self, shape, premise=-1, theorem=-1, root=True):  # 菱形
         if self.rhombus.add(shape, premise, theorem):
             if root:
                 premise = self.rhombus.indexes[shape]
-            self.rhombus.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)    # 4种表示
+            self.rhombus.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
             self.rhombus.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
             self.rhombus.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
-            self.define_parallelogram(shape, premise, -2, False)   # 菱形也是平行四边形
+            self.define_parallelogram(shape, premise, -2, False)  # 菱形也是平行四边形
             self.define_kite(shape, premise, -2, False)  # 菱形也是Kite
             self.define_kite(shape[1] + shape[2] + shape[3] + shape[0], premise, -2, False)
             return True
         return False
 
-    def define_square(self, shape, premise=-1, theorem=-1, root=True):    # 正方形
+    def define_square(self, shape, premise=-1, theorem=-1, root=True):  # 正方形
         if self.square.add(shape, premise, theorem):
             if root:
                 premise = self.square.indexes[shape]
             self.square.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
             self.square.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
             self.square.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
-            self.define_rectangle(shape, premise, -2, False)    # 正方形也是长方形
-            self.define_rhombus(shape, premise, -2, False)      # 正方形也是菱形
+            self.define_rectangle(shape, premise, -2, False)  # 正方形也是长方形
+            self.define_rhombus(shape, premise, -2, False)  # 正方形也是菱形
             return True
         return False
 
-    def define_polygon(self, shape, premise=-1, theorem=-1, root=True):   # 多边形
+    def define_polygon(self, shape, premise=-1, theorem=-1, root=True):  # 多边形
         if self.polygon.add(shape, premise, theorem):
             if root:
                 premise = self.polygon.indexes[shape]
             n = len(shape)
-            for i in range(n):    # n种表示方式
+            for i in range(n):  # n种表示方式
                 polygon_rearrange = ""
                 for j in range(n):
                     polygon_rearrange += shape[(j + i) % n]
                 self.polygon.add(polygon_rearrange, premise, -2)
-                self.define_angle(polygon_rearrange[0:3], premise, -2, False)   # 由角组成
+                self.define_angle(polygon_rearrange[0:3], premise, -2, False)  # 由角组成
             return True
         return False
 
-    def define_regular_polygon(self, shape, premise=-1, theorem=-1, root=True):   # 正多边形
+    def define_regular_polygon(self, shape, premise=-1, theorem=-1, root=True):  # 正多边形
         if self.regular_polygon.add(shape, premise, theorem):
             if root:
                 premise = self.regular_polygon.indexes[shape]
@@ -316,13 +316,13 @@ class ProblemLogic:
                 for j in range(n):
                     polygon_rearrange += shape[(i + j) % n]
                 self.regular_polygon.add(polygon_rearrange, premise, -2)
-            self.define_polygon(shape, premise, -2, False)    # 正多边形也是多边形
+            self.define_polygon(shape, premise, -2, False)  # 正多边形也是多边形
             return True
         return False
 
     """------------define Relation------------"""
 
-    def define_point_on_line(self, triangle, premise=-1, theorem=-1):
+    def define_point_on_line(self, *test, premise=-1, theorem=-1):
         pass
 
     def define_point_on_arc(self, triangle, premise=-1, theorem=-1):
@@ -346,9 +346,9 @@ class ProblemLogic:
     def define_orthocenter(self, triangle, premise=-1, theorem=-1):
         pass
 
-    def define_parallel(self, line1, line2,  premise=-1, theorem=-1):
+    def define_parallel(self, line1, line2, premise=-1, theorem=-1):
         if self.parallel.add((line1, line2), premise, theorem):
-            self.parallel.add((line1, line2[1] + line2[0]), premise, theorem)    # 线的四种排列组合
+            self.parallel.add((line1, line2[1] + line2[0]), premise, theorem)  # 线的四种排列组合
             self.parallel.add((line1[1] + line1[0], line2), premise, theorem)
             self.parallel.add((line1[1] + line1[0], line2[1] + line2[0]), premise, theorem)
             return True
@@ -504,13 +504,20 @@ class ProblemLogic:
     def high_level_func(self):
         pass
 
-    """------------auxiliary function------------"""
 
-    def show_logic(self):
+class Problem(ProblemLogic):
+
+    def __init__(self, problem_index, formal_languages, theorem_seqs):
+        super().__init__()
+        self.problem_index = problem_index
+        self.formal_languages = formal_languages
+        self.theorem_seqs = theorem_seqs
+
+    def show_problem(self):
         conditions = [self.point, self.line, self.angle, self.arc, self.shape, self.circle, self.sector,
                       self.triangle, self.right_triangle, self.isosceles_triangle, self.regular_triangle,
-                      self.quadrilateral, self.trapezoid, self.isosceles_trapezoid, self.parallelogram, self.rectangle,
-                      self.kite, self.rhombus,
+                      self.quadrilateral, self.trapezoid, self.isosceles_trapezoid, self.parallelogram,
+                      self.rectangle, self.kite, self.rhombus,
                       self.square, self.polygon, self.regular_polygon, self.point_on_line,
                       self.point_on_arc, self.point_on_circle, self.midpoint, self.circumcenter, self.incenter,
                       self.centroid, self.orthocenter, self.parallel, self.intersect, self.perpendicular,
@@ -521,25 +528,12 @@ class ProblemLogic:
                       self.circumscribed_to_triangle, self.inscribed_in_triangle, self.congruent, self.similar,
                       self.expression]
         sym_of_attr = [self.length_of_line, self.degree_of_angle, self.length_of_arc, self.radius_of_arc,
-                       self.radius_of_circle, self.radius_of_sector, self.degree_of_sector, self.diameter_of_circle,
+                       self.radius_of_circle, self.radius_of_sector, self.degree_of_sector,
+                       self.diameter_of_circle,
                        self.perimeter_of_triangle, self.perimeter_of_circle, self.perimeter_of_sector,
                        self.perimeter_of_quadrilateral, self.perimeter_of_polygon, self.area_of_triangle,
                        self.area_of_circle, self.area_of_sector, self.area_of_quadrilateral, self.area_of_polygon]
-        for condition in conditions:  # 条件
-            condition.show()
-        for sym in sym_of_attr:  # 属性的符号表示
-            sym.show()
-
-
-class Problem(ProblemLogic):
-
-    def __init__(self, problem_index, formal_languages, theorem_seqs):
-        super().__init__()
-        self.problem_index = problem_index
-        self.formal_languages = formal_languages
-        self.theorem_seqs = theorem_seqs
-
-    def show_formal(self):
+        # Formal Language
         print("problem_index: {}".format(self.problem_index))
         print("formal_languages:")
         for formal_language in self.formal_languages:  # 解析 formal language
@@ -548,3 +542,23 @@ class Problem(ProblemLogic):
         for theorem in self.theorem_seqs:
             print(theorem, end=" ")
         print("\n")
+
+        # Logic
+        for condition in conditions:  # 条件
+            if len(condition.items) > 0:
+                print("{}: {}".format(condition.type.name, condition.name))
+                for item in condition.items:
+                    if condition.type is ConditionType.Entity:
+                        print("{0:^4}{1:^9}{2:^4}{3:^4}".format(condition.indexes[item], item,
+                                                                condition.premises[item],
+                                                                condition.theorems[item]))
+                    else:
+                        print("{0:^4}{1:^20}{2:^4}{3:^4}".format(condition.indexes[item], str(item),
+                                                                 condition.premises[item],
+                                                                 condition.theorems[item]))
+        for sym in sym_of_attr:  # 属性的符号表示
+            if len(sym.attr) > 0:
+                print("Attr's Symbol: {}".format(sym.type.name))
+                for key in sym.attr.keys():
+                    print(key, end=": ")
+                    print(sym.attr[key])
