@@ -1,4 +1,4 @@
-from itertools import permutations
+from utility import get_all_representation_of_shape
 from facts import Condition, ConditionType, AttributionSymbol, AttributionType, TargetType
 
 
@@ -51,7 +51,6 @@ class ProblemLogic:
         self.median = Condition(ConditionType.Relation, "Median")
         self.height_triangle = Condition(ConditionType.Relation, "Height Triangle")
         self.height_trapezoid = Condition(ConditionType.Relation, "Height Trapezoid")
-        self.height_parallelogram = Condition(ConditionType.Relation, "Height Parallelogram")
         self.internally_tangent = Condition(ConditionType.Relation, "Internally Tangent")  # 图形的关系
         self.contain = Condition(ConditionType.Relation, "Contain")
         self.circumscribed_to_triangle = Condition(ConditionType.Relation, "Circumscribed To Triangle")
@@ -94,7 +93,7 @@ class ProblemLogic:
         if self.line.add(line, premise, theorem):
             if root:  # 如果是 definition tree 的根节点，那子节点都使用当前节点的 premise
                 premise = self.line.indexes[line]
-            self.line.add(line[::-1], premise, -2)  # 一条线两种表示 AB --> BA
+            self.line.add(line[::-1], premise, -2)  # 一条线2种表示
             self.point.add(line[0], premise, -2)  # 定义线上的点
             self.point.add(line[1], premise, -2)
             return True
@@ -153,11 +152,10 @@ class ProblemLogic:
         if self.triangle.add(triangle, premise, theorem):
             if root:
                 premise = self.triangle.indexes[triangle]
-            self.triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)  # 一个三角形三种表示
-            self.triangle.add(triangle[2] + triangle[0] + triangle[1], premise, -2)
-            self.define_angle(triangle, premise, -2, False)  # 三角形的三个角
-            self.define_angle(triangle[1] + triangle[2] + triangle[0], premise, -2, False)
-            self.define_angle(triangle[2] + triangle[0] + triangle[1], premise, -2, False)
+            triangle_all = get_all_representation_of_shape(triangle)  # 3种表示
+            for triangle in range(triangle_all):
+                self.triangle.add(triangle, premise, -2)
+                self.define_angle(triangle, premise, -2)  # 定义3个角
             return True
         return False
 
@@ -189,11 +187,10 @@ class ProblemLogic:
         if self.regular_triangle.add(triangle, premise, theorem):
             if root:
                 premise = self.regular_triangle.indexes[triangle]
-            self.regular_triangle.add(triangle[1] + triangle[2] + triangle[0], premise, -2)  # 一个正三角形3种表示
-            self.regular_triangle.add(triangle[2] + triangle[0] + triangle[1], premise, -2)
-            self.define_isosceles_triangle(triangle, premise, -2, False)  # 等边也是等腰
-            self.define_isosceles_triangle(triangle[1] + triangle[2] + triangle[0], premise, -2, False)
-            self.define_isosceles_triangle(triangle[2] + triangle[0] + triangle[1], premise, -2, False)
+            triangle_all = get_all_representation_of_shape(triangle)  # 3种表示
+            for triangle in range(triangle_all):
+                self.regular_triangle.add(triangle, premise, -2)
+                self.define_isosceles_triangle(triangle, premise, -2, False)  # 等边也是等腰
             return True
         return False
 
@@ -201,12 +198,10 @@ class ProblemLogic:
         if self.quadrilateral.add(shape, premise, theorem):
             if root:
                 premise = self.quadrilateral.indexes[shape]
-            for i in range(4):
-                self.quadrilateral.add(
-                    shape[(0 + i) % 4] + shape[(1 + i) % 4] + shape[(2 + i) % 4] + shape[(3 + i) % 4],
-                    premise, -2)  # 每个四边形有4种表示
-                self.define_angle(shape[(0 + i) % 4] + shape[(1 + i) % 4] + shape[(2 + i) % 4],
-                                  premise, -2, False)  # 四个角
+            quadrilateral_all = get_all_representation_of_shape(shape)  # 4种表示
+            for quadrilateral in range(quadrilateral_all):
+                self.quadrilateral.add(quadrilateral, premise, -2)
+                self.define_angle(quadrilateral[0:3], premise, -2, False)  # 四边形由角组成
             return True
         return False
 
@@ -242,9 +237,9 @@ class ProblemLogic:
         if self.parallelogram.add(shape, premise, theorem):
             if root:
                 premise = self.parallelogram.indexes[shape]
-            self.parallelogram.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
-            self.parallelogram.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
-            self.parallelogram.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
+            parallelogram_all = get_all_representation_of_shape(shape)  # 4种表示
+            for parallelogram in range(parallelogram_all):
+                self.parallelogram.add(parallelogram, premise, -2)
             self.define_trapezoid(shape, premise, -2, False)  # 平行四边形也是梯形
             self.define_trapezoid(shape[1] + shape[2] + shape[3] + shape[0], premise, -2, False)
             return True
@@ -254,9 +249,9 @@ class ProblemLogic:
         if self.rectangle.add(shape, premise, theorem):
             if root:
                 premise = self.rectangle.indexes[shape]
-            self.rectangle.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
-            self.rectangle.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
-            self.rectangle.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
+            rectangle_all = get_all_representation_of_shape(shape)  # 4种表示
+            for rectangle in range(rectangle_all):
+                self.rectangle.add(rectangle, premise, -2)
             self.define_parallelogram(shape, premise, -2, False)  # 长方形也是平行四边形
             self.define_isosceles_trapezoid(shape, premise, -2, False)  # 长方形也是等腰梯形
             self.define_isosceles_trapezoid(shape[1] + shape[2] + shape[3] + shape[0], premise, -2, False)
@@ -276,9 +271,9 @@ class ProblemLogic:
         if self.rhombus.add(shape, premise, theorem):
             if root:
                 premise = self.rhombus.indexes[shape]
-            self.rhombus.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
-            self.rhombus.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
-            self.rhombus.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
+            rhombus_all = get_all_representation_of_shape(shape)  # 4种表示
+            for rhombus in range(rhombus_all):
+                self.rhombus.add(rhombus, premise, -2)
             self.define_parallelogram(shape, premise, -2, False)  # 菱形也是平行四边形
             self.define_kite(shape, premise, -2, False)  # 菱形也是Kite
             self.define_kite(shape[1] + shape[2] + shape[3] + shape[0], premise, -2, False)
@@ -289,9 +284,9 @@ class ProblemLogic:
         if self.square.add(shape, premise, theorem):
             if root:
                 premise = self.square.indexes[shape]
-            self.square.add(shape[1] + shape[2] + shape[3] + shape[0], premise, -2)  # 4种表示
-            self.square.add(shape[2] + shape[3] + shape[0] + shape[1], premise, -2)
-            self.square.add(shape[3] + shape[0] + shape[1] + shape[2], premise, -2)
+            square_all = get_all_representation_of_shape(shape)  # 4种表示
+            for square in range(square_all):
+                self.square.add(square, premise, -2)
             self.define_rectangle(shape, premise, -2, False)  # 正方形也是长方形
             self.define_rhombus(shape, premise, -2, False)  # 正方形也是菱形
             return True
@@ -301,13 +296,10 @@ class ProblemLogic:
         if self.polygon.add(shape, premise, theorem):
             if root:
                 premise = self.polygon.indexes[shape]
-            n = len(shape)
-            for i in range(n):  # n种表示方式
-                polygon_rearrange = ""
-                for j in range(n):
-                    polygon_rearrange += shape[(j + i) % n]
-                self.polygon.add(polygon_rearrange, premise, -2)
-                self.define_angle(polygon_rearrange[0:3], premise, -2, False)  # 由角组成
+            polygon_all = get_all_representation_of_shape(shape)  # 所有表示
+            for polygon in range(polygon_all):
+                self.polygon.add(polygon, premise, -2)
+                self.define_angle(polygon[0:3], premise, -2, False)  # 由角组成
             return True
         return False
 
@@ -315,12 +307,10 @@ class ProblemLogic:
         if self.regular_polygon.add(shape, premise, theorem):
             if root:
                 premise = self.regular_polygon.indexes[shape]
-            n = len(shape)
-            for i in range(n):  # n种表示方式
-                polygon_rearrange = ""
-                for j in range(n):
-                    polygon_rearrange += shape[(i + j) % n]
-                self.regular_polygon.add(polygon_rearrange, premise, -2)
+            polygon_all = get_all_representation_of_shape(shape)  # 所有表示
+            for polygon in range(polygon_all):
+                self.regular_polygon.add(polygon, premise, -2)
+                self.define_angle(polygon[0:3], premise, -2, False)  # 由角组成
             self.define_polygon(shape, premise, -2, False)  # 正多边形也是多边形
             return True
         return False
@@ -546,35 +536,111 @@ class ProblemLogic:
             return True
         return False
 
-    def define_median(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_median(self, line, triangle, premise=-1, theorem=-1, root=True):   # 中线
+        if self.median.add((line, triangle), premise, theorem):
+            if root:
+                premise = self.median.indexes[(line, triangle)]
+            self.define_line(line, premise, -2)    # 定义实体
+            self.define_triangle(triangle, premise, -2)
+            self.define_point_on_line(line[1], triangle[1:3], premise, -2, False)   # 子关系
+            return True
+        return False
 
-    def define_height_triangle(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_height_triangle(self, height, triangle, premise=-1, theorem=-1, root=True):  # 高
+        if self.height_triangle.add((height, triangle), premise, theorem):
+            if root:
+                premise = self.height_triangle.indexes[(height, triangle)]
+            self.define_line(height, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
 
-    def define_height_trapezoid(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_height_trapezoid(self, height, trapezoid, premise=-1, theorem=-1, root=True):  # 高
+        if self.height_trapezoid.add((height, trapezoid), premise, theorem):
+            if root:
+                premise = self.height_trapezoid.indexes[(height, trapezoid)]
+            self.define_line(height, premise, -2, False)  # 定义实体
+            self.define_trapezoid(trapezoid, premise, -2, False)
+            return True
+        return False
 
-    def define_height_parallelogram(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_internally_tangent(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内切 circle1是大的
+        if self.internally_tangent.add((point, circle1, circle2), premise, theorem):
+            if root:
+                premise = self.internally_tangent.indexes[(point, circle1, circle2)]
+            self.define_circle(circle1, premise, -2, False)  # 定义实体
+            self.define_circle(circle2, premise, -2, False)
+            if point != "$":
+                self.point.add(point, premise, -2)
+            return True
+        return False
 
-    def define_internally_tangent(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_contain(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内含 circle1是大的
+        if self.contain.add((point, circle1, circle2), premise, theorem):
+            if root:
+                premise = self.contain.indexes[(point, circle1, circle2)]
+            self.define_circle(circle1, premise, -2, False)  # 定义实体
+            self.define_circle(circle2, premise, -2, False)
+            if point != "$":
+                self.point.add(point, premise, -2)
+            return True
+        return False
 
-    def define_contain(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_circumscribed_to_triangle(self, circle, triangle, premise=-1, theorem=-1, root=True):
+        if self.circumscribed_to_triangle.add((circle, triangle), premise, theorem):
+            if root:
+                premise = self.circumscribed_to_triangle.indexes[(circle, triangle)]
+            self.define_circle(circle, premise, -2, False)
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
 
-    def define_circumscribed_to_triangle(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_inscribed_in_triangle(self, point1, point2, point3, circle, triangle, premise=-1, theorem=-1, root=True):
+        if self.inscribed_in_triangle.add((point1, point2, point3, circle, triangle), premise, theorem):
+            if root:
+                premise = self.inscribed_in_triangle.indexes[(point1, point2, point3, circle, triangle)]
+            self.define_circle(circle, premise, -2, False)
+            self.define_triangle(triangle, premise, -2, False)
+            if point1 != "$":
+                self.point.add(point1, premise, -2)
+                self.define_point_on_line(point1, triangle[0:2], premise, -2, False)
+                self.define_point_on_circle(point1, circle, premise, -2, False)
+            if point2 != "$":
+                self.point.add(point2, premise, -2)
+                self.define_point_on_line(point2, triangle[1:3], premise, -2, False)
+                self.define_point_on_circle(point2, circle, premise, -2, False)
+            if point3 != "$":
+                self.point.add(point3, premise, -2)
+                self.define_point_on_line(point3, triangle[2] + triangle[0], premise, -2, False)
+                self.define_point_on_circle(point3, circle, premise, -2, False)
+            return True
+        return False
 
-    def define_inscribed_in_triangle(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_congruent(self, triangle1, triangle2, premise=-1, theorem=-1, root=True):  # 全等
+        if self.congruent.add((triangle1, triangle2), premise, theorem):
+            if root:
+                premise = self.congruent.indexes[(triangle1, triangle2)]
+            triangle1_all = get_all_representation_of_shape(triangle1)   # 6种
+            triangle2_all = get_all_representation_of_shape(triangle2)
+            for i in range(len(triangle1_all)):
+                self.congruent.add((triangle1_all[i], triangle2_all[i]), premise, -2)
+            self.define_triangle(triangle1, premise, -2, False)   # 定义实体
+            self.define_triangle(triangle2, premise, -2, False)
+            return True
+        return False
 
-    def define_congruent(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
-
-    def define_similar(self, triangle, premise=-1, theorem=-1, root=True):
-        pass
+    def define_similar(self, triangle1, triangle2, premise=-1, theorem=-1, root=True):  # 相似
+        if self.similar.add((triangle1, triangle2), premise, theorem):
+            if root:
+                premise = self.similar.indexes[(triangle1, triangle2)]
+            triangle1_all = get_all_representation_of_shape(triangle1)  # 6种表示方式
+            triangle2_all = get_all_representation_of_shape(triangle2)
+            for i in range(len(triangle1_all)):
+                self.similar.add((triangle1_all[i], triangle2_all[i]), premise, -2)
+            self.define_triangle(triangle1, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle2, premise, -2, False)
+            return True
+        return False
 
     """------------Expression related------------"""
 
@@ -686,7 +752,7 @@ class Problem(ProblemLogic):
                       self.perpendicular_bisector, self.bisects_angle, self.disjoint_line_circle,
                       self.disjoint_circle_circle, self.tangent_line_circle, self.tangent_circle_circle,
                       self.intersect_line_circle, self.intersect_circle_circle, self.median, self.height_triangle,
-                      self.height_trapezoid, self.height_parallelogram, self.internally_tangent, self.contain,
+                      self.height_trapezoid, self.internally_tangent, self.contain,
                       self.circumscribed_to_triangle, self.inscribed_in_triangle, self.congruent, self.similar,
                       self.expression]
         sym_of_attr = [self.length_of_line, self.degree_of_angle, self.length_of_arc, self.radius_of_arc,
