@@ -15,19 +15,40 @@ class ProblemLogic:
         self.circle = Condition(ConditionType.Entity, "Circle")  # 圆和扇形
         self.sector = Condition(ConditionType.Entity, "Sector")
         self.triangle = Condition(ConditionType.Entity, "Triangle")  # 三角形
-        self.right_triangle = Condition(ConditionType.Entity, "Right Triangle")
-        self.isosceles_triangle = Condition(ConditionType.Entity, "Isosceles Triangle")
-        self.regular_triangle = Condition(ConditionType.Entity, "Regular Triangle")
+        self.right_triangle = Condition(ConditionType.Entity, "RightTriangle")
+        self.isosceles_triangle = Condition(ConditionType.Entity, "IsoscelesTriangle")
+        self.regular_triangle = Condition(ConditionType.Entity, "RegularTriangle")
         self.quadrilateral = Condition(ConditionType.Entity, "Quadrilateral")  # 四边形
         self.trapezoid = Condition(ConditionType.Entity, "Trapezoid")
-        self.isosceles_trapezoid = Condition(ConditionType.Entity, "Isosceles Trapezoid")
+        self.isosceles_trapezoid = Condition(ConditionType.Entity, "IsoscelesTrapezoid")
         self.parallelogram = Condition(ConditionType.Entity, "Parallelogram")
         self.rectangle = Condition(ConditionType.Entity, "Rectangle")
         self.kite = Condition(ConditionType.Entity, "Kite")
         self.rhombus = Condition(ConditionType.Entity, "Rhombus")
         self.square = Condition(ConditionType.Entity, "Square")
         self.polygon = Condition(ConditionType.Entity, "Polygon")  # 多边形
-        self.regular_polygon = Condition(ConditionType.Entity, "Regular Polygon")
+        self.regular_polygon = Condition(ConditionType.Entity, "RegularPolygon")
+        self.entities = {"Point": self.point,
+                         "Line": self.line,
+                         "Angle": self.angle,
+                         "Arc": self.arc,
+                         "Shape": self.shape,
+                         "Circle": self.circle,
+                         "Sector": self.sector,
+                         "Triangle": self.triangle,
+                         "RightTriangle": self.right_triangle,
+                         "IsoscelesTriangle": self.isosceles_triangle,
+                         "RegularTriangle": self.regular_triangle,
+                         "Quadrilateral": self.quadrilateral,
+                         "Trapezoid": self.trapezoid,
+                         "IsoscelesTrapezoid": self.isosceles_trapezoid,
+                         "Parallelogram": self.parallelogram,
+                         "Rectangle": self.rectangle,
+                         "Kite": self.kite,
+                         "Rhombus": self.rhombus,
+                         "Square": self.square,
+                         "Polygon": self.polygon,
+                         "RegularPolygon": self.regular_polygon}
 
         """------------Positional Relation------------"""
         self.point_on_line = Condition(ConditionType.Relation, "PointOnLine")  # 点的关系
@@ -58,13 +79,39 @@ class ProblemLogic:
         self.inscribed_in_triangle = Condition(ConditionType.Relation, "InscribedInTriangle")
         self.congruent = Condition(ConditionType.Relation, "Congruent")
         self.similar = Condition(ConditionType.Relation, "Similar")
-
-        self.pos_relation_map = {}    #
+        self.relations = {"PointOnLine": self.point_on_line,
+                          "PointOnArc": self.point_on_arc,
+                          "PointOnCircle": self.point_on_circle,
+                          "Midpoint": self.midpoint,
+                          "Circumcenter": self.circumcenter,
+                          "Incenter": self.incenter,
+                          "Centroid": self.centroid,
+                          "Orthocenter": self.orthocenter,
+                          "Parallel": self.parallel,
+                          "Intersect": self.intersect,
+                          "Perpendicular": self.perpendicular,
+                          "PerpendicularBisector": self.perpendicular_bisector,
+                          "BisectsAngle": self.bisects_angle,
+                          "DisjointLineCircle": self.disjoint_line_circle,
+                          "DisjointCircleCircle": self.disjoint_circle_circle,
+                          "TangentLineCircle": self.tangent_line_circle,
+                          "TangentCircleCircle": self.tangent_circle_circle,
+                          "IntersectLineCircle": self.intersect_line_circle,
+                          "IntersectCircleCircle": self.intersect_circle_circle,
+                          "Median": self.median,
+                          "HeightTriangle": self.height_triangle,
+                          "HeightTrapezoid": self.height_trapezoid,
+                          "InternallyTangent": self.internally_tangent,
+                          "Contain": self.contain,
+                          "CircumscribedToTriangle": self.circumscribed_to_triangle,
+                          "InscribedInTriangle": self.inscribed_in_triangle,
+                          "Congruent": self.congruent,
+                          "Similar": self.similar}
 
         """------------Algebraic Relation------------"""
         self.sym_of_attr = {}    # (ConditionType, "name"): sym
         self.value_of_sym = {}   # sym: value
-        self.equations = Condition(ConditionType.Equation, "Equation")
+        self.equations = Condition(ConditionType.Equation, "Equation")   # 代数方程
 
         """----------解题目标----------"""
         self.target_type = None  # 解题目标的类型
@@ -654,18 +701,6 @@ class Problem(ProblemLogic):
         self.theorem_seqs = theorem_seqs
 
     def show_problem(self):
-        conditions = [self.point, self.line, self.angle, self.arc, self.shape, self.circle, self.sector,
-                      self.triangle, self.right_triangle, self.isosceles_triangle, self.regular_triangle,
-                      self.quadrilateral, self.trapezoid, self.isosceles_trapezoid, self.parallelogram,
-                      self.rectangle, self.kite, self.rhombus,
-                      self.square, self.polygon, self.regular_polygon, self.point_on_line,
-                      self.point_on_arc, self.point_on_circle, self.midpoint, self.circumcenter, self.incenter,
-                      self.centroid, self.orthocenter, self.parallel, self.intersect, self.perpendicular,
-                      self.perpendicular_bisector, self.bisects_angle, self.disjoint_line_circle,
-                      self.disjoint_circle_circle, self.tangent_line_circle, self.tangent_circle_circle,
-                      self.intersect_line_circle, self.intersect_circle_circle, self.median, self.height_triangle,
-                      self.height_trapezoid, self.internally_tangent, self.contain,
-                      self.circumscribed_to_triangle, self.inscribed_in_triangle, self.congruent, self.similar]
         # Formal Language
         print("problem_index: {}".format(self.problem_index))
         print("formal_languages:")
@@ -676,26 +711,33 @@ class Problem(ProblemLogic):
             print(theorem, end=" ")
         print("\n")
 
-        # Logic
-        for condition in conditions:  # 条件
-            if len(condition.items) > 0:
-                print("{}: {}".format(condition.type.name, condition.name))
-                for item in condition.items:
-                    if condition.type is ConditionType.Entity:    # Entity
-                        print("{0:^4}{1:^9}{2:^4}{3:^4}".format(condition.indexes[item], item,
-                                                                condition.premises[item],
-                                                                condition.theorems[item]))
-                    else:    # Relation
-                        print("{0:^4}{1:^20}{2:^4}{3:^4}".format(condition.indexes[item], str(item),
-                                                                 condition.premises[item],
-                                                                 condition.theorems[item]))
+        # Logic-Entity
+        print("Entities:")
+        for entity in self.entities.keys():
+            if len(self.entities[entity].items) > 0:
+                print("{}:".format(entity))
+                for item in self.entities[entity].items:
+                    print("{0:^4}{1:^9}{2:^4}{3:^4}".format(self.entities[entity].indexes[item],
+                                                            item,
+                                                            self.entities[entity].premises[item],
+                                                            self.entities[entity].theorems[item]))
+        # Logic-Relation
+        print("Relations:")
+        for relation in self.relations.keys():
+            if len(self.relations[relation].items) > 0:
+                print("{}:".format(relation))
+                for item in self.relations[relation].items:
+                    print("{0:^4}{1:^9}{2:^4}{3:^4}".format(self.relations[relation].indexes[item],
+                                                            item,
+                                                            self.relations[relation].premises[item],
+                                                            self.relations[relation].theorems[item]))
+        # Logic-Attribution&Symbol
         print("Symbol Of Attr:")
         for attr in self.sym_of_attr:
             print("{0:^10}{1:^4}".format(attr, self.sym_of_attr[attr]))
         print("Value Of Symbol:")
         for sym in self.value_of_sym:
             print("{0:^10}{1:^4}".format(sym, self.value_of_sym[sym]))
-        print("equations:")
+        print("Equations:")
         for equation in self.equations.items:
             print("{0:^10}".format(equation))
-

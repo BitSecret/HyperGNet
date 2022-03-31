@@ -230,9 +230,12 @@ class Solver:
             return float(fl[0])
 
     def _parse_find(self, fl):  # 解析find
-        if fl[1][0] in self.problem.pos_relation_map.keys():
+        if fl[1][0] in self.problem.relations.keys():
             self.problem.target_type = TargetType.relation    # 位置关系
-            self.problem.target = []    # 未完待续
+            target = []
+            for i in range(1, len(fl[1])):
+                target.append(len(fl[1][i][1]))
+            self.problem.target = [fl[1][0], set(target)]
         else:
             self.problem.target_type = TargetType.value    # 代数关系
             self.problem.target = [self._generate_expr(fl[1])]
