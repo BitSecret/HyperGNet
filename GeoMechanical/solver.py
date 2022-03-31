@@ -10,7 +10,7 @@ class Solver:
     def __init__(self, problem_index, formal_languages, theorem_seqs=None):
         self.problem = Problem(problem_index, formal_languages, theorem_seqs)  # 题目
 
-        # 使用字典映射解析函数，代替if-else，加速查找。字典采用hash映射，查找复杂读为O(1)。
+        # 使用字典映射parse函数，代替if-else，加速查找。字典采用hash映射，查找复杂读为O(1)。
         self.parse_func_map = {"Point": self._parse_entity,
                                "Line": self._parse_entity,
                                "Angle": self._parse_entity,
@@ -93,6 +93,11 @@ class Solver:
                                              "PerpendicularBisector": self.problem.define_perpendicular_bisector,
                                              "InternallyTangent": self.problem.define_internally_tangent}
 
+        self.theorem_map = {1: Theorem.theorem_1_xxxx,
+                            2: Theorem.theorem_2_xxxx,
+                            3: Theorem.theorem_3_xxxx,
+                            4: Theorem.theorem_4_xxxx}
+
         self.parse()  # 解析形式化语句到logic形式
 
     def parse(self):
@@ -107,6 +112,8 @@ class Solver:
             self.parse_func_map[fl[0]](fl)    # 这个警告不用管
 
     def _parse_entity(self, fl):  # 解析实体
+
+        print(fl[1])
         self.problem_entity_map[fl[0]](fl[1])
 
     def _parse_binary_relation(self, fl):  # 解析二元关系
@@ -241,10 +248,9 @@ class Solver:
             self.problem.target = [self._generate_expr(fl[1])]
 
     def solve(self):
-        Theorem.theorem_1_xxxx(self.problem)  # 应用定理
-        self.problem.show_problem()  # 展示结果
+        for theorem in self.problem.theorem_seqs:
+            self.theorem_map[theorem](self.problem)
 
     """------------auxiliary function------------"""
-
     def show_result(self):  # 输出求解结果
         pass

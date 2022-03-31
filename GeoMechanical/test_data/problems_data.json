@@ -3,10 +3,12 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 0,
 		"formal_languages": [
-			"Centroid(Point(A),Triangle(ABC))"
+			"Square(ABCD)"
 		],
 		"theorem_seqs": [
-			1
+			1,
+			3,
+			2
 		]
 	},
 	"1": {

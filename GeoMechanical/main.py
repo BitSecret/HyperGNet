@@ -1,6 +1,5 @@
-from solver import Solver
-import utility
 import json
+from solver import Solver
 
 
 def main():
@@ -8,6 +7,7 @@ def main():
     data = load_data(problems_path)[0]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
     solver.solve()
+    solver.problem.show_problem()
 
 
 def load_data(problems_path):    # 读取json数据并解析成列表
