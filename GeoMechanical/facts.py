@@ -4,7 +4,7 @@ from enum import Enum
 class ConditionType(Enum):  # 条件的类型
     Entity = 1      # 实体
     Relation = 2    # 位置关系
-    Expression = 3  # 数量关系
+    Equation = 3  # 数量关系
 
 
 class Condition:  # 条件
@@ -49,22 +49,7 @@ class AttributionType(Enum):  # 属性的类型
     AreaOfSector = 16  # 扇形的面积
     AreaOfQuadrilateral = 17  # 四边形的面积
     AreaOfPolygon = 18  # 多边形的面积
-
-
-class AttributionSymbol:    # 与属性对应的符号
-
-    def __init__(self, a_type):
-        self.type = a_type  # 条件集类型
-        self.attr = {}      # attr是key
-        self.sym = {}       # sym是key
-
-    def add(self, attr, sym):
-        if attr not in self.attr:
-            self.attr[attr] = []
-        if sym not in self.sym:
-            self.sym[sym] = []
-        self.attr[attr].append(sym)
-        self.sym[sym].append(attr)
+    Free = 19  # 自由的符号
 
 
 class TargetType(Enum):    # 解题目标类型

@@ -4,8 +4,6 @@ import json
 
 
 def main():
-    print(utility.get_all_representation_of_shape("ABC"))
-    exit(0)
     problems_path = "./test_data/problems_data.json"
     data = load_data(problems_path)[0]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])

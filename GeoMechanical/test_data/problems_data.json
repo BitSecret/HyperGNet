@@ -3,7 +3,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 0,
 		"formal_languages": [
-			"PointOn(Point(A),Line(AB))"
+			"Centroid(Point(A),Triangle(ABC))"
 		],
 		"theorem_seqs": [
 			1

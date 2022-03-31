@@ -1,5 +1,6 @@
 from utility import get_all_representation_of_shape
-from facts import Condition, ConditionType, AttributionSymbol, AttributionType, TargetType
+from facts import Condition, ConditionType, AttributionType, TargetType
+from sympy import symbols
 
 
 class ProblemLogic:
@@ -28,10 +29,10 @@ class ProblemLogic:
         self.polygon = Condition(ConditionType.Entity, "Polygon")  # 多边形
         self.regular_polygon = Condition(ConditionType.Entity, "Regular Polygon")
 
-        """------------Condition:Relation------------"""
-        self.point_on_line = Condition(ConditionType.Relation, "Point On Line")  # 点的关系
-        self.point_on_arc = Condition(ConditionType.Relation, "Point On Arc")
-        self.point_on_circle = Condition(ConditionType.Relation, "Point On Circle")
+        """------------Positional Relation------------"""
+        self.point_on_line = Condition(ConditionType.Relation, "PointOnLine")  # 点的关系
+        self.point_on_arc = Condition(ConditionType.Relation, "PointOnArc")
+        self.point_on_circle = Condition(ConditionType.Relation, "PointOnCircle")
         self.midpoint = Condition(ConditionType.Relation, "Midpoint")
         self.circumcenter = Condition(ConditionType.Relation, "Circumcenter")
         self.incenter = Condition(ConditionType.Relation, "Incenter")
@@ -40,48 +41,32 @@ class ProblemLogic:
         self.parallel = Condition(ConditionType.Relation, "Parallel")  # 线的关系
         self.intersect = Condition(ConditionType.Relation, "Intersect")
         self.perpendicular = Condition(ConditionType.Relation, "Perpendicular")
-        self.perpendicular_bisector = Condition(ConditionType.Relation, "Perpendicular Bisector")
-        self.bisects_angle = Condition(ConditionType.Relation, "Bisects Angle")
-        self.disjoint_line_circle = Condition(ConditionType.Relation, "Disjoint Line Circle")
-        self.disjoint_circle_circle = Condition(ConditionType.Relation, "Disjoint Circle Circle")
-        self.tangent_line_circle = Condition(ConditionType.Relation, "Tangent Line Circle")
-        self.tangent_circle_circle = Condition(ConditionType.Relation, "Tangent Circle Circle")
-        self.intersect_line_circle = Condition(ConditionType.Relation, "Intersect Line Circle")
-        self.intersect_circle_circle = Condition(ConditionType.Relation, "Intersect Circle Circle")
+        self.perpendicular_bisector = Condition(ConditionType.Relation, "PerpendicularBisector")
+        self.bisects_angle = Condition(ConditionType.Relation, "BisectsAngle")
+        self.disjoint_line_circle = Condition(ConditionType.Relation, "DisjointLineCircle")
+        self.disjoint_circle_circle = Condition(ConditionType.Relation, "DisjointCircleCircle")
+        self.tangent_line_circle = Condition(ConditionType.Relation, "TangentLineCircle")
+        self.tangent_circle_circle = Condition(ConditionType.Relation, "TangentCircleCircle")
+        self.intersect_line_circle = Condition(ConditionType.Relation, "IntersectLineCircle")
+        self.intersect_circle_circle = Condition(ConditionType.Relation, "IntersectCircleCircle")
         self.median = Condition(ConditionType.Relation, "Median")
-        self.height_triangle = Condition(ConditionType.Relation, "Height Triangle")
-        self.height_trapezoid = Condition(ConditionType.Relation, "Height Trapezoid")
-        self.internally_tangent = Condition(ConditionType.Relation, "Internally Tangent")  # 图形的关系
+        self.height_triangle = Condition(ConditionType.Relation, "HeightTriangle")
+        self.height_trapezoid = Condition(ConditionType.Relation, "HeightTrapezoid")
+        self.internally_tangent = Condition(ConditionType.Relation, "InternallyTangent")  # 图形的关系
         self.contain = Condition(ConditionType.Relation, "Contain")
-        self.circumscribed_to_triangle = Condition(ConditionType.Relation, "Circumscribed To Triangle")
-        self.inscribed_in_triangle = Condition(ConditionType.Relation, "Inscribed In Triangle")
+        self.circumscribed_to_triangle = Condition(ConditionType.Relation, "CircumscribedToTriangle")
+        self.inscribed_in_triangle = Condition(ConditionType.Relation, "InscribedInTriangle")
         self.congruent = Condition(ConditionType.Relation, "Congruent")
         self.similar = Condition(ConditionType.Relation, "Similar")
 
-        """------------Condition:Expression------------"""
-        self.expression = Condition(ConditionType.Expression, "Expression")
+        self.pos_relation_map = {}    #
 
-        """------Attribution's Symbol------"""
-        self.length_of_line = AttributionSymbol(AttributionType.LengthOfLine)
-        self.length_of_arc = AttributionSymbol(AttributionType.LengthOfArc)
-        self.degree_of_angle = AttributionSymbol(AttributionType.DegreeOfAngle)
-        self.degree_of_sector = AttributionSymbol(AttributionType.DegreeOfSector)
-        self.radius_of_arc = AttributionSymbol(AttributionType.RadiusOfArc)
-        self.radius_of_circle = AttributionSymbol(AttributionType.RadiusOfCircle)
-        self.radius_of_sector = AttributionSymbol(AttributionType.RadiusOfSector)
-        self.diameter_of_circle = AttributionSymbol(AttributionType.DiameterOfCircle)
-        self.perimeter_of_triangle = AttributionSymbol(AttributionType.PerimeterOfTriangle)
-        self.perimeter_of_circle = AttributionSymbol(AttributionType.PerimeterOfCircle)
-        self.perimeter_of_sector = AttributionSymbol(AttributionType.PerimeterOfSector)
-        self.perimeter_of_quadrilateral = AttributionSymbol(AttributionType.PerimeterOfQuadrilateral)
-        self.perimeter_of_polygon = AttributionSymbol(AttributionType.PerimeterOfPolygon)
-        self.area_of_triangle = AttributionSymbol(AttributionType.AreaOfTriangle)
-        self.area_of_circle = AttributionSymbol(AttributionType.AreaOfCircle)
-        self.area_of_sector = AttributionSymbol(AttributionType.AreaOfSector)
-        self.area_of_quadrilateral = AttributionSymbol(AttributionType.AreaOfQuadrilateral)
-        self.area_of_polygon = AttributionSymbol(AttributionType.AreaOfPolygon)
+        """------------Algebraic Relation------------"""
+        self.sym_of_attr = {}    # (ConditionType, "name"): sym
+        self.value_of_sym = {}   # sym: value
+        self.equations = Condition(ConditionType.Equation, "Equation")
 
-        """----------汇总----------"""
+        """----------解题目标----------"""
         self.target_type = None  # 解题目标的类型
         self.target = None  # 解题目标
 
@@ -154,7 +139,7 @@ class ProblemLogic:
             if root:
                 premise = self.triangle.indexes[triangle]
             triangle_all = get_all_representation_of_shape(triangle)  # 3种表示
-            for triangle in range(triangle_all):
+            for triangle in triangle_all:
                 self.triangle.add(triangle, premise, -2)
                 self.define_angle(triangle, premise, -2)  # 定义3个角
             return True
@@ -361,8 +346,8 @@ class ProblemLogic:
             if root:
                 premise = self.circumcenter.indexes[(point, triangle)]
             triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
-            for triangle in triangle_all:
-                self.circumcenter.add((point, triangle_all), premise, -2)
+            for tri in triangle_all:
+                self.circumcenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
@@ -373,8 +358,8 @@ class ProblemLogic:
             if root:
                 premise = self.incenter.indexes[(point, triangle)]
             triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
-            for triangle in triangle_all:
-                self.incenter.add((point, triangle_all), premise, -2)
+            for tri in triangle_all:
+                self.incenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
@@ -385,8 +370,8 @@ class ProblemLogic:
             if root:
                 premise = self.centroid.indexes[(point, triangle)]
             triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
-            for triangle in triangle_all:
-                self.centroid.add((point, triangle_all), premise, -2)
+            for tri in triangle_all:
+                self.centroid.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
@@ -397,8 +382,8 @@ class ProblemLogic:
             if root:
                 premise = self.orthocenter.indexes[(point, triangle)]
             triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
-            for triangle in triangle_all:
-                self.orthocenter.add((point, triangle_all), premise, -2)
+            for tri in triangle_all:
+                self.orthocenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
             self.define_triangle(triangle, premise, -2, False)
             return True
@@ -416,7 +401,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_intersect(self, point, line1, line2, premise=-1, theorem=-1, root=True):  # 线相交
+    def define_intersect_line_line(self, point, line1, line2, premise=-1, theorem=-1, root=True):  # 线相交
         if self.intersect.add((point, line1, line2), premise, theorem):
             if root:
                 premise = self.intersect.indexes[(point, line1, line2)]
@@ -439,7 +424,7 @@ class ProblemLogic:
             self.perpendicular.add((point, line2[::-1], line1), premise, -2)  # 垂直有4种表示
             self.perpendicular.add((point, line1[::-1], line2[::-1]), premise, -2)
             self.perpendicular.add((point, line2, line1[::-1]), premise, -2)
-            self.define_intersect(point, line1, line2, premise, -2, False)  # 垂直也是相交
+            self.define_intersect_line_line(point, line1, line2, premise, -2, False)  # 垂直也是相交
             return True
         return False
 
@@ -648,95 +633,16 @@ class ProblemLogic:
             return True
         return False
 
-    """------------Expression related------------"""
-
-    def define_expression(self, expression, premise=-1, theorem=-1):  # 定义表达式
-        return self.expression.add(expression, premise, theorem)
-
     """------------Attr's Symbol------------"""
 
-    def get_sym_length_of_line(self, attr):
-        if attr not in self.length_of_line.attr:
-            sym = attr.lower() + "_" + "ll"
-            self.length_of_line.add(attr, sym)
-            self.length_of_line.add(attr[::-1], sym)
+    def get_sym_of_attr(self, attr):
+        if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
+            sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())
+            self.sym_of_attr[attr] = sym
+            self.value_of_sym[sym] = None
         else:
-            sym = self.length_of_line.attr[attr][0]
+            sym = self.sym_of_attr[attr]    # 有符号就返回符号
         return sym
-
-    def get_sym_length_of_arc(self, attr):
-        pass
-
-    def get_sym_degree_of_angle(self, attr):
-        if attr not in self.degree_of_angle.attr:
-            sym = attr.lower() + "_" + "da"
-            self.degree_of_angle.add(attr, sym)
-            self.degree_of_angle.add(attr[::-1], sym)
-        else:
-            sym = self.degree_of_angle.attr[attr][0]
-        return sym
-
-    def get_sym_degree_of_sector(self, attr):
-        pass
-
-    def get_sym_radius_of_arc(self, attr):
-        pass
-
-    def get_sym_radius_of_circle(self, attr):
-        pass
-
-    def get_sym_radius_of_sector(self, attr):
-        pass
-
-    def get_sym_diameter_of_circle(self, attr):
-        pass
-
-    def get_sym_perimeter_of_triangle(self, attr):
-        pass
-
-    def get_sym_perimeter_of_circle(self, attr):
-        pass
-
-    def get_sym_perimeter_of_sector(self, attr):
-        pass
-
-    def get_sym_perimeter_of_quadrilateral(self, attr):
-        pass
-
-    def get_sym_perimeter_of_polygon(self, attr):
-        pass
-
-    def get_sym_area_of_triangle(self, attr):
-        pass
-
-    def get_sym_area_of_circle(self, attr):
-        pass
-
-    def get_sym_area_of_sector(self, attr):
-        pass
-
-    def get_sym_area_of_quadrilateral(self, attr):
-        pass
-
-    def get_sym_area_of_polygon(self, attr):
-        pass
-
-    # 处理等式left=right，并将其添加到expression中
-    def equal(self, left, right, premise=-1, theorem=-1):
-        return self.define_expression("{}={}".format(left, right), premise, theorem)
-
-    # 设置解题目标
-    def set_target(self, target_type, target):
-        self.target_type = target_type
-        self.target = target
-
-    """------------high level function------------"""
-
-    def find_(self):
-        pass
-
-    def high_level_func(self):
-        pass
 
 
 class Problem(ProblemLogic):
@@ -759,14 +665,7 @@ class Problem(ProblemLogic):
                       self.disjoint_circle_circle, self.tangent_line_circle, self.tangent_circle_circle,
                       self.intersect_line_circle, self.intersect_circle_circle, self.median, self.height_triangle,
                       self.height_trapezoid, self.internally_tangent, self.contain,
-                      self.circumscribed_to_triangle, self.inscribed_in_triangle, self.congruent, self.similar,
-                      self.expression]
-        sym_of_attr = [self.length_of_line, self.degree_of_angle, self.length_of_arc, self.radius_of_arc,
-                       self.radius_of_circle, self.radius_of_sector, self.degree_of_sector,
-                       self.diameter_of_circle,
-                       self.perimeter_of_triangle, self.perimeter_of_circle, self.perimeter_of_sector,
-                       self.perimeter_of_quadrilateral, self.perimeter_of_polygon, self.area_of_triangle,
-                       self.area_of_circle, self.area_of_sector, self.area_of_quadrilateral, self.area_of_polygon]
+                      self.circumscribed_to_triangle, self.inscribed_in_triangle, self.congruent, self.similar]
         # Formal Language
         print("problem_index: {}".format(self.problem_index))
         print("formal_languages:")
@@ -782,17 +681,21 @@ class Problem(ProblemLogic):
             if len(condition.items) > 0:
                 print("{}: {}".format(condition.type.name, condition.name))
                 for item in condition.items:
-                    if condition.type is ConditionType.Entity:
+                    if condition.type is ConditionType.Entity:    # Entity
                         print("{0:^4}{1:^9}{2:^4}{3:^4}".format(condition.indexes[item], item,
                                                                 condition.premises[item],
                                                                 condition.theorems[item]))
-                    else:
+                    else:    # Relation
                         print("{0:^4}{1:^20}{2:^4}{3:^4}".format(condition.indexes[item], str(item),
                                                                  condition.premises[item],
                                                                  condition.theorems[item]))
-        for sym in sym_of_attr:  # 属性的符号表示
-            if len(sym.attr) > 0:
-                print("Attr's Symbol: {}".format(sym.type.name))
-                for key in sym.attr.keys():
-                    print(key, end=": ")
-                    print(sym.attr[key])
+        print("Symbol Of Attr:")
+        for attr in self.sym_of_attr:
+            print("{0:^10}{1:^4}".format(attr, self.sym_of_attr[attr]))
+        print("Value Of Symbol:")
+        for sym in self.value_of_sym:
+            print("{0:^10}{1:^4}".format(sym, self.value_of_sym[sym]))
+        print("equations:")
+        for equation in self.equations.items:
+            print("{0:^10}".format(equation))
+
