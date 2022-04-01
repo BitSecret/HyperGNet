@@ -223,7 +223,7 @@ class Solver:
             return float(fl[0])
 
     def _parse_find(self, fl):  # 解析find
-        fl[1] = pre_parse(fl[1])
+        fl[1] = pre_parse(fl[1])    # 解析目标
         if fl[1][0] in self.problem.relations.keys():
             self.problem.target_type = TargetType.relation  # 位置关系
             target = []

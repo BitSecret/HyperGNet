@@ -759,8 +759,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 63,
 		"formal_languages": [
-			"Equal(Add(Length(Line(AB)),Length(Arc(CD))),
-Sub(Length(Arc(AB)),Length(Arc(CD))))"
+			"Equal(Add(Length(Line(AB)),Length(Arc(CD))),Sub(Length(Arc(AB)),Length(Arc(CD))))"
 		],
 		"theorem_seqs": [
 			1
@@ -1156,4 +1155,284 @@ Sub(Length(Arc(AB)),Length(Arc(CD))))"
 			1
 		]
 	},
+	"103": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 103,
+		"formal_languages": [
+			"Find(PointOnLine(Point(M),Line(AB)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"104": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 104,
+		"formal_languages": [
+			"Find(PointOnArc(Point(M),Arc(AB)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"105": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 105,
+		"formal_languages": [
+			"Find(PointOnCircle(Point(M),Circle(O)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"106": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 106,
+		"formal_languages": [
+			"Find(Midpoint(Point(M),Line(AB)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"107": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 107,
+		"formal_languages": [
+			"Find(Circumcenter(Point(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"108": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 108,
+		"formal_languages": [
+			"Find(Incenter(Point(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"109": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 109,
+		"formal_languages": [
+			"Find(Centroid(Point(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"110": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 110,
+		"formal_languages": [
+			"Find(Orthocenter(Point(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"111": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 111,
+		"formal_languages": [
+			"Find(Parallel(Line(AB),Line(CD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"112": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 112,
+		"formal_languages": [
+			"Find(Perpendicular(Point(M),Line(AB),Line(CD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"113": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 113,
+		"formal_languages": [
+			"Find(PerpendicularBisector(Point(M),Line(AB),Line(CD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"114": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 114,
+		"formal_languages": [
+			"Find(BisectsAngle(Line(BD),Angle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"115": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 115,
+		"formal_languages": [
+			"Find(DisjointLineCircle(Line(AB),Circle(O)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"116": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 116,
+		"formal_languages": [
+			"Find(DisjointCircleCircle(Circle(M),Circle(N)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"117": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 117,
+		"formal_languages": [
+			"Find(TangentLineCircle(Point(M),Line(AB),Circle(O)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"118": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 118,
+		"formal_languages": [
+			"Find(TangentCircleCircle(Point(M),Circle(A),Circle(B)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"119": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 119,
+		"formal_languages": [
+			"Find(IntersectLineLine(Point(M),Line(AB),Line(CD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"120": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 120,
+		"formal_languages": [
+			"Find(IntersectLineCircle(Point(M),Point(N),Line(AB),Circle(O)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"121": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 121,
+		"formal_languages": [
+			"Find(IntersectCircleCircle(Point(M),Point(N),Circle(A),Circle(B)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"122": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 122,
+		"formal_languages": [
+			"Find(Median(Line(AD),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"123": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 123,
+		"formal_languages": [
+			"Find(HeightOfTriangle(Line(DE),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"124": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 124,
+		"formal_languages": [
+			"Find(HeightOfTrapezoid(Line(EF),Trapezoid(ABCD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"125": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 125,
+		"formal_languages": [
+			"Find(InternallyTangent(Point(M),Circle(O),Circle(N)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"126": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 126,
+		"formal_languages": [
+			"Find(Contain(Circle(O),Circle(M)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"127": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 127,
+		"formal_languages": [
+			"Find(CircumscribedToTriangle(Circle(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"128": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 128,
+		"formal_languages": [
+			"Find(InscribedInTriangle(Circle(O),Triangle(ABC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"129": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 129,
+		"formal_languages": [
+			"Find(Congruent(Triangle(ABC),Triangle(DEF)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"130": {
+		"annotation": "formal language parsing test data",
+		"problem_index": 130,
+		"formal_languages": [
+			"Find(Similar(Triangle(ABC),Triangle(DEF)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	}
 }

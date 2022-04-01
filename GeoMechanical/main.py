@@ -4,10 +4,15 @@ from solver import Solver
 
 def main():
     problems_path = "./test_data/problems_data.json"
-    data = load_data(problems_path)[0]
-    solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
-    solver.solve()
-    solver.problem.show_problem()
+    for data in load_data(problems_path):
+        try:
+            solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
+            solver.solve()
+            solver.problem.show_problem()
+        except Exception as e:
+            print(e)
+
+        a = input("输入1继续执行：")
 
 
 def load_data(problems_path):    # 读取json数据并解析成列表
