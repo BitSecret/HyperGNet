@@ -113,6 +113,7 @@ class Solver:
         self.problem_quaternion_relation_map = {"IntersectLineCircle": self.problem.define_intersect_line_circle,
                                                 "IntersectCircleCircle": self.problem.define_intersect_circle_circle}
 
+        # 定理映射
         self.theorem_map = {1: Theorem.theorem_1_xxxx,
                             2: Theorem.theorem_2_xxxx,
                             3: Theorem.theorem_3_xxxx,
