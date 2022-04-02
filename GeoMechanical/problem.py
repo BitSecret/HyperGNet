@@ -693,6 +693,7 @@ class ProblemLogic:
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
         if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
+            print(attr)
             sym = symbols(attr[0].lower() + "_" + attr[1].lower())
             self.value_of_sym[sym] = None
             if attr[0] == AttributionType.LL.name \

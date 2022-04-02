@@ -222,7 +222,7 @@ class Solver:
         elif fl[0] == "Tan":
             return tan(self._generate_expr(fl[1]))
         elif fl[0].isalpha():  # 如果是字母，生成字母的符号表示
-            return self.problem.get_sym_of_attr((AttributionType.F, fl[0]))
+            return self.problem.get_sym_of_attr((AttributionType.F.name, fl[0]))
         else:  # 数字
             return float(fl)
 
