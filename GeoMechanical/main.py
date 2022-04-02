@@ -3,11 +3,11 @@ from solver import Solver
 
 
 def main():
-    test_define()
+    # test_define()
     test_problem()
 
 
-def load_data(problems_path):    # 读取json数据并解析成列表
+def load_data(problems_path):  # 读取json数据并解析成列表
     problem_data = json.load(open(problems_path, "r"))  # 文本 Formal Language
     return list(problem_data.values())
 
@@ -28,9 +28,8 @@ def test_define():
 
 def test_problem():
     problems_path = "./test_data/test_problem.json"
-    data = load_data(problems_path)[0]
+    data = load_data(problems_path)[1]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
-    solver.problem.show_problem()
     solver.solve()
     solver.problem.show_problem()
 

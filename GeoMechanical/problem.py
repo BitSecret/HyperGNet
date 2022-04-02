@@ -115,9 +115,10 @@ class ProblemLogic:
         self.equations = Condition()   # 代数方程
 
         """----------解题目标----------"""
-        self.target_count = 0    # 目标个数
+        self.target_count = 0  # 目标个数
         self.target_type = []  # 解题目标的类型
         self.target = []  # 解题目标
+        self.target_solved = []  # 条件求解情况
 
     """------------define Entity------------"""
     def define_point(self, point, premise=-1, theorem=-1):  # 点
@@ -440,10 +441,14 @@ class ProblemLogic:
         return False
 
     def define_parallel(self, line1, line2, premise=-1, theorem=-1, root=True):  # 线平行
+        if line1 == line2:    # 显然
+            return False
         if self.parallel.add((line1, line2), premise, theorem):
             if root:
                 premise = self.parallel.indexes[(line1, line2)]
-            self.parallel.add((line2[::-1], line1[::-1]), premise, theorem)  # 平行有2种表示
+            self.parallel.add((line2, line1), premise, -2)  # 平行有4种表示
+            self.parallel.add((line2[::-1], line1[::-1]), premise, -2)
+            self.parallel.add((line1[::-1], line2[::-1]), premise, -2)
             self.define_line(line1, premise, -2, False)  # 定义线
             self.define_line(line2, premise, -2, False)
             return True
@@ -688,15 +693,15 @@ class ProblemLogic:
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
         if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
-            sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())
+            sym = symbols(attr[0].lower() + "_" + attr[1].lower())
             self.value_of_sym[sym] = None
-            if attr[0] is AttributionType.LL \
-                    or attr[0] is AttributionType.PT \
-                    or attr[0] is AttributionType.PQ \
-                    or attr[0] is AttributionType.PP \
-                    or attr[0] is AttributionType.AT \
-                    or attr[0] is AttributionType.AQ \
-                    or attr[0] is AttributionType.AP:
+            if attr[0] == AttributionType.LL.name \
+                    or attr[0] == AttributionType.PT.name \
+                    or attr[0] == AttributionType.PQ.name \
+                    or attr[0] == AttributionType.PP.name \
+                    or attr[0] == AttributionType.AT.name \
+                    or attr[0] == AttributionType.AQ.name \
+                    or attr[0] == AttributionType.AP.name:
                 for all_form in get_all_representation_of_shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
             else:
@@ -733,7 +738,7 @@ class Problem(ProblemLogic):
             if len(self.entities[entity].items) > 0:
                 print("{}:".format(entity))
                 for item in self.entities[entity].items:
-                    print("{0:^4}{1:^9}{2:^4}{3:^4}".format(self.entities[entity].indexes[item],
+                    print("{0:^6}{1:^15}{2:^6}{3:^6}".format(self.entities[entity].indexes[item],
                                                             item,
                                                             self.entities[entity].premises[item],
                                                             self.entities[entity].theorems[item]))
@@ -743,10 +748,10 @@ class Problem(ProblemLogic):
             if len(self.relations[relation].items) > 0:
                 print("{}:".format(relation))
                 for item in self.relations[relation].items:
-                    print("{0:^4}{1:^20}{2:^4}{3:^4}".format(self.relations[relation].indexes[item],
-                                                             str(item),
-                                                             self.relations[relation].premises[item],
-                                                             self.relations[relation].theorems[item]))
+                    print("{0:^6}{1:^25}{2:^15}{3:^6}".format(self.relations[relation].indexes[item],
+                                                              str(item),
+                                                              str(self.relations[relation].premises[item]),
+                                                              self.relations[relation].theorems[item]))
         # Logic-Attribution&Symbol
         print("\033[33mSymbol Of Attr:\033[0m")
         for attr in self.sym_of_attr.keys():
@@ -758,7 +763,7 @@ class Problem(ProblemLogic):
             print(self.value_of_sym[sym])
         print("\033[33mEquations:\033[0m")
         for equation in self.equations.items:
-            print("{0:^4}{1:^20}{2:^4}{3:^4}".format(self.equations.indexes[equation],
+            print("{0:^6}{1:^25}{2:^6}{3:^6}".format(self.equations.indexes[equation],
                                                      str(equation),
                                                      self.equations.premises[equation],
                                                      self.equations.theorems[equation]))
@@ -767,5 +772,6 @@ class Problem(ProblemLogic):
         print("\033[34mTarget Count:\033[0m", end=" ")
         print(self.target_count)
         for i in range(0, self.target_count):
-            print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])))
-
+            print("\033[34m{}:\033[0m  {}  {}".format(self.target_type[i].name,
+                                                               str(self.target[i]),
+                                                               self.target_solved[i]))

@@ -1,15 +1,27 @@
 {
 	"0": {
-		"annotation": "勾股定理测试",
+		"annotation": "test1",
 		"problem_index": 0,
 		"formal_languages": [
 			"RightTriangle(ABC)",
-			"Equal(Length(Line(AB)), 3)",
-			"Equal(Length(Line(BC)), 3)",
-			"Find(Length(Line(AC))"
+			"Equal(Length(Line(AB)),3)",
+			"Equal(Length(Line(BC)),4)",
+			"Find(Length(Line(AC)))"
 		],
 		"theorem_seqs": [
 			1
+		]
+	},
+	"1": {
+		"annotation": "test2",
+		"problem_index": 1,
+		"formal_languages": [
+			"Parallel(Line(AB), Line(CD))",
+			"Parallel(Line(CD), Line(EF))",
+			"Find(Parallel(Line(AB), Line(EF)))"
+		],
+		"theorem_seqs": [
+			2
 		]
 	}
 }

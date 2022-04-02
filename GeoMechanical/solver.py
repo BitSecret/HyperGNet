@@ -2,7 +2,7 @@ from pyparsing import alphanums, Forward, Group, Word, Literal, ZeroOrMore
 from problem import Problem
 from theorem import Theorem
 from facts import AttributionType, TargetType
-from sympy import sin, cos, tan, solve, symbols
+from sympy import *
 from utility import pre_parse
 
 
@@ -114,8 +114,8 @@ class Solver:
         self.problem_five_relation_map = {"InscribedInTriangle": self.problem.define_inscribed_in_triangle}
 
         # 定理映射
-        self.theorem_map = {1: Theorem.theorem_1_xxxx,
-                            2: Theorem.theorem_2_xxxx,
+        self.theorem_map = {1: Theorem.theorem_1_pythagorean,
+                            2: Theorem.theorem_2_transitivity_of_parallel,
                             3: Theorem.theorem_3_xxxx,
                             4: Theorem.theorem_4_xxxx}
 
@@ -154,45 +154,45 @@ class Solver:
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
             if fl[1][0] == "Line":
-                return self.problem.get_sym_of_attr((AttributionType.LL, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.LL.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.LA, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.LA.name, fl[1][1]))
         elif fl[0] == "Degree":
             if fl[1][0] == "Angle":
-                return self.problem.get_sym_of_attr((AttributionType.DA, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.DA.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.DS, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.DS.name, fl[1][1]))
         elif fl[0] == "Radius":
             if fl[1][0] == "Arc":
-                return self.problem.get_sym_of_attr((AttributionType.RA, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RA.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.RC, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RC.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.RS, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RS.name, fl[1][1]))
         elif fl[0] == "Diameter":
-            return self.problem.get_sym_of_attr((AttributionType.DC, fl[1][1]))
+            return self.problem.get_sym_of_attr((AttributionType.DC.name, fl[1][1]))
         elif fl[0] == "Perimeter":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.PT, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.PC, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.PS, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.PQ, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PQ.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.PP, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PP.name, fl[1][1]))
         elif fl[0] == "Area":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.AT, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.AC, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.AS, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.AQ, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AQ.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.AP, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AP.name, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":
@@ -229,6 +229,7 @@ class Solver:
     def _parse_find(self, fl):  # 解析find
         fl[1] = pre_parse(fl[1])  # 解析目标
         self.problem.target_count += 1  # 新目标
+        self.problem.target_solved.append("unsolved")  # 初始化题目求解情况
         if fl[1][0] in self.problem.relations.keys():
             self.problem.target_type.append(TargetType.relation)  # 位置关系
             target = []
@@ -240,7 +241,29 @@ class Solver:
             self.problem.target.append(self._generate_expr(fl[1]))
 
     def solve(self):
-        for theorem in self.problem.theorem_seqs:
-            self.theorem_map[theorem](self.problem)
+        for theorem in self.problem.theorem_seqs:  # 应用定理序列
+            self.theorem_map[theorem](self.problem)  # 求解equation
+        self._solve_equations()
+
+        for i in range(self.problem.target_count):
+            if self.problem.target_type[i] is TargetType.relation:  # 关系型目标
+                if self.problem.target[i][1] in self.problem.relations[self.problem.target[i][0]].items:
+                    self.problem.target_solved[i] = "solved"
+            else:  # 数值型目标
+                if self.problem.value_of_sym[self.problem.target[i]] is not None:
+                    self.problem.target_solved[i] = "solved"
+
+    def _solve_equations(self):
+        attr_vars = list(set(self.problem.sym_of_attr.values()))  # 变量快速去重
+        result = solve(self.problem.equations.items, attr_vars)  # 求解equation
+
+        if isinstance(result, dict):  # 只有一组解的情况，结果为dict
+            for attr_var in attr_vars:
+                if attr_var in result.keys() and isinstance(result[attr_var], Float):  # 如果是数值，更新变量值
+                    self.problem.value_of_sym[attr_var] = abs(float(result[attr_var]))
+        else:  # 只有多组解的情况，结果为list
+            for i in range(len(attr_vars)):
+                if isinstance(result[0][i], Float):  # 如果是数值，更新变量值
+                    self.problem.value_of_sym[attr_vars[i]] = abs(float(result[0][i]))
 
     """------------auxiliary function------------"""
