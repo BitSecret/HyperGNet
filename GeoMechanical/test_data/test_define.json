@@ -3,7 +3,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 0,
 		"formal_languages": [
-			"Point(ABCD)"
+			"Point(A)"
 		],
 		"theorem_seqs": [
 			1,
@@ -63,7 +63,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 5,
 		"formal_languages": [
-			"Circle(ABCD)"
+			"Circle(O)"
 		],
 		"theorem_seqs": [
 			1,
@@ -231,7 +231,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 19,
 		"formal_languages": [
-			"Polygon(ABCD)"
+			"Polygon(ABCDE)"
 		],
 		"theorem_seqs": [
 			1,
@@ -243,7 +243,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 20,
 		"formal_languages": [
-			"RegularPolygon(ABCD)"
+			"RegularPolygon(ABCDE)"
 		],
 		"theorem_seqs": [
 			1,
@@ -699,7 +699,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 58,
 		"formal_languages": [
-			"Contain(Circle(O),Circle(O))"
+			"Contain(Circle(O),Circle(A))"
 		],
 		"theorem_seqs": [
 			1,
@@ -723,7 +723,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 60,
 		"formal_languages": [
-			"InscribedInTriangle(Circle(O),Triangle(ABC))"
+			"InscribedInTriangle(Point(D),Point(E),Point(F),Circle(O),Triangle(ABC))"
 		],
 		"theorem_seqs": [
 			1,
@@ -759,7 +759,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 63,
 		"formal_languages": [
-			"Equal(Add(Length(Line(AB)),Length(Arc(CD))),Sub(Length(Arc(AB)),Length(Arc(CD))))"
+			"Equal(Add(Length(Line(AB)),Length(Line(CD))),Sub(Length(Arc(AB)),Length(Arc(CD))))"
 		],
 		"theorem_seqs": [
 			1
@@ -819,7 +819,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 69,
 		"formal_languages": [
-			"Equal(Tan(Degree(Angle(ABC))),Add(m,1)"
+			"Equal(Tan(Degree(Angle(ABC))),Add(m,1))"
 		],
 		"theorem_seqs": [
 			1
@@ -1359,7 +1359,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 123,
 		"formal_languages": [
-			"Find(HeightOfTriangle(Line(DE),Triangle(ABC)))"
+			"Find(HeightTriangle(Line(DE),Triangle(ABC)))"
 		],
 		"theorem_seqs": [
 			1
@@ -1369,7 +1369,7 @@
 		"annotation": "formal language parsing test data",
 		"problem_index": 124,
 		"formal_languages": [
-			"Find(HeightOfTrapezoid(Line(EF),Trapezoid(ABCD)))"
+			"Find(HeightTrapezoid(Line(EF),Trapezoid(ABCD)))"
 		],
 		"theorem_seqs": [
 			1

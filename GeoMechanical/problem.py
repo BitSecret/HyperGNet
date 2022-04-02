@@ -1,4 +1,5 @@
 from utility import get_all_representation_of_shape
+from facts import AttributionType
 from facts import Condition
 from sympy import symbols
 
@@ -88,7 +89,6 @@ class ProblemLogic:
                           "Centroid": self.centroid,
                           "Orthocenter": self.orthocenter,
                           "Parallel": self.parallel,
-                          "Intersect": self.intersect,
                           "Perpendicular": self.perpendicular,
                           "PerpendicularBisector": self.perpendicular_bisector,
                           "BisectsAngle": self.bisects_angle,
@@ -96,6 +96,7 @@ class ProblemLogic:
                           "DisjointCircleCircle": self.disjoint_circle_circle,
                           "TangentLineCircle": self.tangent_line_circle,
                           "TangentCircleCircle": self.tangent_circle_circle,
+                          "IntersectLineLine": self.intersect,
                           "IntersectLineCircle": self.intersect_line_circle,
                           "IntersectCircleCircle": self.intersect_circle_circle,
                           "Median": self.median,
@@ -114,8 +115,9 @@ class ProblemLogic:
         self.equations = Condition()   # 代数方程
 
         """----------解题目标----------"""
-        self.target_type = None  # 解题目标的类型
-        self.target = None  # 解题目标
+        self.target_count = 0    # 目标个数
+        self.target_type = []  # 解题目标的类型
+        self.target = []  # 解题目标
 
     """------------define Entity------------"""
     def define_point(self, point, premise=-1, theorem=-1):  # 点
@@ -153,9 +155,12 @@ class ProblemLogic:
         if self.shape.add(shape, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
             if root:
                 premise = self.shape.indexes[shape]
-            for point in shape:
-                # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
+            for point in shape: # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
                 self.point.add(point, premise, -2)
+            shape_all = get_all_representation_of_shape(shape)  # n种表示
+            for shape in shape_all:
+                self.shape.add(shape, premise, -2)
+
             return True
         return False
 
@@ -187,7 +192,7 @@ class ProblemLogic:
             triangle_all = get_all_representation_of_shape(triangle)  # 3种表示
             for triangle in triangle_all:
                 self.triangle.add(triangle, premise, -2)
-                self.define_angle(triangle, premise, -2)  # 定义3个角
+                self.define_angle(triangle, premise, -2, False)  # 定义3个角
             return True
         return False
 
@@ -524,8 +529,8 @@ class ProblemLogic:
     def define_tangent_circle_circle(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 相切
         if self.tangent_circle_circle.add((point, circle1, circle2), premise, theorem):
             if root:
-                premise = self.tangent_line_circle.indexes[(point, circle1, circle2)]
-            self.tangent_line_circle.add((point, circle2, circle1), premise, -2)  # 2种表示
+                premise = self.tangent_circle_circle.indexes[(point, circle1, circle2)]
+            self.tangent_circle_circle.add((point, circle2, circle1), premise, -2)  # 2种表示
             self.define_circle(circle1, premise, -2, False)  # 定义圆
             self.define_circle(circle2, premise, -2, False)
             if point != "$":  # 如果给出切点
@@ -555,8 +560,8 @@ class ProblemLogic:
     def define_intersect_circle_circle(self, point1, point2, circle1, circle2, premise=-1, theorem=-1, root=True):  # 相交
         if self.intersect_circle_circle.add((point1, point2, circle1, circle2), premise, theorem):
             if root:
-                premise = self.intersect_line_circle.indexes[(point1, point2, circle1, circle2)]
-            self.intersect_line_circle.add((point2, point1, circle2, circle1), premise, -2)  # 2种表示
+                premise = self.intersect_circle_circle.indexes[(point1, point2, circle1, circle2)]
+            self.intersect_circle_circle.add((point2, point1, circle2, circle1), premise, -2)  # 2种表示
             self.define_circle(circle1, premise, -2, False)  # 定义圆
             self.define_circle(circle2, premise, -2, False)
             if point1 != "$":  # 如果给出交点
@@ -576,7 +581,7 @@ class ProblemLogic:
                 premise = self.median.indexes[(line, triangle)]
             self.define_line(line, premise, -2)  # 定义实体
             self.define_triangle(triangle, premise, -2)
-            self.define_point_on_line(line[1], triangle[1:3], premise, -2, False)  # 子关系
+            self.define_midpoint(line[1], triangle[1:3], premise, -2, False)  # 底边中点
             return True
         return False
 
@@ -598,7 +603,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_internally_tangent(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内切 circle1是大的
+    def define_internally_tangent(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内切 circle2是大的
         if self.internally_tangent.add((point, circle1, circle2), premise, theorem):
             if root:
                 premise = self.internally_tangent.indexes[(point, circle1, circle2)]
@@ -606,17 +611,17 @@ class ProblemLogic:
             self.define_circle(circle2, premise, -2, False)
             if point != "$":
                 self.point.add(point, premise, -2)
+                self.define_point_on_circle(point, circle1, premise, -2, False)
+                self.define_point_on_circle(point, circle2, premise, -2, False)
             return True
         return False
 
-    def define_contain(self, point, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内含 circle1是大的
-        if self.contain.add((point, circle1, circle2), premise, theorem):
+    def define_contain(self, circle1, circle2, premise=-1, theorem=-1, root=True):  # 内含 circle2是大的
+        if self.contain.add((circle1, circle2), premise, theorem):
             if root:
-                premise = self.contain.indexes[(point, circle1, circle2)]
+                premise = self.contain.indexes[(circle1, circle2)]
             self.define_circle(circle1, premise, -2, False)  # 定义实体
             self.define_circle(circle2, premise, -2, False)
-            if point != "$":
-                self.point.add(point, premise, -2)
             return True
         return False
 
@@ -676,12 +681,27 @@ class ProblemLogic:
             return True
         return False
 
+    """------------define Equation------------"""
+    def define_equation(self, equation, premise=-1, theorem=-1):
+        return self.equations.add(equation, premise, theorem)
+
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
         if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
             sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())
-            self.sym_of_attr[attr] = sym
             self.value_of_sym[sym] = None
+            if attr[0] is AttributionType.LL \
+                    or attr[0] is AttributionType.PT \
+                    or attr[0] is AttributionType.PQ \
+                    or attr[0] is AttributionType.PP \
+                    or attr[0] is AttributionType.AT \
+                    or attr[0] is AttributionType.AQ \
+                    or attr[0] is AttributionType.AP:
+                for all_form in get_all_representation_of_shape(attr[1]):
+                    self.sym_of_attr[(attr[0], all_form)] = sym
+            else:
+                self.sym_of_attr[attr] = sym
+
         else:
             sym = self.sym_of_attr[attr]    # 有符号就返回符号
         return sym
@@ -697,17 +717,18 @@ class Problem(ProblemLogic):
 
     def show_problem(self):
         # Formal Language
-        print("problem_index: {}".format(self.problem_index))
-        print("formal_languages:")
+        print("\033[32mproblem_index:\033[0m", end=" ")
+        print(self.problem_index)
+        print("\033[32mformal_languages:\033[0m")
         for formal_language in self.formal_languages:  # 解析 formal language
             print(formal_language)
-        print("theorem_seqs: ", end="")
+        print("\033[32mtheorem_seqs:\033[0m", end=" ")
         for theorem in self.theorem_seqs:
             print(theorem, end=" ")
-        print("\n")
+        print()
 
         # Logic-Entity
-        print("Entities:")
+        print("\033[33mEntities:\033[0m")
         for entity in self.entities.keys():
             if len(self.entities[entity].items) > 0:
                 print("{}:".format(entity))
@@ -717,22 +738,34 @@ class Problem(ProblemLogic):
                                                             self.entities[entity].premises[item],
                                                             self.entities[entity].theorems[item]))
         # Logic-Relation
-        print("Relations:")
+        print("\033[33mRelations:\033[0m")
         for relation in self.relations.keys():
             if len(self.relations[relation].items) > 0:
                 print("{}:".format(relation))
                 for item in self.relations[relation].items:
-                    print("{0:^4}{1:^10}{2:^4}{3:^4}".format(self.relations[relation].indexes[item],
+                    print("{0:^4}{1:^20}{2:^4}{3:^4}".format(self.relations[relation].indexes[item],
                                                              str(item),
                                                              self.relations[relation].premises[item],
                                                              self.relations[relation].theorems[item]))
         # Logic-Attribution&Symbol
-        print("Symbol Of Attr:")
-        for attr in self.sym_of_attr:
-            print("{0:^10}{1:^4}".format(attr, self.sym_of_attr[attr]))
-        print("Value Of Symbol:")
-        for sym in self.value_of_sym:
-            print("{0:^10}{1:^4}".format(sym, self.value_of_sym[sym]))
-        print("Equations:")
+        print("\033[33mSymbol Of Attr:\033[0m")
+        for attr in self.sym_of_attr.keys():
+            print(attr, end=": ")
+            print(self.sym_of_attr[attr])
+        print("\033[33mValue Of Symbol:\033[0m")
+        for sym in self.value_of_sym.keys():
+            print(sym, end=": ")
+            print(self.value_of_sym[sym])
+        print("\033[33mEquations:\033[0m")
         for equation in self.equations.items:
-            print("{0:^10}".format(equation))
+            print("{0:^4}{1:^20}{2:^4}{3:^4}".format(self.equations.indexes[equation],
+                                                     str(equation),
+                                                     self.equations.premises[equation],
+                                                     self.equations.theorems[equation]))
+
+        # target
+        print("\033[34mTarget Count:\033[0m", end=" ")
+        print(self.target_count)
+        for i in range(0, self.target_count):
+            print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])))
+

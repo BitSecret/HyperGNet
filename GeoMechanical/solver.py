@@ -58,7 +58,7 @@ class Solver:
                                "InternallyTangent": self._parse_ternary_relation,
                                "Contain": self._parse_binary_relation,
                                "CircumscribedToTriangle": self._parse_binary_relation,
-                               "InscribedInTriangle": self._parse_binary_relation,
+                               "InscribedInTriangle": self._parse_five_relation,
                                "Congruent": self._parse_binary_relation,
                                "Similar": self._parse_binary_relation,
                                "Equal": self._parse_equal,
@@ -101,7 +101,6 @@ class Solver:
                                             "HeightOfTrapezoid": self.problem.define_height_trapezoid,
                                             "Contain": self.problem.define_contain,
                                             "CircumscribedToTriangle": self.problem.define_circumscribed_to_triangle,
-                                            "InscribedInTriangle": self.problem.define_inscribed_in_triangle,
                                             "Congruent": self.problem.define_congruent,
                                             "Similar": self.problem.define_similar}
         self.problem_ternary_relation_map = {"Perpendicular": self.problem.define_perpendicular,
@@ -112,6 +111,7 @@ class Solver:
                                              "InternallyTangent": self.problem.define_internally_tangent}
         self.problem_quaternion_relation_map = {"IntersectLineCircle": self.problem.define_intersect_line_circle,
                                                 "IntersectCircleCircle": self.problem.define_intersect_circle_circle}
+        self.problem_five_relation_map = {"InscribedInTriangle": self.problem.define_inscribed_in_triangle}
 
         # 定理映射
         self.theorem_map = {1: Theorem.theorem_1_xxxx,
@@ -142,54 +142,57 @@ class Solver:
         self.problem_ternary_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1])
 
     def _parse_quaternion_relation(self, fl):  # 解析4元关系
-        self.problem_ternary_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1])
+        self.problem_quaternion_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1])
+
+    def _parse_five_relation(self, fl):  # 解析5元关系
+        self.problem_five_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1])
 
     def _parse_equal(self, fl):  # 解析equal
         expr = self._generate_expr(fl[1]) - self._generate_expr(fl[2])
-        self.problem.equations.add(expr)
+        self.problem.define_equation(expr)
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
             if fl[1][0] == "Line":
-                return self.problem.get_sym_of_attr((AttributionType.LengthOfLine, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.LL, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.LengthOfArc, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.LA, fl[1][1]))
         elif fl[0] == "Degree":
             if fl[1][0] == "Angle":
-                return self.problem.get_sym_of_attr((AttributionType.DegreeOfAngle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.DA, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.DegreeOfSector, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.DS, fl[1][1]))
         elif fl[0] == "Radius":
             if fl[1][0] == "Arc":
-                return self.problem.get_sym_of_attr((AttributionType.RadiusOfArc, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RA, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.RadiusOfCircle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RC, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.RadiusOfSector, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.RS, fl[1][1]))
         elif fl[0] == "Diameter":
-            return self.problem.get_sym_of_attr((AttributionType.DiameterOfCircle, fl[1][1]))
+            return self.problem.get_sym_of_attr((AttributionType.DC, fl[1][1]))
         elif fl[0] == "Perimeter":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.PerimeterOfTriangle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PT, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.PerimeterOfCircle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PC, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.PerimeterOfSector, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PS, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.PerimeterOfQuadrilateral, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PQ, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.PerimeterOfPolygon, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.PP, fl[1][1]))
         elif fl[0] == "Area":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.AreaOfTriangle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AT, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.AreaOfCircle, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AC, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.AreaOfSector, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AS, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.AreaOfQuadrilateral, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AQ, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.AreaOfPolygon, fl[1][1]))
+                return self.problem.get_sym_of_attr((AttributionType.AP, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":
@@ -206,7 +209,7 @@ class Solver:
             for i in range(2, para_length):
                 expr += self._generate_expr(fl[i])
             return expr
-        elif fl[0] == "Average":
+        elif fl[0] == "Avg":
             para_length = len(fl)
             expr = self._generate_expr(fl[1])
             for i in range(2, para_length):
@@ -219,27 +222,25 @@ class Solver:
         elif fl[0] == "Tan":
             return tan(self._generate_expr(fl[1]))
         elif fl[0].isalpha():  # 如果是字母，生成字母的符号表示
-            return self.problem.get_sym_of_attr((AttributionType.Free, fl[0]))
+            return self.problem.get_sym_of_attr((AttributionType.F, fl[0]))
         else:  # 数字
-            return float(fl[0])
+            return float(fl)
 
     def _parse_find(self, fl):  # 解析find
-        fl[1] = pre_parse(fl[1])    # 解析目标
+        fl[1] = pre_parse(fl[1])  # 解析目标
+        self.problem.target_count += 1  # 新目标
         if fl[1][0] in self.problem.relations.keys():
-            self.problem.target_type = TargetType.relation  # 位置关系
+            self.problem.target_type.append(TargetType.relation)  # 位置关系
             target = []
             for i in range(1, len(fl[1])):
-                target.append(len(fl[1][i][1]))
-            self.problem.target = [fl[1][0], set(target)]
+                target.append(fl[1][i][1])
+            self.problem.target.append([fl[1][0], tuple(target)])
         else:
-            self.problem.target_type = TargetType.value  # 代数关系
-            self.problem.target = [self._generate_expr(fl[1])]
+            self.problem.target_type.append(TargetType.value)  # 代数关系
+            self.problem.target.append(self._generate_expr(fl[1]))
 
     def solve(self):
         for theorem in self.problem.theorem_seqs:
             self.theorem_map[theorem](self.problem)
 
     """------------auxiliary function------------"""
-
-    def show_result(self):  # 输出求解结果
-        pass

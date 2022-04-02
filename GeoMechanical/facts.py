@@ -22,25 +22,25 @@ class Condition:  # 条件
 
 
 class AttributionType(Enum):  # 属性的类型
-    LengthOfLine = 1  # 线长度
-    LengthOfArc = 2  # 弧长
-    DegreeOfAngle = 3  # 角度
-    DegreeOfSector = 4  # 扇形圆心角度数
-    RadiusOfArc = 5  # 弧半径长度
-    RadiusOfCircle = 6  # 圆半径长度
-    RadiusOfSector = 7  # 扇形版经常堵
-    DiameterOfCircle = 8  # 圆的直径
-    PerimeterOfTriangle = 9  # 三角形的周长
-    PerimeterOfCircle = 10  # 圆的周长
-    PerimeterOfSector = 11  # 扇形的周长
-    PerimeterOfQuadrilateral = 12  # 四边形的周长
-    PerimeterOfPolygon = 13  # 多边形的周长
-    AreaOfTriangle = 14  # 三角形的面积
-    AreaOfCircle = 15  # 圆的面积
-    AreaOfSector = 16  # 扇形的面积
-    AreaOfQuadrilateral = 17  # 四边形的面积
-    AreaOfPolygon = 18  # 多边形的面积
-    Free = 19  # 自由的符号
+    LL = 1  # LengthOfLine 线长度
+    LA = 2  # LengthOfArc 弧长
+    DA = 3  # DegreeOfAngle 角度
+    DS = 4  # DegreeOfSector 扇形圆心角度数
+    RA = 5  # RadiusOfArc 弧半径长度
+    RC = 6  # RadiusOfCircle 圆半径长度
+    RS = 7  # RadiusOfSector 扇形版经常堵
+    DC = 8  # DiameterOfCircle 圆的直径
+    PT = 9  # PerimeterOfTriangle 三角形的周长
+    PC = 10  # PerimeterOfCircle 圆的周长
+    PS = 11  # PerimeterOfSector 扇形的周长
+    PQ = 12  # PerimeterOfQuadrilateral 四边形的周长
+    PP = 13  # PerimeterOfPolygon 多边形的周长
+    AT = 14  # AreaOfTriangle 三角形的面积
+    AC = 15  # AreaOfCircle 圆的面积
+    AS = 16  # AreaOfSector 扇形的面积
+    AQ = 17  # AreaOfQuadrilateral 四边形的面积
+    AP = 18  # AreaOfPolygon 多边形的面积
+    F = 19  # Free 自由的符号
 
 
 class TargetType(Enum):    # 解题目标类型
