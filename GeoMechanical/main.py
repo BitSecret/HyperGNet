@@ -28,7 +28,7 @@ def test_define():
 
 def test_problem():
     problems_path = "./test_data/test_problem.json"
-    data = load_data(problems_path)[2]
+    data = load_data(problems_path)[1]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
     solver.solve()
     solver.problem.show_problem()

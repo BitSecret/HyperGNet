@@ -693,7 +693,6 @@ class ProblemLogic:
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
         if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
-            print(attr)
             sym = symbols(attr[0].lower() + "_" + attr[1].lower())
             self.value_of_sym[sym] = None
             if attr[0] == AttributionType.LL.name \
@@ -764,7 +763,7 @@ class Problem(ProblemLogic):
             print(self.value_of_sym[sym])
         print("\033[33mEquations:\033[0m")
         for equation in self.equations.items:
-            print("{0:^6}{1:^25}{2:^6}{3:^6}".format(self.equations.indexes[equation],
+            print("{0:^6}{1:^40}{2:^6}{3:^6}".format(self.equations.indexes[equation],
                                                      str(equation),
                                                      self.equations.premises[equation],
                                                      self.equations.theorems[equation]))

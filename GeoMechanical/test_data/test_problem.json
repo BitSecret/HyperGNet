@@ -24,15 +24,31 @@
 			2
 		]
 	},
-	"3": {
+	"2": {
 		"annotation": "test1",
-		"problem_index": 3,
+		"problem_index": 2,
 		"formal_languages": [
 			"RightTriangle(ABC)",
 			"Equal(Length(Line(AB)),m)",
 			"Equal(m,6)",
 			"Equal(Length(Line(BC)),8)",
 			"Find(Length(Line(AC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"3": {
+		"annotation": "test1",
+		"problem_index": 3,
+		"formal_languages": [
+			"RightTriangle(BCA)",
+			"RightTriangle(ADC)",
+			"RightTriangle(CDB)",
+			"Equal(Length(Line(AD)),3)",
+			"Equal(Length(Line(BD)),14)",
+			"Equal(Length(Line(AB)),Add(Length(Line(AD)), Length(Line(DB))))",
+			"Find(Length(Line(CD)))"
 		],
 		"theorem_seqs": [
 			1

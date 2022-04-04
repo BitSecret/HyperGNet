@@ -4,6 +4,9 @@ from theorem import Theorem
 from facts import AttributionType, TargetType
 from sympy import *
 from utility import pre_parse
+"""后面改进
+1.在solve之前先进行符号的替换，把值已知的变量替换掉（主要是为了加速计算，有必要吗？）
+2.float和integer，求解的结果形式不一样（详见test），看看如何统一"""
 
 
 class Solver:
@@ -149,6 +152,7 @@ class Solver:
 
     def _parse_equal(self, fl):  # 解析equal
         expr = self._generate_expr(fl[1]) - self._generate_expr(fl[2])
+        # 这里判断一下，如果仅仅是 a=1 这种形式，直接赋值就行，不用添加新的equation
         self.problem.define_equation(expr)
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
@@ -224,6 +228,7 @@ class Solver:
         elif fl[0].isalpha():  # 如果是字母，生成字母的符号表示
             return self.problem.get_sym_of_attr((AttributionType.F.name, fl[0]))
         else:  # 数字
+            # return float(fl) if '.' in fl else int(fl)
             return float(fl)
 
     def _parse_find(self, fl):  # 解析find
