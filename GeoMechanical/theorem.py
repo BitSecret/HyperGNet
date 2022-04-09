@@ -1,4 +1,5 @@
 from facts import AttributionType
+from sympy import solve, Float
 
 
 class Theorem:
@@ -11,11 +12,11 @@ class Theorem:
         RT三角形  ==>  a**2 + b**2 - c**2 = 0
         """
         update = False    # 存储应用定理是否更新了条件
-        for rt_triangle in problem.right_triangle.items:
-            a = problem.get_sym_of_attr((AttributionType.LL.name, rt_triangle[0:2]))
-            b = problem.get_sym_of_attr((AttributionType.LL.name, rt_triangle[1:3]))
-            c = problem.get_sym_of_attr((AttributionType.LL.name, rt_triangle[0] + rt_triangle[2]))
-            update = problem.define_equation(a**2 + b**2 - c**2, -3, 1) or update
+        for rt in problem.right_triangle.items:
+            a = problem.get_sym_of_attr((AttributionType.LL.name, rt[0:2]))
+            b = problem.get_sym_of_attr((AttributionType.LL.name, rt[1:3]))
+            c = problem.get_sym_of_attr((AttributionType.LL.name, rt[0] + rt[2]))
+            update = problem.define_equation(a**2 + b**2 - c**2, problem.right_triangle.indexes[rt], 1) or update
         return update
 
     @staticmethod
@@ -42,4 +43,11 @@ class Theorem:
 
     @staticmethod
     def _solve_equations(problem):
-        print("problem {} applied with theorem_4_xxxx".format(problem.problem_index))
+        result = solve(problem.equations_unsolved)  # 求解equation
+        if len(result) == 0:  # 没有解，返回
+            return
+        if isinstance(result, list):  # 解不唯一，选择第一个
+            result = result[0]
+        for attr_var in result.keys():  # 遍历所有的解
+            if isinstance(result[attr_var], Float):  # 如果解是实数，保存
+                problem.value_of_sym[attr_var] = abs(float(result[attr_var]))

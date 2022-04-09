@@ -53,5 +53,39 @@
 		"theorem_seqs": [
 			1
 		]
+	},
+	"4": {
+		"annotation": "test1",
+		"problem_index": 4,
+		"formal_languages": [
+			"RightTriangle(ABC)",
+			"RightTriangle(CDA)",
+			"Equal(Length(Line(CD)),3)",
+			"Equal(Length(Line(AD)),4)",
+			"Equal(Length(Line(AB)),a)",
+			"Equal(Length(Line(BC)),b)",
+			"Find(Add(Pow(a,2),Pow(b,2)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"5": {
+		"annotation": "test1",
+		"problem_index": 5,
+		"formal_languages": [
+			"RightTriangle(ABC)",
+			"RightTriangle(CDA)",
+			"Equal(Length(Line(CD)),3)",
+			"Equal(Length(Line(AD)),4)",
+			"Equal(Length(Line(AB)),a)",
+			"Equal(Length(Line(BC)),b)",
+			"Find(Equal(Add(Pow(a,2),Pow(b,2)), 25))",
+			"Find(Equal(Add(Pow(a,2),Pow(b,2)), 24))",
+			"Find(Add(Pow(a,2),Pow(b,2)))"
+		],
+		"theorem_seqs": [
+			1
+		]
 	}
 }

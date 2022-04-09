@@ -1,6 +1,5 @@
 from utility import get_all_representation_of_shape
-from facts import AttributionType
-from facts import Condition
+from facts import AttributionType, Condition, TargetType
 from sympy import symbols
 
 
@@ -113,6 +112,7 @@ class ProblemLogic:
         self.sym_of_attr = {}    # (ConditionType, "name"): sym
         self.value_of_sym = {}   # sym: value
         self.equations = Condition()   # 代数方程
+        self.equations_unsolved = []    # 还没解出来的方程
 
         """----------解题目标----------"""
         self.target_count = 0  # 目标个数
@@ -688,7 +688,10 @@ class ProblemLogic:
 
     """------------define Equation------------"""
     def define_equation(self, equation, premise=-1, theorem=-1):
-        return self.equations.add(equation, premise, theorem)
+        if self.equations.add(equation, premise, theorem):
+            self.equations_unsolved.append(equation)
+            return True
+        return False
 
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
@@ -772,6 +775,14 @@ class Problem(ProblemLogic):
         print("\033[34mTarget Count:\033[0m", end=" ")
         print(self.target_count)
         for i in range(0, self.target_count):
-            print("\033[34m{}:\033[0m  {}  {}".format(self.target_type[i].name,
-                                                               str(self.target[i]),
-                                                               self.target_solved[i]))
+            if self.target_type[i] is TargetType.relation:
+                print("\033[34m{}:\033[0m  {}  {}".format(self.target_type[i].name,
+                                                          str(self.target[i]),
+                                                          self.target_solved[i]))
+            else:
+                print("\033[34m{}:\033[0m  {}  {}  {}".format(self.target_type[i].name,
+                                                              str(self.target[i]),
+                                                              self.value_of_sym[self.target[i]],
+                                                              self.target_solved[i]))
+
+

@@ -2,11 +2,11 @@ from pyparsing import alphanums, Forward, Group, Word, Literal, ZeroOrMore
 from problem import Problem
 from theorem import Theorem
 from facts import AttributionType, TargetType
-from sympy import *
+from sympy import solve, Float, sin, cos, tan
 from utility import pre_parse
 """后面改进
 1.在solve之前先进行符号的替换，把值已知的变量替换掉（主要是为了加速计算，有必要吗？）
-2.float和integer，求解的结果形式不一样（详见test），看看如何统一"""
+2.float和integer，求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)"""
 
 
 class Solver:
@@ -151,9 +151,7 @@ class Solver:
         self.problem_five_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1])
 
     def _parse_equal(self, fl):  # 解析equal
-        expr = self._generate_expr(fl[1]) - self._generate_expr(fl[2])
-        # 这里判断一下，如果仅仅是 a=1 这种形式，直接赋值就行，不用添加新的equation
-        self.problem.define_equation(expr)
+        self.problem.define_equation(self._generate_expr(fl))
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
@@ -225,6 +223,10 @@ class Solver:
             return cos(self._generate_expr(fl[1]))
         elif fl[0] == "Tan":
             return tan(self._generate_expr(fl[1]))
+        elif fl[0] == "Equal":
+            return self._generate_expr(fl[1]) - self._generate_expr(fl[2])
+        elif fl[0] == "Expression":
+            pass    # 这个需要把expression中的所有符号都解析出来，后面再完善
         elif fl[0].isalpha():  # 如果是字母，生成字母的符号表示
             return self.problem.get_sym_of_attr((AttributionType.F.name, fl[0]))
         else:  # 数字
@@ -240,35 +242,44 @@ class Solver:
             target = []
             for i in range(1, len(fl[1])):
                 target.append(fl[1][i][1])
-            self.problem.target.append([fl[1][0], tuple(target)])
+            self.problem.target.append([fl[1][0], tuple(target)])    # ["Parallel", ("AB", "CD")]
         else:
-            self.problem.target_type.append(TargetType.value)  # 代数关系
-            self.problem.target.append(self._generate_expr(fl[1]))
+            if fl[1][0] == "Equal":
+                self.problem.target_type.append(TargetType.equal)  # 代数关系，equal
+            else:
+                self.problem.target_type.append(TargetType.value)  # 代数关系,求值
+            target = self.problem.get_sym_of_attr((AttributionType.T.name, "{}".format(self.problem.target_count)))
+            self.problem.target.append(target)
+            self.problem.define_equation(target - self._generate_expr(fl[1]))
 
     def solve(self):
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
             self.theorem_map[theorem](self.problem)  # 求解equation
-        self._solve_equations()
+        self._solve_equations()    # 先把代数式求了
 
         for i in range(self.problem.target_count):
             if self.problem.target_type[i] is TargetType.relation:  # 关系型目标
                 if self.problem.target[i][1] in self.problem.relations[self.problem.target[i][0]].items:
                     self.problem.target_solved[i] = "solved"
-            else:  # 数值型目标
+            elif self.problem.target_type[i] is TargetType.value:  # 数值型目标，求值
                 if self.problem.value_of_sym[self.problem.target[i]] is not None:
                     self.problem.target_solved[i] = "solved"
+            else:  # 数值型目标，equal
+                value = self.problem.value_of_sym[self.problem.target[i]]
+                if value is not None and value == 0:
+                    self.problem.target_solved[i] = "solved"
 
-    def _solve_equations(self):
-        attr_vars = list(set(self.problem.sym_of_attr.values()))  # 变量快速去重
-        result = solve(self.problem.equations.items, attr_vars)  # 求解equation
+    def _solve_equations(self):    # 求解方程并保存结果
+        result = solve(self.problem.equations_unsolved)  # 求解equation
+        if len(result) == 0:    # 没有解，返回
+            return
+        if isinstance(result, list):    # 解不唯一，选择第一个
+            result = result[0]
+        for attr_var in result.keys():    # 遍历所有的解
+            if isinstance(result[attr_var], Float):    # 如果解是实数，保存
+                self.problem.value_of_sym[attr_var] = abs(float(result[attr_var]))
 
-        if isinstance(result, dict):  # 只有一组解的情况，结果为dict
-            for attr_var in attr_vars:
-                if attr_var in result.keys() and isinstance(result[attr_var], Float):  # 如果是数值，更新变量值
-                    self.problem.value_of_sym[attr_var] = abs(float(result[attr_var]))
-        else:  # 只有多组解的情况，结果为list
-            for i in range(len(attr_vars)):
-                if isinstance(result[0][i], Float):  # 如果是数值，更新变量值
-                    self.problem.value_of_sym[attr_vars[i]] = abs(float(result[0][i]))
+    def equation_collation(self):    # 用已知量替换方程的未知数，化简方程
+        pass
 
     """------------auxiliary function------------"""
