@@ -47,5 +47,6 @@ class AttributionType(Enum):  # 属性的类型
 class TargetType(Enum):    # 解题目标类型
     value = 1       # 代数关系，求值
     equal = 2       # 代数关系，求相等
-    relation = 3    # 位置关系
+    entity = 3    # 位置关系，实体
+    relation = 4    # 位置关系，联系
 

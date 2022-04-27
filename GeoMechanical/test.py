@@ -1,4 +1,7 @@
 from sympy import *
+from problem import Problem
+from main import load_data
+from utility import RegularExpression
 
 
 def solve_test():
@@ -70,4 +73,56 @@ def test2():
         print(i)
 
 
-test2()
+def test_symbol_result():
+    a, b, t = symbols("a b t")
+    f1 = a - b
+    f2 = b - t
+    result = solve([f1, f2])
+    print(result)
+
+
+def test_symbol_result2():
+    a, b, c, t = symbols("a b c t")
+    f1 = a - b
+    f2 = b - c
+    f3 = t - a + c
+    result = solve([f1, f2, f3])
+    print(result)
+
+
+def test_symbol_result3():
+    a, b, c, t = symbols("a b c t")
+    f1 = a - 5
+    f2 = c - 5
+    f3 = t - a + c
+    result = solve([f1, f2, f3])
+    print(result)
+
+
+def test_symbol_result4():
+    a, b, c, t = symbols("a b c t")
+    f1 = a - b
+    f2 = t - a + b
+    result = solve([f1, f2])
+    print(result)
+
+
+def _parse_expr(problem, expr):    # 解析表达式为list形式，方便转化为sym体系下的表达式
+    result = RegularExpression.get_expr(expr)
+    print(result)
+
+
+problems_path = "./test_data/problem.json"
+data = load_data(problems_path)[0]
+pro = Problem(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
+expr_1 = "36.1+1-61*5/2^{a+@{4.2}}"    # (用{代替
+_parse_expr(pro, expr_1)
+
+
+print("abc".isalpha())
+
+print("111a".isnumeric())
+print("111".isnumeric())
+print("-111".isnumeric())    # 识别负号的问题
+
+print("12.1".isnumeric())

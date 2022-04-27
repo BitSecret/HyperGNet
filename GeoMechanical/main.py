@@ -8,7 +8,7 @@ def main():
 
 
 def load_data(problems_path):  # 读取json数据并解析成列表
-    problem_data = json.load(open(problems_path, "r"))  # 文本 Formal Language
+    problem_data = json.load(open(problems_path, "r", encoding="utf-8"))  # 文本 Formal Language
     return list(problem_data.values())
 
 
@@ -27,8 +27,8 @@ def test_define():
 
 
 def test_problem():
-    problems_path = "./test_data/test_problem.json"
-    data = load_data(problems_path)[5]
+    problems_path = "./test_data/problem.json"
+    data = load_data(problems_path)[6]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
     solver.solve()
     solver.problem.show_problem()

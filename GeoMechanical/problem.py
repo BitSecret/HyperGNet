@@ -1,5 +1,5 @@
 from utility import get_all_representation_of_shape
-from facts import AttributionType, Condition, TargetType
+from facts import AttributionType, Condition
 from sympy import symbols
 
 
@@ -112,7 +112,6 @@ class ProblemLogic:
         self.sym_of_attr = {}    # (ConditionType, "name"): sym
         self.value_of_sym = {}   # sym: value
         self.equations = Condition()   # 代数方程
-        self.equations_unsolved = []    # 还没解出来的方程
 
         """----------解题目标----------"""
         self.target_count = 0  # 目标个数
@@ -156,7 +155,7 @@ class ProblemLogic:
         if self.shape.add(shape, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
             if root:
                 premise = self.shape.indexes[shape]
-            for point in shape: # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
+            for point in shape:    # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
                 self.point.add(point, premise, -2)
             shape_all = get_all_representation_of_shape(shape)  # n种表示
             for shape in shape_all:
@@ -688,16 +687,18 @@ class ProblemLogic:
 
     """------------define Equation------------"""
     def define_equation(self, equation, premise=-1, theorem=-1):
-        if self.equations.add(equation, premise, theorem):
-            self.equations_unsolved.append(equation)
-            return True
-        return False
+        return self.equations.add(equation, premise, theorem)
 
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
+        if attr[0] == AttributionType.T.name:    # 表示目标/中间值类型的符号，不用存储在符号库
+            return symbols(attr[0].lower() + "_" + attr[1])
+
         if attr not in self.sym_of_attr.keys():    # 若无符号，新建符号
             sym = symbols(attr[0].lower() + "_" + attr[1].lower())
             self.value_of_sym[sym] = None
+
+            # 一个图形性质所有的其他表示形式
             if attr[0] == AttributionType.LL.name \
                     or attr[0] == AttributionType.PT.name \
                     or attr[0] == AttributionType.PQ.name \
@@ -775,14 +776,11 @@ class Problem(ProblemLogic):
         print("\033[34mTarget Count:\033[0m", end=" ")
         print(self.target_count)
         for i in range(0, self.target_count):
-            if self.target_type[i] is TargetType.relation:
-                print("\033[34m{}:\033[0m  {}  {}".format(self.target_type[i].name,
-                                                          str(self.target[i]),
-                                                          self.target_solved[i]))
+            print("\033[34m{}:\033[0m  {}  ".format(self.target_type[i].name,
+                                                    str(self.target[i])), end="")
+            if self.target_solved[i] == "solved":
+                print("\033[32m{}\033[0m".format(self.target_solved[i]))
             else:
-                print("\033[34m{}:\033[0m  {}  {}  {}".format(self.target_type[i].name,
-                                                              str(self.target[i]),
-                                                              self.value_of_sym[self.target[i]],
-                                                              self.target_solved[i]))
+                print("\033[31m{}\033[0m".format(self.target_solved[i]))
 
 

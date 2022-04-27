@@ -1,0 +1,120 @@
+{
+	"0": {
+		"problem_index": 0,
+		"annotation": "解题目标为位置关系、定理-平行线的传递性",
+		"text": "如图AB//CD，CD//EF，求证AB//EF。",
+		"image": "0.png",
+		"formal_languages": [
+			"Parallel(Line(AB), Line(CD))",
+			"Parallel(Line(CD), Line(EF))",
+			"Find(Parallel(Line(AB), Line(EF)))"
+		],
+		"theorem_seqs": [
+			3
+		]
+	},
+	"1": {
+		"problem_index": 1,
+		"annotation": "属性值的符号表示、定理-勾股定理",
+		"text": "如图所示，在RT△ABC中，m=8，求AC的长度。",
+		"image": "1.png",
+		"formal_languages": [
+			"RightTriangle(ABC)",
+			"Equal(Length(Line(AB)),m)",
+			"Equal(m,6)",
+			"Equal(Length(Line(BC)),8)",
+			"Find(Length(Line(AC)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"2": {
+		"problem_index": 2,
+		"annotation": "解题目标为代数值、方程式求解",
+		"text": "如图所示，△BCA、△ADC、△CDB均为直角三角形，求CD的长度。",
+		"image": "2.png",
+		"formal_languages": [
+			"RightTriangle(BCA)",
+			"RightTriangle(ADC)",
+			"RightTriangle(CDB)",
+			"Equal(Length(Line(AD)),3)",
+			"Equal(Length(Line(BD)),14)",
+			"Equal(Length(Line(AB)),Add(Length(Line(AD)), Length(Line(DB))))",
+			"Find(Length(Line(CD)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"3": {
+		"problem_index": 3,
+		"annotation": "多个解题目标、验证型解题目标和求解型解题目标",
+		"text": "如图所示，△ABC、△CDA均为直角三角形，求a^2+b^2的值。",
+		"image": "3.png",
+		"formal_languages": [
+			"RightTriangle(ABC)",
+			"RightTriangle(CDA)",
+			"Equal(Length(Line(CD)),3)",
+			"Equal(Length(Line(AD)),4)",
+			"Equal(Length(Line(AB)),a)",
+			"Equal(Length(Line(BC)),b)",
+			"Find(Equal(Add(Pow(a,2),Pow(b,2)), 25))",
+			"Find(Equal(Add(Pow(a,2),Pow(b,2)), 24))",
+			"Find(Add(Pow(a,2),Pow(b,2)))"
+		],
+		"theorem_seqs": [
+			1
+		]
+	},
+	"4": {
+		"problem_index": 4,
+		"annotation": "定理：数值关系  ==》  位置关系",
+		"text": "三角形各边如图所示，求证△ABC为RT△",
+		"image": "4.png",
+		"formal_languages": [
+			"Triangle(ABC)",
+			"Equal(Length(Line(AB)),6)",
+			"Equal(Length(Line(BC)),8)",
+			"Equal(Length(Line(CA)),10)",
+			"Find(RightTriangle(ABC))"
+		],
+		"theorem_seqs": [
+			2
+		]
+	},
+	"5": {
+		"problem_index": 5,
+		"annotation": "定理：数值关系  ==》  位置关系",
+		"text": "三角形各边如图所示，求证△ABC为RT△",
+		"image": "5.png",
+		"formal_languages": [
+			"Triangle(ABC)",
+			"Equal(Length(Line(AB)),6)",
+			"Equal(Length(Line(BC)),6)",
+			"Equal(Length(Line(CA)),6)",
+			"Find(RightTriangle(ABC))"
+		],
+		"theorem_seqs": [
+			2
+		]
+	},
+	"6": {
+		"problem_index": 6,
+		"annotation": "定理测试 全等三角形性质",
+		"text": "如图所示，两个△全等，求y的值",
+		"image": "6.png",
+		"formal_languages": [
+			"Congruent(Triangle(RST),Triangle(XYZ))",
+			"Equal(Length(Line(TR)),Add(x,21))",
+			"Equal(Degree(Angle(TRS)),Sub(Mul(4,y),10))",
+			"Equal(Degree(Angle(ZXY)),Add(Mul(3,y),5))",
+			"Equal(Length(Line(ZX)),Sub(Mul(2,x),14)))",
+			"Find(x)",
+			"Find(y)"
+		],
+		"theorem_seqs": [
+			6
+		]
+	}
+}
