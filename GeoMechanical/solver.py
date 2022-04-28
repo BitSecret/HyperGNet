@@ -1,10 +1,10 @@
+import copy
 from problem import Problem
 from theorem import Theorem
 from facts import AttributionType as aType
 from facts import TargetType as tType
 from sympy import solve, Float, sin, cos, tan
-from utility import pre_parse
-from utility import RegularExpression as reE
+from utility import PreParse as preP
 
 """后面改进
 1.方程式求解问题：①每次求解后要不要简化方程（分为已解决的和未解决的）②解方程的前提条件（最小可求解方程组），如何找出来
@@ -17,58 +17,7 @@ class Solver:
         self.problem = Problem(problem_index, formal_languages, theorem_seqs)  # 题目
 
         # 使用字典映射parse函数，代替if-else，加速查找。字典采用hash映射，查找复杂读为O(1)。
-        self.parse_func_map = {"Point": self._parse_entity,
-                               "Line": self._parse_entity,
-                               "Angle": self._parse_entity,
-                               "Arc": self._parse_entity,
-                               "Shape": self._parse_entity,
-                               "Circle": self._parse_entity,
-                               "Sector": self._parse_entity,
-                               "Triangle": self._parse_entity,
-                               "RightTriangle": self._parse_entity,
-                               "IsoscelesTriangle": self._parse_entity,
-                               "RegularTriangle": self._parse_entity,
-                               "Quadrilateral": self._parse_entity,
-                               "Trapezoid": self._parse_entity,
-                               "IsoscelesTrapezoid": self._parse_entity,
-                               "Parallelogram": self._parse_entity,
-                               "Rectangle": self._parse_entity,
-                               "Rhombus": self._parse_entity,
-                               "Kite": self._parse_entity,
-                               "Square": self._parse_entity,
-                               "Polygon": self._parse_entity,
-                               "RegularPolygon": self._parse_entity,
-                               "PointOnLine": self._parse_binary_relation,
-                               "PointOnArc": self._parse_binary_relation,
-                               "PointOnCircle": self._parse_binary_relation,
-                               "Midpoint": self._parse_binary_relation,
-                               "Circumcenter": self._parse_binary_relation,
-                               "Incenter": self._parse_binary_relation,
-                               "Centroid": self._parse_binary_relation,
-                               "Orthocenter": self._parse_binary_relation,
-                               "Parallel": self._parse_binary_relation,
-                               "Perpendicular": self._parse_ternary_relation,
-                               "PerpendicularBisector": self._parse_ternary_relation,
-                               "BisectsAngle": self._parse_binary_relation,
-                               "DisjointLineCircle": self._parse_binary_relation,
-                               "DisjointCircleCircle": self._parse_binary_relation,
-                               "TangentLineCircle": self._parse_ternary_relation,
-                               "TangentCircleCircle": self._parse_ternary_relation,
-                               "IntersectLineLine": self._parse_ternary_relation,
-                               "IntersectLineCircle": self._parse_quaternion_relation,
-                               "IntersectCircleCircle": self._parse_quaternion_relation,
-                               "Median": self._parse_binary_relation,
-                               "HeightOfTriangle": self._parse_binary_relation,
-                               "HeightOfTrapezoid": self._parse_binary_relation,
-                               "InternallyTangent": self._parse_ternary_relation,
-                               "Contain": self._parse_binary_relation,
-                               "CircumscribedToTriangle": self._parse_binary_relation,
-                               "InscribedInTriangle": self._parse_five_relation,
-                               "Congruent": self._parse_binary_relation,
-                               "Similar": self._parse_binary_relation,
-                               "Equal": self._parse_equal,
-                               "Find": self._parse_find}
-        self.problem_entity_map = {"Point": self.problem.define_point,
+        self.problem_define_map = {"Point": self.problem.define_point,
                                    "Line": self.problem.define_line,
                                    "Angle": self.problem.define_angle,
                                    "Arc": self.problem.define_arc,
@@ -88,35 +37,36 @@ class Solver:
                                    "Kite": self.problem.define_kite,
                                    "Square": self.problem.define_square,
                                    "Polygon": self.problem.define_polygon,
-                                   "RegularPolygon": self.problem.define_regular_polygon}
-        self.problem_binary_relation_map = {"PointOnLine": self.problem.define_point_on_line,
-                                            "PointOnArc": self.problem.define_point_on_arc,
-                                            "PointOnCircle": self.problem.define_point_on_circle,
-                                            "Midpoint": self.problem.define_midpoint,
-                                            "Circumcenter": self.problem.define_circumcenter,
-                                            "Incenter": self.problem.define_incenter,
-                                            "Centroid": self.problem.define_centroid,
-                                            "Orthocenter": self.problem.define_orthocenter,
-                                            "Parallel": self.problem.define_parallel,
-                                            "BisectsAngle": self.problem.define_bisects_angle,
-                                            "DisjointLineCircle": self.problem.define_disjoint_line_circle,
-                                            "DisjointCircleCircle": self.problem.define_disjoint_circle_circle,
-                                            "Median": self.problem.define_median,
-                                            "HeightOfTriangle": self.problem.define_height_triangle,
-                                            "HeightOfTrapezoid": self.problem.define_height_trapezoid,
-                                            "Contain": self.problem.define_contain,
-                                            "CircumscribedToTriangle": self.problem.define_circumscribed_to_triangle,
-                                            "Congruent": self.problem.define_congruent,
-                                            "Similar": self.problem.define_similar}
-        self.problem_ternary_relation_map = {"Perpendicular": self.problem.define_perpendicular,
-                                             "PerpendicularBisector": self.problem.define_perpendicular_bisector,
-                                             "TangentLineCircle": self.problem.define_tangent_line_circle,
-                                             "TangentCircleCircle": self.problem.define_tangent_circle_circle,
-                                             "IntersectLineLine": self.problem.define_intersect_line_line,
-                                             "InternallyTangent": self.problem.define_internally_tangent}
-        self.problem_quaternion_relation_map = {"IntersectLineCircle": self.problem.define_intersect_line_circle,
-                                                "IntersectCircleCircle": self.problem.define_intersect_circle_circle}
-        self.problem_five_relation_map = {"InscribedInTriangle": self.problem.define_inscribed_in_triangle}
+                                   "RegularPolygon": self.problem.define_regular_polygon,
+                                   "PointOnLine": self.problem.define_point_on_line,
+                                   "PointOnArc": self.problem.define_point_on_arc,
+                                   "PointOnCircle": self.problem.define_point_on_circle,
+                                   "Midpoint": self.problem.define_midpoint,
+                                   "Circumcenter": self.problem.define_circumcenter,
+                                   "Incenter": self.problem.define_incenter,
+                                   "Centroid": self.problem.define_centroid,
+                                   "Orthocenter": self.problem.define_orthocenter,
+                                   "Parallel": self.problem.define_parallel,
+                                   "BisectsAngle": self.problem.define_bisects_angle,
+                                   "DisjointLineCircle": self.problem.define_disjoint_line_circle,
+                                   "DisjointCircleCircle": self.problem.define_disjoint_circle_circle,
+                                   "Median": self.problem.define_median,
+                                   "HeightOfTriangle": self.problem.define_height_triangle,
+                                   "HeightOfTrapezoid": self.problem.define_height_trapezoid,
+                                   "Contain": self.problem.define_contain,
+                                   "CircumscribedToTriangle": self.problem.define_circumscribed_to_triangle,
+                                   "Congruent": self.problem.define_congruent,
+                                   "Similar": self.problem.define_similar,
+                                   "Perpendicular": self.problem.define_perpendicular,
+                                   "PerpendicularBisector": self.problem.define_perpendicular_bisector,
+                                   "TangentLineCircle": self.problem.define_tangent_line_circle,
+                                   "TangentCircleCircle": self.problem.define_tangent_circle_circle,
+                                   "IntersectLineLine": self.problem.define_intersect_line_line,
+                                   "InternallyTangent": self.problem.define_internally_tangent,
+                                   "IntersectLineCircle": self.problem.define_intersect_line_circle,
+                                   "IntersectCircleCircle": self.problem.define_intersect_circle_circle,
+                                   "InscribedInTriangle": self.problem.define_inscribed_in_triangle
+                                   }
 
         # 定理映射
         self.theorem_map = {1: Theorem.theorem_1_pythagorean,
@@ -127,31 +77,18 @@ class Solver:
                             6: Theorem.theorem_6_congruent_triangle,
                             7: Theorem.theorem_7_congruent_triangle_inverse}
 
-        self.parse()  # 解析形式化语句到logic形式
+        # 解析形式化语句到logic形式
+        self.parse()
 
     def parse(self):
-        for formal_language in self.problem.formal_languages:
-            fl = reE.get_fl(formal_language)    # 解析形式化语言成树状结构，list形式
-            print(fl)
-            self.parse_func_map[fl[0]](fl)  # 这个警告不用管
-
-    def _parse_entity(self, fl):  # 解析实体
-        self.problem_entity_map[fl[0]](fl[1])
-
-    def _parse_binary_relation(self, fl):  # 解析2元关系
-        self.problem_binary_relation_map[fl[0]](fl[1][1], fl[2][1])
-
-    def _parse_ternary_relation(self, fl):  # 解析3元关系
-        self.problem_ternary_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1])
-
-    def _parse_quaternion_relation(self, fl):  # 解析4元关系
-        self.problem_quaternion_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1])
-
-    def _parse_five_relation(self, fl):  # 解析5元关系
-        self.problem_five_relation_map[fl[0]](fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1])
-
-    def _parse_equal(self, fl):  # 解析equal
-        self.problem.define_equation(self._generate_expr(fl))
+        fls = preP.pre_parse_fls(copy.copy(self.problem.formal_languages))
+        for fl in fls:
+            if fl[0] == "Equal":    # 数量关系
+                self.problem.define_equation(self._generate_expr(fl), [-1], -1)
+            elif fl[0] == "Find":    # 解题目标
+                self._parse_find(fl[1])
+            else:    # 实体定义、位置关系定义
+                self.problem_define_map[fl[0]](fl[1], [-1], -1)
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
@@ -229,15 +166,15 @@ class Solver:
             return self._parse_expr(fl)
 
     def _parse_expr(self, expr):    # 解析表达式字符串为list，然后在组装成sym体系下的表示
-        expr_list = reE.get_expr(expr + "~")
+        expr_list = preP.parse_expr(expr + "~")
         expr_stack = []
         operator_stack = ["~"]  # 栈底元素
 
         i = 0
         while i < len(expr_list):
             unit = expr_list[i]
-            if unit in reE.operator:  # 运算符
-                if reE.stack_priority[operator_stack[-1]] < reE.outside_priority[unit]:
+            if unit in preP.operator:  # 运算符
+                if preP.stack_priority[operator_stack[-1]] < preP.outside_priority[unit]:
                     operator_stack.append(unit)
                     i = i + 1
                 else:
@@ -283,25 +220,23 @@ class Solver:
         return expr_stack.pop()
 
     def _parse_find(self, fl):  # 解析find
-        fl[1] = pre_parse(fl[1])  # 解析目标
         self.problem.target_count += 1  # 新目标
         self.problem.target_solved.append("unsolved")  # 初始化题目求解情况
-        if fl[1][0] in self.problem.relations.keys():  # 位置关系，联系
-            self.problem.target_type.append(tType.relation)
-            target = []
-            for i in range(1, len(fl[1])):
-                target.append(fl[1][i][1])
-            self.problem.target.append([fl[1][0], tuple(target)])  # ["Parallel", ("AB", "CD")]
-        elif fl[1][0] in self.problem.entities.keys():  # 位置关系，实体
-            self.problem.target_type.append(tType.entity)
-            self.problem.target.append([fl[1][0], fl[1][1]])
-        else:
-            if fl[1][0] == "Equal":
-                self.problem.target_type.append(tType.equal)  # 代数关系，equal
-            else:
-                self.problem.target_type.append(tType.value)  # 代数关系,求值
+
+        if fl[0] == "Equal":    # 验证型解题目标
+            self.problem.target_type.append(tType.equal)
+            target = self.problem.get_sym_of_attr((aType.T.name, str(format(self.problem.target_count))))
+            self.problem.target.append([target, target - self._generate_expr(fl), None, None])  # 求解目标 辅助方程 目标值 前提
+        elif fl[0] == "Value":  # 求值型解题目标
+            self.problem.target_type.append(tType.value)
             target = self.problem.get_sym_of_attr((aType.T.name, str(format(self.problem.target_count))))
             self.problem.target.append([target, target - self._generate_expr(fl[1]), None, None])  # 求解目标 辅助方程 目标值 前提
+        else:    # 关系型解题目标
+            if fl[0] in self.problem.entities.keys():
+                self.problem.target_type.append(tType.entity)
+            else:
+                self.problem.target_type.append(tType.relation)
+            self.problem.target.append([fl[0], fl[1]])
 
     def solve(self):
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
@@ -335,7 +270,7 @@ class Solver:
             if isinstance(result[attr_var], Float):  # 如果解是实数，保存
                 self.problem.value_of_sym[attr_var] = abs(float(result[attr_var]))
 
-    def _solve_targets(self, target, target_equation):  # 求解目标方程，返回目标值
+    def _solve_targets(self, target, target_equation):  # 求解目标方程，返回目标值和前提
         self.problem.equations.items.append(target_equation)  # 将目标方程添加到方程组
         result = solve(self.problem.equations.items)  # 求解equation
         self.problem.equations.items.remove(target_equation)  # 求解后，移除目标方程
@@ -347,7 +282,7 @@ class Solver:
             result = result[0]
 
         if target in result.keys() and isinstance(result[target], Float):
-            return abs(float(result[target])), -2  # 有实数解，返回解
+            return abs(float(result[target])), [-3]  # 有实数解，返回解
 
         return None, None  # 无实数解，返回None
 

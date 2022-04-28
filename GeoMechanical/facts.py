@@ -40,13 +40,14 @@ class AttributionType(Enum):  # 属性的类型
     AS = 16  # AreaOfSector 扇形的面积
     AQ = 17  # AreaOfQuadrilateral 四边形的面积
     AP = 18  # AreaOfPolygon 多边形的面积
-    F = 19  # Free 自由的符号
+    F = 19  # Free 自由符号
     T = 20  # Target 代数型解题目标
 
 
 class TargetType(Enum):    # 解题目标类型
     value = 1       # 代数关系，求值
-    equal = 2       # 代数关系，求相等
+    equal = 2       # 代数关系，验证
     entity = 3    # 位置关系，实体
     relation = 4    # 位置关系，联系
+    symbol = 5    # 代数关系，符号形式，以后再实现
 
