@@ -1,13 +1,14 @@
 from problem import Problem
 from theorem import Theorem
-from facts import AttributionType, TargetType
+from facts import AttributionType as aType
+from facts import TargetType as tType
 from sympy import solve, Float, sin, cos, tan
-from utility import pre_parse, RegularExpression
+from utility import pre_parse
+from utility import RegularExpression as reE
 
 """后面改进
 1.方程式求解问题：①每次求解后要不要简化方程（分为已解决的和未解决的）②解方程的前提条件（最小可求解方程组），如何找出来
-2.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
-3.运算表达式识别和构造"""
+2.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)"""
 
 
 class Solver:
@@ -130,7 +131,7 @@ class Solver:
 
     def parse(self):
         for formal_language in self.problem.formal_languages:
-            fl = RegularExpression.get_fl(formal_language)    # 解析形式化语言成树状结构，list形式
+            fl = reE.get_fl(formal_language)    # 解析形式化语言成树状结构，list形式
             print(fl)
             self.parse_func_map[fl[0]](fl)  # 这个警告不用管
 
@@ -155,45 +156,45 @@ class Solver:
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
             if fl[1][0] == "Line":
-                return self.problem.get_sym_of_attr((AttributionType.LL.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.LL.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.LA.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.LA.name, fl[1][1]))
         elif fl[0] == "Degree":
             if fl[1][0] == "Angle":
-                return self.problem.get_sym_of_attr((AttributionType.DA.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.DA.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.DS.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.DS.name, fl[1][1]))
         elif fl[0] == "Radius":
             if fl[1][0] == "Arc":
-                return self.problem.get_sym_of_attr((AttributionType.RA.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.RA.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.RC.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.RC.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.RS.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.RS.name, fl[1][1]))
         elif fl[0] == "Diameter":
-            return self.problem.get_sym_of_attr((AttributionType.DC.name, fl[1][1]))
+            return self.problem.get_sym_of_attr((aType.DC.name, fl[1][1]))
         elif fl[0] == "Perimeter":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.PT.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.PT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.PC.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.PC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.PS.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.PS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.PQ.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.PQ.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.PP.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.PP.name, fl[1][1]))
         elif fl[0] == "Area":
             if fl[1][0] == "Triangle":
-                return self.problem.get_sym_of_attr((AttributionType.AT.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.AT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
-                return self.problem.get_sym_of_attr((AttributionType.AC.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.AC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
-                return self.problem.get_sym_of_attr((AttributionType.AS.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.AS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
-                return self.problem.get_sym_of_attr((AttributionType.AQ.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.AQ.name, fl[1][1]))
             else:
-                return self.problem.get_sym_of_attr((AttributionType.AP.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.AP.name, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":
@@ -228,31 +229,78 @@ class Solver:
             return self._parse_expr(fl)
 
     def _parse_expr(self, expr):    # 解析表达式字符串为list，然后在组装成sym体系下的表示
-        # 4.28 完成这里
-        if expr.isalpha():
-            return self.problem.get_sym_of_attr((AttributionType.F.name, expr))
-        else:
-            return float(expr)
+        expr_list = reE.get_expr(expr + "~")
+        expr_stack = []
+        operator_stack = ["~"]  # 栈底元素
+
+        i = 0
+        while i < len(expr_list):
+            unit = expr_list[i]
+            if unit in reE.operator:  # 运算符
+                if reE.stack_priority[operator_stack[-1]] < reE.outside_priority[unit]:
+                    operator_stack.append(unit)
+                    i = i + 1
+                else:
+                    operator_unit = operator_stack.pop()
+                    if operator_unit == "+":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 + expr_2)
+                    elif operator_unit == "-":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = 0 if len(expr_stack) == 0 else expr_stack.pop()
+                        expr_stack.append(expr_1 - expr_2)
+                    elif operator_unit == "*":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 * expr_2)
+                    elif operator_unit == "/":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 / expr_2)
+                    elif operator_unit == "^":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 ** expr_2)
+                    elif operator_unit == "{":  # 只有unit为"}"，才能到达这个判断
+                        i = i + 1
+                    elif operator_unit == "@":  # sin
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(sin(expr_1))
+                    elif operator_unit == "#":  # cos
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(cos(expr_1))
+                    elif operator_unit == "$":  # tan
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(tan(expr_1))
+                    elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
+                        break
+            else:  # 实数或符号
+                unit = self.problem.get_sym_of_attr((aType.F.name, unit)) if unit.isalpha() else float(unit)
+                expr_stack.append(unit)
+                i = i + 1
+
+        return expr_stack.pop()
 
     def _parse_find(self, fl):  # 解析find
         fl[1] = pre_parse(fl[1])  # 解析目标
         self.problem.target_count += 1  # 新目标
         self.problem.target_solved.append("unsolved")  # 初始化题目求解情况
         if fl[1][0] in self.problem.relations.keys():  # 位置关系，联系
-            self.problem.target_type.append(TargetType.relation)
+            self.problem.target_type.append(tType.relation)
             target = []
             for i in range(1, len(fl[1])):
                 target.append(fl[1][i][1])
             self.problem.target.append([fl[1][0], tuple(target)])  # ["Parallel", ("AB", "CD")]
         elif fl[1][0] in self.problem.entities.keys():  # 位置关系，实体
-            self.problem.target_type.append(TargetType.entity)
+            self.problem.target_type.append(tType.entity)
             self.problem.target.append([fl[1][0], fl[1][1]])
         else:
             if fl[1][0] == "Equal":
-                self.problem.target_type.append(TargetType.equal)  # 代数关系，equal
+                self.problem.target_type.append(tType.equal)  # 代数关系，equal
             else:
-                self.problem.target_type.append(TargetType.value)  # 代数关系,求值
-            target = self.problem.get_sym_of_attr((AttributionType.T.name, str(format(self.problem.target_count))))
+                self.problem.target_type.append(tType.value)  # 代数关系,求值
+            target = self.problem.get_sym_of_attr((aType.T.name, str(format(self.problem.target_count))))
             self.problem.target.append([target, target - self._generate_expr(fl[1]), None, None])  # 求解目标 辅助方程 目标值 前提
 
     def solve(self):
@@ -262,17 +310,17 @@ class Solver:
         self._solve_equations()  # 求解问题的方程组
 
         for i in range(self.problem.target_count):
-            if self.problem.target_type[i] is TargetType.relation:  # 关系
+            if self.problem.target_type[i] is tType.relation:  # 关系
                 if self.problem.target[i][1] in self.problem.relations[self.problem.target[i][0]].items:
                     self.problem.target_solved[i] = "solved"
-            elif self.problem.target_type[i] is TargetType.entity:  # 实体
+            elif self.problem.target_type[i] is tType.entity:  # 实体
                 if self.problem.target[i][1] in self.problem.entities[self.problem.target[i][0]].items:
                     self.problem.target_solved[i] = "solved"
             else:  # 数量型
                 self.problem.target[i][2], self.problem.target[i][3] = self._solve_targets(self.problem.target[i][0],
                                                                                            self.problem.target[i][1])
                 if self.problem.target[i][2] is not None:
-                    if self.problem.target_type[i] is TargetType.value:  # 数值型，有解
+                    if self.problem.target_type[i] is tType.value:  # 数值型，有解
                         self.problem.target_solved[i] = "solved"
                     elif self.problem.target[i][2] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"

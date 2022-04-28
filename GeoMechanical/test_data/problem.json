@@ -116,5 +116,23 @@
 		"theorem_seqs": [
 			6
 		]
+	},
+	"7": {
+		"problem_index": 7,
+		"annotation": "测试表达式解析",
+		"text": "如图所示，两个△全等，求y的值",
+		"image": "7.png",
+		"formal_languages": [
+			"Congruent(Triangle(RST),Triangle(XYZ))",
+			"Equal(Length(Line(TR)),x+21)",
+			"Equal(Degree(Angle(TRS)),4*y-10)",
+			"Equal(Degree(Angle(ZXY)),3*y+5)",
+			"Equal(Length(Line(ZX)),2*x-14)",
+			"Find(x)",
+			"Find(y)"
+		],
+		"theorem_seqs": [
+			6
+		]
 	}
 }

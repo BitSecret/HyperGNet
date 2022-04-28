@@ -62,8 +62,12 @@ class RegularExpression:
     idt_expr = OneOrMore(float_idt | int_idt | alpha_idt | operator_idt)
 
     operator = ["+", "-", "*", "/", "^", "{", "}", "@", "#", "$", "~"]
-    stack_priority = {}
-    outside_priority = {}
+    stack_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
+                      "{": 0, "}": None,
+                      "@": 4, "#": 4, "$": 4, "~": 0}
+    outside_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
+                        "{": 5, "}": 0,
+                        "@": 4, "#": 4, "$": 4, "~": 0}
 
     @staticmethod
     def get_expr(expr):
