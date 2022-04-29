@@ -1,7 +1,8 @@
 from utility import get_all_representation_of_shape
 from facts import AttributionType as aType
 from facts import Condition
-from sympy import symbols
+from sympy import symbols, solve, Float
+from func_timeout import func_set_timeout
 
 
 class ProblemLogic:
@@ -113,6 +114,7 @@ class ProblemLogic:
         self.sym_of_attr = {}  # (ConditionType, "name"): sym
         self.value_of_sym = {}  # sym: value
         self.equations = Condition()  # 代数方程
+        self.solved = True    # 记录有没有求解过方程，避免重复计算
 
         """----------解题目标----------"""
         self.target_count = 0  # 目标个数
@@ -138,7 +140,7 @@ class ProblemLogic:
     def define_angle(self, angle, premise, theorem, root=True):  # 角
         if self.angle.add(angle, premise, theorem):
             if root:
-                premise = self.angle.indexes[angle]
+                premise = [self.angle.indexes[angle]]
             self.angle.add(angle[::-1], premise, theorem)    # 一个角两种表示
             self.define_line(angle[0:2], premise, -2, False)  # 构成角的两个线
             self.define_line(angle[1:3], premise, -2, False)
@@ -354,6 +356,16 @@ class ProblemLogic:
             self.point_on_line.add((point, line[::-1]), premise, theorem)  # 点在线上两种表示
             self.point.add(point, premise, -2)  # 定义点和线
             self.define_line(line, premise, -2, False)
+            if point != line[0] and point != line[1]:
+                self.define_line(line[0] + point, premise, -2, False)    # 定义子线段
+                self.define_line(line[1] + point, premise, -2, False)
+                self.define_parallel((line, line[0] + point), premise, -2, False)    # 定义平行
+                self.define_parallel((line, point + line[1]), premise, -2, False)
+                self.define_parallel((line[0] + point, point + line[1]), premise, -2, False)
+                l_1 = self.get_sym_of_attr((aType.LL.name, line[0] + point))    # 长度和
+                l_2 = self.get_sym_of_attr((aType.LL.name, point + line[1]))
+                l_3 = self.get_sym_of_attr((aType.LL.name, line))
+                self.define_equation(l_3 - l_1 - l_2, premise, -2)
             return True
         return False
 
@@ -472,9 +484,14 @@ class ProblemLogic:
 
     def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
         point, line1, line2 = ordered_pair
-        if self.perpendicular.add(ordered_pair, premise, theorem):
+        if point == "$":    # 处理$情况
+            if line1[0] == line2[0] or line1[0] == line2[1]:
+                point = line1[0]
+            elif line1[1] == line2[0] or line1[1] == line2[1]:
+                point = line1[1]
+        if self.perpendicular.add((point, line1, line2), premise, theorem):
             if root:
-                premise = [self.perpendicular.indexes[ordered_pair]]
+                premise = [self.perpendicular.indexes[(point, line1, line2)]]
             self.perpendicular.add((point, line2[::-1], line1), premise, -2)  # 垂直有4种表示
             self.perpendicular.add((point, line1[::-1], line2[::-1]), premise, -2)
             self.perpendicular.add((point, line2, line1[::-1]), premise, -2)
@@ -707,7 +724,10 @@ class ProblemLogic:
     """------------define Equation------------"""
 
     def define_equation(self, equation, premise, theorem):
-        return self.equations.add(equation, premise, theorem)
+        if self.equations.add(equation, premise, theorem):
+            self.solved = False
+            return True
+        return False
 
     """------------Attr's Symbol------------"""
 
@@ -747,16 +767,35 @@ class Problem(ProblemLogic):
         self.formal_languages = formal_languages
         self.theorem_seqs = theorem_seqs
 
-    def find_all_triangle(self):  # 通过line构造所有的三角形 还没完成呢
-        for line1 in self.line.items:
+    def find_all_triangle(self):  # 通过line构造所有的三角形
+        i = 0
+        while i < len(self.line.items):
+            line1 = self.line.items[i]
             for line2 in self.line.items:
                 line3 = line2[1] + line1[0]
-                if line1[1] == line2[0] and line3 in self.line.items:
-                    self.define_triangle(line1 + line2[0],
+                if line1[1] == line2[0] and line3 in self.line.items:    # 若三条线首尾相连
+                    self.define_triangle(line1 + line2[1],
                                          [self.line.indexes[line1], self.line.indexes[line2], self.line.indexes[line3]],
                                          -2)
+            i = i + 2
 
-    def show_problem(self):
+    def solve_equations(self):    # 求解方程，并保存能解出来的值
+        if self.solved:    # 方程没有更新，就不用重复求解了
+            return
+
+        result = solve(self.equations.items)  # 求解equation
+        if len(result) == 0:  # 没有解，返回
+            return
+        if isinstance(result, list):  # 解不唯一，选择第一个
+            result = result[0]
+
+        for attr_var in result.keys():  # 遍历所有的解
+            if isinstance(result[attr_var], Float):  # 如果解是实数，保存
+                self.value_of_sym[attr_var] = abs(float(result[attr_var]))
+
+        self.solved = True
+
+    def show(self):
         # Formal Language
         print("\033[32mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
@@ -774,17 +813,17 @@ class Problem(ProblemLogic):
             if len(self.entities[entity].items) > 0:
                 print("{}:".format(entity))
                 for item in self.entities[entity].items:
-                    print("{0:^6}{1:^15}{2:^6}{3:^6}".format(self.entities[entity].indexes[item],
-                                                             item,
-                                                             str(self.entities[entity].premises[item]),
-                                                             self.entities[entity].theorems[item]))
+                    print("{0:^6}{1:^15}{2:^25}{3:^6}".format(self.entities[entity].indexes[item],
+                                                              item,
+                                                              str(self.entities[entity].premises[item]),
+                                                              self.entities[entity].theorems[item]))
         # Logic-Relation
         print("\033[33mRelations:\033[0m")
         for relation in self.relations.keys():
             if len(self.relations[relation].items) > 0:
                 print("{}:".format(relation))
                 for item in self.relations[relation].items:
-                    print("{0:^6}{1:^25}{2:^15}{3:^6}".format(self.relations[relation].indexes[item],
+                    print("{0:^6}{1:^25}{2:^25}{3:^6}".format(self.relations[relation].indexes[item],
                                                               str(item),
                                                               str(self.relations[relation].premises[item]),
                                                               self.relations[relation].theorems[item]))
@@ -799,10 +838,10 @@ class Problem(ProblemLogic):
             print(self.value_of_sym[sym])
         print("\033[33mEquations:\033[0m")
         for equation in self.equations.items:
-            print("{0:^6}{1:^40}{2:^6}{3:^6}".format(self.equations.indexes[equation],
-                                                     str(equation),
-                                                     str(self.equations.premises[equation]),
-                                                     self.equations.theorems[equation]))
+            print("{0:^6}{1:^40}{2:^25}{3:^6}".format(self.equations.indexes[equation],
+                                                      str(equation),
+                                                      str(self.equations.premises[equation]),
+                                                      self.equations.theorems[equation]))
 
         # target
         print("\033[34mTarget Count:\033[0m", end=" ")

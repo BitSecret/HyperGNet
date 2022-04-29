@@ -1,4 +1,7 @@
 from sympy import *
+import json
+test_define_file = "./test_data/test_define.json"
+test_problem_file = "./test_data/problem.json"
 
 
 def solve_test():
@@ -117,6 +120,30 @@ def test_list(x):    # 解析表达式为list形式，方便转化为sym体系�
     print(b)
     print(c)
 
+
+def load_data(problems_path):  # 读取json数据并解析成列表
+    problem_data = json.load(open(problems_path, "r", encoding="utf-8"))  # 文本 Formal Language
+    return list(problem_data.values())
+
+
+def test_define():
+    data = load_data(test_define_file)
+    for i in range(0, len(data)):
+        try:
+            solver = Solver(data[i]["problem_index"], data[i]["formal_languages"], data[i]["theorem_seqs"])
+            solver.problem.show_problem()
+        except Exception as e:
+            print(e)
+        print()
+        if (i + 1) % 20 == 0:
+            a = input("输入1继续执行：")
+
+
+def test_problem():
+    data = load_data(test_problem_file)[1]
+    solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
+    solver.solve()
+    solver.problem.show_problem()
 
 test_list((1, 2, 3))
 

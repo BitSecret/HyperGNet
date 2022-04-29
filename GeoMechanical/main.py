@@ -1,43 +1,48 @@
 import json
+import time
+import traceback
+import func_timeout
 from solver import Solver
+test_g3k_tri_file = "F:/PythonProject/geo3k_trans_data/data_tri.json"
 
 
-def main():
-    # test_define()
-    test_problem()
+def save_data(data_json):
+    with open(test_g3k_tri_file, "w") as f:
+        json.dump(data_json, f)
 
 
-def load_data(problems_path):  # 读取json数据并解析成列表
-    problem_data = json.load(open(problems_path, "r", encoding="utf-8"))  # 文本 Formal Language
-    return list(problem_data.values())
-
-
-def test_define():
-    problems_path = "./test_data/test_define.json"
-    data = load_data(problems_path)
-    for i in range(0, len(data)):
-        try:
-            solver = Solver(data[i]["problem_index"], data[i]["formal_languages"], data[i]["theorem_seqs"])
-            # solver.solve()
-            solver.problem.show_problem()
-        except Exception as e:
-            print(e)
-        print()
-        if (i + 1) % 20 == 0:
-            a = input("输入1继续执行：")
-
-
-def test_problem():
-    problems_path = "./test_data/problem.json"
-    data = load_data(problems_path)[1]
-    solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
+def test_g3k_tri():
+    problem_index = "2"
+    problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
+    solver = Solver(problems["problem_id"], problems["formal_languages"], problems["theorem_seqs"])
     solver.solve()
-    solver.problem.show_problem()
+    solver.problem.show()
 
 
-def test_g3k():
-    pass
+def test_g3k_simple():
+    problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))
+    i = 0
+    time_start = time.time()
+    for key in problems.keys():
+        if problems[key]["completeness"] == "True":
+            try:
+                solver = Solver(problems[key]["problem_id"],
+                                problems[key]["formal_languages"],
+                                [5, 3, 1])
+                solver.solve()
+            except func_timeout.exceptions.FunctionTimedOut:    # 求解超时
+                pass
+            except Exception:    # 其他错误
+                pass
+            else:
+                if solver.problem.target_solved[0] == "solved":
+                    problems[key]["theorem_seqs"] = [5, 3, 1]
+                    solver.problem.show()
+                    i = i + 1
+    print("总时间花费: {:.6f}".format(time.time() - time_start))
+    print("解题成功数: {}".format(i))
+    save_data(problems)
 
 
 if __name__ == "__main__":
-    main()
+    test_g3k_tri()

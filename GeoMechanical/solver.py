@@ -5,6 +5,8 @@ from facts import AttributionType as aType
 from facts import TargetType as tType
 from sympy import solve, Float, sin, cos, tan
 from utility import PreParse as preP
+import time
+from func_timeout import func_set_timeout
 
 """后面改进
 1.方程式求解问题：①每次求解后要不要简化方程（分为已解决的和未解决的）②解方程的前提条件（最小可求解方程组），如何找出来
@@ -14,6 +16,7 @@ from utility import PreParse as preP
 class Solver:
 
     def __init__(self, problem_index, formal_languages, theorem_seqs=None):
+        self.last_time = time.time()
         self.problem = Problem(problem_index, formal_languages, theorem_seqs)  # 题目
 
         # 使用字典映射parse函数，代替if-else，加速查找。字典采用hash映射，查找复杂读为O(1)。
@@ -71,14 +74,18 @@ class Solver:
         # 定理映射
         self.theorem_map = {1: Theorem.theorem_1_pythagorean,
                             2: Theorem.theorem_2_pythagorean_inverse,
-                            3: Theorem.theorem_3_transitivity_of_parallel,
-                            4: Theorem.theorem_4_similar_triangle,
-                            5: Theorem.theorem_5_similar_triangle_inverse,
-                            6: Theorem.theorem_6_congruent_triangle,
-                            7: Theorem.theorem_7_congruent_triangle_inverse}
+                            3: Theorem.theorem_3_right_triangle_determine,
+                            4: Theorem.theorem_4_transitivity_of_parallel,
+                            5: Theorem.theorem_5_transitivity_of_perpendicular,
+                            6: Theorem.theorem_6_similar_triangle,
+                            7: Theorem.theorem_7_similar_triangle_inverse,
+                            8: Theorem.theorem_8_congruent_triangle,
+                            9: Theorem.theorem_9_congruent_triangle_inverse,
+                            10: Theorem.theorem_10_perimeter_of_shape}
 
         # 解析形式化语句到logic形式
         self.parse()
+        self.time_cons("parse fl")    # 耗时
 
     def parse(self):
         fls = preP.pre_parse_fls(copy.copy(self.problem.formal_languages))
@@ -93,44 +100,62 @@ class Solver:
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
             if fl[1][0] == "Line":
+                self.problem.define_line(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.LL.name, fl[1][1]))
             else:
+                self.problem.define_arc(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.LA.name, fl[1][1]))
         elif fl[0] == "Degree":
             if fl[1][0] == "Angle":
+                self.problem.define_angle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.DA.name, fl[1][1]))
             else:
+                self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.DS.name, fl[1][1]))
         elif fl[0] == "Radius":
             if fl[1][0] == "Arc":
+                self.problem.define_arc(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.RA.name, fl[1][1]))
             elif fl[1][0] == "Circle":
+                self.problem.define_circle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.RC.name, fl[1][1]))
             else:
+                self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.RS.name, fl[1][1]))
         elif fl[0] == "Diameter":
+            self.problem.define_circle(fl[1][1], [-1], -1)
             return self.problem.get_sym_of_attr((aType.DC.name, fl[1][1]))
         elif fl[0] == "Perimeter":
             if fl[1][0] == "Triangle":
+                self.problem.define_triangle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
+                self.problem.define_circle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
+                self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
+                self.problem.define_quadrilateral(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PQ.name, fl[1][1]))
             else:
+                self.problem.define_polygon(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PP.name, fl[1][1]))
         elif fl[0] == "Area":
             if fl[1][0] == "Triangle":
+                self.problem.define_triangle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AT.name, fl[1][1]))
             elif fl[1][0] == "Circle":
+                self.problem.define_circle(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AC.name, fl[1][1]))
             elif fl[1][0] == "Sector":
+                self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
+                self.problem.define_quadrilateral(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AQ.name, fl[1][1]))
             else:
+                self.problem.define_polygon(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AP.name, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
@@ -238,11 +263,14 @@ class Solver:
                 self.problem.target_type.append(tType.relation)
             self.problem.target.append([fl[0], fl[1]])
 
+    @func_set_timeout(10)    # 限时10s
     def solve(self):
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
             self.theorem_map[theorem](self.problem)
+            self.time_cons("apply theorem {}".format(theorem))  # 耗时
 
-        self._solve_equations()  # 求解问题的方程组
+        self.problem.solve_equations()  # 求解问题的方程组
+        self.time_cons("solve equations")  # 耗时
 
         for i in range(self.problem.target_count):
             if self.problem.target_type[i] is tType.relation:  # 关系
@@ -260,15 +288,7 @@ class Solver:
                     elif self.problem.target[i][2] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"
 
-    def _solve_equations(self):  # 求解方程并保存结果
-        result = solve(self.problem.equations.items)  # 求解equation
-        if len(result) == 0:  # 没有解，返回
-            return
-        if isinstance(result, list):  # 解不唯一，选择第一个
-            result = result[0]
-        for attr_var in result.keys():  # 遍历所有的解
-            if isinstance(result[attr_var], Float):  # 如果解是实数，保存
-                self.problem.value_of_sym[attr_var] = abs(float(result[attr_var]))
+        self.time_cons("solve result")  # 耗时
 
     def _solve_targets(self, target, target_equation):  # 求解目标方程，返回目标值和前提
         self.problem.equations.items.append(target_equation)  # 将目标方程添加到方程组
@@ -286,4 +306,7 @@ class Solver:
 
         return None, None  # 无实数解，返回None
 
+    def time_cons(self, keyword):
+        print("\033[32m{}\033[0m time consuming:{:.6f}s".format(keyword, time.time() - self.last_time))
+        self.last_time = time.time()
     """------------auxiliary function------------"""

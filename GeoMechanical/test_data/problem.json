@@ -10,7 +10,7 @@
 			"Find(Parallel(Line(AB), Line(EF)))"
 		],
 		"theorem_seqs": [
-			3
+			4
 		]
 	},
 	"1": {
@@ -114,7 +114,7 @@
 			"Find(y)"
 		],
 		"theorem_seqs": [
-			6
+			7
 		]
 	},
 	"7": {
@@ -132,7 +132,7 @@
 			"Find(y)"
 		],
 		"theorem_seqs": [
-			6
+			7
 		]
 	}
 }
