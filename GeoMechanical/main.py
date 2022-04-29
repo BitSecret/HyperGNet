@@ -23,15 +23,20 @@ def test_define():
         except Exception as e:
             print(e)
         print()
-        a = input("输入1继续执行：")
+        if (i + 1) % 20 == 0:
+            a = input("输入1继续执行：")
 
 
 def test_problem():
     problems_path = "./test_data/problem.json"
-    data = load_data(problems_path)[7]
+    data = load_data(problems_path)[1]
     solver = Solver(data["problem_index"], data["formal_languages"], data["theorem_seqs"])
     solver.solve()
     solver.problem.show_problem()
+
+
+def test_g3k():
+    pass
 
 
 if __name__ == "__main__":

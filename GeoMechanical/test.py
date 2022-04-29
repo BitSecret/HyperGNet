@@ -1,9 +1,4 @@
 from sympy import *
-from problem import Problem
-from main import load_data
-from utility import RegularExpression as reE
-from facts import AttributionType
-from sympy import solve, Float, sin, cos, tan
 
 
 def solve_test():

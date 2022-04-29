@@ -717,9 +717,10 @@ class ProblemLogic:
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
             sym = symbols(attr[0].lower() + "_" + attr[1].lower())
-            self.value_of_sym[sym] = None
+            self.sym_of_attr[attr] = sym    # 符号
+            self.value_of_sym[sym] = None   # 值
 
-            # 一个图形性质所有的其他表示形式
+            # 其他表示形式
             if attr[0] == aType.LL.name \
                     or attr[0] == aType.PT.name \
                     or attr[0] == aType.PQ.name \
@@ -729,11 +730,12 @@ class ProblemLogic:
                     or attr[0] == aType.AP.name:
                 for all_form in get_all_representation_of_shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
-            else:
-                self.sym_of_attr[attr] = sym
+            if attr[0] == aType.DA.name:
+                self.sym_of_attr[(attr[0], attr[1][::-1])] = sym
 
-        else:
-            sym = self.sym_of_attr[attr]  # 有符号就返回符号
+        else:  # 有符号就返回符号
+            sym = self.sym_of_attr[attr]
+
         return sym
 
 
