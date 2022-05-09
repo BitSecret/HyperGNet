@@ -4,11 +4,11 @@ our_path = "F:/PythonProject/geo3k_trans_data/"
 
 
 def load_data():
-    return json.load(open(our_path + "data.json", "r", encoding="utf-8"))
+    return json.load(open(our_path + "data_tri.json", "r", encoding="utf-8"))
 
 
 def save_data(data_json):
-    with open(our_path + "data.json", "w") as f:
+    with open(our_path + "data_tri.json", "w") as f:
         json.dump(data_json, f)
 
 
@@ -106,7 +106,7 @@ def main():
 
     # show_fl(data_json)
     show_answer(data_json)
-    
+
     # save_data(data_json)
 
 

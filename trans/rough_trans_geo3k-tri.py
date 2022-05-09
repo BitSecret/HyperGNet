@@ -113,7 +113,7 @@ def main():
             data_json[str(count)] = data_json_unit
             count = count + 1
 
-    with open(our_path + "data.json", "w") as f:
+    with open(our_path + "data_tri.json", "w") as f:
         json.dump(data_json, f)
 
 

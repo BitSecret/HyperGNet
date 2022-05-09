@@ -134,5 +134,40 @@
 		"theorem_seqs": [
 			7
 		]
+	},
+	"8": {
+		"problem_index": 8,
+		"annotation": "构造性作图测试1",
+		"text": "",
+		"image": "8.png",
+		"formal_languages": [
+			"Triangle(EAB)",
+			"Triangle(EBC)",
+			"Triangle(ECD)",
+			"Triangle(EDF)",
+			"Triangle(FDG)",
+			"Collinear(ABCD)",
+			"Collinear(GFE)",
+			"Perpendicular(Point(C),Line(CD),Line(EC))",
+			"Perpendicular(Point(D),Line(DG),Line(EG))",
+			"Perpendicular(Point(F),Line(FE),Line(DF))"
+		],
+		"theorem_seqs": []
+	},
+	"9": {
+		"problem_index": 9,
+		"annotation": "构造性作图测试2",
+		"text": "",
+		"image": "9.png",
+		"formal_languages": [
+			"Congruent(Triangle(RST),Triangle(XYZ))",
+			"Equal(Length(Line(TR)),x+21)",
+			"Equal(Degree(Angle(TRS)),4*y-10)",
+			"Equal(Degree(Angle(ZXY)),3*y+5)",
+			"Equal(Length(Line(ZX)),2*x-14)",
+			"Find(x)",
+			"Find(y)"
+		],
+		"theorem_seqs": []
 	}
 }

@@ -12,37 +12,36 @@ def save_data(data_json):
 
 
 def test_g3k_tri():
-    problem_index = "2"
-    problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
-    solver = Solver(problems["problem_id"], problems["formal_languages"], problems["theorem_seqs"])
+    solver = Solver()
+    while True:
+        problem_index = input("input problem id:")
+        try:
+            problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
+            solver.new_problem(problems["problem_id"], problems["formal_languages"], problems["theorem_seqs"])
+            solver.solve()
+            answer = solver._parse_expr(problems["problem_answer"])
+        except func_timeout.exceptions.FunctionTimedOut:  # 求解超时
+            print("求解超时")
+            solver.problem.show()
+            print()
+        except Exception as e:  # 其他错误
+            print(traceback.format_exc())
+            print()
+        else:
+            solver.problem.show()
+            print("\033[32mcorrect answer: \033[0m{}".format(answer))
+            print()
+
+
+def theorem_test():
+    solver = Solver()
+    fl = ["Perpendicular(Point(S),Line(TS),Line(RS))"]
+
+    solver.new_problem(0, fl, [])    # 定理10测试
     solver.solve()
     solver.problem.show()
 
 
-def test_g3k_simple():
-    problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))
-    i = 0
-    time_start = time.time()
-    for key in problems.keys():
-        if problems[key]["completeness"] == "True":
-            try:
-                solver = Solver(problems[key]["problem_id"],
-                                problems[key]["formal_languages"],
-                                [5, 3, 1])
-                solver.solve()
-            except func_timeout.exceptions.FunctionTimedOut:    # 求解超时
-                pass
-            except Exception:    # 其他错误
-                pass
-            else:
-                if solver.problem.target_solved[0] == "solved":
-                    problems[key]["theorem_seqs"] = [5, 3, 1]
-                    solver.problem.show()
-                    i = i + 1
-    print("总时间花费: {:.6f}".format(time.time() - time_start))
-    print("解题成功数: {}".format(i))
-    save_data(problems)
-
-
 if __name__ == "__main__":
     test_g3k_tri()
+    # theorem_test()

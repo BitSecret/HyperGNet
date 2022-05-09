@@ -1,19 +1,59 @@
 from pyparsing import oneOf, Combine, alphanums, Forward, Group, Word, Literal, ZeroOrMore, nums, alphas, OneOrMore
 
 
-def get_all_representation_of_shape(shape):
-    shape_inverse = shape[::-1]
-    results = []
-    length = len(shape)
-    for i in range(length):
-        result = ""
-        result_inverse = ""
-        for j in range(length):
-            result += shape[(i + j) % length]
-            result_inverse += shape_inverse[(i + j) % length]
-        results.append(result)
-        results.append(result_inverse)
-    return results
+class Representation:
+
+    count_line = 2
+    count_angle = 2
+    count_tri = 6    # 三角形
+    count_rt_tri = 2    # 直角三角形
+    count_iso_tri = 2    # 等腰三角形
+    count_qua = 8
+    count_parallel = 4
+    count_perpendicular = 4
+    count_congruent = count_tri    # 全等
+    count_similar = count_tri    # 相似
+
+    @staticmethod
+    def line(entity):
+        return [entity, entity[::-1]]
+
+    @staticmethod
+    def angle(entity):
+        return [entity, entity[::-1]]
+
+    @staticmethod
+    def shape(entity):
+        entity_inverse = entity[::-1]
+        results = []
+        length = len(entity)
+        for i in range(length):
+            result = ""
+            result_inverse = ""
+            for j in range(length):
+                result += entity[(i + j) % length]
+                result_inverse += entity_inverse[(i + j) % length]
+            results.append(result)
+            results.append(result_inverse)
+        return results
+
+    @staticmethod
+    def parallel(relation):
+        line1, line2 = relation
+        results = [(line1, line2),
+                   (line1[::-1], line2[::-1]),
+                   (line2, line1),
+                   (line2[::-1], line1[::-1])]
+        return results
+
+    @staticmethod
+    def perpendicular(relation):
+        line1, line2 = relation
+        results = [(line1, line2),
+                   (line2, line1[::-1]),
+                   (line1[::-1], line2[::-1]),
+                   (line2[::-1], line1)]
+        return results
 
 
 class PreParse:
@@ -24,7 +64,7 @@ class PreParse:
     binary_relation = ['PointOnLine', 'PointOnArc', 'PointOnCircle', 'Midpoint', 'Circumcenter', 'Incenter', 'Centroid',
                        'Orthocenter', 'Parallel', 'BisectsAngle', 'DisjointLineCircle', 'DisjointCircleCircle',
                        'Median', 'HeightOfTriangle', 'HeightOfTrapezoid', 'Contain', 'CircumscribedToTriangle',
-                       'Congruent', 'Similar']
+                       'Congruent', 'Similar', 'Chord']
     ternary_relation = ['Perpendicular', 'PerpendicularBisector', 'TangentLineCircle', 'TangentCircleCircle',
                         'IntersectLineLine', 'InternallyTangent']
     quaternion_relation = ["IntersectLineCircle", "IntersectCircleCircle"]

@@ -1,7 +1,7 @@
-from utility import get_all_representation_of_shape
+from utility import Representation as rep
 from facts import AttributionType as aType
 from facts import Condition
-from sympy import symbols, solve, Float
+from sympy import symbols, solve, Float, pi
 from func_timeout import func_set_timeout
 
 
@@ -81,6 +81,7 @@ class ProblemLogic:
         self.inscribed_in_triangle = Condition()
         self.congruent = Condition()
         self.similar = Condition()
+        self.chord = Condition()
         self.relations = {"PointOnLine": self.point_on_line,
                           "PointOnArc": self.point_on_arc,
                           "PointOnCircle": self.point_on_circle,
@@ -108,13 +109,14 @@ class ProblemLogic:
                           "CircumscribedToTriangle": self.circumscribed_to_triangle,
                           "InscribedInTriangle": self.inscribed_in_triangle,
                           "Congruent": self.congruent,
-                          "Similar": self.similar}
+                          "Similar": self.similar,
+                          "Chord": self.chord}
 
         """------------Algebraic Relation------------"""
         self.sym_of_attr = {}  # (ConditionType, "name"): sym
         self.value_of_sym = {}  # sym: value
         self.equations = Condition()  # 代数方程
-        self.solved = True    # 记录有没有求解过方程，避免重复计算
+        self.solved = True  # 记录有没有求解过方程，避免重复计算
 
         """----------解题目标----------"""
         self.target_count = 0  # 目标个数
@@ -141,7 +143,7 @@ class ProblemLogic:
         if self.angle.add(angle, premise, theorem):
             if root:
                 premise = [self.angle.indexes[angle]]
-            self.angle.add(angle[::-1], premise, theorem)    # 一个角两种表示
+            self.angle.add(angle[::-1], premise, theorem)  # 一个角两种表示
             self.define_line(angle[0:2], premise, -2, False)  # 构成角的两个线
             self.define_line(angle[1:3], premise, -2, False)
             return True
@@ -162,7 +164,7 @@ class ProblemLogic:
                 premise = [self.shape.indexes[shape]]
             for point in shape:  # 添加构成shape的点。因为shape形状不确定，只能知道有这些点。
                 self.point.add(point, premise, -2)
-            shape_all = get_all_representation_of_shape(shape)  # n种表示
+            shape_all = rep.shape(shape)  # n种表示
             for shape in shape_all:
                 self.shape.add(shape, premise, -2)
 
@@ -190,8 +192,8 @@ class ProblemLogic:
         if self.triangle.add(triangle, premise, theorem):
             if root:
                 premise = [self.triangle.indexes[triangle]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 6种表示
-            for triangle in triangle_all:
+
+            for triangle in rep.shape(triangle):  # 所有表示形式
                 self.triangle.add(triangle, premise, -2)
                 self.define_angle(triangle, premise, -2, False)  # 定义3个角
             return True
@@ -219,7 +221,7 @@ class ProblemLogic:
         if self.regular_triangle.add(triangle, premise, theorem):
             if root:
                 premise = [self.regular_triangle.indexes[triangle]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 6种表示
+            triangle_all = rep.shape(triangle)  # 6种表示
             for triangle in triangle_all:
                 self.regular_triangle.add(triangle, premise, -2)
                 self.define_isosceles_triangle(triangle, premise, -2, False)  # 等边也是等腰
@@ -230,7 +232,7 @@ class ProblemLogic:
         if self.quadrilateral.add(shape, premise, theorem):
             if root:
                 premise = [self.quadrilateral.indexes[shape]]
-            quadrilateral_all = get_all_representation_of_shape(shape)  # 8种表示
+            quadrilateral_all = rep.shape(shape)  # 8种表示
             for quadrilateral in quadrilateral_all:
                 self.quadrilateral.add(quadrilateral, premise, -2)
                 self.define_angle(quadrilateral[0:3], premise, -2, False)  # 四边形由角组成
@@ -265,7 +267,7 @@ class ProblemLogic:
         if self.parallelogram.add(shape, premise, theorem):
             if root:
                 premise = [self.parallelogram.indexes[shape]]
-            parallelogram_all = get_all_representation_of_shape(shape)  # 8种表示
+            parallelogram_all = rep.shape(shape)  # 8种表示
             for parallelogram in parallelogram_all:
                 self.parallelogram.add(parallelogram, premise, -2)
             self.define_trapezoid(shape, premise, -2, False)  # 平行四边形也是梯形
@@ -277,7 +279,7 @@ class ProblemLogic:
         if self.rectangle.add(shape, premise, theorem):
             if root:
                 premise = [self.rectangle.indexes[shape]]
-            rectangle_all = get_all_representation_of_shape(shape)  # 8种表示
+            rectangle_all = rep.shape(shape)  # 8种表示
             for rectangle in rectangle_all:
                 self.rectangle.add(rectangle, premise, -2)
             self.define_parallelogram(shape, premise, -2, False)  # 长方形也是平行四边形
@@ -302,7 +304,7 @@ class ProblemLogic:
         if self.rhombus.add(shape, premise, theorem):
             if root:
                 premise = [self.rhombus.indexes[shape]]
-            rhombus_all = get_all_representation_of_shape(shape)  # 8种表示
+            rhombus_all = rep.shape(shape)  # 8种表示
             for rhombus in rhombus_all:
                 self.rhombus.add(rhombus, premise, -2)
             self.define_parallelogram(shape, premise, -2, False)  # 菱形也是平行四边形
@@ -315,7 +317,7 @@ class ProblemLogic:
         if self.square.add(shape, premise, theorem):
             if root:
                 premise = [self.square.indexes[shape]]
-            square_all = get_all_representation_of_shape(shape)  # 8种表示
+            square_all = rep.shape(shape)  # 8种表示
             for square in square_all:
                 self.square.add(square, premise, -2)
             self.define_rectangle(shape, premise, -2, False)  # 正方形也是长方形
@@ -327,7 +329,7 @@ class ProblemLogic:
         if self.polygon.add(shape, premise, theorem):
             if root:
                 premise = [self.polygon.indexes[shape]]
-            polygon_all = get_all_representation_of_shape(shape)  # 所有表示
+            polygon_all = rep.shape(shape)  # 所有表示
             for polygon in polygon_all:
                 self.polygon.add(polygon, premise, -2)
                 self.define_angle(polygon[0:3], premise, -2, False)  # 由角组成
@@ -338,7 +340,7 @@ class ProblemLogic:
         if self.regular_polygon.add(shape, premise, theorem):
             if root:
                 premise = [self.regular_polygon.indexes[shape]]
-            polygon_all = get_all_representation_of_shape(shape)  # 所有表示
+            polygon_all = rep.shape(shape)  # 所有表示
             for polygon in polygon_all:
                 self.regular_polygon.add(polygon, premise, -2)
                 self.define_angle(polygon[0:3], premise, -2, False)  # 由角组成
@@ -357,12 +359,12 @@ class ProblemLogic:
             self.point.add(point, premise, -2)  # 定义点和线
             self.define_line(line, premise, -2, False)
             if point != line[0] and point != line[1]:
-                self.define_line(line[0] + point, premise, -2, False)    # 定义子线段
+                self.define_line(line[0] + point, premise, -2, False)  # 定义子线段
                 self.define_line(line[1] + point, premise, -2, False)
-                self.define_parallel((line, line[0] + point), premise, -2, False)    # 定义平行
+                self.define_parallel((line, line[0] + point), premise, -2, False)  # 定义平行
                 self.define_parallel((line, point + line[1]), premise, -2, False)
                 self.define_parallel((line[0] + point, point + line[1]), premise, -2, False)
-                l_1 = self.get_sym_of_attr((aType.LL.name, line[0] + point))    # 长度和
+                l_1 = self.get_sym_of_attr((aType.LL.name, line[0] + point))  # 长度和
                 l_2 = self.get_sym_of_attr((aType.LL.name, point + line[1]))
                 l_3 = self.get_sym_of_attr((aType.LL.name, line))
                 self.define_equation(l_3 - l_1 - l_2, premise, -2)
@@ -405,7 +407,7 @@ class ProblemLogic:
         if self.circumcenter.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.circumcenter.indexes[ordered_pair]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            triangle_all = rep.shape(triangle)  # 一个三角形三种表示
             for tri in triangle_all:
                 self.circumcenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
@@ -418,7 +420,7 @@ class ProblemLogic:
         if self.incenter.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.incenter.indexes[ordered_pair]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            triangle_all = rep.shape(triangle)  # 一个三角形三种表示
             for tri in triangle_all:
                 self.incenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
@@ -431,7 +433,7 @@ class ProblemLogic:
         if self.centroid.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.centroid.indexes[ordered_pair]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            triangle_all = rep.shape(triangle)  # 一个三角形三种表示
             for tri in triangle_all:
                 self.centroid.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
@@ -444,7 +446,7 @@ class ProblemLogic:
         if self.orthocenter.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.orthocenter.indexes[ordered_pair]]
-            triangle_all = get_all_representation_of_shape(triangle)  # 一个三角形三种表示
+            triangle_all = rep.shape(triangle)  # 一个三角形三种表示
             for tri in triangle_all:
                 self.orthocenter.add((point, tri), premise, -2)
             self.point.add(point, premise, -2)  # 定义点和三角形
@@ -484,7 +486,7 @@ class ProblemLogic:
 
     def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
         point, line1, line2 = ordered_pair
-        if point == "$":    # 处理$情况
+        if point == "$":  # 处理$情况
             if line1[0] == line2[0] or line1[0] == line2[1]:
                 point = line1[0]
             elif line1[1] == line2[0] or line1[1] == line2[1]:
@@ -496,6 +498,12 @@ class ProblemLogic:
             self.perpendicular.add((point, line1[::-1], line2[::-1]), premise, -2)
             self.perpendicular.add((point, line2, line1[::-1]), premise, -2)
             self.define_intersect_line_line((point, line1, line2), premise, -2, False)  # 垂直也是相交
+            if point != "$":  # 四个角为90°
+                angles = [line1[0] + point + line2[0], line2[0] + point + line1[1],
+                          line1[1] + point + line2[1], line2[1] + point + line1[0]]
+                for angle in angles:
+                    if angle[0] != angle[1] and angle[1] != angle[2] and angle[2] != angle[0]:
+                        self.define_equation(self.get_sym_of_attr((aType.DA.name, angle)) - pi / 2, premise, -2)
             return True
         return False
 
@@ -698,8 +706,8 @@ class ProblemLogic:
         if self.congruent.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.congruent.indexes[ordered_pair]]
-            triangle1_all = get_all_representation_of_shape(triangle1)  # 6种
-            triangle2_all = get_all_representation_of_shape(triangle2)
+            triangle1_all = rep.shape(triangle1)  # 6种
+            triangle2_all = rep.shape(triangle2)
             for i in range(len(triangle1_all)):
                 self.congruent.add((triangle1_all[i], triangle2_all[i]), premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
@@ -712,12 +720,23 @@ class ProblemLogic:
         if self.similar.add(ordered_pair, premise, theorem):
             if root:
                 premise = [self.similar.indexes[ordered_pair]]
-            triangle1_all = get_all_representation_of_shape(triangle1)  # 6种表示方式
-            triangle2_all = get_all_representation_of_shape(triangle2)
+            triangle1_all = rep.shape(triangle1)  # 6种表示方式
+            triangle2_all = rep.shape(triangle2)
             for i in range(len(triangle1_all)):
                 self.similar.add((triangle1_all[i], triangle2_all[i]), premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
+            return True
+        return False
+
+    def define_chord(self, ordered_pair, premise, theorem, root=True):  # 弦
+        line, circle = ordered_pair
+        if self.chord.add(ordered_pair, premise, theorem):
+            if root:
+                premise = [self.chord.indexes[ordered_pair]]
+            self.chord.add((line[::-1], circle), premise, -2)  # 两种表示
+            self.define_line(line, premise, -2, False)  # 定义实体
+            self.define_circle(circle, premise, -2, False)
             return True
         return False
 
@@ -736,9 +755,10 @@ class ProblemLogic:
             return symbols(attr[0].lower() + "_" + attr[1])
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
-            sym = symbols(attr[0].lower() + "_" + attr[1].lower())
-            self.sym_of_attr[attr] = sym    # 符号
-            self.value_of_sym[sym] = None   # 值
+            # sym = symbols(attr[0].lower() + "_" + attr[1].lower())
+            sym = symbols(attr[0].lower() + "_" + attr[1].lower(), positive=True)    # 属性值没有负数
+            self.sym_of_attr[attr] = sym  # 符号
+            self.value_of_sym[sym] = None  # 值
 
             # 其他表示形式
             if attr[0] == aType.LL.name \
@@ -748,7 +768,7 @@ class ProblemLogic:
                     or attr[0] == aType.AT.name \
                     or attr[0] == aType.AQ.name \
                     or attr[0] == aType.AP.name:
-                for all_form in get_all_representation_of_shape(attr[1]):
+                for all_form in rep.shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
             if attr[0] == aType.DA.name:
                 self.sym_of_attr[(attr[0], attr[1][::-1])] = sym
@@ -757,6 +777,121 @@ class ProblemLogic:
             sym = self.sym_of_attr[attr]
 
         return sym
+
+    """------------auxiliary function------------"""
+
+    def clean(self):
+        self.point = Condition()  # 点、线、角、弧
+        self.line = Condition()
+        self.angle = Condition()
+        self.arc = Condition()
+        self.shape = Condition()  # 形状
+        self.circle = Condition()  # 圆和扇形
+        self.sector = Condition()
+        self.triangle = Condition()  # 三角形
+        self.right_triangle = Condition()
+        self.isosceles_triangle = Condition()
+        self.regular_triangle = Condition()
+        self.quadrilateral = Condition()  # 四边形
+        self.trapezoid = Condition()
+        self.isosceles_trapezoid = Condition()
+        self.parallelogram = Condition()
+        self.rectangle = Condition()
+        self.kite = Condition()
+        self.rhombus = Condition()
+        self.square = Condition()
+        self.polygon = Condition()  # 多边形
+        self.regular_polygon = Condition()
+        self.entities = {"Point": self.point,
+                         "Line": self.line,
+                         "Angle": self.angle,
+                         "Arc": self.arc,
+                         "Shape": self.shape,
+                         "Circle": self.circle,
+                         "Sector": self.sector,
+                         "Triangle": self.triangle,
+                         "RightTriangle": self.right_triangle,
+                         "IsoscelesTriangle": self.isosceles_triangle,
+                         "RegularTriangle": self.regular_triangle,
+                         "Quadrilateral": self.quadrilateral,
+                         "Trapezoid": self.trapezoid,
+                         "IsoscelesTrapezoid": self.isosceles_trapezoid,
+                         "Parallelogram": self.parallelogram,
+                         "Rectangle": self.rectangle,
+                         "Kite": self.kite,
+                         "Rhombus": self.rhombus,
+                         "Square": self.square,
+                         "Polygon": self.polygon,
+                         "RegularPolygon": self.regular_polygon}
+
+        self.point_on_line = Condition()  # 点的关系
+        self.point_on_arc = Condition()
+        self.point_on_circle = Condition()
+        self.midpoint = Condition()
+        self.circumcenter = Condition()
+        self.incenter = Condition()
+        self.centroid = Condition()
+        self.orthocenter = Condition()
+        self.parallel = Condition()  # 线的关系
+        self.intersect = Condition()
+        self.perpendicular = Condition()
+        self.perpendicular_bisector = Condition()
+        self.bisects_angle = Condition()
+        self.disjoint_line_circle = Condition()
+        self.disjoint_circle_circle = Condition()
+        self.tangent_line_circle = Condition()
+        self.tangent_circle_circle = Condition()
+        self.intersect_line_circle = Condition()
+        self.intersect_circle_circle = Condition()
+        self.median = Condition()
+        self.height_triangle = Condition()
+        self.height_trapezoid = Condition()
+        self.internally_tangent = Condition()  # 图形的关系
+        self.contain = Condition()
+        self.circumscribed_to_triangle = Condition()
+        self.inscribed_in_triangle = Condition()
+        self.congruent = Condition()
+        self.similar = Condition()
+        self.chord = Condition()
+        self.relations = {"PointOnLine": self.point_on_line,
+                          "PointOnArc": self.point_on_arc,
+                          "PointOnCircle": self.point_on_circle,
+                          "Midpoint": self.midpoint,
+                          "Circumcenter": self.circumcenter,
+                          "Incenter": self.incenter,
+                          "Centroid": self.centroid,
+                          "Orthocenter": self.orthocenter,
+                          "Parallel": self.parallel,
+                          "Perpendicular": self.perpendicular,
+                          "PerpendicularBisector": self.perpendicular_bisector,
+                          "BisectsAngle": self.bisects_angle,
+                          "DisjointLineCircle": self.disjoint_line_circle,
+                          "DisjointCircleCircle": self.disjoint_circle_circle,
+                          "TangentLineCircle": self.tangent_line_circle,
+                          "TangentCircleCircle": self.tangent_circle_circle,
+                          "IntersectLineLine": self.intersect,
+                          "IntersectLineCircle": self.intersect_line_circle,
+                          "IntersectCircleCircle": self.intersect_circle_circle,
+                          "Median": self.median,
+                          "HeightTriangle": self.height_triangle,
+                          "HeightTrapezoid": self.height_trapezoid,
+                          "InternallyTangent": self.internally_tangent,
+                          "Contain": self.contain,
+                          "CircumscribedToTriangle": self.circumscribed_to_triangle,
+                          "InscribedInTriangle": self.inscribed_in_triangle,
+                          "Congruent": self.congruent,
+                          "Similar": self.similar,
+                          "Chord": self.chord}
+
+        self.sym_of_attr = {}  # (ConditionType, "name"): sym
+        self.value_of_sym = {}  # sym: value
+        self.equations = Condition()  # 代数方程
+        self.solved = True  # 记录有没有求解过方程，避免重复计算
+
+        self.target_count = 0  # 目标个数
+        self.target_type = []  # 解题目标的类型
+        self.target = []  # 解题目标
+        self.target_solved = []  # 条件求解情况
 
 
 class Problem(ProblemLogic):
@@ -767,26 +902,34 @@ class Problem(ProblemLogic):
         self.formal_languages = formal_languages
         self.theorem_seqs = theorem_seqs
 
+    def new_problem(self, problem_index, formal_languages, theorem_seqs):  # 新问题
+        self.problem_index = problem_index
+        self.formal_languages = formal_languages
+        self.theorem_seqs = theorem_seqs
+        self.clean()
+
     def find_all_triangle(self):  # 通过line构造所有的三角形
         i = 0
         while i < len(self.line.items):
             line1 = self.line.items[i]
             for line2 in self.line.items:
                 line3 = line2[1] + line1[0]
-                if line1[1] == line2[0] and line3 in self.line.items:    # 若三条线首尾相连
+                if line1[1] == line2[0] and line3 in self.line.items:  # 若三条线首尾相连
                     self.define_triangle(line1 + line2[1],
                                          [self.line.indexes[line1], self.line.indexes[line2], self.line.indexes[line3]],
                                          -2)
             i = i + 2
 
-    def solve_equations(self):    # 求解方程，并保存能解出来的值
-        if self.solved:    # 方程没有更新，就不用重复求解了
+    @func_set_timeout(10)  # 限时10s
+    def solve_equations(self):  # 求解方程，并保存能解出来的值
+        if self.solved:  # 方程没有更新，就不用重复求解了
             return
 
         result = solve(self.equations.items)  # 求解equation
         if len(result) == 0:  # 没有解，返回
             return
-        if isinstance(result, list):  # 解不唯一，选择第一个
+
+        if isinstance(result, list):  # 解不唯一
             result = result[0]
 
         for attr_var in result.keys():  # 遍历所有的解
@@ -794,6 +937,28 @@ class Problem(ProblemLogic):
                 self.value_of_sym[attr_var] = abs(float(result[attr_var]))
 
         self.solved = True
+
+    @func_set_timeout(10)  # 限时10s
+    def solve_targets(self, target, target_equation):  # 求解目标方程，返回目标值和前提
+        self.equations.items.append(target_equation)  # 将目标方程添加到方程组
+        # for i in self.problem.equations.items:
+        #     print(i)
+        # print()
+        result = solve(self.equations.items)  # 求解equation
+        for r in result:
+            print(r)
+        self.equations.items.remove(target_equation)  # 求解后，移除目标方程
+
+        if len(result) == 0:  # 没有解，返回None
+            return None, None
+
+        if isinstance(result, list):  # 解不唯一
+            result = result[0]
+
+        if target in result.keys() and isinstance(result[target], Float):
+            return abs(float(result[target])), [-3]  # 有实数解，返回解
+
+        return None, None  # 无实数解，返回None
 
     def show(self):
         # Formal Language
