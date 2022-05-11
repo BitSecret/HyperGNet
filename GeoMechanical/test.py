@@ -244,3 +244,42 @@ def test3():
 # a = symbols("x")
 # b = symbols("x")
 # print(a - b)
+
+# a, b, c = symbols("a b c")
+# f1 = [a + b - c]
+# f2 = [f1[0]]
+# f2.append(f1[0])
+# f1[0] = f1[0] + c
+# f2[0] = f2[0] - a
+# print(f1)
+# print(f2)
+
+# a = ["123", "456", "789"]
+# b = a
+# a[0] = "change"
+# print(a)
+# print(b)
+
+a, b, c = symbols("a b c")
+fl = a + b
+f2 = c
+
+print(fl.free_symbols.union(f2.free_symbols))
+print(fl.free_symbols.intersection(f2.free_symbols))
+for i in fl.free_symbols.union(f2.free_symbols):
+    print(i)
+print(type(fl.free_symbols))
+
+# a = [1]
+#
+#
+# for b in a:
+#     a.append(b + 1)
+#     if b == 5:
+#         break
+#
+# print(a)
+
+# a = [1, 2]
+# b = [3]
+# print(a + b)

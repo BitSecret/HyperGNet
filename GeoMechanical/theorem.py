@@ -8,7 +8,7 @@ class Theorem:
     """------------theorem------------"""
 
     # 凡是带有 inverse 和 determine 的，在定理应用前都需要扩充条件的操作
-    # hardcore版本，解题的可能性大一点，但是时间黑洞，轻易不要使用
+    # hardcore版本，解题的可能性大一点，但是时间黑洞，轻易不要使用（过时的版本，准备删去）
 
     @staticmethod
     def theorem_1_pythagorean(problem):
@@ -361,7 +361,7 @@ class Theorem:
                     known_count[j] += 1
                 if problem.value_of_sym[angle] is not None:
                     known_count[j] += 1
-                ratios.append(line / sin(angle))
+                ratios.append(line / sin(angle * pi / 180))
 
             for j in range(3):
                 if known_count[j] + known_count[(j + 1) % 3] == 3:
@@ -386,7 +386,8 @@ class Theorem:
                 b = problem.get_sym_of_attr((aType.LL.name, tri[(j + 1) % 3] + tri[(j + 2) % 3]))
                 c = problem.get_sym_of_attr((aType.LL.name, tri[(j + 2) % 3] + tri[j]))
                 angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
-                update = problem.define_equation(a ** 2 - b ** 2 - c ** 2 + 2 * b * c * cos(angle), index, 22) or update
+                equation = a ** 2 - b ** 2 - c ** 2 + 2 * b * c * cos(angle * pi / 180)
+                update = problem.define_equation(equation, index, 22) or update
 
             i = i + rep.count_tri  # 一个三角形多种表示
 

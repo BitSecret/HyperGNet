@@ -3,7 +3,8 @@ from problem import Problem
 from theorem import Theorem
 from facts import AttributionType as aType
 from facts import TargetType as tType
-from sympy import solve, Float, sin, cos, tan, pi
+from facts import EquationType as eType
+from sympy import sin, cos, tan, pi
 from utility import PreParse as pp
 import time
 from func_timeout import func_set_timeout
@@ -42,9 +43,11 @@ class Solver:
                             22: Theorem.theorem_22_cosine,
                             50: Theorem.theorem_50_perimeter_of_tri}
 
-    def new_problem(self, problem_index, formal_languages, theorem_seqs):    #
+    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs):    #
+        self.last_time = time.time()
+
         if self.problem is None:    # 第一次，初始化
-            self.problem = Problem(problem_index, formal_languages, theorem_seqs)  # 题目
+            self.problem = Problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs)  # 题目
             self.problem_define_map = {"Point": self.problem.define_point,
                                        "Line": self.problem.define_line,
                                        "Angle": self.problem.define_angle,
@@ -66,6 +69,7 @@ class Solver:
                                        "Square": self.problem.define_square,
                                        "Polygon": self.problem.define_polygon,
                                        "RegularPolygon": self.problem.define_regular_polygon,
+                                       "Collinear": self.problem.define_collinear,
                                        "PointOnLine": self.problem.define_point_on_line,
                                        "PointOnArc": self.problem.define_point_on_arc,
                                        "PointOnCircle": self.problem.define_point_on_circle,
@@ -97,21 +101,41 @@ class Solver:
                                        "InscribedInTriangle": self.problem.define_inscribed_in_triangle
                                        }
         else:
-            self.problem.new_problem(problem_index, formal_languages, theorem_seqs)
+            self.problem.new_problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs)
 
-        self.last_time = time.time()
         self.parse()    # 解析形式化语句到logic形式
-        self.time_cons("parse fl")  # 耗时
+        self.time_cons("init_problem, parse_and_expand_fl, first_solve")  # 初始化问题、解析语句、扩充语句和求解方程耗时
 
     def parse(self):
-        fls = pp.pre_parse_fls(copy.copy(self.problem.formal_languages))
-        for fl in fls:
+        """------构图语句------"""
+        construction_fls = pp.pre_parse_fls(copy.copy(self.problem.construction_fls))
+        for fl in construction_fls:
+            if fl[0] == "Triangle":    # 基本构图三角形
+                self.problem.define_triangle(fl[1], [-1], -1)
+            elif fl[0] == "Quadrilateral":    # 基本构图四边形
+                self.problem.define_triangle(fl[1], [-1], -1)
+            elif fl[0] == "Collinear":    # 共线
+                self.problem.define_collinear(fl[1], [-1], -1)
+
+        """------由构图语句扩展条件------"""
+        self.problem.find_all_triangle()
+        self.problem.angle_representation_alignment()
+        self.problem.find_all_angle_addition()
+        self.problem.find_all_line_addition()
+
+        """------题目条件------"""
+        text_fls = pp.pre_parse_fls(copy.copy(self.problem.text_fls))
+        image_fls = pp.pre_parse_fls(copy.copy(self.problem.image_fls))
+        for fl in text_fls + image_fls:
             if fl[0] == "Equal":    # 数量关系
-                self.problem.define_equation(self._generate_expr(fl), [-1], -1)
+                self.problem.define_equation(self._generate_expr(fl), eType.basic, [-1], -1)
             elif fl[0] == "Find":    # 解题目标
                 self._parse_find(fl[1])
             else:    # 实体定义、位置关系定义
                 self.problem_define_map[fl[0]](fl[1], [-1], -1)
+
+        """------求解初始方程------"""
+        self.problem.solve_equations()
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
@@ -124,7 +148,7 @@ class Solver:
         elif fl[0] == "Degree":
             if fl[1][0] == "Angle":
                 self.problem.define_angle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.DA.name, fl[1][1])) * 180 / pi  # 弧度制转角度制
+                return self.problem.get_sym_of_attr((aType.DA.name, fl[1][1]))
             else:
                 self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.DS.name, fl[1][1]))
@@ -280,15 +304,10 @@ class Solver:
             self.problem.target.append([fl[0], fl[1]])
 
     def solve(self):
-        self.problem.find_all_triangle()  # 条件扩充 找到所有的隐藏三角形
-        self.time_cons("expanding")  # 耗时
-
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
             self.theorem_map[theorem](self.problem)
-            self.time_cons("apply theorem {}".format(theorem))  # 耗时
-
-        # self.problem.solve_equations()  # 不用解方程，这里求解只是为了展示
-        # self.time_cons("solve equations")  # 耗时
+            self.problem.solve_equations()    # 求解定理添加的方程
+            self.time_cons("apply and solve theorem {}".format(theorem))  # 耗时
 
         for i in range(self.problem.target_count):
             if self.problem.target_type[i] is tType.relation:  # 关系
@@ -299,14 +318,13 @@ class Solver:
                     self.problem.target_solved[i] = "solved"
             else:  # 数量型
                 self.problem.target[i][2], self.problem.target[i][3] = \
-                    self.problem.solve_targets(self.problem.target[i][0], self.problem.target[i][1])
+                    self.problem.solve_equations(self.problem.target[i][0], self.problem.target[i][1])
                 if self.problem.target[i][2] is not None:
                     if self.problem.target_type[i] is tType.value:  # 数值型，有解
                         self.problem.target_solved[i] = "solved"
                     elif self.problem.target[i][2] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"
-
-        self.time_cons("solve result")  # 耗时
+            self.time_cons("solve target {}".format(i))  # 求解目标耗时
 
     """------------auxiliary function------------"""
     def time_cons(self, keyword):

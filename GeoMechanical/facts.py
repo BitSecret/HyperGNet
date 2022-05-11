@@ -20,6 +20,12 @@ class Condition:  # 条件
             return True
         return False
 
+    def clean(self):    # 更新问题
+        self.items = []  # 每一个条件
+        self.indexes = {}  # 每个条件的序号
+        self.premises = {}  # 推出条件需要的前提
+        self.theorems = {}  # 推出条件应用的定理
+
 
 class AttributionType(Enum):  # 属性的类型
     LL = 1  # LengthOfLine 线长度
@@ -51,3 +57,8 @@ class TargetType(Enum):    # 解题目标类型
     relation = 4    # 位置关系，联系
     symbol = 5    # 代数关系，符号形式，以后再实现
 
+
+class EquationType(Enum):    # 方程的类型
+    basic = 1      # 由构图语句和初始条件扩充来的方程
+    value = 2      # 已经求出的符号，用方程形式表示，便于求解后续方程
+    theorem = 3    # 定理得到的方程

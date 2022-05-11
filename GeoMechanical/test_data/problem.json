@@ -136,21 +136,25 @@
 		]
 	},
 	"8": {
-		"problem_index": 8,
+		"problem_id": 8,
 		"annotation": "构造性作图测试1",
 		"text": "",
 		"image": "8.png",
-		"formal_languages": [
+		"problem_answer": "0",
+		"construction_fls": [
 			"Triangle(EAB)",
 			"Triangle(EBC)",
 			"Triangle(ECD)",
 			"Triangle(EDF)",
 			"Triangle(FDG)",
 			"Collinear(ABCD)",
-			"Collinear(GFE)",
-			"Perpendicular(Point(C),Line(CD),Line(EC))",
-			"Perpendicular(Point(D),Line(DG),Line(EG))",
-			"Perpendicular(Point(F),Line(FE),Line(DF))"
+			"Collinear(GFE)"
+		],
+		"text_fls": [],
+		"image_fls": [
+			"Perpendicular(Point(C),Line(BD),Line(EC))",
+			"Perpendicular(Point(D),Line(DG),Line(ED))",
+			"Perpendicular(Point(F),Line(EG),Line(FD))"
 		],
 		"theorem_seqs": []
 	},

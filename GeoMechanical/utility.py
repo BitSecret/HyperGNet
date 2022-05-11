@@ -4,37 +4,25 @@ from pyparsing import oneOf, Combine, alphanums, Forward, Group, Word, Literal, 
 class Representation:
 
     count_line = 2
-    count_angle = 2
-    count_tri = 6    # 三角形
-    count_rt_tri = 2    # 直角三角形
-    count_iso_tri = 2    # 等腰三角形
-    count_qua = 8
+    count_angle = 1
+    count_tri = 3    # 三角形
+    count_rt_tri = 1    # 直角三角形
+    count_iso_tri = 1    # 等腰三角形
+    count_qua = 4
     count_parallel = 4
     count_perpendicular = 4
     count_congruent = count_tri    # 全等
     count_similar = count_tri    # 相似
 
     @staticmethod
-    def line(entity):
-        return [entity, entity[::-1]]
-
-    @staticmethod
-    def angle(entity):
-        return [entity, entity[::-1]]
-
-    @staticmethod
     def shape(entity):
-        entity_inverse = entity[::-1]
         results = []
         length = len(entity)
         for i in range(length):
             result = ""
-            result_inverse = ""
             for j in range(length):
                 result += entity[(i + j) % length]
-                result_inverse += entity_inverse[(i + j) % length]
             results.append(result)
-            results.append(result_inverse)
         return results
 
     @staticmethod
@@ -47,12 +35,12 @@ class Representation:
         return results
 
     @staticmethod
-    def perpendicular(relation):
-        line1, line2 = relation
-        results = [(line1, line2),
-                   (line2, line1[::-1]),
-                   (line1[::-1], line2[::-1]),
-                   (line2[::-1], line1)]
+    def intersect(relation):
+        point, line1, line2 = relation
+        results = [(point, line1, line2),
+                   (point, line2, line1[::-1]),
+                   (point, line1[::-1], line2[::-1]),
+                   (point, line2[::-1], line1)]
         return results
 
 
@@ -102,7 +90,7 @@ class PreParse:
             result = fl
         elif fl[0] == "Find":    # find，需要处理其子内容
             result.append(PreParse.pre_parse_fl(fl[1]))
-        elif fl[0] in PreParse.entity:    # 一元关系，不需要处理
+        elif fl[0] in PreParse.entity or fl[0] == "Collinear":    # 一元关系，不需要处理
             result = fl
         elif fl[0] in PreParse.binary_relation:    # 二元关系
             result.append(tuple([fl[1][1], fl[2][1]]))
@@ -159,3 +147,5 @@ class PreParse:
             fls[i] = PreParse.idt_fl.parseString(fls[i]).asList()
             fls[i] = PreParse.pre_parse_fl(fls[i])
         return fls
+
+

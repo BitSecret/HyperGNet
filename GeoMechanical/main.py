@@ -4,6 +4,8 @@ import traceback
 import func_timeout
 from solver import Solver
 test_g3k_tri_file = "F:/PythonProject/geo3k_trans_data/data_tri.json"
+test_problem_file = "F:/PythonProject/PGPS/GeoMechanical/test_data/problem.json"
+test_define_file = "F:/PythonProject/PGPS/GeoMechanical/test_data/test_define.json"
 
 
 def save_data(data_json):
@@ -42,6 +44,32 @@ def theorem_test():
     solver.problem.show()
 
 
+def test_problem():
+    solver = Solver()
+    problem_index = "8"
+    problems = json.load(open(test_problem_file, "r", encoding="utf-8"))[problem_index]
+    solver.new_problem(problems["problem_id"], problems["construction_fls"], problems["text_fls"],
+                       problems["image_fls"], problems["theorem_seqs"])
+    solver.problem.find_all_triangle()
+    solver.problem.angle_representation_alignment()
+    solver.problem.find_all_angle_addition()
+    solver.problem.find_all_line_addition()
+    # solver.solve()
+    print("\033[32mbasic_equations:\033[0m")
+    for i in solver.problem.basic_equations:
+        print(i)
+    # solver.problem.simplify_basic_equations()
+    print("\033[32mtheorem_equations:\033[0m")
+    for i in solver.problem.theorem_equations:
+        print(i)
+    print("\033[32mvalue_equations:\033[0m")
+    for i in solver.problem.value_equations:
+        print(i)
+
+    solver.problem.show()
+
+
 if __name__ == "__main__":
-    test_g3k_tri()
+    # test_g3k_tri()
     # theorem_test()
+    test_problem()
