@@ -46,25 +46,21 @@ def theorem_test():
 
 def test_problem():
     solver = Solver()
-    problem_index = "8"
-    problems = json.load(open(test_problem_file, "r", encoding="utf-8"))[problem_index]
+    problem_index = "0"
+    problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
     solver.new_problem(problems["problem_id"], problems["construction_fls"], problems["text_fls"],
                        problems["image_fls"], problems["theorem_seqs"])
-    solver.problem.find_all_triangle()
-    solver.problem.angle_representation_alignment()
-    solver.problem.find_all_angle_addition()
-    solver.problem.find_all_line_addition()
-    # solver.solve()
-    print("\033[32mbasic_equations:\033[0m")
-    for i in solver.problem.basic_equations:
-        print(i)
+    solver.solve()
+    # print("\033[32mbasic_equations:\033[0m")
+    # for i in solver.problem.basic_equations:
+    #     print(i)
     # solver.problem.simplify_basic_equations()
-    print("\033[32mtheorem_equations:\033[0m")
-    for i in solver.problem.theorem_equations:
-        print(i)
-    print("\033[32mvalue_equations:\033[0m")
-    for i in solver.problem.value_equations:
-        print(i)
+    # print("\033[32mtheorem_equations:\033[0m")
+    # for i in solver.problem.theorem_equations:
+    #     print(i)
+    # print("\033[32mvalue_equations:\033[0m")
+    # for i in solver.problem.value_equations:
+    #     print(i)
 
     solver.problem.show()
 

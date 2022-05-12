@@ -1,6 +1,7 @@
 from utility import Representation as rep
 from facts import AttributionType as aType
 from facts import EquationType as eType
+from facts import ConditionType as cType
 from facts import Condition
 from sympy import symbols, solve, Float
 from func_timeout import func_set_timeout
@@ -8,29 +9,33 @@ from func_timeout import func_set_timeout
 
 class ProblemLogic:
 
-    def __init__(self):
+    def __init__(self, problem_index):
+        Condition.index_count[problem_index] = 0    # 初始化 本问题的条件初始数量
+        Condition.conditions[problem_index] = {}    # 辅助数据结构，高性能解题时可删去
+        Condition.indexes[problem_index] = {}
+
         """-------------Entity-------------"""
-        self.point = Condition()  # 点、线、角、弧
-        self.line = Condition()
-        self.angle = Condition()
-        self.arc = Condition()
-        self.shape = Condition()  # 形状
-        self.circle = Condition()  # 圆和扇形
-        self.sector = Condition()
-        self.triangle = Condition()  # 三角形
-        self.right_triangle = Condition()
-        self.isosceles_triangle = Condition()
-        self.regular_triangle = Condition()
-        self.quadrilateral = Condition()  # 四边形
-        self.trapezoid = Condition()
-        self.isosceles_trapezoid = Condition()
-        self.parallelogram = Condition()
-        self.rectangle = Condition()
-        self.kite = Condition()
-        self.rhombus = Condition()
-        self.square = Condition()
-        self.polygon = Condition()  # 多边形
-        self.regular_polygon = Condition()
+        self.point = Condition(problem_index)  # 点、线、角、弧
+        self.line = Condition(problem_index)
+        self.angle = Condition(problem_index)
+        self.arc = Condition(problem_index)
+        self.shape = Condition(problem_index)  # 形状
+        self.circle = Condition(problem_index)  # 圆和扇形
+        self.sector = Condition(problem_index)
+        self.triangle = Condition(problem_index)  # 三角形
+        self.right_triangle = Condition(problem_index)
+        self.isosceles_triangle = Condition(problem_index)
+        self.regular_triangle = Condition(problem_index)
+        self.quadrilateral = Condition(problem_index)  # 四边形
+        self.trapezoid = Condition(problem_index)
+        self.isosceles_trapezoid = Condition(problem_index)
+        self.parallelogram = Condition(problem_index)
+        self.rectangle = Condition(problem_index)
+        self.kite = Condition(problem_index)
+        self.rhombus = Condition(problem_index)
+        self.square = Condition(problem_index)
+        self.polygon = Condition(problem_index)  # 多边形
+        self.regular_polygon = Condition(problem_index)
         self.entities = {"Point": self.point,
                          "Line": self.line,
                          "Angle": self.angle,
@@ -54,36 +59,36 @@ class ProblemLogic:
                          "RegularPolygon": self.regular_polygon}
 
         """------------Positional Relation------------"""
-        self.collinear = Condition()    # 共线
-        self.point_on_line = Condition()  # 点的关系
-        self.point_on_arc = Condition()
-        self.point_on_circle = Condition()
-        self.midpoint = Condition()
-        self.circumcenter = Condition()
-        self.incenter = Condition()
-        self.centroid = Condition()
-        self.orthocenter = Condition()
-        self.parallel = Condition()  # 线的关系
-        self.intersect = Condition()
-        self.perpendicular = Condition()
-        self.perpendicular_bisector = Condition()
-        self.bisects_angle = Condition()
-        self.disjoint_line_circle = Condition()
-        self.disjoint_circle_circle = Condition()
-        self.tangent_line_circle = Condition()
-        self.tangent_circle_circle = Condition()
-        self.intersect_line_circle = Condition()
-        self.intersect_circle_circle = Condition()
-        self.median = Condition()
-        self.height_triangle = Condition()
-        self.height_trapezoid = Condition()
-        self.internally_tangent = Condition()  # 图形的关系
-        self.contain = Condition()
-        self.circumscribed_to_triangle = Condition()
-        self.inscribed_in_triangle = Condition()
-        self.congruent = Condition()
-        self.similar = Condition()
-        self.chord = Condition()
+        self.collinear = Condition(problem_index)    # 共线
+        self.point_on_line = Condition(problem_index)  # 点的关系
+        self.point_on_arc = Condition(problem_index)
+        self.point_on_circle = Condition(problem_index)
+        self.midpoint = Condition(problem_index)
+        self.circumcenter = Condition(problem_index)
+        self.incenter = Condition(problem_index)
+        self.centroid = Condition(problem_index)
+        self.orthocenter = Condition(problem_index)
+        self.parallel = Condition(problem_index)  # 线的关系
+        self.intersect = Condition(problem_index)
+        self.perpendicular = Condition(problem_index)
+        self.perpendicular_bisector = Condition(problem_index)
+        self.bisects_angle = Condition(problem_index)
+        self.disjoint_line_circle = Condition(problem_index)
+        self.disjoint_circle_circle = Condition(problem_index)
+        self.tangent_line_circle = Condition(problem_index)
+        self.tangent_circle_circle = Condition(problem_index)
+        self.intersect_line_circle = Condition(problem_index)
+        self.intersect_circle_circle = Condition(problem_index)
+        self.median = Condition(problem_index)
+        self.height_triangle = Condition(problem_index)
+        self.height_trapezoid = Condition(problem_index)
+        self.internally_tangent = Condition(problem_index)  # 图形的关系
+        self.contain = Condition(problem_index)
+        self.circumscribed_to_triangle = Condition(problem_index)
+        self.inscribed_in_triangle = Condition(problem_index)
+        self.congruent = Condition(problem_index)
+        self.similar = Condition(problem_index)
+        self.chord = Condition(problem_index)
         self.relations = {"Collinear": self.collinear,
                           "PointOnLine": self.point_on_line,
                           "PointOnArc": self.point_on_arc,
@@ -118,7 +123,7 @@ class ProblemLogic:
         """------------Algebraic Relation------------"""
         self.sym_of_attr = {}  # (ConditionType, "name"): sym
         self.value_of_sym = {}  # sym: value
-        self.equations = Condition()  # 代数方程
+        self.equations = Condition(problem_index)  # 代数方程
         self.basic_equations = []
         self.value_equations = []
         self.theorem_equations = []
@@ -129,6 +134,8 @@ class ProblemLogic:
         self.target_type = []  # 解题目标的类型
         self.target = []  # 解题目标
         self.target_solved = []  # 条件求解情况
+        self.answer = []    # 答案
+        self.premise = []   # 前提条件集合
 
     """------------define Entity------------"""
     def define_point(self, point, premise, theorem):  # 点
@@ -529,7 +536,7 @@ class ProblemLogic:
                 sym.append(self.get_sym_of_attr((aType.DA.name, line2[1] + point + line1[0])))
 
             for s in sym:    # 设置直角为90°
-                self.set_value_of_sym(s, 90, [-1], -1)
+                self.set_value_of_sym(s, 90, premise, -2)
 
             return True
         return False
@@ -781,29 +788,6 @@ class ProblemLogic:
             return True
         return False
 
-    def simplify_basic_equations(self):    # 化简basic equation
-        for equation in self.basic_equations:
-            remove = True
-            for sym in equation.free_symbols:    # 遍历方程中的符号，检查其值是否都是已知的
-                remove = remove and self.value_of_sym[sym] is not None
-            if remove:    # 如果都是已知的，删除这个方程
-                self.basic_equations.remove(equation)
-
-    def get_minimum_solvable_equations(self, target_equation, all_equations):    # 找到与求解目标方程相关的最小方程组
-        sym_set = target_equation.free_symbols
-        min_equations = [target_equation]
-        premise = []
-        update = True
-        while update:
-            update = False
-            for equation in all_equations:
-                if len(sym_set.intersection(equation.free_symbols)) > 0 and equation not in min_equations:  # 含有目标符号
-                    min_equations.append(equation)
-                    premise.append(self.equations.indexes[equation])
-                    sym_set = sym_set.union(equation.free_symbols)
-                    update = True
-        return min_equations, premise
-
     """------------Attr's Symbol------------"""
     def get_sym_of_attr(self, attr):
         if attr[0] == aType.T.name:  # 表示目标/中间值类型的符号，不用存储在符号库
@@ -841,7 +825,7 @@ class ProblemLogic:
 class Problem(ProblemLogic):
 
     def __init__(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs):
-        super().__init__()
+        super().__init__(problem_index)
         self.problem_index = problem_index
         self.construction_fls = construction_fls
         self.text_fls = text_fls
@@ -919,6 +903,7 @@ class Problem(ProblemLogic):
 
     def find_all_line_addition(self):    # 所有共线边长度的相加关系、平角大小
         for coll in self.collinear.items:
+            premise = self.collinear.indexes[coll]
             for i in range(0, len(coll) - 2):
                 for j in range(i + 1, len(coll) - 1):
                     for k in range(j + 1, len(coll)):
@@ -929,32 +914,25 @@ class Problem(ProblemLogic):
                         # self.define_line(coll[i] + coll[k], [-1], -1)
                         sym3 = self.get_sym_of_attr((aType.LL.name, coll[i] + coll[k]))
                         sym_of_angle = self.get_sym_of_attr((aType.DA.name, coll[i] + coll[j] + coll[k]))
-                        self.set_value_of_sym(sym_of_angle, 180, [-1], -1)    # 平角为180°
-                        self.define_equation(sym1 + sym2 - sym3, eType.basic, [-1], -1)    # 共线边长度的相加关系
+                        self.set_value_of_sym(sym_of_angle, 180, premise, -2)    # 平角为180°
+                        self.define_equation(sym1 + sym2 - sym3, eType.basic, premise, -2)    # 共线边长度的相加关系
 
-    """------------解方程------------"""
+    """------------解方程相关------------"""
     @func_set_timeout(15)  # 限时10s
     def solve_equations(self, target_sym=None, target_equation=None):    # 求解方程
         if target_sym is None:    # 只涉及basic、value、theorem
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解
                 return
 
-            if len(self.theorem_equations) > 0:    # 求解basic+value+theorem
-                equations = self.basic_equations + self.value_equations + self.theorem_equations
-                premise = [-1]
-                for eq in self.theorem_equations:
-                    premise.append(self.equations.indexes[eq])
-            else:    # 求解basic+value，一个题目中只有最开始会调用一次这个else
-                equations = self.basic_equations + self.value_equations
-                premise = [-1]
-
-            solved_result = solve(equations)  # 求解equations
+            solved_result = solve(self.basic_equations + self.value_equations + self.theorem_equations)  # 求解equations
             if len(solved_result) == 0:  # 没有解，返回(一般都是有解的)
                 return
             if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
                 solved_result = solved_result[0]
+
             for sym in solved_result.keys():  # 遍历所有的解
-                if isinstance(solved_result[sym], Float):  # 如果解是实数，保存
+                if isinstance(solved_result[sym], Float) and self.value_of_sym[sym] is None:  # 有新解，且解是实数
+                    _, premise = self.get_minimum_equations(set(), sym, True)    # 得到求解sym的值所需要的最小方程组
                     self.set_value_of_sym(sym, solved_result[sym], premise, -3)    # 保存求解结果
 
             self.theorem_equations = []    # 清空 theorem_equations
@@ -962,17 +940,17 @@ class Problem(ProblemLogic):
             self.equation_solved = True    # 更新方程求解状态
 
         else:    # 求解target+value、target+value+basic
-            equations, premise = self.get_minimum_solvable_equations(target_equation, self.value_equations)
-            solved_result = solve(equations)
-            if len(solved_result) > 0 and isinstance(solved_result, list):    # 若解不唯一，选择第一个
-                solved_result = solved_result[0]
-
-            # 若没有解，尝试添加basic后再求解
-            if len(solved_result) == 0 or (len(solved_result) > 0 and target_sym not in solved_result.keys()):
-                equations, premise = self.get_minimum_solvable_equations(target_equation,
-                                                                         self.value_equations + self.basic_equations)
+            equations, premise = self.get_minimum_equations({target_sym}, target_equation, False)    # 只用value
+            equations.append(target_equation)
+            if len(equations) < len(target_equation.free_symbols):    # value方程数量不够，没法求解，需添加basic
+                equations, premise = self.get_minimum_equations({target_sym}, target_equation, True)    # 使用value + basic
+                equations.append(target_equation)
                 solved_result = solve(equations)  # 求解target+value+basic equation
-                if len(solved_result) > 0 and isinstance(solved_result, list):    # 若解不唯一，选择第一个
+                if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
+                    solved_result = solved_result[0]
+            else:    # 求解方程，只使用value
+                solved_result = solve(equations)
+                if isinstance(solved_result, list):  # 若解不唯一，选择第一个
                     solved_result = solved_result[0]
 
             if len(solved_result) > 0 and \
@@ -982,8 +960,50 @@ class Problem(ProblemLogic):
 
             return None, None  # 无解，返回None
 
+    def simplify_basic_equations(self):    # 化简basic equation
+        for equation in self.basic_equations:
+            remove = True
+            for sym in equation.free_symbols:    # 遍历方程中的符号，检查其值是否都是已知的
+                remove = remove and self.value_of_sym[sym] is not None
+            if remove:    # 如果都是已知的，删除这个方程
+                self.basic_equations.remove(equation)
+
+    def get_minimum_equations(self, target_sym, target_equation, has_basic):    # 找到与求解目标方程相关的最小(basic、value)方程组
+        sym_set = target_equation.free_symbols.difference(target_sym)    # 去掉求解的目标符号
+        min_equations = []
+        premise = []
+        if not has_basic:    # 只使用value求解目标方程
+            for sym in sym_set:
+                if self.value_of_sym[sym] is not None:
+                    min_equations.append(sym - self.value_of_sym[sym])    # 方程
+                    premise.append(self.equations.indexes[sym - self.value_of_sym[sym]])    # 方程序号作为前提
+        else:    # 使用basic和value来求解目标方程
+            update = True
+            while update:
+                update = False
+                for sym in sym_set:
+                    if self.value_of_sym[sym] is not None:    # sym的值已经求出
+                        equation = sym - self.value_of_sym[sym]
+                        if equation not in min_equations:
+                            min_equations.append(equation)  # 方程
+                            premise.append(self.equations.indexes[equation])  # 方程序号作为前提
+                            update = True
+                    else:    # sym的值未求出，寻找basic中的最小方程组
+                        for equation in self.basic_equations + self.theorem_equations:
+                            if sym in equation.free_symbols and equation not in min_equations:     # 如果basic中涉及sym
+                                min_equations.append(equation)
+                                premise.append(self.equations.indexes[equation])
+                                sym_set = sym_set.union(equation.free_symbols)    # 添加basic方程可能会引入新符号
+                                update = True
+
+        return min_equations, premise
+
     """------------辅助功能------------"""
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs):  # 新问题
+        Condition.index_count[problem_index] = 0  # 初始化 本问题的条件初始数量
+        Condition.conditions[problem_index] = {}    # 辅助数据结构，高性能解题时可删去
+        Condition.indexes[problem_index] = {}
+
         self.problem_index = problem_index
         self.construction_fls = construction_fls
         self.text_fls = text_fls
@@ -991,20 +1011,34 @@ class Problem(ProblemLogic):
         self.theorem_seqs = theorem_seqs
 
         for key in self.entities.keys():
-            self.entities[key].clean()
+            self.entities[key].clean(problem_index)
 
         for key in self.relations.keys():
-            self.relations[key].clean()
+            self.relations[key].clean(problem_index)
 
         self.sym_of_attr = {}  # (ConditionType, "name"): sym
         self.value_of_sym = {}  # sym: value
-        self.equations = Condition()  # 代数方程
+        self.equations = Condition(problem_index)  # 代数方程
+        self.basic_equations = []
+        self.value_equations = []
+        self.theorem_equations = []
         self.equation_solved = True  # 记录有没有求解过方程，避免重复计算
 
         self.target_count = 0  # 目标个数
         self.target_type = []  # 解题目标的类型
         self.target = []  # 解题目标
         self.target_solved = []  # 条件求解情况
+        self.answer = []    # 答案
+        self.premise = []   # 前提条件集合
+
+    def get_premise(self):    # 从结果往前遍历，找到所有所需条件
+        for i in range(self.target_count):
+            if self.target[3] is not None:
+                self.premise += self.target[3]
+        while True:
+            length = len(self.premise)
+            for index in self.premise:
+                self.premise += Condition.conditions[self.problem_index]
 
     def show(self):
         # Formal Language

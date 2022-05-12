@@ -1,5 +1,6 @@
 import time
 from facts import AttributionType as aType
+from facts import EquationType as eType
 from sympy import solve, Float, pi, sin, cos
 from utility import Representation as rep
 
@@ -193,20 +194,20 @@ class Theorem:
 
         i = 0
         while i < len(problem.congruent.items):
-            index = [problem.congruent.indexes[problem.congruent.items[i]]]  # 前提
+            premise = [problem.congruent.indexes[problem.congruent.items[i]]]  # 前提
             tri1 = problem.congruent.items[i][0]  # 三角形
             tri2 = problem.congruent.items[i][1]
             for j in range(3):
                 # 对应边相等
                 l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
                 l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
-                update = problem.define_equation(l_1 - l_2, index, 8) or update
+                update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
                 # 对应角相等
                 angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
                 angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
-                update = problem.define_equation(angle_1 - angle_2, index, 8) or update
+                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
 
-            i = i + rep.count_congruent  # 一个全等关系有6种表示
+            i = i + rep.count_congruent  # 一个全等关系有3种表示
 
         return update
 

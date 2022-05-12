@@ -264,11 +264,13 @@ a, b, c = symbols("a b c")
 fl = a + b
 f2 = c
 
-print(fl.free_symbols.union(f2.free_symbols))
-print(fl.free_symbols.intersection(f2.free_symbols))
-for i in fl.free_symbols.union(f2.free_symbols):
-    print(i)
-print(type(fl.free_symbols))
+print(type({a}))
+
+# print(fl.free_symbols.union(f2.free_symbols))
+# print(fl.free_symbols.intersection(f2.free_symbols))
+# for i in fl.free_symbols.union(f2.free_symbols):
+#     print(i)
+# print(type(fl.free_symbols))
 
 # a = [1]
 #

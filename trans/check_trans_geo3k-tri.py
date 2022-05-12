@@ -1,5 +1,6 @@
 import json
 import re
+import time
 our_path = "F:/PythonProject/geo3k_trans_data/"
 
 
@@ -8,7 +9,7 @@ def load_data():
 
 
 def save_data(data_json):
-    with open(our_path + "data_tri.json", "w") as f:
+    with open(our_path + "data_new_{}.json".format(int(time.time())), "w", encoding="utf-8") as f:
         json.dump(data_json, f)
 
 
@@ -100,14 +101,27 @@ def check_answer(data_json):
 
 
 def main():
-    data_json = load_data()
-    # data_json = alignment_fl(data_json)
-    # data_json = alignment_answer(data_json)
-
-    # show_fl(data_json)
-    show_answer(data_json)
-
-    # save_data(data_json)
+    data_old = load_data()
+    data_new = {}
+    for i in range(0, 1213):
+        data_unit = {
+            "problem_id": data_old[str(i)]["problem_id"],
+            "annotation": data_old[str(i)]["annotation"],
+            "source": data_old[str(i)]["source"],
+            "problem_type": data_old[str(i)]["problem_type"],
+            "problem_text_cn": data_old[str(i)]["problem_text_cn"],
+            "problem_text_en": data_old[str(i)]["problem_text_en"],
+            "problem_img": data_old[str(i)]["problem_img"],
+            "problem_answer": data_old[str(i)]["problem_answer"],
+            "construction_fls": data_old[str(i)]["construction_fls"],
+            "text_fls": data_old[str(i)]["text_fls"],
+            "image_fls": data_old[str(i)]["image_fls"],
+            "theorem_seqs": data_old[str(i)]["theorem_seqs"],
+            "completeness": data_old[str(i)]["completeness"],
+        }
+        data_new[str(i)] = data_unit
+    print(data_new)
+    # save_data(data_new)
 
 
 if __name__ == '__main__':
