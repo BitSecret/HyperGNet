@@ -1,6 +1,7 @@
 from sympy import *
 import math
 import json
+from facts import ConditionType as cType
 test_define_file = "./test_data/test_define.json"
 test_problem_file = "./test_data/problem.json"
 
@@ -260,11 +261,11 @@ def test3():
 # print(a)
 # print(b)
 
-a, b, c = symbols("a b c")
-fl = a + b
-f2 = c
-
-print(type({a}))
+# a, b, c = symbols("a b c")
+# fl = a + b
+# f2 = c
+#
+# print(type({a}))
 
 # print(fl.free_symbols.union(f2.free_symbols))
 # print(fl.free_symbols.intersection(f2.free_symbols))
@@ -285,3 +286,7 @@ print(type({a}))
 # a = [1, 2]
 # b = [3]
 # print(a + b)
+
+print_str = "{}{}"
+
+print(print_str.format("a", "b"))

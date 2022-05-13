@@ -7,7 +7,6 @@ from facts import EquationType as eType
 from sympy import sin, cos, tan, pi
 from utility import PreParse as pp
 import time
-from func_timeout import func_set_timeout
 """后面改进
 1.方程式求解问题：①每次求解后要不要简化方程（分为已解决的和未解决的）②解方程的前提条件（最小可求解方程组），如何找出来
 2.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)"""
@@ -43,11 +42,11 @@ class Solver:
                             22: Theorem.theorem_22_cosine,
                             50: Theorem.theorem_50_perimeter_of_tri}
 
-    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs):    #
+    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer):    #
         self.last_time = time.time()
 
         if self.problem is None:    # 第一次，初始化
-            self.problem = Problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs)  # 题目
+            self.problem = Problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer)  # 题目
             self.problem_define_map = {"Point": self.problem.define_point,
                                        "Line": self.problem.define_line,
                                        "Angle": self.problem.define_angle,
@@ -101,7 +100,7 @@ class Solver:
                                        "InscribedInTriangle": self.problem.define_inscribed_in_triangle
                                        }
         else:
-            self.problem.new_problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs)
+            self.problem.new_problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer)
 
         self.parse()    # 解析形式化语句到logic形式
         self.time_cons("init_problem, parse_and_expand_fl, first_solve")  # 初始化问题、解析语句、扩充语句和求解方程耗时
@@ -320,7 +319,8 @@ class Solver:
                 self.problem.target[i][2], self.problem.target[i][3] = \
                     self.problem.solve_equations(self.problem.target[i][0], self.problem.target[i][1])
                 if self.problem.target[i][2] is not None:
-                    if self.problem.target_type[i] is tType.value:  # 数值型，有解
+                    if self.problem.target_type[i] is tType.value and \
+                            abs(self.problem.target[i][2] - self._parse_expr(self.problem.answer[i])) < 0.0001:  # 有解
                         self.problem.target_solved[i] = "solved"
                     elif self.problem.target[i][2] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"

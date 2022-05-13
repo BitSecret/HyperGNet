@@ -121,7 +121,7 @@ def main():
         }
         data_new[str(i)] = data_unit
     print(data_new)
-    # save_data(data_new)
+    save_data(data_new)
 
 
 if __name__ == '__main__':
