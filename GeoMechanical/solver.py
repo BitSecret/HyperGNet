@@ -8,8 +8,8 @@ from sympy import sin, cos, tan, pi
 from utility import PreParse as pp
 import time
 """后面改进
-1.方程式求解问题：①每次求解后要不要简化方程（分为已解决的和未解决的）②解方程的前提条件（最小可求解方程组），如何找出来
-2.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)"""
+1.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
+2.Theorem部分还没重构完成，这个与题目的整理同步进行"""
 
 
 class Solver:
@@ -320,7 +320,7 @@ class Solver:
                     self.problem.solve_equations(self.problem.target[i][0], self.problem.target[i][1])
                 if self.problem.target[i][2] is not None:
                     if self.problem.target_type[i] is tType.value and \
-                            abs(self.problem.target[i][2] - self._parse_expr(self.problem.answer[i])) < 0.0001:  # 有解
+                            abs(self.problem.target[i][2] - self._parse_expr(self.problem.answer[i])) < 0.01:  # 有解
                         self.problem.target_solved[i] = "solved"
                     elif self.problem.target[i][2] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"

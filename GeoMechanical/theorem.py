@@ -50,11 +50,11 @@ class Theorem:
                 a = problem.value_of_sym[a]
                 b = problem.value_of_sym[b]
                 c = problem.value_of_sym[c]
-                if abs(a ** 2 + b ** 2 - c ** 2) < 0.00001:
+                if abs(a ** 2 + b ** 2 - c ** 2) < 0.001:
                     update = problem.define_right_triangle(tri, premise, 2) or update
-                elif abs(a ** 2 - b ** 2 + c ** 2) < 0.00001:
+                elif abs(a ** 2 - b ** 2 + c ** 2) < 0.001:
                     update = problem.define_right_triangle(tri[1] + tri[0] + tri[2], premise, 2) or update
-                elif abs(- a ** 2 + b ** 2 + c ** 2) < 0.00001:
+                elif abs(- a ** 2 + b ** 2 + c ** 2) < 0.001:
                     update = problem.define_right_triangle(tri[1] + tri[2] + tri[0], premise, 2) or update
             i = i + rep.count_tri
 
@@ -197,12 +197,14 @@ class Theorem:
         """
         update = False
         i = 0
-        while i < len(problem.triangle.items):
-            tri = problem.triangle.items[i]
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
             a = problem.get_sym_of_attr((aType.DA.name, tri))
             b = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
             c = problem.get_sym_of_attr((aType.DA.name, tri[2] + tri[0:2]))
-            update = problem.define_equation(a + b + c - pi, [problem.triangle.indexes[tri]], 10) or update
+            equation = a + b + c - 180
+            premise = [problem.conditions.get_index(tri, cType.triangle)]
+            update = problem.define_equation(equation, eType.theorem, premise, 10) or update
             i = i + rep.count_tri  # 跳过冗余表示
         return update
 
@@ -317,12 +319,10 @@ class Theorem:
         正弦定理
         """
         update = False
-        problem.solve_equations()    # 应用定理前先解方程
         i = 0
-        while i < len(problem.triangle.items):
-            tri = problem.triangle.items[i]
-            index = [problem.triangle.indexes[tri]]
-            ratios = []
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
+            ratios_unit = []
             known_count = [0, 0, 0]    # 记录方程中已知变量的个数, =3方程才有意义
             for j in range(3):
                 line = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
@@ -331,13 +331,17 @@ class Theorem:
                     known_count[j] += 1
                 if problem.value_of_sym[angle] is not None:
                     known_count[j] += 1
-                ratios.append(line / sin(angle * pi / 180))
+                ratios_unit.append(line / sin(angle * pi / 180))
 
             for j in range(3):
                 if known_count[j] + known_count[(j + 1) % 3] == 3:
-                    update = problem.define_equation(ratios[j] - ratios[(j + 1) % 3], index, 21) or update
+                    equation = ratios_unit[j] - ratios_unit[(j + 1) % 3]
+                    print(equation)
+                    premise = [problem.conditions.get_index(tri, cType.triangle)]
+                    update = problem.define_equation(equation, eType.theorem, premise, 21) or update
 
             i = i + rep.count_tri    # 一个三角形多种表示
+            # break
 
         return update
 
@@ -366,18 +370,19 @@ class Theorem:
     @staticmethod
     def theorem_50_perimeter_of_tri(problem):
         """
-        三角形、圆、扇形、四边形周长公式
+        三角形周长公式
         """
         update = False  # 存储应用定理是否更新了条件
         i = 0
-        while i < len(problem.triangle.items):  # 三角形
-            tri = problem.triangle.items[i]
+        while i < len(problem.conditions.items[cType.triangle]):  # 三角形
+            tri = problem.conditions.items[cType.triangle][i]
             p = problem.get_sym_of_attr((aType.PT.name, tri))
             a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
             b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
             c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
-            update = problem.define_equation(p - a - b - c, [problem.triangle.indexes[tri]], 50) or update
-            i = i + rep.count_tri  # 一个三角形6种表示
+            premise = [problem.conditions.get_index(tri, cType.triangle)]
+            update = problem.define_equation(p - a - b - c, eType.theorem, premise, 10) or update
+            i = i + rep.count_tri
 
         return update
 
@@ -388,14 +393,15 @@ class Theorem:
         """
         update = False  # 存储应用定理是否更新了条件
         i = 0
-        while i < len(problem.triangle.items):  # 三角形
-            tri = problem.triangle.items[i]
+        while i < len(problem.conditions.items[cType.triangle]):  # 三角形
+            tri = problem.conditions.items[cType.triangle][i]
             p = problem.get_sym_of_attr((aType.PT.name, tri))
             a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
             b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
             c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
-            update = problem.define_equation(p - a - b - c, [problem.triangle.indexes[tri]], 10) or update
-            i = i + 6  # 一个三角形6种表示
+            premise = [problem.conditions.get_index(tri, cType.triangle)]
+            update = problem.define_equation(p - a - b - c, premise, 10) or update
+            i = i + rep.count_tri
 
         i = 0
         while i < len(problem.quadrilateral.items):  # 四边形

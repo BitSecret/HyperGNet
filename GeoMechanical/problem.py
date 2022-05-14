@@ -16,9 +16,9 @@ class ProblemLogic:
         """------------symbols and equation------------"""
         self.sym_of_attr = {}  # 属性的符号表示 (ConditionType, "name"): sym
         self.value_of_sym = {}  # 符号的值 sym: value
-        self.basic_equations = []
+        self.basic_equations = {}
+        self.theorem_equations = {}
         self.value_equations = []
-        self.theorem_equations = []
         self.equation_solved = True  # 记录有没有求解过方程，避免重复计算
 
         """----------Target----------"""
@@ -651,12 +651,12 @@ class ProblemLogic:
     """------------Equation------------"""
 
     def define_equation(self, equation, equation_type, premise, theorem):  # 定义方程
-        if equation_type is eType.basic and equation not in self.basic_equations:
-            self.basic_equations.append(equation)  # 由题目条件和构图语句得到的方程
+        if equation_type is eType.basic and equation not in self.basic_equations.keys():
+            self.basic_equations[equation] = equation  # 由题目条件和构图语句得到的方程
+        elif equation_type is eType.theorem and equation not in self.theorem_equations:
+            self.theorem_equations[equation] = equation  # 应用定理时得到的方程
         elif equation_type is eType.value and equation not in self.value_equations:
             self.value_equations.append(equation)  # 已经求解的值，使用方程表示，便于后续求解
-        elif equation_type is eType.theorem and equation not in self.theorem_equations:
-            self.theorem_equations.append(equation)  # 应用定理时得到的方程
 
         if self.conditions.add(equation, cType.equation, premise, theorem) and equation_type is not eType.value:
             self.equation_solved = False  # solved类型的equation不会引入新的信息
@@ -692,7 +692,7 @@ class ProblemLogic:
 
     def set_value_of_sym(self, sym, value, premise, theorem):  # 设置符号的值
         if self.value_of_sym[sym] is None:
-            self.value_of_sym[sym] = value
+            self.value_of_sym[sym] = [value, premise]
             self.define_equation(sym - value, eType.value, premise, theorem)
             return True
         return False
@@ -803,6 +803,7 @@ class Problem(ProblemLogic):
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解
                 return
 
+            equations = list(self.basic_equations.values()) + list(self.theorem_equations.values())
             solved_result = solve(self.basic_equations + self.value_equations + self.theorem_equations)  # 求解equations
             if len(solved_result) == 0:  # 没有解，返回(一般都是有解的)
                 return
@@ -819,7 +820,7 @@ class Problem(ProblemLogic):
                 self.set_value_of_sym(saved_result[0], saved_result[1], saved_result[2], -3)
 
             self.theorem_equations = []  # 清空 theorem_equations
-            self.simplify_basic_equations()  # 简化 basic_equations
+            self.simplify_equations()  # 简化 basic、theorem equations
             self.equation_solved = True  # 更新方程求解状态
 
         else:  # 求解target+value、target+value+basic
@@ -828,6 +829,8 @@ class Problem(ProblemLogic):
             if len(equations) < len(target_equation.free_symbols):  # value方程数量不够，没法求解，需添加basic
                 equations, premise = self.get_minimum_equations({target_sym}, target_equation, True)  # 使用value + basic
                 equations.append(target_equation)
+                # for i in equations:
+                #     print(i)
                 solved_result = solve(equations)  # 求解target+value+basic equation
                 if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
                     solved_result = solved_result[0]
@@ -843,7 +846,7 @@ class Problem(ProblemLogic):
 
             return None, None  # 无解，返回None
 
-    def simplify_basic_equations(self):  # 化简basic equation
+    def simplify_equations(self):  # 化简basic、theorem equation
         for equation in self.basic_equations:
             remove = True
             for sym in equation.free_symbols:  # 遍历方程中的符号，检查其值是否都是已知的
@@ -897,9 +900,9 @@ class Problem(ProblemLogic):
         """------------symbols and equation------------"""
         self.sym_of_attr = {}  # (ConditionType, "name"): sym
         self.value_of_sym = {}  # sym: value
-        self.basic_equations = []
+        self.basic_equations = {}
+        self.theorem_equations = {}
         self.value_equations = []
-        self.theorem_equations = []
         self.equation_solved = True  # 记录有没有求解过方程，避免重复计算
 
         """----------Target----------"""
@@ -986,13 +989,20 @@ class Problem(ProblemLogic):
             print("{}:".format(Condition.equation.name))
             for item in self.conditions.items[Condition.equation]:
                 if self.conditions.get_index(item, Condition.equation) not in self.premise:
-                    print_str = "{0:^6}{1:^40}{2:^50}{3:>6}"
+                    print_str = "{0:^6}{1:^65}{2:^25}{3:>6}"
                 else:
-                    print_str = "\033[35m{0:^6}{1:^40}{2:^50}{3:>6}\033[0m"
-                print(print_str.format(self.conditions.get_index(item, Condition.equation),
-                                       str(item),
-                                       str(self.conditions.get_premise(item, Condition.equation)),
-                                       self.conditions.get_theorem(item, Condition.equation)))
+                    print_str = "\033[35m{0:^6}{1:^65}{2:^25}{3:>6}\033[0m"
+                if len(self.conditions.get_premise(item, Condition.equation)) > 4:
+                    print(print_str.format(self.conditions.get_index(item, Condition.equation),
+                                           str(item),
+                                           str(self.conditions.get_premise(item, Condition.equation)[0:4]) + "...",
+                                           self.conditions.get_theorem(item, Condition.equation)))
+                else:
+                    print(print_str.format(self.conditions.get_index(item, Condition.equation),
+                                           str(item),
+                                           str(self.conditions.get_premise(item, Condition.equation)),
+                                           self.conditions.get_theorem(item, Condition.equation)))
+
 
         # target and answer
         print("\033[34mTarget Count:\033[0m {}".format(self.target_count))
