@@ -327,16 +327,21 @@ class Theorem:
             for j in range(3):
                 line = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
                 angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
+                # print(line, end=":")
+                # print(problem.value_of_sym[line], end="   ")
+                # print(angle, end=":")
+                # print(problem.value_of_sym[angle])
                 if problem.value_of_sym[line] is not None:
                     known_count[j] += 1
                 if problem.value_of_sym[angle] is not None:
                     known_count[j] += 1
                 ratios_unit.append(line / sin(angle * pi / 180))
+            # print(known_count)
 
             for j in range(3):
                 if known_count[j] + known_count[(j + 1) % 3] == 3:
                     equation = ratios_unit[j] - ratios_unit[(j + 1) % 3]
-                    print(equation)
+                    # print(equation)
                     premise = [problem.conditions.get_index(tri, cType.triangle)]
                     update = problem.define_equation(equation, eType.theorem, premise, 21) or update
 

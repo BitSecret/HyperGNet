@@ -177,5 +177,5 @@ class TargetType(Enum):  # 解题目标类型
 
 class EquationType(Enum):  # 方程的类型
     basic = 1  # 由构图语句和初始条件扩充来的方程
-    value = 2  # 已经求出的符号，用方程形式表示，便于求解后续方程
-    theorem = 3  # 定理得到的方程
+    theorem = 2  # 定理得到的方程
+    value = 3    # value的值，用方程存储

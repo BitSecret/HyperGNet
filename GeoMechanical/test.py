@@ -287,6 +287,25 @@ def test3():
 # b = [3]
 # print(a + b)
 
-print_str = "{}{}"
+# print_str = "{}{}"
+#
+# print(print_str.format("a", "b"))
+ll_ae = symbols("ll_ae", positive=True)    # 换成a就可以求解，为什么？？
+ll_eb = symbols("ll_eb", positive=True)
+ll_de = symbols("ll_de", positive=True)
+ll_db = symbols("ll_db", positive=True)
+ll_ac = symbols("ll_ac", positive=True)
+ll_ec = symbols("ll_ec", positive=True)
+a = symbols("a", positive=True)
+b = symbols("b", positive=True)
 
-print(print_str.format("a", "b"))
+f1 = -ll_db + ll_de + ll_eb
+f2 = -ll_ac + ll_ae + ll_ec
+f3 = ll_ae - ll_eb
+f4 = ll_eb - ll_ec
+f5 = ll_ae**2 + ll_de**2 - 100.0
+f6 = ll_ae**2 + ll_eb**2 - 64.0
+f7 = ll_de**2 + ll_ec**2 - 100.0
+f8 = ll_eb**2 + ll_ec**2 - 64.0
+f9 = a - b
+print(a == a)

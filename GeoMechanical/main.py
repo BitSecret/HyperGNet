@@ -12,7 +12,7 @@ def save_data(data_json):
 
 if __name__ == "__main__":
     solver = Solver()
-    problem_index = "2"
+    problem_index = "8"
     problems = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
     solver.new_problem(problems["problem_id"], problems["construction_fls"], problems["text_fls"],
                        problems["image_fls"], problems["theorem_seqs"], problems["problem_answer"])
