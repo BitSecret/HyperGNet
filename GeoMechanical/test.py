@@ -290,7 +290,7 @@ def test3():
 # print_str = "{}{}"
 #
 # print(print_str.format("a", "b"))
-ll_ae = symbols("ll_ae", positive=True)    # 换成a就可以求解，为什么？？
+ll_ae = symbols("ll_ae", positive=True)
 ll_eb = symbols("ll_eb", positive=True)
 ll_de = symbols("ll_de", positive=True)
 ll_db = symbols("ll_db", positive=True)
@@ -299,13 +299,38 @@ ll_ec = symbols("ll_ec", positive=True)
 a = symbols("a", positive=True)
 b = symbols("b", positive=True)
 
-f1 = -ll_db + ll_de + ll_eb
-f2 = -ll_ac + ll_ae + ll_ec
-f3 = ll_ae - ll_eb
-f4 = ll_eb - ll_ec
-f5 = ll_ae**2 + ll_de**2 - 100.0
-f6 = ll_ae**2 + ll_eb**2 - 64.0
-f7 = ll_de**2 + ll_ec**2 - 100.0
-f8 = ll_eb**2 + ll_ec**2 - 64.0
-f9 = a - b
-print(a == a)
+# f1 = -ll_db + ll_de + ll_eb
+# f2 = -ll_ac + ll_ae + ll_ec
+# f3 = ll_ae - ll_eb
+# f4 = ll_eb - ll_ec
+# f5 = ll_ae**2 + ll_de**2 - 100.0
+# f6 = ll_ae**2 + ll_eb**2 - 64.0
+# f7 = ll_de**2 + ll_ec**2 - 100.0
+# f8 = ll_eb**2 + ll_ec**2 - 64.0
+# f9 = a - b
+# print(solve([f1, f2, f3, f4, f5, f6, f7, f8]))
+#
+# ll_db = symbols("ll_db", positive=True)
+# ll_de = symbols("ll_de", positive=True)
+# ll_eb = symbols("ll_eb", positive=True)
+# ll_ac = symbols("ll_ac", positive=True)
+# ll_ec = symbols("ll_ec", positive=True)
+# ll_ae = symbols("ll_ae", positive=True)
+# ll_ba = symbols("ll_ec", positive=True)
+# ll_da = symbols("ll_ae", positive=True)
+# ll_dc = symbols("ll_ec", positive=True)
+# ll_bc = symbols("ll_bc", positive=True)
+# f1 = -ll_db + ll_de + ll_eb
+# f2 = ll_ae - ll_eb
+# f3 = ll_eb - ll_ec
+# f4 = ll_ae**2 + ll_eb**2 - 64.0
+# f5 = ll_eb**2 + ll_ec**2 - 64.0
+# f6 = ll_ae**2 + ll_de**2 - 100.0
+# f7 = ll_de**2 + ll_ec**2 - 100.0
+# f8 = ll_ba - 8.0
+# f9 = ll_da - 10.0
+# f10 = ll_dc - 10.0
+# f11 = -ll_ac + ll_ae + ll_ec
+# f12 = ll_bc - 8.0
+#
+# print(solve([f1, f2, f3, f4, f5, f6, f7, f11]))    # 去掉f6 7 就可以求出结果

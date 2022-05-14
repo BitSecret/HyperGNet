@@ -789,7 +789,7 @@ class Problem(ProblemLogic):
 
     """------------解方程相关------------"""
 
-    @func_set_timeout(15)  # 限时15s
+    # @func_set_timeout(15)  # 限时15s
     def solve_equations(self, target_sym=None, target_equation=None):  # 求解方程
         self.simplify_equations()  # solve前先化简方程
         if target_sym is None:  # 只涉及basic、value、theorem
@@ -797,54 +797,58 @@ class Problem(ProblemLogic):
                 return
 
             equations = list(self.basic_equations.values()) + list(self.theorem_equations.values())
-            # sym_set = []
-            # for equation in equations:
-            #     sym_set += equation.free_symbols
-            # print(list(set(sym_set)))
-            # a = input("")
+
+            sym_set = []
+            for equation in equations:
+                sym_set += equation.free_symbols
+
+            update = True
+            while update:    # 循环求解变量值
+                update = False
+                self.simplify_equations()  # solve前先化简方程
+                for sym in list(set(sym_set)):  # 快速去重
+                    if self.value_of_sym[sym] is None:  # 符号值未知，尝试求解
+                        # self.show_equations()
+                        # print(list(set(sym_set)))
+                        min_equations, premise = self.get_minimum_equations(set(), sym, False)
+                        # print("\033[34msym:\033[0m{}".format(str(sym)))
+                        # for i in min_equations:
+                        #     print(i)
+                        solved_result = solve(min_equations)  # 求解min_equations
+                        # print("\033[34mresult:\033[0m")
+                        # print(solved_result)
+                        # print()
+                        # a = input("continue?")
+                        if len(solved_result) > 0:  # 有解
+                            if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
+                                solved_result = solved_result[0]
+                            if sym in solved_result.keys() and isinstance(solved_result[sym], Float):  # sym有实数解
+                                self.set_value_of_sym(sym, solved_result[sym], premise, -3)
+                                update = True
+
+            # solved_result = solve(equations)  # 求解equations
+            # # for i in equations:
+            # #     print(i)
+            # # print(solved_result)
+            # # print("???")
+            # if len(solved_result) == 0:  # 没有解，返回(一般都是有解的)
+            #     return
+            # if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
+            #     solved_result = solved_result[0]
             #
-            # update = True
-            # while update:    # 循环求解变量值
-            #     update = False
-            #     self.simplify_equations()  # solve前先化简方程
-            #     for sym in list(set(sym_set)):  # 快速去重
-            #         if self.value_of_sym[sym] is None:  # 符号值未知，尝试求解
-            #             min_equations, premise = self.get_minimum_equations(set(), sym)
-            #             print(sym)
-            #             for i in min_equations:
-            #                 print(i)
-            #             print()
-            #             solved_result = solve(min_equations)  # 求解min_equations
-            #             if len(solved_result) > 0:  # 有解
-            #                 if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
-            #                     solved_result = solved_result[0]
-            #                 if sym in solved_result.keys() and isinstance(solved_result[sym], Float):  # sym有实数解
-            #                     self.set_value_of_sym(sym, solved_result[sym], premise, -3)
-            #                     update = True
-
-            solved_result = solve(equations)  # 求解equations
-            # for i in equations:
-            #     print(i)
-            # print(solved_result)
-            # print("???")
-            if len(solved_result) == 0:  # 没有解，返回(一般都是有解的)
-                return
-            if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
-                solved_result = solved_result[0]
-
-            saved_results = []
-            for sym in solved_result.keys():  # 遍历所有的解
-                if isinstance(solved_result[sym], Float) and self.value_of_sym[sym] is None:  # 有新解，且解是实数
-                    _, premise = self.get_minimum_equations(set(), sym)  # 得到求解sym的值所需要的最小方程组
-                    saved_results.append([sym, solved_result[sym], premise])
-
-            for saved_result in saved_results:  # 保存求解结果
-                self.set_value_of_sym(saved_result[0], saved_result[1], saved_result[2], -3)
+            # saved_results = []
+            # for sym in solved_result.keys():  # 遍历所有的解
+            #     if isinstance(solved_result[sym], Float) and self.value_of_sym[sym] is None:  # 有新解，且解是实数
+            #         _, premise = self.get_minimum_equations(set(), sym)  # 得到求解sym的值所需要的最小方程组
+            #         saved_results.append([sym, solved_result[sym], premise])
+            #
+            # for saved_result in saved_results:  # 保存求解结果
+            #     self.set_value_of_sym(saved_result[0], saved_result[1], saved_result[2], -3)
 
             self.theorem_equations = {}  # 清空 theorem_equations
             self.equation_solved = True  # 更新方程求解状态
         else:  # 求解target
-            equations, premise = self.get_minimum_equations({target_sym}, target_equation)  # 使用value + basic
+            equations, premise = self.get_minimum_equations({target_sym}, target_equation, True)  # 使用value + basic
             equations.append(target_equation)
             solved_result = solve(equations)  # 求解target+value+basic equation
             if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
@@ -907,7 +911,7 @@ class Problem(ProblemLogic):
             for remove_eq in remove_lists:  # 如果方程符号值都是已知的，删除这个方程
                 self.theorem_equations.pop(remove_eq)
 
-    def get_minimum_equations(self, target_sym, target_equation):  # 找到与求解目标方程相关的最小(basic、value)方程组
+    def get_minimum_equations(self, target_sym, target_equation, add_value):  # 找到与求解目标方程相关的最小(basic、value)方程组
         sym_set = target_equation.free_symbols.difference(target_sym)  # 去掉求解的目标符号
         min_equations = []
         premise = []
@@ -919,9 +923,9 @@ class Problem(ProblemLogic):
                 if self.value_of_sym[sym] is not None:  # sym的值已经求出，只用添加 equation:sym-value
                     equation = sym - self.value_of_sym[sym]
                     if equation not in min_equations:
-                        min_equations.append(equation)  # 未知数方程经过了simplify，不可能含有已知量
+                        if add_value:
+                            min_equations.append(equation)  # 加入解题方程组
                         premise.append(self.conditions.get_index(equation, cType.equation))  # 方程序号作为前提
-                        update = True
                 else:  # sym的值未求出，寻找basic和theorem中的最小方程组
                     for key in self.basic_equations.keys():
                         if sym in self.basic_equations[key].free_symbols and \
@@ -941,13 +945,15 @@ class Problem(ProblemLogic):
         return min_equations, premise
 
     def show_equations(self):
-        """
-        simplify_equations 核查完毕
-        get_minimum_equations 未核查
-        solve_equations 未核查
-        show_equations 未编写
-        """
-        pass
+        print("\033[32mbasic_equations:\033[0m")
+        for equation in self.basic_equations.keys():
+            print(equation, end=":   ")
+            print(self.basic_equations[equation])
+        print("\033[32mtheorem_equations:\033[0m")
+        for equation in self.theorem_equations.keys():
+            print(equation, end=":   ")
+            print(self.theorem_equations[equation])
+        print()
     """------------辅助功能------------"""
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer):  # 新问题
