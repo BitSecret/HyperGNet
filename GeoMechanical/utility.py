@@ -48,7 +48,8 @@ class PreParse:
     # 处理形式化语言
     entity = ['Point', 'Line', 'Angle', 'Arc', 'Shape', 'Circle', 'Sector', 'Triangle', 'RightTriangle',
               'IsoscelesTriangle', 'RegularTriangle', 'Quadrilateral', 'Trapezoid', 'IsoscelesTrapezoid',
-              'Parallelogram', 'Rectangle', 'Rhombus', 'Kite', 'Square', 'Polygon', 'RegularPolygon']
+              'Parallelogram', 'Rectangle', 'Rhombus', 'Kite', 'Square', 'Polygon', 'RegularPolygon', 'Collinear',
+              'Extended']
     binary_relation = ['PointOnLine', 'PointOnArc', 'PointOnCircle', 'Midpoint', 'Circumcenter', 'Incenter', 'Centroid',
                        'Orthocenter', 'Parallel', 'BisectsAngle', 'DisjointLineCircle', 'DisjointCircleCircle',
                        'Median', 'HeightOfTriangle', 'HeightOfTrapezoid', 'Contain', 'CircumscribedToTriangle',
@@ -90,7 +91,7 @@ class PreParse:
             result = fl
         elif fl[0] == "Find":    # find，需要处理其子内容
             result.append(PreParse.pre_parse_fl(fl[1]))
-        elif fl[0] in PreParse.entity or fl[0] == "Collinear":    # 一元关系，不需要处理
+        elif fl[0] in PreParse.entity:    # 一元关系，不需要处理
             result = fl
         elif fl[0] in PreParse.binary_relation:    # 二元关系
             result.append(tuple([fl[1][1], fl[2][1]]))

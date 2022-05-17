@@ -15,7 +15,8 @@ import time
 class Solver:
 
     def __init__(self):
-        self.last_time = None
+        self.last_time = time.time()
+        self.extended = False
         self.problem = None
         self.problem_define_map = None
         self.theorem_map = {1: Theorem.theorem_1_pythagorean,
@@ -44,6 +45,7 @@ class Solver:
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer):    #
         self.last_time = time.time()
+        self.extended = False
 
         if self.problem is None:    # 第一次，初始化
             self.problem = Problem(problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer)  # 题目
@@ -109,18 +111,21 @@ class Solver:
         """------构图语句------"""
         construction_fls = pp.pre_parse_fls(copy.copy(self.problem.construction_fls))
         for fl in construction_fls:
-            if fl[0] == "Triangle":    # 基本构图三角形
-                self.problem.define_triangle(fl[1], [-1], -1)
-            elif fl[0] == "Quadrilateral":    # 基本构图四边形
-                self.problem.define_triangle(fl[1], [-1], -1)
-            elif fl[0] == "Collinear":    # 共线
+            if fl[0] == "Shape":    # 基本构图图形
+                self.problem.define_shape(fl[1], [-1], -1)
+            elif fl[0] == "Extended":    # 是否扩展
+                if fl[1] == "True":
+                    self.extended = True
+                else:
+                    self.extended = False
+            else:    # 共线
                 self.problem.define_collinear(fl[1], [-1], -1)
 
         """------由构图语句扩展条件------"""
-        self.problem.find_all_triangle()
+        self.problem.find_all_shape(self.extended)
         self.problem.angle_representation_alignment()
-        self.problem.find_all_angle_addition()
-        self.problem.find_all_line_addition()
+        self.problem.find_all_angle_addition(self.extended)
+        self.problem.find_all_line_addition(self.extended)
 
         """------题目条件------"""
         text_fls = pp.pre_parse_fls(copy.copy(self.problem.text_fls))
@@ -154,48 +159,46 @@ class Solver:
         elif fl[0] == "Radius":
             if fl[1][0] == "Arc":
                 self.problem.define_arc(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.RA.name, fl[1][1]))
             elif fl[1][0] == "Circle":
                 self.problem.define_circle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.RC.name, fl[1][1]))
             else:
                 self.problem.define_sector(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.RS.name, fl[1][1]))
+            return self.problem.get_sym_of_attr((aType.R.name, fl[1][1]))
         elif fl[0] == "Diameter":
             self.problem.define_circle(fl[1][1], [-1], -1)
             return self.problem.get_sym_of_attr((aType.DC.name, fl[1][1]))
         elif fl[0] == "Perimeter":
             if fl[1][0] == "Triangle":
                 self.problem.define_triangle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.PT.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
             elif fl[1][0] == "Circle":
                 self.problem.define_circle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.PC.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
             elif fl[1][0] == "Sector":
                 self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.PS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
                 self.problem.define_quadrilateral(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.PQ.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
             else:
                 self.problem.define_polygon(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.PP.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
         elif fl[0] == "Area":
             if fl[1][0] == "Triangle":
                 self.problem.define_triangle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.AT.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
             elif fl[1][0] == "Circle":
                 self.problem.define_circle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.AC.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
             elif fl[1][0] == "Sector":
                 self.problem.define_sector(fl[1][1], [-1], -1)
                 return self.problem.get_sym_of_attr((aType.AS.name, fl[1][1]))
             elif fl[1][0] == "Quadrilateral":
                 self.problem.define_quadrilateral(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.AQ.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
             else:
                 self.problem.define_polygon(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.AP.name, fl[1][1]))
+                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":

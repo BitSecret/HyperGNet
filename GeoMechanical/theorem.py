@@ -73,7 +73,7 @@ class Theorem:
             if key[0] == aType.DA.name:    # 如果是角
                 sym = problem.sym_of_attr[key]
                 value = problem.value_of_sym[problem.sym_of_attr[key]]
-                if value is not None and (value - 90) < 0.00001 and \
+                if value is not None and abs(value - 90) < 0.01 and \
                         key[1] in problem.conditions.items[cType.triangle]:  # 如果是90°的角
                     premise = [problem.conditions.get_index(sym - value, cType.equation),
                                problem.conditions.get_index(key[1], cType.triangle)]
@@ -327,26 +327,19 @@ class Theorem:
             for j in range(3):
                 line = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
                 angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
-                # print(line, end=":")
-                # print(problem.value_of_sym[line], end="   ")
-                # print(angle, end=":")
-                # print(problem.value_of_sym[angle])
                 if problem.value_of_sym[line] is not None:
                     known_count[j] += 1
                 if problem.value_of_sym[angle] is not None:
                     known_count[j] += 1
                 ratios_unit.append(line / sin(angle * pi / 180))
-            # print(known_count)
 
             for j in range(3):
                 if known_count[j] + known_count[(j + 1) % 3] == 3:
                     equation = ratios_unit[j] - ratios_unit[(j + 1) % 3]
-                    # print(equation)
                     premise = [problem.conditions.get_index(tri, cType.triangle)]
                     update = problem.define_equation(equation, eType.theorem, premise, 21) or update
 
             i = i + rep.count_tri    # 一个三角形多种表示
-            # break
 
         return update
 
@@ -357,16 +350,16 @@ class Theorem:
         """
         update = False
         i = 0
-        while i < len(problem.triangle.items):
-            tri = problem.triangle.items[i]
-            index = [problem.triangle.indexes[tri]]
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
             for j in range(3):
                 a = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
                 b = problem.get_sym_of_attr((aType.LL.name, tri[(j + 1) % 3] + tri[(j + 2) % 3]))
                 c = problem.get_sym_of_attr((aType.LL.name, tri[(j + 2) % 3] + tri[j]))
                 angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
                 equation = a ** 2 - b ** 2 - c ** 2 + 2 * b * c * cos(angle * pi / 180)
-                update = problem.define_equation(equation, index, 22) or update
+                premise = [problem.conditions.get_index(tri, cType.triangle)]
+                update = problem.define_equation(equation, eType.theorem, premise, 22) or update
 
             i = i + rep.count_tri  # 一个三角形多种表示
 
@@ -381,7 +374,7 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):  # 三角形
             tri = problem.conditions.items[cType.triangle][i]
-            p = problem.get_sym_of_attr((aType.PT.name, tri))
+            p = problem.get_sym_of_attr((aType.P.name, tri))
             a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
             b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
             c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
@@ -431,20 +424,3 @@ class Theorem:
             update = problem.define_equation(p - pi * r * d / 180 - 2 * r, [problem.sector.indexes[sec]], 10) or update
 
         return update
-
-    @staticmethod
-    def _solve_targets(problem, target, target_equation):  # 求解目标值，并返回使用的最小方程组集合(前提)
-        problem.equations.items.append(target_equation)  # 将目标方程添加到方程组
-        result = solve(problem.equations.items)  # 求解equation
-        problem.equations.items.remove(target_equation)  # 求解后，移除目标方程
-
-        if len(result) == 0:  # 没有解，返回None
-            return None, None
-
-        if isinstance(result, list):  # 解不唯一
-            result = result[0]
-
-        if target in result.keys() and isinstance(result[target], Float):
-            return abs(float(result[target])), [-3]  # 有实数解，返回解
-
-        return None, None
