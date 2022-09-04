@@ -1,7 +1,7 @@
 import json
 import re
 import time
-our_path = "F:/PythonProject/geo3k_trans_data/"
+our_path = "F:/geo3k_trans_data/"
 
 
 def load_data():
@@ -104,38 +104,23 @@ def main():
     data_old = load_data()
     data_new = {}
     for i in range(0, 1213):
-        if i <= 20:
-            data_unit = {
-                "problem_id": data_old[str(i)]["problem_id"],
-                "annotation": data_old[str(i)]["annotation"],
-                "source": data_old[str(i)]["source"],
-                "problem_type": data_old[str(i)]["problem_type"],
-                "problem_text_cn": data_old[str(i)]["problem_text_cn"],
-                "problem_text_en": data_old[str(i)]["problem_text_en"],
-                "problem_img": data_old[str(i)]["problem_img"],
-                "problem_answer": data_old[str(i)]["problem_answer"],
-                "construction_fls": data_old[str(i)]["construction_fls"],
-                "text_fls": data_old[str(i)]["text_fls"],
-                "image_fls": data_old[str(i)]["image_fls"],
-                "theorem_seqs": data_old[str(i)]["theorem_seqs"],
-                "completeness": data_old[str(i)]["completeness"]
-            }
-        else:
-            data_unit = {
-                "problem_id": data_old[str(i)]["problem_id"],
-                "annotation": data_old[str(i)]["annotation"],
-                "source": data_old[str(i)]["source"],
-                "problem_type": data_old[str(i)]["problem_type"],
-                "problem_text_cn": data_old[str(i)]["problem_text_cn"],
-                "problem_text_en": data_old[str(i)]["problem_text_en"],
-                "problem_img": data_old[str(i)]["problem_img"],
-                "problem_answer": data_old[str(i)]["problem_answer"],
-                "construction_fls": data_old[str(i)]["construction_fls"],
-                "text_fls":  data_old[str(i)]["text_fls"],
-                "image_fls": data_old[str(i)]["image_fls"],
-                "theorem_seqs": data_old[str(i)]["theorem_seqs"],
-                "completeness": data_old[str(i)]["completeness"]
-            }
+        data_unit = {
+            "problem_id": data_old[str(i)]["problem_id"],
+            "annotation": data_old[str(i)]["annotation"],
+            "source": data_old[str(i)]["source"],
+            "problem_type": data_old[str(i)]["problem_type"],
+            "problem_level": data_old[str(i)]["problem_level"],
+            "problem_text_cn": data_old[str(i)]["problem_text_cn"],
+            "problem_text_en": data_old[str(i)]["problem_text_en"],
+            "problem_img": data_old[str(i)]["problem_img"],
+            "problem_answer": data_old[str(i)]["problem_answer"],
+            "construction_fls": data_old[str(i)]["construction_fls"],
+            "text_fls": data_old[str(i)]["text_fls"],
+            "image_fls": data_old[str(i)]["image_fls"],
+            "target_fls": [],
+            "theorem_seqs": data_old[str(i)]["theorem_seqs"],
+            "completeness": data_old[str(i)]["completeness"]
+        }
 
         data_new[str(i)] = data_unit
     print(data_new)
