@@ -3,6 +3,7 @@ from facts import AttributionType as aType
 from facts import EquationType as eType
 from facts import ConditionType as cType
 from facts import Condition
+from facts import FormalLanguage
 from sympy import symbols, solve, Float
 from func_timeout import func_set_timeout
 
@@ -70,11 +71,11 @@ class ProblemLogic:
                 self.define_point(point, premise, -2)
 
             if len(shape) == 3:    # 三角形 注意这里前提和定理都是-1
-                self.define_triangle(shape, [-1], -1)
+                self.define_triangle(shape, premise, -2)
             elif len(shape) == 4:    # 四边形
-                self.define_quadrilateral(shape, [-1], -1)
+                self.define_quadrilateral(shape, premise, -2)
             else:    # 多边形
-                self.define_polygon(shape, [-1], -1)
+                self.define_polygon(shape, premise, -2)
 
             for shape in rep.shape(shape):  # shape多种表示
                 self.conditions.add(shape, cType.shape, premise, -2)
@@ -700,12 +701,10 @@ class ProblemLogic:
 
 class Problem(ProblemLogic):
 
-    def __init__(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer):
+    def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
         super().__init__()
         self.problem_index = problem_index
-        self.construction_fls = construction_fls
-        self.text_fls = text_fls
-        self.image_fls = image_fls
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
 
@@ -716,7 +715,7 @@ class Problem(ProblemLogic):
                 return True
         return False
 
-    def find_all_shape(self, extended):    # 拼图法，构造所有shape，并记录面积之间的相加关系
+    def find_all_shape(self, extended):     # 拼图法，构造所有shape，并记录面积之间的相加关系
         update = True
         traversed = []    # 记录已经计算过的，避免重复计算
         while update:
@@ -816,6 +815,7 @@ class Problem(ProblemLogic):
 
     @func_set_timeout(5)  # 限时5s
     def solve_equations(self, target_sym=None, target_equation=None):  # 求解方程
+
         if target_sym is None:  # 只涉及basic、value、theorem
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解
                 return
@@ -939,7 +939,6 @@ class Problem(ProblemLogic):
 
         return min_equations, premise
 
-    """------------辅助功能------------"""
     def show_equations(self):
         print("\033[32mbasic_equations:\033[0m")
         for equation in self.basic_equations.keys():
@@ -951,11 +950,11 @@ class Problem(ProblemLogic):
             print(self.theorem_equations[equation])
         print()
 
-    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, theorem_seqs, answer):  # 新问题
+    """------------辅助功能------------"""
+
+    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):  # 新问题
         self.problem_index = problem_index
-        self.construction_fls = construction_fls
-        self.text_fls = text_fls
-        self.image_fls = image_fls
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
 
@@ -997,14 +996,25 @@ class Problem(ProblemLogic):
         print("\033[36mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
         print("\033[36mconstruction_fls:\033[0m")
-        for construction_fl in self.construction_fls:  # 解析 formal language
+        for construction_fl in self.fl.construction_fls:  # 解析 formal language
             print(construction_fl)
         print("\033[36mtext_fls:\033[0m")
-        for text_fl in self.text_fls:  # 解析 formal language
+        for text_fl in self.fl.text_fls:  # 解析 formal language
             print(text_fl)
         print("\033[36mimage_fls:\033[0m")
-        for image_fl in self.image_fls:  # 解析 formal language
+        for image_fl in self.fl.image_fls:  # 解析 formal language
             print(image_fl)
+
+        print("\033[36mtarget_fls:\033[0m")
+        for target_fl in self.fl.target_fls:  # 解析 formal language
+            print(target_fl)
+
+        print("\033[36mreasoning_fls:\033[0m")
+        for reasoning_fl in self.fl.reasoning_fls:  # 解析 formal language
+            print(reasoning_fl, end="   (step:")
+            print(self.fl.reasoning_fls_step[reasoning_fl], end=", theorem:")
+            print(self.fl.reasoning_fls_theorem[reasoning_fl], end=")\n")
+
         print("\033[36mtheorem_seqs:\033[0m", end=" ")
         for theorem in self.theorem_seqs:
             print(theorem, end=" ")

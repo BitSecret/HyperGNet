@@ -85,20 +85,11 @@ class Condition:  # 条件
         self.premises = {}  # 推出条件需要的前提
         self.theorems = {}  # 推出条件应用的定理
 
-        for entity in Condition.entity_list:   # 初始化
+        for entity in Condition.entity_list + Condition.entity_relation_list + [Condition.equation]:   # 初始化
             self.items[entity] = []
             self.indexes[entity] = {}
             self.premises[entity] = {}
             self.theorems[entity] = {}
-        for entity_relation in Condition.entity_relation_list:
-            self.items[entity_relation] = []
-            self.indexes[entity_relation] = {}
-            self.premises[entity_relation] = {}
-            self.theorems[entity_relation] = {}
-        self.items[ConditionType.equation] = []
-        self.indexes[ConditionType.equation] = {}
-        self.premises[ConditionType.equation] = {}
-        self.theorems[ConditionType.equation] = {}
 
     def add(self, item, condition_type, premise, theorem):
         if item not in self.items[condition_type]:  # 如果是新条件，添加
@@ -128,20 +119,33 @@ class Condition:  # 条件
         self.premises = {}  # 推出条件需要的前提
         self.theorems = {}  # 推出条件应用的定理
 
-        for entity in Condition.entity_list:   # 初始化
+        for entity in Condition.entity_list + Condition.entity_relation_list + [Condition.equation]:  # 初始化
             self.items[entity] = []
             self.indexes[entity] = {}
             self.premises[entity] = {}
             self.theorems[entity] = {}
-        for entity_relation in Condition.entity_relation_list:
-            self.items[entity_relation] = []
-            self.indexes[entity_relation] = {}
-            self.premises[entity_relation] = {}
-            self.theorems[entity_relation] = {}
-        self.items[ConditionType.equation] = []
-        self.indexes[ConditionType.equation] = {}
-        self.premises[ConditionType.equation] = {}
-        self.theorems[ConditionType.equation] = {}
+
+
+class FormalLanguage:
+    def __init__(self, construction_fls, text_fls, image_fls, target_fls):
+        self.construction_fls = construction_fls
+        self.text_fls = text_fls
+        self.image_fls = image_fls
+        self.target_fls = target_fls
+        self.reasoning_fls = []
+
+        self.reasoning_fls_step = {}
+        self.step_count = 1
+        self.reasoning_fls_theorem = {}
+
+    def add(self, fl, theorem):
+        if fl not in self.reasoning_fls:
+            self.reasoning_fls.append(fl)
+            self.reasoning_fls_step[fl] = self.step_count
+            self.reasoning_fls_theorem[fl] = theorem
+
+    def step(self):
+        self.step_count += 1
 
 
 class AttributionType(Enum):  # 属性的类型
@@ -173,6 +177,6 @@ class TargetType(Enum):  # 解题目标类型
 
 
 class EquationType(Enum):  # 方程的类型
-    basic = 1  # 由构图语句和初始条件扩充来的方程
+    basic = 1  # 由构图语句和常识得到的方程
     theorem = 2  # 定理得到的方程
     value = 3    # value的值，用方程存储

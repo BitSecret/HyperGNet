@@ -2,9 +2,9 @@ import json
 from solver import Solver
 from func_timeout import FunctionTimedOut
 import traceback
-test_g3k_tri_file = "F:/PythonProject/geo3k_trans_data/data_tri.json"
-test_problem_file = "F:/PythonProject/PGPS/GeoMechanical/test_data/problem.json"
-test_define_file = "F:/PythonProject/PGPS/GeoMechanical/test_data/test_define.json"
+test_g3k_tri_file = "F:/geo3k_trans_data/data_tri.json"
+test_problem_file = "F:/PGPS/GeoMechanical/test_data/problem.json"
+test_define_file = "F:/PGPS/GeoMechanical/test_data/test_define.json"
 
 
 if __name__ == "__main__":
@@ -16,7 +16,8 @@ if __name__ == "__main__":
                 break
             problem = json.load(open(test_g3k_tri_file, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
-                               problem["image_fls"], problem["theorem_seqs"], problem["problem_answer"])
+                               problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
+                               problem["problem_answer"])
             solver.solve()
             solver.problem.show()
             print()
