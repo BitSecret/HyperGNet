@@ -169,6 +169,10 @@ class Theorem:
         return update
 
     @staticmethod
+    def drawing_11_connect_two_points(problem):
+        pass
+
+    @staticmethod
     def theorem_21_pythagorean(problem):
         """
         勾股定理

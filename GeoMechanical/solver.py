@@ -10,9 +10,6 @@ import time
 
 """后面改进
 1.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
-2.Theorem部分还没重构完成，这个与题目的整理同步进行"""
-"""
-1.把 extend 移植到theorem上
 """
 
 
