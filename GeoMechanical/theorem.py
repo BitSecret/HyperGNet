@@ -7,6 +7,7 @@ from utility import Representation as rep
 
 
 class Theorem:
+    """------------常识------------"""
 
     @staticmethod
     def nous_1_extend_shape(problem):
@@ -169,11 +170,90 @@ class Theorem:
         return update
 
     @staticmethod
-    def drawing_11_connect_two_points(problem):
+    def nous_6_(problem):
         pass
 
     @staticmethod
-    def theorem_21_pythagorean(problem):
+    def nous_7_(problem):
+        pass
+
+    @staticmethod
+    def nous_8_(problem):
+        pass
+
+    @staticmethod
+    def nous_9_(problem):
+        pass
+
+    @staticmethod
+    def nous_10_(problem):
+        pass
+
+    """------------辅助线------------"""
+
+    @staticmethod
+    def auxiliary_11_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_12_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_13_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_14_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_15_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_16_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_17_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_18_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_19_(problem):
+        pass
+
+    @staticmethod
+    def auxiliary_20_(problem):
+        pass
+
+    """------------定理------------"""
+
+    @staticmethod
+    def theorem_21_triangle_property_angle_sum(problem):
+        """
+        三角形 性质
+        △ABC  ==>  内角和为180°
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
+            a = problem.get_sym_of_attr((aType.DA.name, tri))
+            b = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
+            c = problem.get_sym_of_attr((aType.DA.name, tri[2] + tri[0:2]))
+            equation = a + b + c - 180
+            premise = [problem.conditions.get_index(tri, cType.triangle)]
+            update = problem.define_equation(equation, eType.theorem, premise, 10) or update
+            i = i + rep.count_tri  # 跳过冗余表示
+        return update
+
+    @staticmethod
+    def theorem_22_right_triangle_pythagorean(problem):
         """
         勾股定理
         RT△  ==>  a**2 + b**2 - c**2 = 0
@@ -194,7 +274,11 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_22_pythagorean_inverse(problem):
+    def theorem_23_right_triangle_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_24_right_triangle_pythagorean_inverse(problem):
         """
         勾股定理 逆定理
         a**2 + b**2 - c**2 = 0  ==>  RT△
@@ -207,8 +291,9 @@ class Theorem:
             b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
             c = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
 
-            if problem.value_of_sym[a] is not None and problem.value_of_sym[b] is not None and problem.value_of_sym[
-                c] is not None:
+            if problem.value_of_sym[a] is not None and \
+                    problem.value_of_sym[b] is not None and \
+                    problem.value_of_sym[c] is not None:
                 premise = [problem.conditions.get_index(a - problem.value_of_sym[a], cType.equation),
                            problem.conditions.get_index(b - problem.value_of_sym[b], cType.equation),
                            problem.conditions.get_index(c - problem.value_of_sym[c], cType.equation)]
@@ -226,13 +311,12 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_23_right_triangle_determine(problem):
+    def theorem_25_right_triangle_judgment(problem):
         """
         直角三角形 判定
-        ①满足勾股定理  ==>  RT△
         ②三角形有一个角是直角  ==>  RT△
         """
-        update = Theorem.theorem_22_pythagorean_inverse(problem)  # 勾股定理
+        update = False
 
         for key in problem.sym_of_attr.keys():
             if key[0] == aType.DA.name:  # 如果是角
@@ -248,26 +332,116 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_24_transitivity_of_parallel(problem):
+    def theorem_26_isosceles_triangle_property_angle_equal(problem):
         """
-        平行的传递性
-        AB // CD, CD // EF  ==>  AB // EF
+        等腰三角形 性质
+        等腰△  ==>  腰相等、底角相等
         """
-        update = False  # 存储应用定理是否更新了条件
-        for item1 in problem.parallel.items:
-            for item2 in problem.parallel.items:
-                if item1[1] == item2[0] and item1[0] != item2[1]:
-                    premise = [problem.parallel.indexes[item1], problem.parallel.indexes[item2]]
-                    update = problem.define_parallel((item1[0], item2[1]), premise, 4) or update
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.isosceles_triangle]):
+            tri = problem.conditions.items[cType.isosceles_triangle][i]
+            premise = [problem.conditions.get_index(tri, cType.isosceles_triangle)]  # 前提
+            # 两腰相等
+            l_1 = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
+            l_2 = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
+            update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 11) or update
+            # 底角相等
+            angle_1 = problem.get_sym_of_attr((aType.DA.name, tri))
+            angle_2 = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
+            update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 11) or update
+            i = i + rep.count_iso_tri
+
         return update
 
     @staticmethod
-    def theorem_25_transitivity_of_perpendicular(problem):
+    def theorem_27_isosceles_triangle_property_side_equal(problem):
+        """
+        等腰三角形 性质
+        等腰△  ==>  腰相等、底角相等
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.isosceles_triangle]):
+            tri = problem.conditions.items[cType.isosceles_triangle][i]
+            premise = [problem.conditions.get_index(tri, cType.isosceles_triangle)]  # 前提
+            # 两腰相等
+            l_1 = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
+            l_2 = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
+            update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 11) or update
+            # 底角相等
+            angle_1 = problem.get_sym_of_attr((aType.DA.name, tri))
+            angle_2 = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
+            update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 11) or update
+            i = i + rep.count_iso_tri
+
+        return update
+
+    @staticmethod
+    def theorem_28_isosceles_triangle_property_line_coincidence(problem):
+        pass
+
+    @staticmethod
+    def theorem_29_isosceles_triangle_judgment_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_30_isosceles_triangle_judgment_side_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_31_equilateral_triangle_property_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_32_equilateral_triangle_property_side_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_33_equilateral_triangle_judgment_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_34_equilateral_triangle_judgment_side_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_35_equilateral_triangle_judgment_isos_and_angle60(problem):
+        pass
+
+    @staticmethod
+    def theorem_36_intersect_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_37_parallel_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_38_parallel_judgment(problem):
+        pass
+
+    @staticmethod
+    def theorem_39_perpendicular_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_40_perpendicular_judgment(problem):
+        pass
+
+    @staticmethod
+    def theorem_41_parallel_perpendicular_combination(problem):
         """
         垂直的传递性
         AB ⊥ CD, CD // EF  ==>  AB ⊥ EF
         """
         update = False
+        for item1 in problem.parallel.items:
+            for item2 in problem.parallel.items:
+                if item1[1] == item2[0] and item1[0] != item2[1]:
+                    premise = [problem.parallel.indexes[item1], problem.parallel.indexes[item2]]
+                    update = problem.define_parallel((item1[0], item2[1]), premise, 4) or update
+
         i = 0
         while i < len(problem.perpendicular.items):
             pp = problem.perpendicular.items[i]
@@ -276,10 +450,169 @@ class Theorem:
                     premise = [problem.perpendicular.indexes[pp], problem.parallel.indexes[pl]]
                     update = problem.define_perpendicular(("$", pp[1], pl[1]), premise, 5) or update
             i = i + rep.count_perpendicular  # 跳过冗余表示
+
         return update
 
     @staticmethod
-    def theorem_26_similar_triangle(problem):
+    def theorem_42_perpendicular_bisector_property_perpendicular(problem):
+        pass
+
+    @staticmethod
+    def theorem_43_perpendicular_bisector_property_bisector(problem):
+        pass
+
+    @staticmethod
+    def theorem_44_perpendicular_bisector_property_distance_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_45_perpendicular_bisector_judgment(problem):
+        pass
+
+    @staticmethod
+    def theorem_46_bisector_property_line_ratio(problem):
+        pass
+
+    @staticmethod
+    def theorem_47_bisector_property_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_48_bisector_property_distance_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_49_bisector_judgment_line_ratio(problem):
+        pass
+
+    @staticmethod
+    def theorem_50_bisector_judgment_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_51_altitude_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_52_altitude_judgment(problem):
+        pass
+
+    @staticmethod
+    def theorem_53_neutrality_property_similar(problem):
+        pass
+
+    @staticmethod
+    def theorem_54_neutrality_property_angle_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_55_neutrality_property_line_ratio(problem):
+        pass
+
+    @staticmethod
+    def theorem_56_neutrality_judgment(problem):
+        pass
+
+    @staticmethod
+    def theorem_57_circumcenter_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_58_incenter_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_59_centroid_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_60_orthocenter_property(problem):
+        pass
+
+    @staticmethod
+    def theorem_61_congruent_property_line_euqal(problem):
+        """
+        全等三角形 性质
+        两个三角形全等  ==>  对应角相等、对应边相等
+        """
+        update = False  # 存储应用定理是否更新了条件
+
+        i = 0
+        while i < len(problem.conditions.items[cType.congruent]):
+            congruent = problem.conditions.items[cType.congruent][i]
+            tri1 = congruent[0]  # 三角形
+            tri2 = congruent[1]
+            premise = [problem.conditions.get_index(congruent, cType.congruent)]  # 前提
+
+            for j in range(3):
+                # 对应边相等
+                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
+                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
+                update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
+                # 对应角相等
+                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
+                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
+                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
+
+            i = i + rep.count_congruent  # 一个全等关系有3种表示
+
+        return update
+
+    @staticmethod
+    def theorem_62_congruent_property_angle_equal(problem):
+        """
+        全等三角形 性质
+        两个三角形全等  ==>  对应角相等、对应边相等
+        """
+        update = False  # 存储应用定理是否更新了条件
+
+        i = 0
+        while i < len(problem.conditions.items[cType.congruent]):
+            congruent = problem.conditions.items[cType.congruent][i]
+            tri1 = congruent[0]  # 三角形
+            tri2 = congruent[1]
+            premise = [problem.conditions.get_index(congruent, cType.congruent)]  # 前提
+
+            for j in range(3):
+                # 对应边相等
+                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
+                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
+                update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
+                # 对应角相等
+                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
+                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
+                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
+
+            i = i + rep.count_congruent  # 一个全等关系有3种表示
+
+        return update
+
+    @staticmethod
+    def theorem_63_congruent_property_area_equal(problem):
+        pass
+
+    @staticmethod
+    def theorem_64_congruent_judgment_sss(problem):
+        pass
+
+    @staticmethod
+    def theorem_65_congruent_judgment_sas(problem):
+        pass
+
+    @staticmethod
+    def theorem_66_congruent_judgment_asa(problem):
+        pass
+
+    @staticmethod
+    def theorem_67_congruent_judgment_aas(problem):
+        pass
+
+    @staticmethod
+    def theorem_68_congruent_judgment_hl(problem):
+        pass
+
+    @staticmethod
+    def theorem_69_similar_property_angle_euqal(problem):
         """
         相似三角形 性质
         相似△  ==>  对应角相等、对应边成比例
@@ -309,177 +642,88 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_27_similar_triangle_determine(problem):
+    def theorem_70_similar_property_line_ratio(problem):
         """
-        相似三角形 判定
-        xxx  ==>  相似△
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_28_congruent_triangle(problem):
-        """
-        全等三角形 性质
-        两个三角形全等  ==>  对应角相等、对应边相等
+        相似三角形 性质
+        相似△  ==>  对应角相等、对应边成比例
         """
         update = False  # 存储应用定理是否更新了条件
 
         i = 0
-        while i < len(problem.conditions.items[cType.congruent]):
-            congruent = problem.conditions.items[cType.congruent][i]
-            tri1 = congruent[0]  # 三角形
-            tri2 = congruent[1]
-            premise = [problem.conditions.get_index(congruent, cType.congruent)]  # 前提
-
+        while i < len(problem.similar.items):
+            index = [problem.similar.indexes[problem.similar.items[i]]]  # 前提
+            tri1 = problem.similar.items[i][0]  # 三角形
+            tri2 = problem.similar.items[i][1]
+            ratios = []  # 对应边的比
             for j in range(3):
-                # 对应边相等
+                # 对应边的比
                 l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
                 l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
-                update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
+                ratios.append(l_1 / l_2)
                 # 对应角相等
                 angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
                 angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
-                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
+                update = problem.define_equation(angle_1 - angle_2, index, 6) or update
+            update = problem.define_equation(ratios[0] - ratios[1], index, 6) or update  # 对应边的比值相等
+            update = problem.define_equation(ratios[1] - ratios[2], index, 6) or update
 
-            i = i + rep.count_congruent  # 一个全等关系有3种表示
+            i = i + rep.count_similar  # 一个全等关系有6种表示
 
         return update
 
     @staticmethod
-    def theorem_29_congruent_triangle_determine(problem):
-        """
-        全等三角形 判定
-        SSS、SAS、ASA、AL、HL  ==>  两个三角形全等
-        """
-        update = False  # 存储应用定理是否更新了条件
+    def theorem_71_similar_property_perimeter_ratio(problem):
         pass
 
     @staticmethod
-    def theorem_30_triangle(problem):
+    def theorem_72_similar_property_area_square_ratio(problem):
+        pass
+
+    @staticmethod
+    def theorem_73_similar_judgment_sss(problem):
+        pass
+
+    @staticmethod
+    def theorem_74_similar_judgment_sas(problem):
+        pass
+
+    @staticmethod
+    def theorem_75_similar_judgment_aa(problem):
+        pass
+
+    @staticmethod
+    def theorem_76_triangle_perimeter_formula(problem):
         """
-        三角形 性质
-        △ABC  ==>  内角和为180°
+        三角形周长公式
         """
-        update = False
+        update = False  # 存储应用定理是否更新了条件
         i = 0
-        while i < len(problem.conditions.items[cType.triangle]):
+        while i < len(problem.conditions.items[cType.triangle]):  # 三角形
             tri = problem.conditions.items[cType.triangle][i]
-            a = problem.get_sym_of_attr((aType.DA.name, tri))
-            b = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
-            c = problem.get_sym_of_attr((aType.DA.name, tri[2] + tri[0:2]))
-            equation = a + b + c - 180
+            p = problem.get_sym_of_attr((aType.P.name, tri))
+            a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
+            b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
+            c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
             premise = [problem.conditions.get_index(tri, cType.triangle)]
-            update = problem.define_equation(equation, eType.theorem, premise, 10) or update
-            i = i + rep.count_tri  # 跳过冗余表示
-        return update
-
-    @staticmethod
-    def theorem_31_isosceles_triangle(problem):
-        """
-        等腰三角形 性质
-        等腰△  ==>  腰相等、底角相等
-        """
-        update = False
-        i = 0
-        while i < len(problem.conditions.items[cType.isosceles_triangle]):
-            tri = problem.conditions.items[cType.isosceles_triangle][i]
-            premise = [problem.conditions.get_index(tri, cType.isosceles_triangle)]  # 前提
-            # 两腰相等
-            l_1 = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            l_2 = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
-            update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 11) or update
-            # 底角相等
-            angle_1 = problem.get_sym_of_attr((aType.DA.name, tri))
-            angle_2 = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
-            update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 11) or update
-            i = i + rep.count_iso_tri
+            update = problem.define_equation(p - a - b - c, eType.theorem, premise, 10) or update
+            i = i + rep.count_tri
 
         return update
 
     @staticmethod
-    def theorem_32_isosceles_triangle_determine(problem):
-        """
-        等腰三角形 判定
-        xxxx  ==>  等腰△
-        """
-        update = False  # 存储应用定理是否更新了条件
+    def theorem_77_triangle_area_formula_common(problem):
         pass
 
     @staticmethod
-    def theorem_33_tangent_radius(problem):
-        """
-        圆的直径 性质
-        直径所对的圆周角是直角
-        """
-        update = False  # 存储应用定理是否更新了条件
+    def theorem_78_triangle_area_formula_heron(problem):
         pass
 
     @staticmethod
-    def theorem_34_center_and_circumference_angle(problem):
-        """
-        圆的弦 性质
-        同弦所对的圆周角是圆心角的一半
-        """
-        update = False  # 存储应用定理是否更新了条件
+    def theorem_79_triangle_area_formula_sine(problem):
         pass
 
     @staticmethod
-    def theorem_35_parallel(problem):
-        """
-        平行线 性质
-        两直线平行  ==>  内错角相等，同旁内角互补
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_36_parallel_inverse(problem):
-        """
-        平行线 判定
-        xxx  ==>  两直线平行
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_37_flat_angle(problem):
-        """
-        平角 性质
-        pointOn(O, AB)  ==>  AOC + COB = 180°
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_38_intersecting_chord(problem):
-        """
-        相交弦 性质
-        若圆内任意弦AB、弦CD交于点P  则PA·PB=PC·PD
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_39_polygon(problem):
-        """
-        多边形 性质
-        多边形  ==>  内角和 = (n - 2 ) * 180°
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_40_angle_bisector(problem):
-        """
-        角平分线线 性质
-        △ABC, AD是角平分线  ==>  AB/AC=BD/DC
-        """
-        update = False  # 存储应用定理是否更新了条件
-        pass
-
-    @staticmethod
-    def theorem_41_sine(problem):
+    def theorem_80_sine(problem):
         """
         正弦定理
         """
@@ -509,7 +753,7 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_42_cosine(problem):
+    def theorem_81_cosine(problem):
         """
         余弦定理
         """
@@ -527,65 +771,5 @@ class Theorem:
                 update = problem.define_equation(equation, eType.theorem, premise, 22) or update
 
             i = i + rep.count_tri  # 一个三角形多种表示
-
-        return update
-
-    @staticmethod
-    def theorem_43_perimeter_of_tri(problem):
-        """
-        三角形周长公式
-        """
-        update = False  # 存储应用定理是否更新了条件
-        i = 0
-        while i < len(problem.conditions.items[cType.triangle]):  # 三角形
-            tri = problem.conditions.items[cType.triangle][i]
-            p = problem.get_sym_of_attr((aType.P.name, tri))
-            a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
-            premise = [problem.conditions.get_index(tri, cType.triangle)]
-            update = problem.define_equation(p - a - b - c, eType.theorem, premise, 10) or update
-            i = i + rep.count_tri
-
-        return update
-
-    @staticmethod
-    def theorem_44_perimeter_of_shape(problem):
-        """
-        三角形、圆、扇形、四边形周长公式
-        """
-        update = False  # 存储应用定理是否更新了条件
-        i = 0
-        while i < len(problem.conditions.items[cType.triangle]):  # 三角形
-            tri = problem.conditions.items[cType.triangle][i]
-            p = problem.get_sym_of_attr((aType.P.name, tri))
-            a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
-            premise = [problem.conditions.get_index(tri, cType.triangle)]
-            update = problem.define_equation(p - a - b - c, premise, 10) or update
-            i = i + rep.count_tri
-
-        i = 0
-        while i < len(problem.quadrilateral.items):  # 四边形
-            qua = problem.quadrilateral.items[i]
-            p = problem.get_sym_of_attr((aType.P.name, qua))
-            a = problem.get_sym_of_attr((aType.LL.name, qua[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, qua[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, qua[2:4]))
-            d = problem.get_sym_of_attr((aType.LL.name, qua[3] + qua[0]))
-            update = problem.define_equation(p - a - b - c - d, [problem.triangle.indexes[qua]], 10) or update
-            i = i + 8  # 一个四边形6种表示
-
-        for cir in problem.circle.items:  # 圆
-            p = problem.get_sym_of_attr((aType.P.name, cir))
-            r = problem.get_sym_of_attr((aType.P.name, cir))
-            update = problem.define_equation(p - 2 * pi * r, [problem.circle.indexes[cir]], 10) or update
-
-        for sec in problem.sector.items:  # 扇形
-            p = problem.get_sym_of_attr((aType.PS.name, sec))
-            r = problem.get_sym_of_attr((aType.R.name, sec))
-            d = problem.get_sym_of_attr((aType.DS.name, sec))
-            update = problem.define_equation(p - pi * r * d / 180 - 2 * r, [problem.sector.indexes[sec]], 10) or update
 
         return update

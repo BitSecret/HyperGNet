@@ -2,80 +2,49 @@ from enum import Enum
 
 
 class ConditionType(Enum):  # 条件的类型
-    point = 1  # 点、线、角、弧
-    line = 2
-    angle = 3
-    arc = 4
-    shape = 5  # 形状
-    circle = 6  # 圆和扇形
-    sector = 7
-    triangle = 8  # 三角形
-    right_triangle = 9
-    isosceles_triangle = 10
-    regular_triangle = 11
-    quadrilateral = 12  # 四边形
-    trapezoid = 13
-    isosceles_trapezoid = 14
-    parallelogram = 15
-    rectangle = 16
-    kite = 17
-    rhombus = 18
-    square = 19
-    polygon = 20  # 多边形
-    regular_polygon = 21
-    collinear = 22  # 共线
-    point_on_line = 23  # 点的关系
-    point_on_arc = 24
-    point_on_circle = 25
-    midpoint = 26
-    circumcenter = 27
-    incenter = 28
-    centroid = 29
-    orthocenter = 30
-    parallel = 31  # 线的关系
-    intersect = 32
-    perpendicular = 33
-    perpendicular_bisector = 34
-    bisects_angle = 35
-    disjoint_line_circle = 36
-    disjoint_circle_circle = 37
-    tangent_line_circle = 38
-    tangent_circle_circle = 39
-    intersect_line_circle = 40
-    intersect_circle_circle = 41
-    median = 42
-    height_triangle = 43
-    height_trapezoid = 44
-    internally_tangent = 45  # 图形的关系
-    contain = 46
-    circumscribed_to_triangle = 47
-    inscribed_in_triangle = 48
-    congruent = 49
-    similar = 50
-    chord = 51
+    shape = 1  # 形状
+    collinear = 2  # 共线
+
+    point = 3  # 点、线、角、弧
+    line = 4
+    angle = 5
+    triangle = 6  # 三角形
+    right_triangle = 7
+    isosceles_triangle = 8
+    equilateral_triangle = 9
+    polygon = 10  # 多边形
+
+    midpoint = 11
+    intersect = 12
+    parallel = 13
+    perpendicular = 14
+    perpendicular_bisector = 15
+    bisector = 16
+    median = 17
+    is_altitude = 18
+    neutrality = 19
+    circumcenter = 20
+    incenter = 21
+    centroid = 22
+    orthocenter = 23
+    congruent = 24
+    similar = 25
+
     equation = 52  # 代数方程
 
 
 class Condition:  # 条件
-    entity_list = [ConditionType.point, ConditionType.line, ConditionType.angle, ConditionType.arc, ConditionType.shape,
-                   ConditionType.circle, ConditionType.sector, ConditionType.triangle, ConditionType.right_triangle,
-                   ConditionType.isosceles_triangle, ConditionType.regular_triangle, ConditionType.quadrilateral,
-                   ConditionType.trapezoid, ConditionType.isosceles_trapezoid, ConditionType.parallelogram,
-                   ConditionType.rectangle, ConditionType.kite, ConditionType.rhombus, ConditionType.square,
-                   ConditionType.polygon, ConditionType.regular_polygon]
-    entity_relation_list = [ConditionType.collinear, ConditionType.point_on_line, ConditionType.point_on_arc,
-                            ConditionType.point_on_circle, ConditionType.midpoint, ConditionType.circumcenter,
-                            ConditionType.incenter, ConditionType.centroid, ConditionType.orthocenter,
-                            ConditionType.parallel, ConditionType.intersect, ConditionType.perpendicular,
-                            ConditionType.perpendicular_bisector, ConditionType.bisects_angle,
-                            ConditionType.disjoint_line_circle, ConditionType.disjoint_circle_circle,
-                            ConditionType.tangent_line_circle, ConditionType.tangent_circle_circle,
-                            ConditionType.intersect_line_circle, ConditionType.intersect_circle_circle,
-                            ConditionType.median, ConditionType.height_triangle, ConditionType.height_trapezoid,
-                            ConditionType.internally_tangent, ConditionType.contain,
-                            ConditionType.circumscribed_to_triangle, ConditionType.inscribed_in_triangle,
-                            ConditionType.congruent, ConditionType.similar, ConditionType.chord]
+    construction_list = [ConditionType.shape, ConditionType.collinear]
+    entity_list = [ConditionType.point, ConditionType.line, ConditionType.angle, ConditionType.triangle,
+                   ConditionType.right_triangle, ConditionType.isosceles_triangle,
+                   ConditionType.equilateral_triangle, ConditionType.polygon]
+    entity_relation_list = [ConditionType.midpoint, ConditionType.intersect, ConditionType.parallel,
+                            ConditionType.perpendicular, ConditionType.perpendicular_bisector, ConditionType.bisector,
+                            ConditionType.median, ConditionType.is_altitude, ConditionType.neutrality,
+                            ConditionType.circumcenter, ConditionType.incenter, ConditionType.centroid,
+                            ConditionType.orthocenter, ConditionType.congruent, ConditionType.similar]
     equation = ConditionType.equation
+    all = construction_list + entity_list + entity_relation_list + [ConditionType.equation]
 
     def __init__(self):
         self.count = 0  # 条件计数
@@ -85,7 +54,7 @@ class Condition:  # 条件
         self.premises = {}  # 推出条件需要的前提
         self.theorems = {}  # 推出条件应用的定理
 
-        for entity in Condition.entity_list + Condition.entity_relation_list + [Condition.equation]:   # 初始化
+        for entity in Condition.all:  # 初始化
             self.items[entity] = []
             self.indexes[entity] = {}
             self.premises[entity] = {}
@@ -119,14 +88,32 @@ class Condition:  # 条件
         self.premises = {}  # 推出条件需要的前提
         self.theorems = {}  # 推出条件应用的定理
 
-        for entity in Condition.entity_list + Condition.entity_relation_list + [Condition.equation]:  # 初始化
+        for entity in Condition.all:  # 初始化
             self.items[entity] = []
             self.indexes[entity] = {}
             self.premises[entity] = {}
             self.theorems[entity] = {}
 
 
+class AttributionType(Enum):  # 属性的类型
+    LL = 1  # LengthOfLine 线长
+    MA = 2  # MeasureOfAngle 角度
+    AS = 3  # AreaOfShape 面积
+    PT = 4  # PerimeterOfTriangle 三角形周长
+    AT = 5  # AltitudeOfTriangle 三角形高
+
+    F = 6  # Free 自由符号
+    T = 7  # Target 代数型解题目标
+
+
 class FormalLanguage:
+    construction_predicates = ["Shape", "Collinear"]
+    entity_predicates = []
+    entity_relation_predicates = []
+    attribute_predicates = []
+    equation = "Equation"
+    all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]
+
     def __init__(self, construction_fls, text_fls, image_fls, target_fls):
         self.construction_fls = construction_fls
         self.text_fls = text_fls
@@ -135,7 +122,7 @@ class FormalLanguage:
         self.reasoning_fls = []
 
         self.reasoning_fls_step = {}
-        self.step_count = 1
+        self.step_count = 0
         self.reasoning_fls_theorem = {}
 
     def add(self, fl, theorem):
@@ -146,26 +133,6 @@ class FormalLanguage:
 
     def step(self):
         self.step_count += 1
-
-
-class AttributionType(Enum):  # 属性的类型
-    LL = 1  # LengthOfLine 线长度
-    LA = 2  # LengthOfArc 弧长
-
-    DA = 3  # DegreeOfAngle 角度
-    DS = 4  # DegreeOfSector 扇形圆心角度数
-
-    R = 5  # RadiusOfArc 弧半径、圆半径、扇形半径长度
-    DC = 6  # DiameterOfCircle 圆的直径
-
-    P = 8  # PerimeterOfPolygon 多边形、圆的周长
-    PS = 7  # PerimeterOfSector 扇形的周长
-
-    A = 10  # AreaOfPolygon 多边形、圆的面积
-    AS = 9  # AreaOfSector 扇形的面积
-
-    F = 11  # Free 自由符号
-    T = 12  # Target 代数型解题目标
 
 
 class TargetType(Enum):  # 解题目标类型
@@ -179,4 +146,4 @@ class TargetType(Enum):  # 解题目标类型
 class EquationType(Enum):  # 方程的类型
     basic = 1  # 由构图语句和常识得到的方程
     theorem = 2  # 定理得到的方程
-    value = 3    # value的值，用方程存储
+    value = 3  # value的值，用方程存储

@@ -45,27 +45,28 @@ class Representation:
 
 
 class PreParse:
-    # 处理形式化语言
-    entity = ['Point', 'Line', 'Angle', 'Arc', 'Shape', 'Circle', 'Sector', 'Triangle', 'RightTriangle',
-              'IsoscelesTriangle', 'RegularTriangle', 'Quadrilateral', 'Trapezoid', 'IsoscelesTrapezoid',
-              'Parallelogram', 'Rectangle', 'Rhombus', 'Kite', 'Square', 'Polygon', 'RegularPolygon', 'Collinear',
-              'Extended']
-    binary_relation = ['PointOnLine', 'PointOnArc', 'PointOnCircle', 'Midpoint', 'Circumcenter', 'Incenter', 'Centroid',
-                       'Orthocenter', 'Parallel', 'BisectsAngle', 'DisjointLineCircle', 'DisjointCircleCircle',
-                       'Median', 'HeightOfTriangle', 'HeightOfTrapezoid', 'Contain', 'CircumscribedToTriangle',
-                       'Congruent', 'Similar', 'Chord']
-    ternary_relation = ['Perpendicular', 'PerpendicularBisector', 'TangentLineCircle', 'TangentCircleCircle',
-                        'IntersectLineLine', 'InternallyTangent']
-    quaternion_relation = ["IntersectLineCircle", "IntersectCircleCircle"]
-    five_relation = ["InscribedInTriangle"]
+    # # 处理形式化语言
+    # entity = ['Point', 'Line', 'Angle', 'Arc', 'Shape', 'Circle', 'Sector', 'Triangle', 'RightTriangle',
+    #           'IsoscelesTriangle', 'RegularTriangle', 'Quadrilateral', 'Trapezoid', 'IsoscelesTrapezoid',
+    #           'Parallelogram', 'Rectangle', 'Rhombus', 'Kite', 'Square', 'Polygon', 'RegularPolygon', 'Collinear',
+    #           'Extended']
+    # binary_relation = ['PointOnLine', 'PointOnArc', 'PointOnCircle', 'Midpoint', 'Circumcenter', 'Incenter', 'Centroid',
+    #                    'Orthocenter', 'Parallel', 'BisectsAngle', 'DisjointLineCircle', 'DisjointCircleCircle',
+    #                    'Median', 'HeightOfTriangle', 'HeightOfTrapezoid', 'Contain', 'CircumscribedToTriangle',
+    #                    'Congruent', 'Similar', 'Chord']
+    # ternary_relation = ['Perpendicular', 'PerpendicularBisector', 'TangentLineCircle', 'TangentCircleCircle',
+    #                     'IntersectLineLine', 'InternallyTangent']
+    # quaternion_relation = ["IntersectLineCircle", "IntersectCircleCircle"]
+    # five_relation = ["InscribedInTriangle"]
 
-    idt_fl = Forward()  # 定义解析 formal language 的 表达式
+    # 解析formal language的idt: idt_fl
+    idt_fl = Forward()
     expr = Word(alphanums + '.+-*/^{}@#$~')  # 识别的最小unit 谓词或字母或数字或代数表达式
     arg = Group(idt_fl) | expr  # arg 可能是聚合体，也可能是标志符
     args = arg + ZeroOrMore(Literal(",").suppress() + arg)  # arg组合起来  suppress 的字符不会在结果中出现
     idt_fl <<= expr + Literal("(").suppress() + args + Literal(")").suppress()
 
-    # 处理表达式的
+    # 处理表达式的idt: idt_expr
     float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))  # 浮点数
     int_idt = OneOrMore(Word(nums))  # 整数
     alpha_idt = Word(alphas)  # 符号
@@ -94,9 +95,9 @@ class PreParse:
         elif fl[0] in PreParse.entity:    # 一元关系，不需要处理
             result = fl
         elif fl[0] in PreParse.binary_relation:    # 二元关系
-            result.append(tuple([fl[1][1], fl[2][1]]))
+            result.append()
         elif fl[0] in PreParse.ternary_relation:    # 三元关系
-            result.append(tuple([fl[1][1], fl[2][1], fl[3][1]]))
+            result.append()
         elif fl[0] in PreParse.quaternion_relation:    # 四元关系
             result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1]]))
         elif fl[0] in PreParse.five_relation:    # 五元关系
@@ -146,7 +147,6 @@ class PreParse:
     def pre_parse_fls(fls):
         for i in range(len(fls)):
             fls[i] = PreParse.idt_fl.parseString(fls[i]).asList()
-            fls[i] = PreParse.pre_parse_fl(fls[i])
         return fls
 
 

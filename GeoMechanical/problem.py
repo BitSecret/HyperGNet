@@ -29,6 +29,31 @@ class ProblemLogic:
         self.answer = []  # 答案
         self.premise = []  # 前提条件集合
 
+    """------------Construction------------"""
+
+    def define_shape(self, shape, premise, theorem, root=True):
+        if self.conditions.add(shape, cType.shape, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
+            if root:
+                premise = [self.conditions.get_index(shape, cType.shape)]
+
+            for point in shape:   # 添加构成shape的点
+                self.define_point(point, premise, -2)
+
+            if len(shape) == 3:    # 三角形
+                self.define_triangle(shape, premise, -2)
+            else:    # 多边形
+                self.define_polygon(shape, premise, -2)
+
+            for shape in rep.shape(shape):  # shape多种表示
+                self.conditions.add(shape, cType.shape, premise, -2)
+            return True
+        return False
+
+    def define_collinear(self, points, premise, theorem):    # 共线
+        if len(points) > 2 and self.conditions.add(points, cType.collinear, premise, theorem):
+            return True
+        return False
+
     """------------define Entity------------"""
 
     def define_point(self, point, premise, theorem):  # 点
@@ -50,52 +75,6 @@ class ProblemLogic:
                 premise = [self.conditions.get_index(angle, cType.angle)]
             self.define_line(angle[0:2], premise, -2, False)  # 构成角的两个线
             self.define_line(angle[1:3], premise, -2, False)
-            return True
-        return False
-
-    def define_arc(self, arc, premise, theorem, root=True):  # 弧
-        if self.conditions.add(arc, cType.arc, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
-            if root:
-                premise = [self.conditions.get_index(arc, cType.arc)]
-            self.define_point(arc[0], premise, -2)  # 构成弧的两个点
-            self.define_point(arc[1], premise, -2)
-            return True
-        return False
-
-    def define_shape(self, shape, premise, theorem, root=True):
-        if self.conditions.add(shape, cType.shape, premise, theorem):  # 因为规定了方向，一个弧的表示方式是唯一的
-            if root:
-                premise = [self.conditions.get_index(shape, cType.shape)]
-
-            for point in shape:   # 添加构成shape的点
-                self.define_point(point, premise, -2)
-
-            if len(shape) == 3:    # 三角形 注意这里前提和定理都是-1
-                self.define_triangle(shape, premise, -2)
-            elif len(shape) == 4:    # 四边形
-                self.define_quadrilateral(shape, premise, -2)
-            else:    # 多边形
-                self.define_polygon(shape, premise, -2)
-
-            for shape in rep.shape(shape):  # shape多种表示
-                self.conditions.add(shape, cType.shape, premise, -2)
-            return True
-        return False
-
-    def define_circle(self, circle, premise, theorem, root=True):  # 圆
-        if self.conditions.add(circle, cType.circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(circle, cType.circle)]
-            self.conditions.add(circle, cType.point, premise, -2)  # 圆心
-            return True
-        return False
-
-    def define_sector(self, sector, premise, theorem, root=True):  # 扇形
-        if self.conditions.add(sector, cType.sector, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(sector, cType.sector)]
-            self.define_angle(sector[2] + sector[0] + sector[1], premise, -2, False)  # 构成扇形的角
-            self.define_arc(sector[1:3], premise, -2, False)  # 扇形的弧
             return True
         return False
 
@@ -127,96 +106,13 @@ class ProblemLogic:
             return True
         return False
 
-    def define_regular_triangle(self, triangle, premise, theorem, root=True):  # 正三角形
-        if self.conditions.add(triangle, cType.regular_triangle, premise, theorem):
+    def define_equilateral_triangle(self, triangle, premise, theorem, root=True):  # 等边三角形
+        if self.conditions.add(triangle, cType.equilateral_triangle, premise, theorem):
             if root:
-                premise = [self.conditions.get_index(triangle, cType.regular_triangle)]
+                premise = [self.conditions.get_index(triangle, cType.equilateral_triangle)]
             for triangle in rep.shape(triangle):
-                self.conditions.add(triangle, cType.regular_triangle, premise, -2)
+                self.conditions.add(triangle, cType.equilateral_triangle, premise, -2)
                 self.define_isosceles_triangle(triangle, premise, -2, False)  # 等边也是等腰
-            return True
-        return False
-
-    def define_quadrilateral(self, shape, premise, theorem, root=True):  # 四边形
-        if self.conditions.add(shape, cType.quadrilateral, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.quadrilateral)]
-
-            for quadrilateral in rep.shape(shape):
-                self.conditions.add(quadrilateral, cType.quadrilateral, premise, -2)
-                self.define_angle(quadrilateral[0:3], premise, -2, False)  # 四边形由角组成
-            return True
-        return False
-
-    def define_trapezoid(self, shape, premise, theorem, root=True):  # 梯形
-        if self.conditions.add(shape, cType.trapezoid, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.trapezoid)]
-
-            self.conditions.add(shape[2] + shape[3] + shape[0] + shape[1], cType.trapezoid, premise, -2)
-            self.define_quadrilateral(shape, premise, -2, False)  # 梯形也是四边形
-            return True
-        return False
-
-    def define_isosceles_trapezoid(self, shape, premise, theorem, root=True):  # 等腰梯形
-        if self.conditions.add(shape, cType.isosceles_trapezoid, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.isosceles_trapezoid)]
-
-            self.conditions.add(shape[2] + shape[3] + shape[0] + shape[1], cType.isosceles_trapezoid, premise, -2)
-            self.define_trapezoid(shape, premise, -2, False)  # 等腰梯形也是梯形
-            return True
-        return False
-
-    def define_parallelogram(self, shape, premise, theorem, root=True):  # 平行四边形
-        if self.conditions.add(shape, cType.parallelogram, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.parallelogram)]
-
-            for parallelogram in rep.shape(shape):
-                self.conditions.add(parallelogram, cType.parallelogram, premise, -2)
-                self.define_isosceles_trapezoid(parallelogram, premise, -2, False)  # 平行四边形也是梯形
-            return True
-        return False
-
-    def define_rectangle(self, shape, premise, theorem, root=True):  # 长方形
-        if self.conditions.add(shape, cType.rectangle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.rectangle)]
-            for rectangle in rep.shape(shape):
-                self.conditions.add(cType.rectangle, rectangle, premise, -2)
-            self.define_parallelogram(shape, premise, -2, False)  # 长方形也是平行四边形
-            return True
-        return False
-
-    def define_kite(self, shape, premise, theorem, root=True):  # 风筝形
-        if self.conditions.add(shape, cType.kite, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.kite)]
-            self.conditions.add(shape[2] + shape[3] + shape[0] + shape[1], cType.kite, premise, -2)
-            self.define_quadrilateral(shape, premise, -2, False)  # Kite也是四边形
-            return True
-        return False
-
-    def define_rhombus(self, shape, premise, theorem, root=True):  # 菱形
-        if self.conditions.add(shape, cType.rhombus, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.rhombus)]
-            for rhombus in rep.shape(shape):
-                self.conditions.add(rhombus, cType.rhombus, premise, -2)
-            self.define_parallelogram(shape, premise, -2, False)  # 菱形也是平行四边形
-            self.define_kite(shape, premise, -2, False)  # 菱形也是Kite
-            return True
-        return False
-
-    def define_square(self, shape, premise, theorem, root=True):  # 正方形
-        if self.conditions.add(shape, cType.square, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.square)]
-            for square in rep.shape(shape):
-                self.conditions.add(square, cType.square, premise, -2)
-            self.define_rectangle(shape, premise, -2, False)  # 正方形也是长方形
-            self.define_rhombus(shape, premise, -2, False)  # 正方形也是菱形
             return True
         return False
 
@@ -231,58 +127,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_regular_polygon(self, shape, premise, theorem, root=True):  # 正多边形
-        if self.conditions.add(shape, cType.regular_polygon, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(shape, cType.regular_polygon)]
-
-            for polygon in rep.shape(shape):
-                self.conditions.add(polygon, cType.regular_polygon, premise, -2)
-                self.define_angle(polygon[0:3], premise, -2, False)  # 由角组成
-            self.define_polygon(shape, premise, -2, False)  # 正多边形也是多边形
-            return True
-        return False
-
     """------------define Relation------------"""
-
-    def define_collinear(self, points, premise, theorem):
-        if len(points) > 2 and self.conditions.add(points, cType.collinear, premise, theorem):
-            return True
-        return False
-
-    def define_point_on_line(self, ordered_pair, premise, theorem, root=True):  # 点在线上
-        point, line = ordered_pair
-        if self.conditions.add(ordered_pair, cType.point_on_line, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.point_on_line)]
-            self.conditions.add((point, line[::-1]), cType.point_on_line, premise, theorem)  # 点在线上两种表示
-            self.define_point(point, premise, -2)  # 定义点和线
-            self.define_line(line, premise, -2, False)
-            if point != line[0] and point != line[1]:
-                self.define_line(line[0] + point, premise, -2, False)  # 定义子线段
-                self.define_line(line[1] + point, premise, -2, False)
-            return True
-        return False
-
-    def define_point_on_arc(self, ordered_pair, premise, theorem, root=True):  # 点在弧上
-        point, arc = ordered_pair
-        if self.conditions.add(ordered_pair, cType.point_on_arc, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.point_on_arc)]
-            self.define_point(point, premise, -2)  # 定义点和弧
-            self.define_arc(arc, premise, -2, False)
-            return True
-        return False
-
-    def define_point_on_circle(self, ordered_pair, premise, theorem, root=True):  # 点在圆上
-        point, circle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.point_on_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.point_on_circle)]
-            self.define_point(point, premise, -2)  # 定义点和弧
-            self.define_circle(circle, premise, -2, False)
-            return True
-        return False
 
     def define_midpoint(self, ordered_pair, premise, theorem, root=True):  # 中点
         point, line = ordered_pair
@@ -292,6 +137,131 @@ class ProblemLogic:
             self.conditions.add((point, line[::-1]), cType.midpoint, premise, -2)  # 中点有两中表示形式
             self.define_point(point, premise, -2)  # 定义点和弧
             self.define_line(line, premise, -2, False)
+            return True
+        return False
+
+    def define_intersect(self, ordered_pair, premise, theorem, root=True):  # 线相交
+        point, line1, line2 = ordered_pair
+        if self.conditions.add(ordered_pair, cType.intersect, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.intersect)]
+
+            for all_form in rep.intersect(ordered_pair):  # 相交有4种表示
+                self.conditions.add(all_form, cType.intersect, premise, -2)
+
+            self.define_line(line1, premise, -2, False)  # 定义线
+            self.define_line(line2, premise, -2, False)
+            return True
+        return False
+
+    def define_parallel(self, ordered_pair, premise, theorem, root=True):  # 线平行
+        line1, line2, = ordered_pair
+        if self.conditions.add(ordered_pair, cType.parallel, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.parallel)]
+
+            for parallel in rep.parallel(ordered_pair):  # 平行的4种表示
+                self.conditions.add(parallel, cType.parallel, premise, -2)
+
+            self.define_line(line1, premise, -2, False)  # 定义线
+            self.define_line(line2, premise, -2, False)
+            return True
+        return False
+
+    def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
+        point, line1, line2 = ordered_pair
+
+        if self.conditions.add(ordered_pair, cType.perpendicular, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
+
+            for all_form in rep.intersect(ordered_pair):
+                self.conditions.add(all_form, cType.perpendicular, premise, -2)  # 垂直有4种表示
+
+            self.define_intersect(ordered_pair, premise, -2, False)  # 垂直也是相交
+
+            sym = []
+            if len(set(point + line1 + line2)) == 3:
+                if line1[0] == line2[1]:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2 + line1[1])))
+                elif line1[1] == line2[1]:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1 + line2[0])))
+                elif line1[1] == line2[0]:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[::-1] + line1[0])))
+                elif line1[0] == line2[0]:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[::-1] + line2[1])))
+            elif len(set(point + line1 + line2)) == 4:
+                if line2[1] == point:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[0] + line2[::-1])))
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2 + line1[1])))
+                elif line1[1] == point:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[1] + line1[::-1])))
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1 + line2[0])))
+                elif line2[0] == point:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[1] + line2)))
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[::-1] + line1[0])))
+                elif line1[0] == point:
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[0] + line1)))
+                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[::-1] + line2[1])))
+            elif len(set(point + line1 + line2)) == 5:
+                sym.append(self.get_sym_of_attr((aType.MA.name, line1[0] + point + line2[0])))
+                sym.append(self.get_sym_of_attr((aType.MA.name, line2[0] + point + line1[1])))
+                sym.append(self.get_sym_of_attr((aType.MA.name, line1[1] + point + line2[1])))
+                sym.append(self.get_sym_of_attr((aType.MA.name, line2[1] + point + line1[0])))
+
+            for s in sym:  # 设置直角为90°
+                self.set_value_of_sym(s, 90, premise, -2)
+
+            return True
+        return False
+
+    def define_perpendicular_bisector(self, ordered_pair, premise, theorem, root=True):  # 垂直平分
+        point, line1, line2 = ordered_pair
+        if self.conditions.add(ordered_pair, cType.perpendicular_bisector, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.perpendicular_bisector)]
+            self.define_perpendicular((point, line1, line2), premise, -2, False)  # 垂直平分也是垂直
+            return True
+        return False
+
+    def define_bisector(self, ordered_pair, premise, theorem, root=True):  # 角平分线
+        line, angle = ordered_pair
+        if self.conditions.add(ordered_pair, cType.bisector, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.bisector)]
+            self.define_angle(angle, premise, -2, False)  # 定义角和线
+            self.define_line(line, premise, -2, False)
+            return True
+        return False
+
+    def define_median(self, ordered_pair, premise, theorem, root=True):  # 中线
+        line, triangle = ordered_pair
+        if self.conditions.add(ordered_pair, cType.median, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.median)]
+            self.define_line(line, premise, -2)  # 定义实体
+            self.define_triangle(triangle, premise, -2)
+            self.define_midpoint((line[1], triangle[1:3]), premise, -2, False)  # 底边中点
+            return True
+        return False
+
+    def define_is_altitude(self, ordered_pair, premise, theorem, root=True):  # 高
+        height, triangle = ordered_pair
+        if self.conditions.add(ordered_pair, cType.is_altitude, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.is_altitude)]
+            self.define_line(height, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle, premise, -2, False)
+            return True
+        return False
+
+    def define_neutrality(self, ordered_pair, premise, theorem, root=True):    # 中位线
+        line, triangle = ordered_pair
+        if self.conditions.add(ordered_pair, cType.neutrality, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.is_altitude)]
+            self.define_line(line, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle, premise, -2, False)
             return True
         return False
 
@@ -347,276 +317,6 @@ class ProblemLogic:
             return True
         return False
 
-    def define_parallel(self, ordered_pair, premise, theorem, root=True):  # 线平行
-        line1, line2, = ordered_pair
-        if self.conditions.add(ordered_pair, cType.parallel, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.parallel)]
-
-            for parallel in rep.parallel(ordered_pair):  # 平行的4种表示
-                self.conditions.add(parallel, cType.parallel, premise, -2)
-
-            self.define_line(line1, premise, -2, False)  # 定义线
-            self.define_line(line2, premise, -2, False)
-            return True
-        return False
-
-    def define_intersect_line_line(self, ordered_pair, premise, theorem, root=True):  # 线相交
-        point, line1, line2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.intersect, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.intersect)]
-
-            for all_form in rep.intersect(ordered_pair):  # 相交有4种表示
-                self.conditions.add(all_form, cType.intersect, premise, -2)
-
-            self.define_line(line1, premise, -2, False)  # 定义线
-            self.define_line(line2, premise, -2, False)
-            self.define_point_on_line((point, line1), premise, -2, False)  # 定义点在线上
-            self.define_point_on_line((point, line2), premise, -2, False)
-            return True
-        return False
-
-    def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
-        point, line1, line2 = ordered_pair
-
-        if self.conditions.add(ordered_pair, cType.perpendicular, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
-
-            for all_form in rep.intersect(ordered_pair):
-                self.conditions.add(all_form, cType.perpendicular, premise, -2)  # 垂直有4种表示
-
-            self.define_intersect_line_line(ordered_pair, premise, -2, False)  # 垂直也是相交
-
-            sym = []
-            if len(set(point + line1 + line2)) == 3:
-                if line1[0] == line2[1]:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2 + line1[1])))
-                elif line1[1] == line2[1]:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1 + line2[0])))
-                elif line1[1] == line2[0]:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2[::-1] + line1[0])))
-                elif line1[0] == line2[0]:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1[::-1] + line2[1])))
-            elif len(set(point + line1 + line2)) == 4:
-                if line2[1] == point:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1[0] + line2[::-1])))
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2 + line1[1])))
-                elif line1[1] == point:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2[1] + line1[::-1])))
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1 + line2[0])))
-                elif line2[0] == point:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1[1] + line2)))
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2[::-1] + line1[0])))
-                elif line1[0] == point:
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line2[0] + line1)))
-                    sym.append(self.get_sym_of_attr((aType.DA.name, line1[::-1] + line2[1])))
-            elif len(set(point + line1 + line2)) == 5:
-                sym.append(self.get_sym_of_attr((aType.DA.name, line1[0] + point + line2[0])))
-                sym.append(self.get_sym_of_attr((aType.DA.name, line2[0] + point + line1[1])))
-                sym.append(self.get_sym_of_attr((aType.DA.name, line1[1] + point + line2[1])))
-                sym.append(self.get_sym_of_attr((aType.DA.name, line2[1] + point + line1[0])))
-
-            for s in sym:  # 设置直角为90°
-                self.set_value_of_sym(s, 90, premise, -2)
-
-            return True
-        return False
-
-    def define_perpendicular_bisector(self, ordered_pair, premise, theorem, root=True):  # 垂直平分
-        point, line1, line2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.perpendicular_bisector, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.perpendicular_bisector)]
-            self.define_perpendicular((point, line1, line2), premise, -2, False)  # 垂直平分也是垂直
-            return True
-        return False
-
-    def define_bisects_angle(self, ordered_pair, premise, theorem, root=True):  # 角平分线
-        line, angle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.bisects_angle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.bisects_angle)]
-            self.define_angle(angle, premise, -2, False)  # 定义角和线
-            self.define_line(line, premise, -2, False)
-            return True
-        return False
-
-    def define_disjoint_line_circle(self, ordered_pair, premise, theorem, root=True):  # 线圆相离
-        line, circle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.disjoint_line_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.disjoint_line_circle)]
-            self.define_line(line, premise, -2, False)  # 定义和线圆
-            self.define_circle(circle, premise, -2, False)
-            return True
-        return False
-
-    def define_disjoint_circle_circle(self, ordered_pair, premise, theorem, root=True):  # 圆圆相离
-        circle1, circle2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.disjoint_circle_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.disjoint_circle_circle)]
-            self.conditions.add((circle2, circle1), cType.disjoint_circle_circle, premise, -2)  # 2种表示
-            self.define_circle(circle1, premise, -2, False)  # 定义圆
-            self.define_circle(circle2, premise, -2, False)
-            return True
-        return False
-
-    def define_tangent_line_circle(self, ordered_pair, premise, theorem, root=True):  # 相切
-        point, line, circle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.tangent_line_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.tangent_line_circle)]
-            self.define_line(line, premise, -2, False)  # 定义线和圆
-            self.define_circle(circle, premise, -2, False)
-            if point != "$":  # 如果给出切点
-                self.define_point(point, premise, -2)
-                self.define_point_on_line((point, line), premise, -2, False)
-                self.define_point_on_circle((point, circle), premise, -2, False)
-            return True
-        return False
-
-    def define_tangent_circle_circle(self, ordered_pair, premise, theorem, root=True):  # 相切
-        point, circle1, circle2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.tangent_circle_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.tangent_circle_circle)]
-            self.conditions.add((point, circle2, circle1), cType.tangent_circle_circle, premise, -2)  # 2种表示
-            self.define_circle(circle1, premise, -2, False)  # 定义圆
-            self.define_circle(circle2, premise, -2, False)
-            if point != "$":  # 如果给出切点
-                self.define_point(point, premise, -2)
-                self.define_point_on_circle((point, circle1), premise, -2, False)
-                self.define_point_on_circle((point, circle2), premise, -2, False)
-            return True
-        return False
-
-    def define_intersect_line_circle(self, ordered_pair, premise, theorem, root=True):  # 相交
-        point1, point2, line, circle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.intersect_line_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.intersect_line_circle)]
-            self.define_line(line, premise, -2, False)  # 定义线
-            self.define_circle(circle, premise, -2, False)  # 定义圆
-            if point1 != "$":  # 如果给出交点
-                self.define_point(point1, premise, -2)
-                self.define_point_on_line((point1, line), premise, -2, False)
-                self.define_point_on_circle((point1, circle), premise, -2, False)
-            if point2 != "$":  # 如果给出交点
-                self.define_point(point2, premise, -2)
-                self.define_point_on_line((point2, line), premise, -2, False)
-                self.define_point_on_circle((point2, circle), premise, -2, False)
-            return True
-        return False
-
-    def define_intersect_circle_circle(self, ordered_pair, premise, theorem, root=True):  # 相交
-        point1, point2, circle1, circle2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.intersect_circle_circle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.intersect_circle_circle)]
-            self.conditions.add((point2, point1, circle2, circle1), cType.intersect_circle_circle, premise, -2)  # 2种表示
-            self.define_circle(circle1, premise, -2, False)  # 定义圆
-            self.define_circle(circle2, premise, -2, False)
-            if point1 != "$":  # 如果给出交点
-                self.define_point(point1, premise, -2)
-                self.define_point_on_circle((point1, circle1), premise, -2, False)
-                self.define_point_on_circle((point1, circle2), premise, -2, False)
-            if point2 != "$":  # 如果给出交点
-                self.define_point(point2, premise, -2)
-                self.define_point_on_circle((point2, circle1), premise, -2, False)
-                self.define_point_on_circle((point2, circle2), premise, -2, False)
-            return True
-        return False
-
-    def define_median(self, ordered_pair, premise, theorem, root=True):  # 中线
-        line, triangle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.median, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.median)]
-            self.define_line(line, premise, -2)  # 定义实体
-            self.define_triangle(triangle, premise, -2)
-            self.define_midpoint((line[1], triangle[1:3]), premise, -2, False)  # 底边中点
-            return True
-        return False
-
-    def define_height_triangle(self, ordered_pair, premise, theorem, root=True):  # 高
-        height, triangle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.height_triangle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.height_triangle)]
-            self.define_line(height, premise, -2, False)  # 定义实体
-            self.define_triangle(triangle, premise, -2, False)
-            return True
-        return False
-
-    def define_height_trapezoid(self, ordered_pair, premise, theorem, root=True):  # 高
-        height, trapezoid = ordered_pair
-        if self.conditions.add(ordered_pair, cType.height_trapezoid, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.height_trapezoid)]
-            self.define_line(height, premise, -2, False)  # 定义实体
-            self.define_trapezoid(trapezoid, premise, -2, False)
-            return True
-        return False
-
-    def define_internally_tangent(self, ordered_pair, premise, theorem, root=True):  # 内切 circle2是大的
-        point, circle1, circle2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.internally_tangent, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.internally_tangent)]
-            self.define_circle(circle1, premise, -2, False)  # 定义实体
-            self.define_circle(circle2, premise, -2, False)
-            if point != "$":
-                self.define_point(point, premise, -2)
-                self.define_point_on_circle((point, circle1), premise, -2, False)
-                self.define_point_on_circle((point, circle2), premise, -2, False)
-            return True
-        return False
-
-    def define_contain(self, ordered_pair, premise, theorem, root=True):  # 内含 circle2是大的
-        circle1, circle2 = ordered_pair
-        if self.conditions.add(ordered_pair, cType.contain, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.contain)]
-            self.define_circle(circle1, premise, -2, False)  # 定义实体
-            self.define_circle(circle2, premise, -2, False)
-            return True
-        return False
-
-    def define_circumscribed_to_triangle(self, ordered_pair, premise, theorem, root=True):  # 外接圆
-        circle, triangle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.circumscribed_to_triangle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.circumscribed_to_triangle)]
-            self.define_circle(circle, premise, -2, False)
-            self.define_triangle(triangle, premise, -2, False)
-            return True
-        return False
-
-    def define_inscribed_in_triangle(self, ordered_pair, premise, theorem, root=True):
-        point1, point2, point3, circle, triangle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.inscribed_in_triangle, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.inscribed_in_triangle)]
-            self.define_circle(circle, premise, -2, False)
-            self.define_triangle(triangle, premise, -2, False)
-            if point1 != "$":
-                self.define_point(point1, premise, -2)
-                self.define_point_on_line((point1, triangle[0:2]), premise, -2, False)
-                self.define_point_on_circle((point1, circle), premise, -2, False)
-            if point2 != "$":
-                self.define_point(point2, premise, -2)
-                self.define_point_on_line((point2, triangle[1:3]), premise, -2, False)
-                self.define_point_on_circle((point2, circle), premise, -2, False)
-            if point3 != "$":
-                self.define_point(point3, premise, -2)
-                self.define_point_on_line((point3, triangle[2] + triangle[0]), premise, -2, False)
-                self.define_point_on_circle((point3, circle), premise, -2, False)
-            return True
-        return False
-
     def define_congruent(self, ordered_pair, premise, theorem, root=True):  # 全等
         triangle1, triangle2 = ordered_pair
         if self.conditions.add(ordered_pair, cType.congruent, premise, theorem):
@@ -645,17 +345,6 @@ class ProblemLogic:
             return True
         return False
 
-    def define_chord(self, ordered_pair, premise, theorem, root=True):  # 弦
-        line, circle = ordered_pair
-        if self.conditions.add(ordered_pair, cType.chord, premise, theorem):
-            if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.chord)]
-            self.conditions.add((line[::-1], circle), cType.chord, premise, -2)  # 两种表示
-            self.define_line(line, premise, -2, False)  # 定义实体
-            self.define_circle(circle, premise, -2, False)
-            return True
-        return False
-
     """------------Equation------------"""
 
     def define_equation(self, equation, equation_type, premise, theorem):  # 定义方程
@@ -670,22 +359,23 @@ class ProblemLogic:
 
     """------------Attr's Symbol------------"""
 
-    def get_sym_of_attr(self, attr):
-        if attr[0] == aType.T.name:  # 表示目标/中间值类型的符号，不用存储在符号库
-            return symbols(attr[0].lower() + "_" + attr[1])
+    def get_sym_of_attr(self, attr):    # attr: (aType, entity_name)
+        if attr[0] == aType.T:  # 表示目标/中间值类型的符号，不用存储在符号库
+            return symbols(attr[0].name.lower() + "_" + attr[1])
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
-            if attr[0] == "DA":
-                sym = symbols(attr[0].lower() + "_" + attr[1].lower())    # 角可以有负的
+            if attr[0] in [aType.MA, aType.F]:
+                sym = symbols(attr[0].lower() + "_" + attr[1].lower())    # 角、自由变量可以有负的
             else:
                 sym = symbols(attr[0].lower() + "_" + attr[1].lower(), positive=True)  # 属性值没有负数
-            self.sym_of_attr[attr] = sym  # 符号
-            self.value_of_sym[sym] = None  # 值
 
-            # 图形有多种表示形式的
-            if attr[0] == aType.LL.name or attr[0] == aType.P.name or attr[0] == aType.A.name:
+            self.value_of_sym[sym] = None  # 符号值
+
+            if attr[0] in [aType.LL, aType.MA, aType.AS, aType.PT]:    # entity 有多种表示形式
                 for all_form in rep.shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
+            else:    # entity 只有一种形式
+                self.sym_of_attr[attr] = sym  # 符号
 
         else:  # 有符号就返回符号
             sym = self.sym_of_attr[attr]
@@ -698,69 +388,15 @@ class ProblemLogic:
             self.define_equation(sym - value, eType.value, premise, theorem)
         return False
 
-
-class Problem(ProblemLogic):
-
-    def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
-        super().__init__()
-        self.problem_index = problem_index
-        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
-        self.theorem_seqs = theorem_seqs
-        self.answer = answer
-
-    """------------构图函数------------"""
-    def is_collinear(self, point1, point2, point3):
-        for coll in self.conditions.items[cType.collinear]:
-            if point1 in coll and point2 in coll and point3 in coll:
-                return True
-        return False
-
-    def find_all_shape(self, extended):     # 拼图法，构造所有shape，并记录面积之间的相加关系
-        update = True
-        traversed = []    # 记录已经计算过的，避免重复计算
-        while update:
-            update = False
-            for shape1 in self.conditions.items[cType.shape]:
-                for shape2 in self.conditions.items[cType.shape]:
-                    if shape1[len(shape1) - 1] == shape2[0] and shape1[len(shape1) - 2] == shape2[1] and \
-                            (shape1, shape2) not in traversed:
-                        traversed.append((shape1, shape2))
-                        same_length = 2
-                        while same_length < len(shape1) and same_length < len(shape2):    # 共同点的数量
-                            if shape1[len(shape1) - same_length - 1] == shape2[same_length]:
-                                same_length += 1
-                            else:
-                                break
-                        new_shape = shape1[0:len(shape1) - same_length + 1]    # shape1不同的部分、第一个共点
-                        new_shape += shape2[same_length:len(shape2)]    # shape2不同的部分
-                        new_shape += shape1[len(shape1) - 1]    # 第2个共点
-
-                        i = 0    # 当前长度为3窗口起始的位置
-                        while len(new_shape) > 2 and i < len(new_shape):
-                            point1 = new_shape[i]
-                            point2 = new_shape[(i + 1) % len(new_shape)]
-                            point3 = new_shape[(i + 2) % len(new_shape)]
-                            if self.is_collinear(point1,  point2, point3):    # 三点共线，去掉中间的点
-                                new_shape = new_shape.replace(point2, "")
-                            else:    # 不共线，窗口后移
-                                i += 1
-                        if 2 < len(new_shape) == len(set(new_shape)):   # 是图形且没有环
-                            update = self.define_shape(new_shape, [-1], -2) or update
-                            if extended:
-                                a1 = self.get_sym_of_attr((aType.A.name, shape1))
-                                a2 = self.get_sym_of_attr((aType.A.name, shape2))
-                                a3 = self.get_sym_of_attr((aType.A.name, new_shape))
-                                self.define_equation(a1 + a2 - a3, eType.basic, [-1], -2)
-
-    def angle_representation_alignment(self):  # 使角的表示符号一致
+    def angle_repsentation_alignment(self):    # 使角的角度表示符号一致
         for angle in self.conditions.items[cType.angle]:
-            if (aType.DA.name, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
+            if (aType.MA.name, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
                 continue
 
             a_points = angle[0]
             o_point = angle[1]
             b_points = angle[2]
-            sym = self.get_sym_of_attr((aType.DA.name, angle))
+            sym = self.get_sym_of_attr((aType.MA.name, angle))
 
             coll_a = None  # 与AO共线的collinear
             coll_b = None  # 与OB共线的collinear
@@ -781,35 +417,18 @@ class Problem(ProblemLogic):
 
             for a_point in a_points:  # 本质上相同的角安排一样的符号
                 for b_point in b_points:
-                    self.sym_of_attr[(aType.DA.name, a_point + o_point + b_point)] = sym
+                    self.sym_of_attr[(aType.MA.name, a_point + o_point + b_point)] = sym
 
-    def find_all_angle_addition(self, extended):  # 所有的角的相加关系
-        if not extended:
-            return
 
-        for angle1 in self.conditions.items[cType.angle]:
-            for angle2 in self.conditions.items[cType.angle]:
-                if angle1[0] == angle2[2] and angle1[1] == angle2[1]:
-                    angle3 = angle2[0:2] + angle1[2]
-                    sym1 = self.get_sym_of_attr((aType.DA.name, angle1))
-                    sym2 = self.get_sym_of_attr((aType.DA.name, angle2))
-                    sym3 = self.get_sym_of_attr((aType.DA.name, angle3))
-                    self.define_equation(sym1 + sym2 - sym3, eType.basic, [-1], -2)
+class Problem(ProblemLogic):
 
-    def find_all_line_addition(self, extended):  # 所有共线边长度的相加关系、平角大小
-        if not extended:
-            return
-
-        for coll in self.conditions.items[cType.collinear]:
-            for i in range(0, len(coll) - 2):
-                for j in range(i + 1, len(coll) - 1):
-                    for k in range(j + 1, len(coll)):
-                        sym1 = self.get_sym_of_attr((aType.LL.name, coll[i] + coll[j]))
-                        sym2 = self.get_sym_of_attr((aType.LL.name, coll[j] + coll[k]))
-                        sym3 = self.get_sym_of_attr((aType.LL.name, coll[i] + coll[k]))
-                        sym_of_angle = self.get_sym_of_attr((aType.DA.name, coll[i] + coll[j] + coll[k]))
-                        self.set_value_of_sym(sym_of_angle, 180, [-1], -2)  # 平角为180°
-                        self.define_equation(sym1 + sym2 - sym3, eType.basic, [-1], -2)  # 共线边长度的相加关系
+    def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
+        super().__init__()
+        self.problem_index = problem_index
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
+        self.theorem_seqs = theorem_seqs
+        self.answer = answer
+        self.solve_time_list = []
 
     """------------解方程相关------------"""
 
@@ -952,11 +571,12 @@ class Problem(ProblemLogic):
 
     """------------辅助功能------------"""
 
-    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):  # 新问题
+    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer): 
         self.problem_index = problem_index
         self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
+        self.solve_time_list = []
 
         """------Entity, Entity Relation, Equation------"""
         self.conditions.clean()
@@ -990,6 +610,9 @@ class Problem(ProblemLogic):
             self.premise = list(set(self.premise))  # 快速去重
             if len(self.premise) == length:  # 如果没有更新，结束循环
                 break
+
+    def anti_generate_fl_using_logic(self):
+        pass
 
     def show(self):
         # Formal Language
@@ -1085,3 +708,23 @@ class Problem(ProblemLogic):
                 print("\033[32m{}\033[0m".format(self.target_solved[i]))
             else:
                 print("\033[31m{}\033[0m".format(self.target_solved[i]))
+
+        # 求解时间
+        for solve_time in self.solve_time_list:
+            print(solve_time)
+
+        print()
+
+    def simpel_show(self):
+        print("\033[36mproblem_index:\033[0m", end=" ")
+        print(self.problem_index)
+        for i in range(0, self.target_count):
+            print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])), end="  ")
+            print("\033[34mcorrect answer:\033[0m {}".format(self.answer[i]), end="  ")
+            if self.target_solved[i] == "solved":
+                print("\033[32m{}\033[0m".format(self.target_solved[i]))
+            else:
+                print("\033[31m{}\033[0m".format(self.target_solved[i]))
+
+    def show_fl(self):
+        pass

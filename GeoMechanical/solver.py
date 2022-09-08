@@ -1,15 +1,22 @@
-import copy
 from problem import Problem
 from theorem import Theorem
 from facts import AttributionType as aType
 from facts import TargetType as tType
 from facts import EquationType as eType
+from facts import FormalLanguage
 from sympy import sin, cos, tan, pi
 from utility import PreParse as pp
 import time
 
 """后面改进
+2022.09.07
 1.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
+2.要转化的数据集：①interGPS的  ②几何瑰宝1有关三角形的
+2022.09.08
+1.去掉多于代码，只考虑三角形的
+2.编写完所有定理
+3.logic 转化为 FL 部分代码 编写
+4.parse 部分 改写代码更易读
 """
 
 
@@ -25,30 +32,9 @@ class Solver:
             3: Theorem.nous_3_extend_line_addition,
             4: Theorem.nous_4_extend_angle_addition,
             5: Theorem.nous_5_extend_flat_angle,
-            21: Theorem.theorem_21_pythagorean,
-            22: Theorem.theorem_22_pythagorean_inverse,
-            23: Theorem.theorem_23_right_triangle_determine,
-            24: Theorem.theorem_24_transitivity_of_parallel,
-            25: Theorem.theorem_25_transitivity_of_perpendicular,
-            26: Theorem.theorem_26_similar_triangle,
-            27: Theorem.theorem_27_similar_triangle_determine,
-            28: Theorem.theorem_28_congruent_triangle,
-            29: Theorem.theorem_29_congruent_triangle_determine,
-            30: Theorem.theorem_30_triangle,
-            31: Theorem.theorem_31_isosceles_triangle,
-            32: Theorem.theorem_32_isosceles_triangle_determine,
-            33: Theorem.theorem_33_tangent_radius,
-            34: Theorem.theorem_34_center_and_circumference_angle,
-            35: Theorem.theorem_35_parallel,
-            36: Theorem.theorem_36_parallel_inverse,
-            37: Theorem.theorem_37_flat_angle,
-            38: Theorem.theorem_38_intersecting_chord,
-            39: Theorem.theorem_39_polygon,
-            40: Theorem.theorem_40_angle_bisector,
-            41: Theorem.theorem_41_sine,
-            42: Theorem.theorem_42_cosine,
-            43: Theorem.theorem_43_perimeter_of_tri,
-            44: Theorem.theorem_44_perimeter_of_shape}
+            21: Theorem.theorem_21_triangle_property_angle_sum,
+            22: Theorem.theorem_22_right_triangle_pythagorean
+            }
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):  #
         self.last_time = time.time()
@@ -56,60 +42,8 @@ class Solver:
         if self.problem is None:  # 第一次，初始化
             self.problem = Problem(problem_index,
                                    construction_fls, text_fls, image_fls, target_fls,
-                                   theorem_seqs, answer)  # 题目
-            self.problem_define_map = {"Point": self.problem.define_point,
-                                       "Line": self.problem.define_line,
-                                       "Angle": self.problem.define_angle,
-                                       "Arc": self.problem.define_arc,
-                                       "Shape": self.problem.define_shape,
-                                       "Circle": self.problem.define_circle,
-                                       "Sector": self.problem.define_sector,
-                                       "Triangle": self.problem.define_triangle,
-                                       "RightTriangle": self.problem.define_right_triangle,
-                                       "IsoscelesTriangle": self.problem.define_isosceles_triangle,
-                                       "RegularTriangle": self.problem.define_regular_triangle,
-                                       "Quadrilateral": self.problem.define_quadrilateral,
-                                       "Trapezoid": self.problem.define_trapezoid,
-                                       "IsoscelesTrapezoid": self.problem.define_isosceles_trapezoid,
-                                       "Parallelogram": self.problem.define_parallelogram,
-                                       "Rectangle": self.problem.define_rectangle,
-                                       "Rhombus": self.problem.define_rhombus,
-                                       "Kite": self.problem.define_kite,
-                                       "Square": self.problem.define_square,
-                                       "Polygon": self.problem.define_polygon,
-                                       "RegularPolygon": self.problem.define_regular_polygon,
-                                       "Collinear": self.problem.define_collinear,
-                                       "PointOnLine": self.problem.define_point_on_line,
-                                       "PointOnArc": self.problem.define_point_on_arc,
-                                       "PointOnCircle": self.problem.define_point_on_circle,
-                                       "Midpoint": self.problem.define_midpoint,
-                                       "Circumcenter": self.problem.define_circumcenter,
-                                       "Incenter": self.problem.define_incenter,
-                                       "Centroid": self.problem.define_centroid,
-                                       "Orthocenter": self.problem.define_orthocenter,
-                                       "Parallel": self.problem.define_parallel,
-                                       "BisectsAngle": self.problem.define_bisects_angle,
-                                       "DisjointLineCircle": self.problem.define_disjoint_line_circle,
-                                       "DisjointCircleCircle": self.problem.define_disjoint_circle_circle,
-                                       "Median": self.problem.define_median,
-                                       "HeightOfTriangle": self.problem.define_height_triangle,
-                                       "HeightOfTrapezoid": self.problem.define_height_trapezoid,
-                                       "Contain": self.problem.define_contain,
-                                       "CircumscribedToTriangle": self.problem.define_circumscribed_to_triangle,
-                                       "Congruent": self.problem.define_congruent,
-                                       "Similar": self.problem.define_similar,
-                                       "Chord": self.problem.define_chord,
-                                       "Perpendicular": self.problem.define_perpendicular,
-                                       "PerpendicularBisector": self.problem.define_perpendicular_bisector,
-                                       "TangentLineCircle": self.problem.define_tangent_line_circle,
-                                       "TangentCircleCircle": self.problem.define_tangent_circle_circle,
-                                       "IntersectLineLine": self.problem.define_intersect_line_line,
-                                       "InternallyTangent": self.problem.define_internally_tangent,
-                                       "IntersectLineCircle": self.problem.define_intersect_line_circle,
-                                       "IntersectCircleCircle": self.problem.define_intersect_circle_circle,
-                                       "InscribedInTriangle": self.problem.define_inscribed_in_triangle
-                                       }
-        else:
+                                   theorem_seqs, answer)
+        else:    # 更新题目
             self.problem.new_problem(problem_index,
                                      construction_fls, text_fls, image_fls, target_fls,
                                      theorem_seqs, answer)
@@ -119,90 +53,94 @@ class Solver:
 
     def parse(self):
         """------构图语句------"""
-        construction_fls = pp.pre_parse_fls(copy.copy(self.problem.fl.construction_fls))
-        for fl in construction_fls:
+        for fl in pp.pre_parse_fls(self.problem.fl.construction_fls):
             if fl[0] == "Shape":  # 基本构图图形
                 self.problem.define_shape(fl[1], [-1], -1)
-            else:  # 共线
+            elif fl[0] == "Collinear":  # 共线
                 self.problem.define_collinear(fl[1], [-1], -1)
+            else:
+                print("Unknown predicate: {}".format(fl[0]))    # 之后可以改成 throw error
 
-        self.problem.angle_representation_alignment()    # 使角的符号表示一致
+        """------角一致化------"""
+        self.problem.angle_representation_alignment()  # 使角的符号表示一致
 
         """------题目条件------"""
-        text_fls = pp.pre_parse_fls(copy.copy(self.problem.fl.text_fls))
-        image_fls = pp.pre_parse_fls(copy.copy(self.problem.fl.image_fls))
-        for fl in text_fls + image_fls:
-            if fl[0] == "Equal":  # 数量关系
+        for fl in pp.pre_parse_fls(self.problem.fl.text_fls + self.problem.fl.image_fls):
+            if fl[0] == "Equal":    # Equal
                 self.problem.define_equation(self._generate_expr(fl), eType.basic, [-1], -1)
-            else:  # 实体定义、位置关系定义
-                self.problem_define_map[fl[0]](fl[1], [-1], -1)
+            elif fl[0] == "Point":    # Entity
+                self.problem.define_point(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "Line":
+                self.problem.define_line(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "Angle":
+                self.problem.define_angle(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "Triangle":
+                self.problem.define_triangle(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "RightTriangle":
+                self.problem.define_right_triangle(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "IsoscelesTriangle":
+                self.problem.define_isosceles_triangle(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "EquilateralTriangle":
+                self.problem.define_equilateral_triangle(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "Polygon":
+                self.problem.define_polygon(fl[1], eType.basic, [-1], -1)
+            elif fl[0] == "Midpoint":    # Entity Relation
+                self.problem.define_midpoint(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Intersect":
+                self.problem.define_intersect(([fl[1][1], fl[2][1], fl[3][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Parallel":
+                self.problem.define_parallel(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Perpendicular":
+                self.problem.define_perpendicular(([fl[1][1], fl[2][1], fl[3][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "PerpendicularBisector":
+                self.problem.define_perpendicular_bisector(([fl[1][1], fl[2][1], fl[3][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Bisector":
+                self.problem.define_bisector(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Median":
+                self.problem.define_median(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "IsAltitude":
+                self.problem.define_is_altitude(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Neutrality":
+                self.problem.define_neutrality(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Circumcenter":
+                self.problem.define_circumcenter(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Incenter":
+                self.problem.define_incenter(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Centroid":
+                self.problem.define_centroid(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Orthocenter":
+                self.problem.define_orthocenter(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Congruent":
+                self.problem.define_congruent(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            elif fl[0] == "Similar":
+                self.problem.define_similar(([fl[1][1], fl[2][1]]), eType.basic, [-1], -1)
+            else:
+                print("Unknown predicate: {}".format(fl[0]))
 
         """------解题目标------"""
-        target_fls = pp.pre_parse_fls(copy.copy(self.problem.fl.target_fls))
+        target_fls = pp.pre_parse_fls(self.problem.fl.target_fls)
         for fl in target_fls:
-            self._parse_find(fl[1])
-
-        """------求解初始方程------"""
-        self.problem.solve_equations()
+            if fl[0] == "Find":
+                self._parse_find(fl[1])
+            else:
+                print("Unknown predicate: {}".format(fl[0]))
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
-            if fl[1][0] == "Line":
-                self.problem.define_line(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.LL.name, fl[1][1]))
-            else:
-                self.problem.define_arc(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.LA.name, fl[1][1]))
-        elif fl[0] == "Degree":
-            if fl[1][0] == "Angle":
-                self.problem.define_angle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.DA.name, fl[1][1]))
-            else:
-                self.problem.define_sector(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.DS.name, fl[1][1]))
-        elif fl[0] == "Radius":
-            if fl[1][0] == "Arc":
-                self.problem.define_arc(fl[1][1], [-1], -1)
-            elif fl[1][0] == "Circle":
-                self.problem.define_circle(fl[1][1], [-1], -1)
-            else:
-                self.problem.define_sector(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.R.name, fl[1][1]))
-        elif fl[0] == "Diameter":
-            self.problem.define_circle(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.DC.name, fl[1][1]))
-        elif fl[0] == "Perimeter":
-            if fl[1][0] == "Triangle":
-                self.problem.define_triangle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
-            elif fl[1][0] == "Circle":
-                self.problem.define_circle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
-            elif fl[1][0] == "Sector":
-                self.problem.define_sector(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.PS.name, fl[1][1]))
-            elif fl[1][0] == "Quadrilateral":
-                self.problem.define_quadrilateral(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
-            else:
-                self.problem.define_polygon(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.P.name, fl[1][1]))
+            self.problem.define_line(fl[1][1], [-1], -1)
+            return self.problem.get_sym_of_attr((aType.LL, fl[1][1]))
+        elif fl[0] == "Measure":
+            self.problem.define_angle(fl[1][1], [-1], -1)
+            return self.problem.get_sym_of_attr((aType.MA, fl[1][1]))
         elif fl[0] == "Area":
-            if fl[1][0] == "Triangle":
-                self.problem.define_triangle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
-            elif fl[1][0] == "Circle":
-                self.problem.define_circle(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
-            elif fl[1][0] == "Sector":
-                self.problem.define_sector(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.AS.name, fl[1][1]))
-            elif fl[1][0] == "Quadrilateral":
-                self.problem.define_quadrilateral(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
-            else:
-                self.problem.define_polygon(fl[1][1], [-1], -1)
-                return self.problem.get_sym_of_attr((aType.A.name, fl[1][1]))
+            self.problem.define_triangle(fl[1][1], [-1], -1)
+            return self.problem.get_sym_of_attr((aType.AS, fl[1][1]))
+        elif fl[0] == "Perimeter":
+            self.problem.define_triangle(fl[1][1], [-1], -1)
+            return self.problem.get_sym_of_attr((aType.PT, fl[1][1]))
+        elif fl[0] == "Altitude":
+            self.problem.define_triangle(fl[1][1], [-1], -1)
+            return self.problem.get_sym_of_attr((aType.AT, fl[1][1]))
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":
@@ -290,26 +228,32 @@ class Solver:
 
         return expr_stack.pop()
 
+    def _generate_tuple(self, fl):
+        pass
+
     def _parse_find(self, fl):  # 解析find
         self.problem.target_count += 1  # 新目标
         self.problem.target_solved.append("unsolved")  # 初始化题目求解情况
 
-        if fl[0] == "Equal":  # 验证型解题目标
+        if fl[0] == "Equal":   # 数值-验证型 解题目标
             self.problem.target_type.append(tType.equal)
             target = self.problem.get_sym_of_attr((aType.T.name, str(format(self.problem.target_count))))
             self.problem.target.append([target, target - self._generate_expr(fl), None, None])  # 求解目标 辅助方程 目标值 前提
-        elif fl[0] == "Value":  # 求值型解题目标
+        elif fl[0] in FormalLanguage.entity_predicates:    # 关系型解题目标(实体)
+            self.problem.target_type.append(tType.entity)
+            self.problem.target.append([fl[0], self._generate_tuple(fl)])
+        elif fl[0] in FormalLanguage.entity_relation_predicates:    # 关系型解题目标(实体关系)
+            self.problem.target_type.append(tType.relation)
+            self.problem.target.append([fl[0], self._generate_tuple(fl)])
+        else:   # 数值-求解型 解题目标
             self.problem.target_type.append(tType.value)
             target = self.problem.get_sym_of_attr((aType.T.name, str(format(self.problem.target_count))))
-            self.problem.target.append([target, target - self._generate_expr(fl[1]), None, None])  # 求解目标 辅助方程 目标值 前提
-        else:  # 关系型解题目标
-            if fl[0] in self.problem.entities.keys():
-                self.problem.target_type.append(tType.entity)
-            else:
-                self.problem.target_type.append(tType.relation)
-            self.problem.target.append([fl[0], fl[1]])
+            self.problem.target.append([target, target - self._generate_expr(fl[0]), None, None])
+
 
     def solve(self):
+        self.problem.solve_equations()    # 求解初始方程
+
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
             self.theorem_map[theorem](self.problem)
             self.problem.solve_equations()  # 求解定理添加的方程
@@ -336,5 +280,6 @@ class Solver:
     """------------auxiliary function------------"""
 
     def time_cons(self, keyword):
-        print("\033[32m{}\033[0m time consuming:{:.6f}s".format(keyword, time.time() - self.last_time))
+        self.problem.solve_time_list.append(
+            "\033[32m{}\033[0m time consuming:{:.6f}s".format(keyword, time.time() - self.last_time))
         self.last_time = time.time()
