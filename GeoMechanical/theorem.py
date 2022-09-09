@@ -1,65 +1,19 @@
-import time
 from facts import AttributionType as aType
 from facts import EquationType as eType
 from facts import ConditionType as cType
-from sympy import solve, Float, pi, sin, cos
+from sympy import pi, sin, cos
 from utility import Representation as rep
+"""
+1.题目标注到25了
+2.get_sym_of_attr   参数顺序改一下，太迷惑人了
+"""
 
 
 class Theorem:
     """------------常识------------"""
 
     @staticmethod
-    def nous_1_extend_shape(problem):
-        """
-        拼图法构造新shape
-        Shape(ABC), Shape(CBD) ==> Shape(ABD)
-        """
-        shape_update = False  # 是否更新了条件
-        update = True
-        traversed = []  # 记录已经计算过的，避免重复计算
-        while update:
-            update = False
-            for shape1 in problem.conditions.items[cType.shape]:
-                for shape2 in problem.conditions.items[cType.shape]:
-                    if shape1[len(shape1) - 1] == shape2[0] and shape1[len(shape1) - 2] == shape2[1] and \
-                            (shape1, shape2) not in traversed:
-                        traversed.append((shape1, shape2))
-                        same_length = 2
-                        while same_length < len(shape1) and same_length < len(shape2):  # 共同点的数量
-                            if shape1[len(shape1) - same_length - 1] == shape2[same_length]:
-                                same_length += 1
-                            else:
-                                break
-                        new_shape = shape1[0:len(shape1) - same_length + 1]  # shape1不同的部分、第一个共点
-                        new_shape += shape2[same_length:len(shape2)]  # shape2不同的部分
-                        new_shape += shape1[len(shape1) - 1]  # 第2个共点
-
-                        i = 0  # 当前长度为3窗口起始的位置
-                        while len(new_shape) > 2 and i < len(new_shape):
-                            point1 = new_shape[i]
-                            point2 = new_shape[(i + 1) % len(new_shape)]
-                            point3 = new_shape[(i + 2) % len(new_shape)]
-
-                            is_coll = False  # 判断是否共线
-                            for coll in problem.conditions.items[cType.collinear]:
-                                if point1 in coll and point2 in coll and point3 in coll:
-                                    is_coll = True
-                                    new_shape = new_shape.replace(point2, "")  # 三点共线，去掉中间的点
-                                    break
-                            if not is_coll:  # 不共线，窗口后移
-                                i += 1
-
-                        if 2 < len(new_shape) == len(set(new_shape)):  # 是图形且没有环
-                            premise = [problem.conditions.get_index(shape1, cType.shape),
-                                       problem.conditions.get_index(shape2, cType.shape)]
-                            update = problem.define_shape(new_shape, premise, 1) or update
-                            shape_update = update or shape_update
-
-        return shape_update
-
-    @staticmethod
-    def nous_2_extend_shape_and_area_addition(problem):
+    def nous_1_area_addition(problem):
         """
         拼图法构造新shape，并记录shape之间的面积相加关系
         Shape(ABC), Shape(CBD) ==> Shape(ABD), a_abc + a_cbd - a_abd = 0
@@ -112,7 +66,7 @@ class Theorem:
         return shape_update
 
     @staticmethod
-    def nous_3_extend_line_addition(problem):
+    def nous_2_line_addition(problem):
         """
         拼图法构造线段之间的相加关系
         Line(AB), Line(BC) ==> Line(AC), ll_ab + ll_bc - ll_ac = 0
@@ -131,7 +85,7 @@ class Theorem:
         return update
 
     @staticmethod
-    def nous_4_extend_angle_addition(problem):
+    def nous_3_angle_addition(problem):
         """
         拼图法构造角之间的相加关系
         Angle(ABC), Angle(CBD) ==> Angle(ABD), da_abc + da_cbd - da_abd = 0
@@ -151,7 +105,7 @@ class Theorem:
         return update
 
     @staticmethod
-    def nous_5_extend_flat_angle(problem):
+    def nous_4_flat_angle(problem):
         """
         拼图法赋予平角180°
         Line(AB), Line(BC) ==> da_abc = 180°
@@ -168,6 +122,10 @@ class Theorem:
                         update = problem.define_equation(sym_of_angle - 180, eType.basic, premise, 5) or update
 
         return update
+
+    @staticmethod
+    def nous_5_(problem):
+        pass
 
     @staticmethod
     def nous_6_(problem):
@@ -307,13 +265,13 @@ class Theorem:
                     problem.value_of_sym[c] is not None:
                 v = problem.get_sym_of_attr((aType.M, "1"))
                 result, premise = problem.solve_equations(v, v - a ** 2 - b ** 2 + c ** 2)
-                if result is not None and abs(result) < 0.001:
+                if result is not None and abs(result) < 0.01:
                     update = problem.define_right_triangle(tri, premise, 24) or update
                 result, premise = problem.solve_equations(v, v - a ** 2 + b ** 2 - c ** 2)
-                if result is not None and abs(result) < 0.001:
+                if result is not None and abs(result) < 0.01:
                     update = problem.define_right_triangle(tri[1] + tri[0] + tri[2], premise, 24) or update
                 result, premise = problem.solve_equations(v, v + a ** 2 - b ** 2 - c ** 2)
-                if result is not None and abs(result) < 0.001:
+                if result is not None and abs(result) < 0.01:
                     update = problem.define_right_triangle(tri[1] + tri[2] + tri[0], premise, 24) or update
 
             i = i + rep.count_triangle
@@ -558,7 +516,20 @@ class Theorem:
 
     @staticmethod
     def theorem_46_bisector_property_line_ratio(problem):
-        pass
+        """
+        角平分线 性质
+        角平分线AD  ==>  BD/DC=AB/AC
+        """
+        update = False
+        for bisector in problem.conditions.items[cType.bisector]:
+            line, tri = bisector
+            line11 = problem.get_sym_of_attr((aType.LL, tri[1] + line[1]))
+            line12 = problem.get_sym_of_attr((aType.LL, line[1] + tri[2]))
+            line21 = problem.get_sym_of_attr((aType.LL, tri[0] + tri[1]))
+            line22 = problem.get_sym_of_attr((aType.LL, tri[2] + tri[0]))
+            update = problem.define_equation(line11 / line12 - line21 / line22, eType.theorem,
+                                             [problem.conditions.get_index(bisector, cType.bisector)], 46) or update
+        return update
 
     @staticmethod
     def theorem_47_bisector_property_angle_equal(problem):
@@ -574,7 +545,28 @@ class Theorem:
 
     @staticmethod
     def theorem_50_bisector_judgment_angle_equal(problem):
-        pass
+        """
+        角平分线 判定
+        平分的两角相等  ==>  DA为△ABC的角平分线
+        """
+        update = False
+        for tri in problem.conditions.items[cType.triangle]:
+            for line in problem.conditions.items[cType.line]:
+                if tri[0] == line[0]:
+                    is_coll = False  # 判断是否共线
+                    for coll in problem.conditions.items[cType.collinear]:
+                        if tri[1] in coll and line[1] in coll and tri[2] in coll:
+                            if coll.index(tri[1]) + coll.index(tri[2]) == 2 * coll.index(line[1]):
+                                is_coll = True
+                                break
+                    if is_coll:
+                        angle1 = problem.get_sym_of_attr((aType.MA, line[1] + tri[0:2]))
+                        angle2 = problem.get_sym_of_attr((aType.MA, tri[2] + tri[0] + line[1]))
+                        v = problem.get_sym_of_attr((aType.M, "1"))
+                        result, premise = problem.solve_equations(v, v - angle2 + angle1)
+                        if result is not None and abs(result) < 0.01:
+                            update = problem.define_bisector((line, tri), premise, 50) or update
+        return update
 
     @staticmethod
     def theorem_51_altitude_property(problem):
@@ -594,11 +586,49 @@ class Theorem:
 
     @staticmethod
     def theorem_55_neutrality_property_line_ratio(problem):
-        pass
+        """
+        中位线 性质
+        中位线  ==>  两侧对边成比例
+        """
+        update = False
+        for neutrality in problem.conditions.items[cType.neutrality]:
+            line, tri = neutrality
+            line11 = problem.get_sym_of_attr((aType.LL, tri[0] + line[0]))
+            line12 = problem.get_sym_of_attr((aType.LL, line[0] + tri[1]))
+            line21 = problem.get_sym_of_attr((aType.LL, tri[0] + line[1]))
+            line22 = problem.get_sym_of_attr((aType.LL, line[1] + tri[2]))
+            update = problem.define_equation(line11 / line12 - line21 / line22, eType.theorem,
+                                             [problem.conditions.get_index(neutrality, cType.neutrality)], 55) or update
+        return update
 
     @staticmethod
     def theorem_56_neutrality_judgment(problem):
-        pass
+        """
+        中位线 判定
+        △ABC、DE//BC  ==>  DE为△ABC的中位线
+        """
+        update = False
+        for tri in problem.conditions.items[cType.triangle]:
+            for parallel in problem.conditions.items[cType.parallel]:
+                if tri[1:3] == parallel[1]:
+                    is_coll_left = False  # 判断是否共线
+                    for coll in problem.conditions.items[cType.collinear]:
+                        if tri[0] in coll and parallel[0][0] in coll and tri[1] in coll:
+                            if coll.index(tri[0]) + coll.index(tri[1]) == 2 * coll.index(parallel[0][0]):
+                                is_coll_left = True
+                                break
+                    is_coll_right = False  # 判断是否共线
+                    for coll in problem.conditions.items[cType.collinear]:
+                        if tri[0] in coll and parallel[0][1] in coll and tri[2] in coll:
+                            if coll.index(tri[0]) + coll.index(tri[2]) == 2 * coll.index(parallel[0][1]):
+                                is_coll_right = True
+                                break
+                    if is_coll_left and is_coll_right:
+                        premise = [problem.conditions.get_index(tri, cType.triangle),
+                                   problem.conditions.get_index(parallel, cType.parallel)]
+                        update = problem.define_neutrality((parallel[0], tri), premise, 56) or update
+
+        return update
 
     @staticmethod
     def theorem_57_circumcenter_property(problem):
@@ -699,16 +729,16 @@ class Theorem:
         update = False  # 存储应用定理是否更新了条件
 
         i = 0
-        while i < len(problem.similar.items):
-            index = [problem.similar.indexes[problem.similar.items[i]]]  # 前提
-            tri1 = problem.similar.items[i][0]  # 三角形
-            tri2 = problem.similar.items[i][1]
-            ratios = []  # 对应边的比
+        while i < len(problem.conditions.items[cType.similar]):
+            similar = problem.conditions.items[cType.similar][i]
+            tri1 = similar[0]  # 三角形
+            tri2 = similar[1]
             for j in range(3):
                 # 对应角相等
                 angle_1 = problem.get_sym_of_attr((aType.MA, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
                 angle_2 = problem.get_sym_of_attr((aType.MA, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
-                update = problem.define_equation(angle_1 - angle_2, index, 69) or update
+                premise = [problem.conditions.get_index(similar, cType.similar)]
+                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 69) or update
 
             i = i + rep.count_similar  # 一个全等关系有6种表示
 
@@ -723,20 +753,21 @@ class Theorem:
         update = False  # 存储应用定理是否更新了条件
 
         i = 0
-        while i < len(problem.similar.items):
-            index = [problem.similar.indexes[problem.similar.items[i]]]  # 前提
-            tri1 = problem.similar.items[i][0]  # 三角形
-            tri2 = problem.similar.items[i][1]
+        while i < len(problem.conditions.items[cType.similar]):
+            similar = problem.conditions.items[cType.similar][i]
+            tri1 = similar[0]  # 三角形
+            tri2 = similar[1]
             ratios = []  # 对应边的比
             for j in range(3):
                 # 对应边的比
                 l_1 = problem.get_sym_of_attr((aType.LL, tri1[j] + tri1[(j + 1) % 3]))
                 l_2 = problem.get_sym_of_attr((aType.LL, tri2[j] + tri2[(j + 1) % 3]))
                 ratios.append(l_1 / l_2)
-            update = problem.define_equation(ratios[0] - ratios[1], index, 70) or update  # 对应边的比值相等
-            update = problem.define_equation(ratios[1] - ratios[2], index, 70) or update
+            premise = [problem.conditions.get_index(similar, cType.similar)]
+            update = problem.define_equation(ratios[0] - ratios[1], eType.theorem, premise, 70) or update  # 对应边的比值相等
+            update = problem.define_equation(ratios[1] - ratios[2], eType.theorem, premise, 70) or update
 
-            i = i + rep.count_similar  # 一个全等关系有6种表示
+            i = i + rep.count_similar  # 一个全等关系有3种表示
 
         return update
 

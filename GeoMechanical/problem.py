@@ -4,7 +4,7 @@ from facts import EquationType as eType
 from facts import ConditionType as cType
 from facts import Condition
 from facts import FormalLanguage
-from sympy import symbols, solve, Float
+from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
 
 
@@ -36,12 +36,12 @@ class ProblemLogic:
             if root:
                 premise = [self.conditions.get_index(shape, cType.shape)]
 
-            for point in shape:   # 添加构成shape的点
+            for point in shape:  # 添加构成shape的点
                 self.define_point(point, premise, -2)
 
-            if len(shape) == 3:    # 三角形
+            if len(shape) == 3:  # 三角形
                 self.define_triangle(shape, premise, -2)
-            else:    # 多边形
+            else:  # 多边形
                 self.define_polygon(shape, premise, -2)
 
             for shape in rep.shape(shape):  # shape多种表示
@@ -49,7 +49,7 @@ class ProblemLogic:
             return True
         return False
 
-    def define_collinear(self, points, premise, theorem):    # 共线
+    def define_collinear(self, points, premise, theorem):  # 共线
         if len(points) > 2 and self.conditions.add(points, cType.collinear, premise, theorem):
             return True
         return False
@@ -220,11 +220,11 @@ class ProblemLogic:
             return True
         return False
 
-    def define_neutrality(self, ordered_pair, premise, theorem, root=True):    # 中位线
+    def define_neutrality(self, ordered_pair, premise, theorem, root=True):  # 中位线
         line, triangle = ordered_pair
         if self.conditions.add(ordered_pair, cType.neutrality, premise, theorem):
             if root:
-                premise = [self.conditions.get_index(ordered_pair, cType.is_altitude)]
+                premise = [self.conditions.get_index(ordered_pair, cType.neutrality)]
             self.define_line(line, premise, -2, False)  # 定义实体
             self.define_triangle(triangle, premise, -2, False)
             return True
@@ -324,22 +324,22 @@ class ProblemLogic:
 
     """------------Attr's Symbol------------"""
 
-    def get_sym_of_attr(self, attr):    # attr: (aType, entity_name)
+    def get_sym_of_attr(self, attr):  # attr: (aType, entity_name)
         if attr[0] in [aType.T, aType.M]:  # 表示目标/中间值类型的符号，不用存储在符号库
             return symbols(attr[0].name.lower() + "_" + attr[1])
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
             if attr[0] in [aType.MA, aType.F]:
-                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())    # 角、自由变量可以有负的
+                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())  # 角、自由变量可以有负的
             else:
                 sym = symbols(attr[0].name.lower() + "_" + attr[1].lower(), positive=True)  # 属性值没有负数
 
             self.value_of_sym[sym] = None  # 符号值
 
-            if attr[0] in [aType.LL, aType.AS, aType.PT]:    # entity 有多种表示形式
+            if attr[0] in [aType.LL, aType.AS, aType.PT]:  # entity 有多种表示形式
                 for all_form in rep.shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
-            else:    # entity 只有一种形式
+            else:  # entity 只有一种形式
                 self.sym_of_attr[attr] = sym  # 符号
 
         else:  # 有符号就返回符号
@@ -353,7 +353,64 @@ class ProblemLogic:
             return self.define_equation(sym - value, eType.value, premise, theorem)
         return False
 
-    def angle_representation_alignment(self):    # 使角的角度表示符号一致
+
+class Problem(ProblemLogic):
+
+    def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
+        super().__init__()
+        self.problem_index = problem_index
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
+        self.theorem_seqs = theorem_seqs
+        self.answer = answer
+        self.solve_time_list = []
+
+    """------------构造图形------------"""
+
+    def construct_all_shape(self):
+        """
+        拼图法构造新shape
+        Shape(ABC), Shape(CBD) ==> Shape(ABD)
+        """
+        update = True
+        traversed = []  # 记录已经计算过的，避免重复计算
+        while update:
+            update = False
+            for shape1 in self.conditions.items[cType.shape]:
+                for shape2 in self.conditions.items[cType.shape]:
+                    if shape1[len(shape1) - 1] == shape2[0] and shape1[len(shape1) - 2] == shape2[1] and \
+                            (shape1, shape2) not in traversed:
+                        traversed.append((shape1, shape2))
+                        same_length = 2
+                        while same_length < len(shape1) and same_length < len(shape2):  # 共同点的数量
+                            if shape1[len(shape1) - same_length - 1] == shape2[same_length]:
+                                same_length += 1
+                            else:
+                                break
+                        new_shape = shape1[0:len(shape1) - same_length + 1]  # shape1不同的部分、第一个共点
+                        new_shape += shape2[same_length:len(shape2)]  # shape2不同的部分
+                        new_shape += shape1[len(shape1) - 1]  # 第2个共点
+
+                        i = 0  # 当前长度为3窗口起始的位置
+                        while len(new_shape) > 2 and i < len(new_shape):
+                            point1 = new_shape[i]
+                            point2 = new_shape[(i + 1) % len(new_shape)]
+                            point3 = new_shape[(i + 2) % len(new_shape)]
+
+                            is_coll = False  # 判断是否共线
+                            for coll in self.conditions.items[cType.collinear]:
+                                if point1 in coll and point2 in coll and point3 in coll:
+                                    is_coll = True
+                                    new_shape = new_shape.replace(point2, "")  # 三点共线，去掉中间的点
+                                    break
+                            if not is_coll:  # 不共线，窗口后移
+                                i += 1
+
+                        if 2 < len(new_shape) == len(set(new_shape)):  # 是图形且没有环
+                            premise = [self.conditions.get_index(shape1, cType.shape),
+                                       self.conditions.get_index(shape2, cType.shape)]
+                            update = self.define_shape(new_shape, premise, -1) or update
+
+    def angle_representation_alignment(self):  # 使角的角度表示符号一致
         for angle in self.conditions.items[cType.angle]:
             if (aType.MA, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
                 continue
@@ -384,17 +441,6 @@ class ProblemLogic:
                 for b_point in b_points:
                     self.sym_of_attr[(aType.MA, a_point + o_point + b_point)] = sym
 
-
-class Problem(ProblemLogic):
-
-    def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
-        super().__init__()
-        self.problem_index = problem_index
-        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
-        self.theorem_seqs = theorem_seqs
-        self.answer = answer
-        self.solve_time_list = []
-
     """------------解方程相关------------"""
 
     @func_set_timeout(5)  # 限时5s
@@ -404,13 +450,13 @@ class Problem(ProblemLogic):
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解
                 return
 
-            sym_set = []    # 所有值未知的符号
+            sym_set = []  # 所有值未知的符号
             for equation in list(self.basic_equations.values()) + list(self.theorem_equations.values()):
                 sym_set += equation.free_symbols
-            sym_set = list(set(sym_set))    # 快速去重
+            sym_set = list(set(sym_set))  # 快速去重
 
             update = True
-            while update:    # 循环求解变量值
+            while update:  # 循环求解变量值
                 update = False
                 self.simplify_equations()  # solve前先化简方程
                 for sym in sym_set:  # 遍历所有的值未知的符号值，并形成求解该符号的最小方程组
@@ -420,8 +466,9 @@ class Problem(ProblemLogic):
                         if len(solved_result) > 0:  # 有解
                             if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
                                 solved_result = solved_result[0]
-                            if sym in solved_result.keys() and isinstance(solved_result[sym], Float):  # sym有实数解
-                                self.set_value_of_sym(sym, solved_result[sym], premise, -3)
+                            if sym in solved_result.keys() and\
+                                    (isinstance(solved_result[sym], Float) or isinstance(solved_result[sym], Integer)):
+                                self.set_value_of_sym(sym, float(solved_result[sym]), premise, -3)
                                 update = True
 
             self.theorem_equations = {}  # 清空 theorem_equations
@@ -435,7 +482,7 @@ class Problem(ProblemLogic):
 
             if len(solved_result) > 0 and \
                     target_sym in solved_result.keys() and \
-                    isinstance(solved_result[target_sym], Float):
+                    (isinstance(solved_result[target_sym], Float) or isinstance(solved_result[target_sym], Integer)):
                 return float(solved_result[target_sym]), premise  # 有实数解，返回解
 
             return None, None  # 无解，返回None
@@ -456,13 +503,13 @@ class Problem(ProblemLogic):
                 if len(self.basic_equations[key].free_symbols) == 1:  # 化简后只剩一个符号，自然求得符号
                     target_sym = list(self.basic_equations[key].free_symbols)[0]
                     value = solve(self.basic_equations[key])[0]
-                    premise = [self.conditions.get_index(key, cType.equation)]    # 前提
+                    premise = [self.conditions.get_index(key, cType.equation)]  # 前提
                     for sym in key.free_symbols:
                         if self.value_of_sym[sym] is not None:
                             premise.append(self.conditions.get_index(sym - self.value_of_sym[sym], cType.equation))
                     self.set_value_of_sym(target_sym, value, premise, -3)
                     remove_lists.append(key)
-                    update = True    # 得到了新的sym值，需要再次循环替换掉basic中此sym的值
+                    update = True  # 得到了新的sym值，需要再次循环替换掉basic中此sym的值
 
             for remove_eq in remove_lists:  # 如果方程符号值都是已知的，删除这个方程
                 self.basic_equations.pop(remove_eq)
@@ -502,7 +549,7 @@ class Problem(ProblemLogic):
                 if self.value_of_sym[sym] is not None:  # sym的值已经求出，只用添加 equation:sym-value
                     equation = sym - self.value_of_sym[sym]
                     if equation not in min_equations:
-                        if solve_target:    # 当求解目标时，需要加入equation:sym-value；只求解basic+theorem的时候不用
+                        if solve_target:  # 当求解目标时，需要加入equation:sym-value；只求解basic+theorem的时候不用
                             min_equations.append(equation)  # 加入解题方程组
                         premise.append(self.conditions.get_index(equation, cType.equation))  # 方程序号作为前提
                 else:  # sym的值未求出，寻找basic和theorem中的最小方程组
@@ -536,7 +583,7 @@ class Problem(ProblemLogic):
 
     """------------辅助功能------------"""
 
-    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer): 
+    def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
         self.problem_index = problem_index
         self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
@@ -727,7 +774,7 @@ class Problem(ProblemLogic):
             if len(equation.free_symbols) > 1:
                 self.fl.add(("Equation", equation))
 
-        self.fl.step()    # step
+        self.fl.step()  # step
 
     def show(self):
         # Formal Language

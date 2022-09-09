@@ -28,11 +28,11 @@ class Solver:
         self.problem = None
         self.problem_define_map = None
         self.theorem_map = {
-            1: Theorem.nous_1_extend_shape,
-            2: Theorem.nous_2_extend_shape_and_area_addition,
-            3: Theorem.nous_3_extend_line_addition,
-            4: Theorem.nous_4_extend_angle_addition,
-            5: Theorem.nous_5_extend_flat_angle,
+            1: Theorem.nous_1_area_addition,
+            2: Theorem.nous_2_line_addition,
+            3: Theorem.nous_3_angle_addition,
+            4: Theorem.nous_4_flat_angle,
+            5: Theorem.nous_5_,
             6: Theorem.nous_6_,
             7: Theorem.nous_7_,
             8: Theorem.nous_8_,
@@ -136,7 +136,8 @@ class Solver:
             else:
                 raise RuntimeError("Unknown predicate <{}> when parse construction FL. Please check FL.".format(fl[0]))
 
-        """------角一致化------"""
+        """------构造图形------"""
+        self.problem.construct_all_shape()    # 构造所有图形
         self.problem.angle_representation_alignment()  # 使角的符号表示一致
 
         """------题目条件------"""

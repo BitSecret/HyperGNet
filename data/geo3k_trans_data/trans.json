@@ -68,8 +68,7 @@
 			"Find(z)"
 		],
 		"theorem_seqs": [
-			1,
-			3,
+			2,
 			25,
 			22
 		],
@@ -203,7 +202,6 @@
 			"Find(Measure(Angle(FEK)))"
 		],
 		"theorem_seqs": [
-			1,
 			39,
 			21
 		],
@@ -339,7 +337,6 @@
 			"Find(x)"
 		],
 		"theorem_seqs": [
-			1,
 			25,
 			22
 		],
@@ -467,8 +464,7 @@
 			"Find(x)"
 		],
 		"theorem_seqs": [
-			1,
-			3,
+			2,
 			25,
 			22
 		],
@@ -501,7 +497,7 @@
 			"Find(Measure(Angle(MNP)))"
 		],
 		"theorem_seqs": [
-			4,
+			3,
 			39,
 			21
 		],
@@ -529,13 +525,17 @@
 			"Equal(Length(Line(GF)),12)",
 			"Equal(Length(Line(HG)),6)",
 			"Equal(Length(Line(HJ)),8)",
-			"Equal(Length(Line(JK)),x-4)",
-			"Find(x)"
+			"Equal(Length(Line(JK)),x-4)"
 		],
 		"image_fls": [],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(x)"
+		],
+		"theorem_seqs": [
+			56,
+			55
+		],
+		"completeness": "True"
 	},
 	"16": {
 		"problem_id": 16,
@@ -586,12 +586,10 @@
 			"Shape(GFH)",
 			"Collinear(CDE)",
 			"Collinear(EFH)",
-			"Collinear(HGC)",
-			"Extended(False)"
+			"Collinear(HGC)"
 		],
 		"text_fls": [
-			"Similar(Triangle(DEF),Triangle(GFH))",
-			"Find(Perimeter(Triangle(DEF)))"
+			"Similar(Triangle(DEF),Triangle(GFH))"
 		],
 		"image_fls": [
 			"Equal(Length(Line(HG)),2)",
@@ -599,9 +597,14 @@
 			"Equal(Length(Line(FH)),4)",
 			"Equal(Length(Line(FE)),6)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(Perimeter(Triangle(DEF)))"
+		],
+		"theorem_seqs": [
+			70,
+			76
+		],
+		"completeness": "True"
 	},
 	"18": {
 		"problem_id": 18,
@@ -750,8 +753,7 @@
 			"Find(z)"
 		],
 		"theorem_seqs": [
-			1,
-			3,
+			2,
 			25,
 			22
 		],
@@ -759,7 +761,7 @@
 	},
 	"22": {
 		"problem_id": 22,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-61",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -788,7 +790,7 @@
 	},
 	"23": {
 		"problem_id": 23,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-66",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -819,7 +821,7 @@
 	},
 	"24": {
 		"problem_id": 24,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-67",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -831,57 +833,62 @@
 		"construction_fls": [
 			"Shape(QTR)",
 			"Shape(TSR)",
-			"Collinear(QTS)",
-			"Extended(True)"
+			"Collinear(QTS)"
 		],
-		"text_fls": [
-			"Find(x)"
-		],
+		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(QT)),x)",
 			"Equal(Length(Line(RQ)),6)",
 			"Equal(Length(Line(SQ)),18)",
 			"Equal(Length(Line(SR)),14)",
-			"PointOn(Point(T),Line(SQ))",
 			"Equal(Measure(Angle(TRQ)),Measure(Angle(SRT)))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(x)"
+		],
+		"theorem_seqs": [
+			50,
+			2,
+			46
+		],
+		"completeness": "True"
 	},
 	"25": {
 		"problem_id": 25,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-68",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle A B C, if \\triangle A B C \\sim \\triangle C B D, A D = 5, C D = 12, and B C = 31.2.",
+		"problem_text_en": "Find the perimeter of the \\triangle A C B, if \\triangle A C B \\sim \\triangle C D B, A D = 5, C D = 12, and B C = 31.2.",
 		"problem_img": "25_g3k-68.png",
 		"problem_answer": [
 			"78"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ACD)",
+			"Shape(DCB)",
+			"Collinear(ADB)"
 		],
-		"text_fls": [],
+		"text_fls": [
+			"Triangle(ACB)",
+			"Similar(Triangle(ACB),Triangle(CDB))",
+			"Equal(Length(Line(AD)),5)",
+			"Equal(Length(Line(CD)),12)",
+			"Equal(Length(Line(BC)),31.2)"
+		],
 		"image_fls": [
-			"Equal(Length(Line(AD)),5)",
-			"Equal(Length(Line(CD)),12)",
-			"Equal(Length(Line(CB)),31.2)",
-			"PointOn(Point(D),Line(BA))",
-			"Perpendicular(Point(D),Line(BD),Line(CD))",
-			"Perpendicular(Point(C),Line(CD),Line(CB))",
-			"Similar(Triangle(ABC),Triangle(CBD))",
-			"Equal(Length(Line(AD)),5)",
-			"Equal(Length(Line(CD)),12)",
-			"Equal(Length(Line(BC)),31.2)",
-			"Find(Perimeter(Triangle(ABC)))"
+			"Perpendicular(Point(D),Line(AB),Line(DC))",
+			"Perpendicular(Point(C),Line(CB),Line(AC))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(Perimeter(Triangle(ACB)))"
+		],
+		"theorem_seqs": [
+			25,
+			22,
+			76
+		],
+		"completeness": "True"
 	},
 	"26": {
 		"problem_id": 26,
