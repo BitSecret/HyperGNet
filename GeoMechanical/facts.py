@@ -43,6 +43,8 @@ class AttributionType(Enum):  # 属性的类型
     F = 6  # Free 自由符号
     T = 7  # Target 代数型解题目标
 
+    M = 8  # Middle 解题中间过程需要引入的符号
+
 
 class TargetType(Enum):  # 解题目标类型
     value = 1  # 代数关系，求值
@@ -140,15 +142,13 @@ class FormalLanguage:
         self.target_fls = target_fls
 
         self.reasoning_fls = []
-        self.reasoning_fls_steps = {}
+        self.reasoning_fls_steps = []
         self.step_count = 0
-        self.reasoning_fls_theorems = {}
 
-    def add(self, fl, theorem):
+    def add(self, fl):
         if fl not in self.reasoning_fls:
             self.reasoning_fls.append(fl)
-            self.reasoning_fls_steps[fl] = self.step_count
-            self.reasoning_fls_theorems[fl] = theorem
+            self.reasoning_fls_steps.append(self.step_count)
 
     def step(self):
         self.step_count += 1

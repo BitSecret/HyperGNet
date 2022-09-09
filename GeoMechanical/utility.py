@@ -3,16 +3,35 @@ from pyparsing import oneOf, Combine, alphanums, Forward, Group, Word, Literal, 
 
 class Representation:
 
+    # count_shape
+    count_collinear = 2
+
+    count_point = 1  # 点、线、角、弧
     count_line = 2
     count_angle = 1
-    count_tri = 3    # 三角形
-    count_rt_tri = 1    # 直角三角形
-    count_iso_tri = 1    # 等腰三角形
+    count_triangle = 3  # 三角形
+    count_right_triangle = 1
+    count_isosceles_triangle = 1
+    count_equilateral_triangle = 3
+    # count_polygon
+
+    count_midpoint = count_line
     count_intersect = 4
     count_parallel = 4
-    count_perpendicular = 4
-    count_congruent = count_tri    # 全等
-    count_similar = count_tri    # 相似
+    count_perpendicular = count_intersect
+    count_perpendicular_bisector = 2
+    count_bisector = 1
+    count_median = 1
+    count_is_altitude = 1
+    count_neutrality = 1
+    count_circumcenter = count_triangle
+    count_incenter = count_triangle
+    count_centroid = count_triangle
+    count_orthocenter = count_triangle
+    count_congruent = count_triangle
+    count_similar = count_triangle
+
+    # count_equation
 
     @staticmethod
     def shape(entity):

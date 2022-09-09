@@ -15,7 +15,7 @@ class ProblemLogic:
         self.conditions = Condition()  # 题目条件
 
         """------------symbols and equation------------"""
-        self.sym_of_attr = {}  # 属性的符号表示 (ConditionType, "name"): sym
+        self.sym_of_attr = {}  # 属性的符号表示 (aTpye, "name"): sym
         self.value_of_sym = {}  # 符号的值 sym: value
         self.basic_equations = {}
         self.theorem_equations = {}
@@ -325,7 +325,7 @@ class ProblemLogic:
     """------------Attr's Symbol------------"""
 
     def get_sym_of_attr(self, attr):    # attr: (aType, entity_name)
-        if attr[0] == aType.T:  # 表示目标/中间值类型的符号，不用存储在符号库
+        if attr[0] in [aType.T, aType.M]:  # 表示目标/中间值类型的符号，不用存储在符号库
             return symbols(attr[0].name.lower() + "_" + attr[1])
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
@@ -350,7 +350,7 @@ class ProblemLogic:
     def set_value_of_sym(self, sym, value, premise, theorem):  # 设置符号的值
         if self.value_of_sym[sym] is None:
             self.value_of_sym[sym] = value
-            self.define_equation(sym - value, eType.value, premise, theorem)
+            return self.define_equation(sym - value, eType.value, premise, theorem)
         return False
 
     def angle_representation_alignment(self):    # 使角的角度表示符号一致
@@ -577,7 +577,157 @@ class Problem(ProblemLogic):
                 break
 
     def anti_generate_fl_using_logic(self):
-        pass
+        """---------construction---------"""
+        # i = 0
+        # while i < len(self.conditions.items[cType.shape]):    # shape 没必要生成FL
+        #     item = self.conditions.items[cType.shape][i]
+        i = 0
+        while i < len(self.conditions.items[cType.collinear]):
+            item = self.conditions.items[cType.collinear][i]
+            self.fl.add(("Collinear", item))
+            i = i + rep.count_collinear
+
+        """---------entity---------"""
+        # i = 0
+        # while i < len(self.conditions.items[cType.point]):    # point 没必要生成FL
+        #     item = self.conditions.items[cType.point][i]
+        #     i = i + rep.count_point
+        # i = 0
+        # while i < len(self.conditions.items[cType.line]):    # line 暂无必要生成FL
+        #     item = self.conditions.items[cType.line][i]
+        #     self.fl.add(("Line", item))
+        #     i = i + rep.count_line
+        # i = 0
+        # while i < len(self.conditions.items[cType.angle]):    # angle 暂无必要生成FL
+        #     item = self.conditions.items[cType.angle][i]
+        #     self.fl.add(("Angle", item))
+        #     i = i + rep.count_angle
+        i = 0
+        while i < len(self.conditions.items[cType.triangle]):
+            item = self.conditions.items[cType.triangle][i]
+            self.fl.add(("Triangle", item))
+            i = i + rep.count_triangle
+        i = 0
+        while i < len(self.conditions.items[cType.right_triangle]):
+            item = self.conditions.items[cType.right_triangle][i]
+            self.fl.add(("RightTriangle", item))
+            i = i + rep.count_right_triangle
+        i = 0
+        while i < len(self.conditions.items[cType.isosceles_triangle]):
+            item = self.conditions.items[cType.isosceles_triangle][i]
+            self.fl.add(("IsoscelesTriangle", item))
+            i = i + rep.count_isosceles_triangle
+        i = 0
+        while i < len(self.conditions.items[cType.equilateral_triangle]):
+            item = self.conditions.items[cType.equilateral_triangle][i]
+            self.fl.add(("EquilateralTriangle", item))
+            i = i + rep.count_equilateral_triangle
+        # i = 0
+        # while i < len(self.conditions.items[cType.polygon]):    # polygon 没必要生成FL
+        #     item = self.conditions.items[cType.polygon][i]
+
+        """---------entity relation---------"""
+        i = 0
+        while i < len(self.conditions.items[cType.midpoint]):
+            item = self.conditions.items[cType.midpoint][i]
+            self.fl.add(("Midpoint", item[0], item[1]))
+            i = i + rep.count_midpoint
+        i = 0
+        while i < len(self.conditions.items[cType.intersect]):
+            item = self.conditions.items[cType.intersect][i]
+            self.fl.add(("Intersect", item[0], item[1], item[2]))
+            i = i + rep.count_intersect
+        i = 0
+        while i < len(self.conditions.items[cType.parallel]):
+            item = self.conditions.items[cType.parallel][i]
+            self.fl.add(("Parallel", item[0], item[1]))
+            i = i + rep.count_parallel
+        i = 0
+        while i < len(self.conditions.items[cType.perpendicular]):
+            item = self.conditions.items[cType.perpendicular][i]
+            self.fl.add(("Perpendicular", item[0], item[1], item[2]))
+            i = i + rep.count_perpendicular
+        i = 0
+        while i < len(self.conditions.items[cType.perpendicular_bisector]):
+            item = self.conditions.items[cType.perpendicular_bisector][i]
+            self.fl.add(("PerpendicularBisector", item[0], item[1], item[2]))
+            i = i + rep.count_perpendicular_bisector
+        i = 0
+        while i < len(self.conditions.items[cType.bisector]):
+            item = self.conditions.items[cType.bisector][i]
+            self.fl.add(("Bisector", item[0], item[1]))
+            i = i + rep.count_bisector
+        i = 0
+        while i < len(self.conditions.items[cType.median]):
+            item = self.conditions.items[cType.median][i]
+            self.fl.add(("Median", item[0], item[1]))
+            i = i + rep.count_median
+        i = 0
+        while i < len(self.conditions.items[cType.is_altitude]):
+            item = self.conditions.items[cType.is_altitude][i]
+            self.fl.add(("IsAltitude", item[0], item[1]))
+            i = i + rep.count_is_altitude
+        i = 0
+        while i < len(self.conditions.items[cType.neutrality]):
+            item = self.conditions.items[cType.neutrality][i]
+            self.fl.add(("Neutrality", item[0], item[1]))
+            i = i + rep.count_neutrality
+        i = 0
+        while i < len(self.conditions.items[cType.circumcenter]):
+            item = self.conditions.items[cType.circumcenter][i]
+            self.fl.add(("Circumcenter", item[0], item[1]))
+            i = i + rep.count_circumcenter
+        i = 0
+        while i < len(self.conditions.items[cType.incenter]):
+            item = self.conditions.items[cType.incenter][i]
+            self.fl.add(("Incenter", item[0], item[1]))
+            i = i + rep.count_incenter
+        i = 0
+        while i < len(self.conditions.items[cType.centroid]):
+            item = self.conditions.items[cType.centroid][i]
+            self.fl.add(("Centroid", item[0], item[1]))
+            i = i + rep.count_centroid
+        i = 0
+        while i < len(self.conditions.items[cType.orthocenter]):
+            item = self.conditions.items[cType.orthocenter][i]
+            self.fl.add(("Orthocenter", item[0], item[1]))
+            i = i + rep.count_orthocenter
+        i = 0
+        while i < len(self.conditions.items[cType.congruent]):
+            item = self.conditions.items[cType.congruent][i]
+            self.fl.add(("Congruent", item[0], item[1]))
+            i = i + rep.count_congruent
+        i = 0
+        while i < len(self.conditions.items[cType.similar]):
+            item = self.conditions.items[cType.similar][i]
+            self.fl.add(("Similar", item[0], item[1]))
+            i = i + rep.count_similar
+
+        """---------attribute---------"""
+        processed = []
+        for key in self.sym_of_attr.keys():
+            sym = self.sym_of_attr[key]
+            if self.value_of_sym[sym] is not None and sym not in processed:
+                if key[0] is aType.LL:
+                    self.fl.add(("Length", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif key[0] is aType.MA:
+                    self.fl.add(("Measure", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif key[0] is aType.AS:
+                    self.fl.add(("Area", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif key[0] is aType.PT:
+                    self.fl.add(("Perimeter", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif key[0] is aType.AT:
+                    self.fl.add(("Altitude", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif key[0] is aType.F:
+                    self.fl.add(("Free", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                processed.append(sym)
+
+        """---------equation---------"""
+        for equation in self.conditions.items[cType.equation]:
+            if len(equation.free_symbols) > 1:
+                self.fl.add(("Equation", equation))
+
+        self.fl.step()    # step
 
     def show(self):
         # Formal Language
@@ -592,15 +742,17 @@ class Problem(ProblemLogic):
         print("\033[36mimage_fls:\033[0m")
         for image_fl in self.fl.image_fls:
             print(image_fl)
-
         print("\033[36mtarget_fls:\033[0m")
         for target_fl in self.fl.target_fls:  # 解析 formal language
             print(target_fl)
-
         print("\033[36mtheorem_seqs:\033[0m", end=" ")
         for theorem in self.theorem_seqs:
             print(theorem, end=" ")
         print()
+        print("\033[36mreasoning_fls:\033[0m")
+        for i in range(len(self.fl.reasoning_fls)):
+            print("step: {}".format(self.fl.reasoning_fls_steps[i]), end="  ")
+            print(self.fl.reasoning_fls[i])
 
         self.get_premise()  # 生成条件树
 
@@ -700,13 +852,3 @@ class Problem(ProblemLogic):
                 print("\033[32m{}\033[0m".format(self.target_solved[i]))
             else:
                 print("\033[31m{}\033[0m".format(self.target_solved[i]))
-
-    def show_fl(self):
-        print("\033[36mproblem_index:\033[0m", end=" ")
-        print(self.problem_index)
-
-        print("\033[36mreasoning_fls:\033[0m")
-        for reasoning_fl in self.fl.reasoning_fls:  # 解析 formal language
-            print(reasoning_fl, end="   (step:")
-            print(self.fl.reasoning_fls_step[reasoning_fl], end=", theorem:")
-            print(self.fl.reasoning_fls_theorem[reasoning_fl], end=")\n")

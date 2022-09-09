@@ -14,10 +14,10 @@ import time
 1.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
 2.要转化的数据集：①interGPS的  ②几何瑰宝1有关三角形的
 2022.09.08
-1.去掉多于代码，只考虑三角形的  ok
+1.去掉多于代码，只考虑三角形的    ok
 2.编写完所有定理
-3.logic 转化为 FL 部分代码 编写
-4.parse 部分 改写代码更易读   ok
+3.logic 转化为 FL 部分代码 编写  ok
+4.parse 部分 改写代码更易读     ok
 """
 
 
@@ -134,7 +134,7 @@ class Solver:
             elif fl[0] == "Collinear":  # 共线
                 self.problem.define_collinear(fl[1], [-1], -1)
             else:
-                print("Unknown predicate: {}".format(fl[0]))  # 之后可以改成 throw error
+                raise RuntimeError("Unknown predicate <{}> when parse construction FL. Please check FL.".format(fl[0]))
 
         """------角一致化------"""
         self.problem.angle_representation_alignment()  # 使角的符号表示一致
@@ -190,7 +190,7 @@ class Solver:
             elif fl[0] == "Similar":
                 self.problem.define_similar((fl[1][1], fl[2][1]), [-1], -1)
             else:
-                print("Unknown predicate: {}".format(fl[0]))
+                raise RuntimeError("Unknown predicate <{}> when parse text/image FL. Please check FL.".format(fl[0]))
 
         """------解题目标------"""
         target_fls = pp.pre_parse_fls(self.problem.fl.target_fls)
@@ -198,7 +198,7 @@ class Solver:
             if fl[0] == "Find":
                 self._parse_find(fl[1])
             else:
-                print("Unknown predicate: {}".format(fl[0]))
+                raise RuntimeError("Unknown predicate <{}> when parse target FL. Please check FL.".format(fl[0]))
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
@@ -330,10 +330,12 @@ class Solver:
 
     def solve(self):
         self.problem.solve_equations()  # 求解初始方程
+        self.problem.anti_generate_fl_using_logic()    # 通过logic反向生成FL，以供embedding
 
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
             self.theorem_map[theorem](self.problem)
             self.problem.solve_equations()  # 求解定理添加的方程
+            self.problem.anti_generate_fl_using_logic()  # 通过logic反向生成FL，以供embedding
             self.time_cons("apply and solve theorem {}".format(theorem))  # 耗时
 
         for i in range(self.problem.target_count):
