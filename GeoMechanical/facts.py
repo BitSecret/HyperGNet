@@ -33,7 +33,33 @@ class ConditionType(Enum):  # 条件的类型
     equation = 52  # 代数方程
 
 
+class AttributionType(Enum):  # 属性的类型
+    LL = 1  # LengthOfLine 线长
+    MA = 2  # MeasureOfAngle 角度
+    AS = 3  # AreaOfShape 面积
+    PT = 4  # PerimeterOfTriangle 三角形周长
+    AT = 5  # AltitudeOfTriangle 三角形高
+
+    F = 6  # Free 自由符号
+    T = 7  # Target 代数型解题目标
+
+
+class TargetType(Enum):  # 解题目标类型
+    value = 1  # 代数关系，求值
+    equal = 2  # 代数关系，验证
+    entity = 3  # 位置关系，实体
+    relation = 4  # 位置关系，联系
+    symbol = 5  # 代数关系，符号形式，以后再实现
+
+
+class EquationType(Enum):  # 方程的类型
+    basic = 1  # 由构图语句和常识得到的方程
+    theorem = 2  # 定理得到的方程
+    value = 3  # value的值，用方程存储
+
+
 class Condition:  # 条件
+    # 与FormalLanguage一一对应
     construction_list = [ConditionType.shape, ConditionType.collinear]
     entity_list = [ConditionType.point, ConditionType.line, ConditionType.angle, ConditionType.triangle,
                    ConditionType.right_triangle, ConditionType.isosceles_triangle,
@@ -95,22 +121,15 @@ class Condition:  # 条件
             self.theorems[entity] = {}
 
 
-class AttributionType(Enum):  # 属性的类型
-    LL = 1  # LengthOfLine 线长
-    MA = 2  # MeasureOfAngle 角度
-    AS = 3  # AreaOfShape 面积
-    PT = 4  # PerimeterOfTriangle 三角形周长
-    AT = 5  # AltitudeOfTriangle 三角形高
-
-    F = 6  # Free 自由符号
-    T = 7  # Target 代数型解题目标
-
-
 class FormalLanguage:
+    # 与Condition一一对应
     construction_predicates = ["Shape", "Collinear"]
-    entity_predicates = []
-    entity_relation_predicates = []
-    attribute_predicates = []
+    entity_predicates = ["Point", "Line", "Angle", "Triangle", "RightTriangle", "IsoscelesTriangle",
+                         "EquilateralTriangle", "Polygon"]
+    entity_relation_predicates = ["Midpoint", "Intersect", "Parallel", "Perpendicular", "PerpendicularBisector",
+                                  "Bisector", "Median", "IsAltitude", "Neutrality", "Circumcenter", "Incenter",
+                                  "Centroid", "Orthocenter", "Congruent", "Similar"]
+    attribute_predicates = ["Length", "Measure", "Area", "Perimeter", "Altitude"]
     equation = "Equation"
     all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]
 
@@ -119,31 +138,17 @@ class FormalLanguage:
         self.text_fls = text_fls
         self.image_fls = image_fls
         self.target_fls = target_fls
-        self.reasoning_fls = []
 
-        self.reasoning_fls_step = {}
+        self.reasoning_fls = []
+        self.reasoning_fls_steps = {}
         self.step_count = 0
-        self.reasoning_fls_theorem = {}
+        self.reasoning_fls_theorems = {}
 
     def add(self, fl, theorem):
         if fl not in self.reasoning_fls:
             self.reasoning_fls.append(fl)
-            self.reasoning_fls_step[fl] = self.step_count
-            self.reasoning_fls_theorem[fl] = theorem
+            self.reasoning_fls_steps[fl] = self.step_count
+            self.reasoning_fls_theorems[fl] = theorem
 
     def step(self):
         self.step_count += 1
-
-
-class TargetType(Enum):  # 解题目标类型
-    value = 1  # 代数关系，求值
-    equal = 2  # 代数关系，验证
-    entity = 3  # 位置关系，实体
-    relation = 4  # 位置关系，联系
-    symbol = 5  # 代数关系，符号形式，以后再实现
-
-
-class EquationType(Enum):  # 方程的类型
-    basic = 1  # 由构图语句和常识得到的方程
-    theorem = 2  # 定理得到的方程
-    value = 3  # value的值，用方程存储

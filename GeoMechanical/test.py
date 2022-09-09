@@ -290,14 +290,14 @@ def test3():
 # print_str = "{}{}"
 #
 # print(print_str.format("a", "b"))
-ll_ae = symbols("ll_ae", positive=True)
-ll_eb = symbols("ll_eb", positive=True)
-ll_de = symbols("ll_de", positive=True)
-ll_db = symbols("ll_db", positive=True)
-ll_ac = symbols("ll_ac", positive=True)
-ll_ec = symbols("ll_ec", positive=True)
-a = symbols("a", positive=True)
-b = symbols("b", positive=True)
+# ll_ae = symbols("ll_ae", positive=True)
+# ll_eb = symbols("ll_eb", positive=True)
+# ll_de = symbols("ll_de", positive=True)
+# ll_db = symbols("ll_db", positive=True)
+# ll_ac = symbols("ll_ac", positive=True)
+# ll_ec = symbols("ll_ec", positive=True)
+# a = symbols("a", positive=True)
+# b = symbols("b", positive=True)
 
 # f1 = -ll_db + ll_de + ll_eb
 # f2 = -ll_ac + ll_ae + ll_ec
@@ -334,3 +334,8 @@ b = symbols("b", positive=True)
 # f12 = ll_bc - 8.0
 #
 # print(solve([f1, f2, f3, f4, f5, f6, f7, f11]))    # 去掉f6 7 就可以求出结果
+
+
+a = ["a", "b", "c"]
+
+print(a.index("b"))

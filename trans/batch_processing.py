@@ -2,8 +2,8 @@ import json
 import time
 trans_data_path = "../data/geo3k_trans_data/"
 gen_data_path = "../data/generated_data/"
-trans_filename = "data_trans.json"
-gen_filename = "data_gen.json"
+trans_filename = "trans.json"
+gen_filename = "gen.json"
 count = 1213
 
 
@@ -23,7 +23,7 @@ def main():
     for i in range(0, count):
         data_unit = {
             "problem_id": data_old[str(i)]["problem_id"],
-            "annotation": data_old[str(i)]["annotation"],
+            "annotation": data_old[str(i)]["problem_id"],
             "source": data_old[str(i)]["source"],
             "problem_level": data_old[str(i)]["problem_level"],
             "problem_text_cn": data_old[str(i)]["problem_text_cn"],
@@ -41,7 +41,7 @@ def main():
         data_new[str(i)] = data_unit
 
     save_data(trans_data_path, data_new)
-    print("OK")
+    print("{} problems processed and saved.".format(len(data_new)))
 
 
 if __name__ == '__main__':

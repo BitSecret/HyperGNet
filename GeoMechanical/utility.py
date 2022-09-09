@@ -8,7 +8,7 @@ class Representation:
     count_tri = 3    # 三角形
     count_rt_tri = 1    # 直角三角形
     count_iso_tri = 1    # 等腰三角形
-    count_qua = 4
+    count_intersect = 4
     count_parallel = 4
     count_perpendicular = 4
     count_congruent = count_tri    # 全等
@@ -45,20 +45,6 @@ class Representation:
 
 
 class PreParse:
-    # # 处理形式化语言
-    # entity = ['Point', 'Line', 'Angle', 'Arc', 'Shape', 'Circle', 'Sector', 'Triangle', 'RightTriangle',
-    #           'IsoscelesTriangle', 'RegularTriangle', 'Quadrilateral', 'Trapezoid', 'IsoscelesTrapezoid',
-    #           'Parallelogram', 'Rectangle', 'Rhombus', 'Kite', 'Square', 'Polygon', 'RegularPolygon', 'Collinear',
-    #           'Extended']
-    # binary_relation = ['PointOnLine', 'PointOnArc', 'PointOnCircle', 'Midpoint', 'Circumcenter', 'Incenter', 'Centroid',
-    #                    'Orthocenter', 'Parallel', 'BisectsAngle', 'DisjointLineCircle', 'DisjointCircleCircle',
-    #                    'Median', 'HeightOfTriangle', 'HeightOfTrapezoid', 'Contain', 'CircumscribedToTriangle',
-    #                    'Congruent', 'Similar', 'Chord']
-    # ternary_relation = ['Perpendicular', 'PerpendicularBisector', 'TangentLineCircle', 'TangentCircleCircle',
-    #                     'IntersectLineLine', 'InternallyTangent']
-    # quaternion_relation = ["IntersectLineCircle", "IntersectCircleCircle"]
-    # five_relation = ["InscribedInTriangle"]
-
     # 解析formal language的idt: idt_fl
     idt_fl = Forward()
     expr = Word(alphanums + '.+-*/^{}@#$~')  # 识别的最小unit 谓词或字母或数字或代数表达式
@@ -82,71 +68,14 @@ class PreParse:
                         "@": 4, "#": 4, "$": 4, "~": 0}
 
     @staticmethod
-    def parse_expr(expr):
+    def parse_expr(expr):    # trans expr to sym_list
         return PreParse.idt_expr.parseString(expr).asList()
 
     @staticmethod
-    def pre_parse_fl(fl):
-        result = [fl[0]]
-        if fl[0] == "Equal":    # equal，不用处理
-            result = fl
-        elif fl[0] == "Find":    # find，需要处理其子内容
-            result.append(PreParse.pre_parse_fl(fl[1]))
-        elif fl[0] in PreParse.entity:    # 一元关系，不需要处理
-            result = fl
-        elif fl[0] in PreParse.binary_relation:    # 二元关系
-            result.append()
-        elif fl[0] in PreParse.ternary_relation:    # 三元关系
-            result.append()
-        elif fl[0] in PreParse.quaternion_relation:    # 四元关系
-            result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1]]))
-        elif fl[0] in PreParse.five_relation:    # 五元关系
-            result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1]]))
-        elif fl[0] == "PointOn":    # 一些需要extend的语句
-            if fl[2][0] == "Line":
-                result[0] = "PointOnLine"
-            elif fl[2][0] == "Arc":
-                result[0] = "PointOnArc"
-            else:
-                result[0] = "PointOnCircle"
-            result.append(tuple([fl[1][1], fl[2][1]]))
-        elif fl[0] == "Disjoint":
-            if fl[1][0] == "Line":
-                result[0] = "DisjointLineCircle"
-            else:
-                result[0] = "DisjointCircleCircle"
-            result.append(tuple([fl[1][1], fl[2][1]]))
-        elif fl[0] == "Tangent":
-            if fl[2][0] == "Line":
-                result[0] = "TangentLineCircle"
-            else:
-                result[0] = "TangentCircleCircle"
-            result.append(tuple([fl[1][1], fl[2][1], fl[3][1]]))
-        elif fl[0] == "Intersect":
-            if fl[2][0] == "Line":
-                result[0] = "IntersectLineLine"
-                result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1]]))
-            elif fl[3][0] == "Line":
-                result[0] = "IntersectLineCircle"
-                result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1]]))
-            else:
-                result[0] = "IntersectCircleCircle"
-                result.append(tuple([fl[1][1], fl[2][1], fl[3][1], fl[4][1], fl[5][1]]))
-        elif fl[0] == "Height":
-            if fl[2][0] == "Triangle":
-                result[0] = "HeightOfTriangle"
-            else:
-                result[0] = "HeightOfTrapezoid"
-            result.append(tuple([fl[1][1], fl[2][1]]))
-        else:    # 属性类语句，只可能出现在find的子语句了
-            return ["Value", fl]
-
-        return result
-
-    @staticmethod
-    def pre_parse_fls(fls):
-        for i in range(len(fls)):
-            fls[i] = PreParse.idt_fl.parseString(fls[i]).asList()
-        return fls
+    def pre_parse_fls(fls):    # trans FL to parse_tree
+        fls_parse_tree = []
+        for fl in fls:
+            fls_parse_tree.append(PreParse.idt_fl.parseString(fl).asList())
+        return fls_parse_tree
 
 

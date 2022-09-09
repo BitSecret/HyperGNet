@@ -169,8 +169,6 @@ class ProblemLogic:
         return False
 
     def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
-        point, line1, line2 = ordered_pair
-
         if self.conditions.add(ordered_pair, cType.perpendicular, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
@@ -179,39 +177,6 @@ class ProblemLogic:
                 self.conditions.add(all_form, cType.perpendicular, premise, -2)  # 垂直有4种表示
 
             self.define_intersect(ordered_pair, premise, -2, False)  # 垂直也是相交
-
-            sym = []
-            if len(set(point + line1 + line2)) == 3:
-                if line1[0] == line2[1]:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2 + line1[1])))
-                elif line1[1] == line2[1]:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1 + line2[0])))
-                elif line1[1] == line2[0]:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[::-1] + line1[0])))
-                elif line1[0] == line2[0]:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[::-1] + line2[1])))
-            elif len(set(point + line1 + line2)) == 4:
-                if line2[1] == point:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[0] + line2[::-1])))
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2 + line1[1])))
-                elif line1[1] == point:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[1] + line1[::-1])))
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1 + line2[0])))
-                elif line2[0] == point:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[1] + line2)))
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[::-1] + line1[0])))
-                elif line1[0] == point:
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line2[0] + line1)))
-                    sym.append(self.get_sym_of_attr((aType.MA.name, line1[::-1] + line2[1])))
-            elif len(set(point + line1 + line2)) == 5:
-                sym.append(self.get_sym_of_attr((aType.MA.name, line1[0] + point + line2[0])))
-                sym.append(self.get_sym_of_attr((aType.MA.name, line2[0] + point + line1[1])))
-                sym.append(self.get_sym_of_attr((aType.MA.name, line1[1] + point + line2[1])))
-                sym.append(self.get_sym_of_attr((aType.MA.name, line2[1] + point + line1[0])))
-
-            for s in sym:  # 设置直角为90°
-                self.set_value_of_sym(s, 90, premise, -2)
-
             return True
         return False
 
@@ -365,13 +330,13 @@ class ProblemLogic:
 
         if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
             if attr[0] in [aType.MA, aType.F]:
-                sym = symbols(attr[0].lower() + "_" + attr[1].lower())    # 角、自由变量可以有负的
+                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())    # 角、自由变量可以有负的
             else:
-                sym = symbols(attr[0].lower() + "_" + attr[1].lower(), positive=True)  # 属性值没有负数
+                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower(), positive=True)  # 属性值没有负数
 
             self.value_of_sym[sym] = None  # 符号值
 
-            if attr[0] in [aType.LL, aType.MA, aType.AS, aType.PT]:    # entity 有多种表示形式
+            if attr[0] in [aType.LL, aType.AS, aType.PT]:    # entity 有多种表示形式
                 for all_form in rep.shape(attr[1]):
                     self.sym_of_attr[(attr[0], all_form)] = sym
             else:    # entity 只有一种形式
@@ -388,15 +353,15 @@ class ProblemLogic:
             self.define_equation(sym - value, eType.value, premise, theorem)
         return False
 
-    def angle_repsentation_alignment(self):    # 使角的角度表示符号一致
+    def angle_representation_alignment(self):    # 使角的角度表示符号一致
         for angle in self.conditions.items[cType.angle]:
-            if (aType.MA.name, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
+            if (aType.MA, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
                 continue
 
             a_points = angle[0]
             o_point = angle[1]
             b_points = angle[2]
-            sym = self.get_sym_of_attr((aType.MA.name, angle))
+            sym = self.get_sym_of_attr((aType.MA, angle))
 
             coll_a = None  # 与AO共线的collinear
             coll_b = None  # 与OB共线的collinear
@@ -417,7 +382,7 @@ class ProblemLogic:
 
             for a_point in a_points:  # 本质上相同的角安排一样的符号
                 for b_point in b_points:
-                    self.sym_of_attr[(aType.MA.name, a_point + o_point + b_point)] = sym
+                    self.sym_of_attr[(aType.MA, a_point + o_point + b_point)] = sym
 
 
 class Problem(ProblemLogic):
@@ -619,24 +584,18 @@ class Problem(ProblemLogic):
         print("\033[36mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
         print("\033[36mconstruction_fls:\033[0m")
-        for construction_fl in self.fl.construction_fls:  # 解析 formal language
+        for construction_fl in self.fl.construction_fls:
             print(construction_fl)
         print("\033[36mtext_fls:\033[0m")
-        for text_fl in self.fl.text_fls:  # 解析 formal language
+        for text_fl in self.fl.text_fls:
             print(text_fl)
         print("\033[36mimage_fls:\033[0m")
-        for image_fl in self.fl.image_fls:  # 解析 formal language
+        for image_fl in self.fl.image_fls:
             print(image_fl)
 
         print("\033[36mtarget_fls:\033[0m")
         for target_fl in self.fl.target_fls:  # 解析 formal language
             print(target_fl)
-
-        print("\033[36mreasoning_fls:\033[0m")
-        for reasoning_fl in self.fl.reasoning_fls:  # 解析 formal language
-            print(reasoning_fl, end="   (step:")
-            print(self.fl.reasoning_fls_step[reasoning_fl], end=", theorem:")
-            print(self.fl.reasoning_fls_theorem[reasoning_fl], end=")\n")
 
         print("\033[36mtheorem_seqs:\033[0m", end=" ")
         for theorem in self.theorem_seqs:
@@ -644,6 +603,21 @@ class Problem(ProblemLogic):
         print()
 
         self.get_premise()  # 生成条件树
+
+        # Logic-Construction
+        print("\033[33mEntity:\033[0m")
+        for entity in Condition.construction_list:
+            if len(self.conditions.items[entity]) > 0:
+                print("{}:".format(entity.name))
+                for item in self.conditions.items[entity]:
+                    if self.conditions.get_index(item, entity) not in self.premise:
+                        print_str = "{0:^6}{1:^15}{2:^25}{3:^6}"
+                    else:
+                        print_str = "\033[35m{0:^6}{1:^15}{2:^25}{3:^6}\033[0m"
+                    print(print_str.format(self.conditions.get_index(item, entity),
+                                           str(item),
+                                           str(self.conditions.get_premise(item, entity)),
+                                           self.conditions.get_theorem(item, entity)))
 
         # Logic-Entity
         print("\033[33mEntity:\033[0m")
@@ -718,6 +692,7 @@ class Problem(ProblemLogic):
     def simpel_show(self):
         print("\033[36mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
+
         for i in range(0, self.target_count):
             print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])), end="  ")
             print("\033[34mcorrect answer:\033[0m {}".format(self.answer[i]), end="  ")
@@ -727,4 +702,11 @@ class Problem(ProblemLogic):
                 print("\033[31m{}\033[0m".format(self.target_solved[i]))
 
     def show_fl(self):
-        pass
+        print("\033[36mproblem_index:\033[0m", end=" ")
+        print(self.problem_index)
+
+        print("\033[36mreasoning_fls:\033[0m")
+        for reasoning_fl in self.fl.reasoning_fls:  # 解析 formal language
+            print(reasoning_fl, end="   (step:")
+            print(self.fl.reasoning_fls_step[reasoning_fl], end=", theorem:")
+            print(self.fl.reasoning_fls_theorem[reasoning_fl], end=")\n")

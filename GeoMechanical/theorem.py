@@ -104,9 +104,9 @@ class Theorem:
                                        problem.conditions.get_index(shape2, cType.shape)]
                             update = problem.define_shape(new_shape, premise, 2) or update
                             shape_update = update or shape_update
-                            a1 = problem.get_sym_of_attr((aType.A.name, shape1))
-                            a2 = problem.get_sym_of_attr((aType.A.name, shape2))
-                            a3 = problem.get_sym_of_attr((aType.A.name, new_shape))
+                            a1 = problem.get_sym_of_attr((aType.AS, shape1))
+                            a2 = problem.get_sym_of_attr((aType.AS, shape2))
+                            a3 = problem.get_sym_of_attr((aType.AS, new_shape))
                             problem.define_equation(a1 + a2 - a3, eType.basic, premise, 2)
 
         return shape_update
@@ -123,9 +123,9 @@ class Theorem:
             for i in range(0, len(coll) - 2):
                 for j in range(i + 1, len(coll) - 1):
                     for k in range(j + 1, len(coll)):
-                        sym1 = problem.get_sym_of_attr((aType.LL.name, coll[i] + coll[j]))
-                        sym2 = problem.get_sym_of_attr((aType.LL.name, coll[j] + coll[k]))
-                        sym3 = problem.get_sym_of_attr((aType.LL.name, coll[i] + coll[k]))
+                        sym1 = problem.get_sym_of_attr((aType.LL, coll[i] + coll[j]))
+                        sym2 = problem.get_sym_of_attr((aType.LL, coll[j] + coll[k]))
+                        sym3 = problem.get_sym_of_attr((aType.LL, coll[i] + coll[k]))
                         update = problem.define_equation(sym1 + sym2 - sym3, eType.basic, premise, 3) or update  # 相加关系
 
         return update
@@ -141,9 +141,9 @@ class Theorem:
             for angle2 in problem.conditions.items[cType.angle]:
                 if angle1[0] == angle2[2] and angle1[1] == angle2[1]:
                     angle3 = angle2[0:2] + angle1[2]
-                    sym1 = problem.get_sym_of_attr((aType.DA.name, angle1))
-                    sym2 = problem.get_sym_of_attr((aType.DA.name, angle2))
-                    sym3 = problem.get_sym_of_attr((aType.DA.name, angle3))
+                    sym1 = problem.get_sym_of_attr((aType.MA, angle1))
+                    sym2 = problem.get_sym_of_attr((aType.MA, angle2))
+                    sym3 = problem.get_sym_of_attr((aType.MA, angle3))
                     premise = [problem.conditions.get_index(angle1, cType.angle),
                                problem.conditions.get_index(angle2, cType.angle)]
                     update = problem.define_equation(sym1 + sym2 - sym3, eType.basic, premise, 4) or update
@@ -162,9 +162,9 @@ class Theorem:
             for i in range(0, len(coll) - 2):
                 for j in range(i + 1, len(coll) - 1):
                     for k in range(j + 1, len(coll)):
-                        sym_of_angle = problem.get_sym_of_attr((aType.DA.name, coll[i] + coll[j] + coll[k]))
+                        sym_of_angle = problem.get_sym_of_attr((aType.MA, coll[i] + coll[j] + coll[k]))
                         update = problem.define_equation(sym_of_angle - 180, eType.basic, premise, 5) or update
-                        sym_of_angle = problem.get_sym_of_attr((aType.DA.name, coll[k] + coll[j] + coll[i]))
+                        sym_of_angle = problem.get_sym_of_attr((aType.MA, coll[k] + coll[j] + coll[i]))
                         update = problem.define_equation(sym_of_angle - 180, eType.basic, premise, 5) or update
 
         return update
@@ -243,12 +243,12 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):
             tri = problem.conditions.items[cType.triangle][i]
-            a = problem.get_sym_of_attr((aType.DA.name, tri))
-            b = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
-            c = problem.get_sym_of_attr((aType.DA.name, tri[2] + tri[0:2]))
+            a = problem.get_sym_of_attr((aType.MA, tri))
+            b = problem.get_sym_of_attr((aType.MA, tri[1:3] + tri[0]))
+            c = problem.get_sym_of_attr((aType.MA, tri[2] + tri[0:2]))
             equation = a + b + c - 180
             premise = [problem.conditions.get_index(tri, cType.triangle)]
-            update = problem.define_equation(equation, eType.theorem, premise, 10) or update
+            update = problem.define_equation(equation, eType.theorem, premise, 21) or update
             i = i + rep.count_tri  # 跳过冗余表示
         return update
 
@@ -262,20 +262,31 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.right_triangle]):
             rt = problem.conditions.items[cType.right_triangle][i]
-            a = problem.get_sym_of_attr((aType.LL.name, rt[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, rt[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, rt[0] + rt[2]))
+            a = problem.get_sym_of_attr((aType.LL, rt[0:2]))
+            b = problem.get_sym_of_attr((aType.LL, rt[1:3]))
+            c = problem.get_sym_of_attr((aType.LL, rt[0] + rt[2]))
             update = problem.define_equation(a ** 2 + b ** 2 - c ** 2,
                                              eType.theorem,
                                              [problem.conditions.get_index(rt, cType.right_triangle)],
-                                             1) or update
+                                             22) or update
             i = i + rep.count_rt_tri
 
         return update
 
     @staticmethod
     def theorem_23_right_triangle_property(problem):
-        pass
+        """
+        直角三角形性质
+        RT△  ==>  角90°、边垂直
+        """
+        update = False
+        for rt in problem.conditions.items[cType.right_triangle]:
+            premise = [problem.conditions.get_index[rt, cType.right_triangle]]
+            sym = problem.get_sym_of_attr((aType.MA, rt))
+            update = problem.define_equation(sym - 90, eType.theorem, premise, 23) or update  # 角90°
+            update = problem.define_perpendicular((rt[0], rt[0:2], rt[2] + rt[1]), premise, 23) or update  # 边垂直
+
+        return update
 
     @staticmethod
     def theorem_24_right_triangle_pythagorean_inverse(problem):
@@ -287,9 +298,9 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):
             tri = problem.conditions.items[cType.triangle][i]
-            a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
+            a = problem.get_sym_of_attr((aType.LL, tri[0:2]))
+            b = problem.get_sym_of_attr((aType.LL, tri[1:3]))
+            c = problem.get_sym_of_attr((aType.LL, tri[0] + tri[2]))
 
             if problem.value_of_sym[a] is not None and \
                     problem.value_of_sym[b] is not None and \
@@ -301,11 +312,11 @@ class Theorem:
                 b = problem.value_of_sym[b]
                 c = problem.value_of_sym[c]
                 if abs(a ** 2 + b ** 2 - c ** 2) < 0.001:
-                    update = problem.define_right_triangle(tri, premise, 2) or update
+                    update = problem.define_right_triangle(tri, premise, 24) or update
                 elif abs(a ** 2 - b ** 2 + c ** 2) < 0.001:
-                    update = problem.define_right_triangle(tri[1] + tri[0] + tri[2], premise, 2) or update
+                    update = problem.define_right_triangle(tri[1] + tri[0] + tri[2], premise, 24) or update
                 elif abs(- a ** 2 + b ** 2 + c ** 2) < 0.001:
-                    update = problem.define_right_triangle(tri[1] + tri[2] + tri[0], premise, 2) or update
+                    update = problem.define_right_triangle(tri[1] + tri[2] + tri[0], premise, 24) or update
             i = i + rep.count_tri
 
         return update
@@ -314,20 +325,63 @@ class Theorem:
     def theorem_25_right_triangle_judgment(problem):
         """
         直角三角形 判定
-        ②三角形有一个角是直角  ==>  RT△
+        1. 三角形有一个角是直角  ==>  RT△
+        2. 两条边垂直的△        ==>  RT△
         """
         update = False
 
         for key in problem.sym_of_attr.keys():
-            if key[0] == aType.DA.name:  # 如果是角
+            if key[0] == aType.MA:  # 如果是角
                 sym = problem.sym_of_attr[key]
                 value = problem.value_of_sym[problem.sym_of_attr[key]]
                 if value is not None and abs(value - 90) < 0.01 and \
-                        key[1] in problem.conditions.items[cType.triangle]:  # 如果是90°的角
+                        key[1] in problem.conditions.items[cType.triangle]:  # 如果是90°的角且三角形存在
 
                     premise = [problem.conditions.get_index(sym - value, cType.equation),
                                problem.conditions.get_index(key[1], cType.triangle)]
                     update = problem.define_right_triangle(key[1], premise, 3) or update
+
+        i = 0
+        while i < len(problem.conditions.items[cType.perpendicular]):
+            perpendicular = problem.conditions.items[cType.perpendicular][i]
+            point, line1, line2 = perpendicular
+            premise = [problem.conditions.get_index(perpendicular, cType.perpendicular)]
+            rt_triangle = []
+            if len(set(point + line1 + line2)) == 3:
+                if line1[0] == line2[1]:
+                    rt_triangle.append(line2 + line1[1])
+                elif line1[1] == line2[1]:
+                    rt_triangle.append(line1 + line2[0])
+                elif line1[1] == line2[0]:
+                    rt_triangle.append(line2[::-1] + line1[0])
+                elif line1[0] == line2[0]:
+                    rt_triangle.append(line1[::-1] + line2[1])
+            elif len(set(point + line1 + line2)) == 4:
+                if line2[1] == point:
+                    rt_triangle.append(line1[0] + line2[::-1])
+                    rt_triangle.append(line2 + line1[1])
+                elif line1[1] == point:
+                    rt_triangle.append(line2[1] + line1[::-1])
+                    rt_triangle.append(line1 + line2[0])
+                elif line2[0] == point:
+                    rt_triangle.append(line1[1] + line2)
+                    rt_triangle.append(line2[::-1] + line1[0])
+                elif line1[0] == point:
+                    rt_triangle.append(line2[0] + line1)
+                    rt_triangle.append(line1[::-1] + line2[1])
+            elif len(set(point + line1 + line2)) == 5:
+                rt_triangle.append(line1[0] + point + line2[0])
+                rt_triangle.append(line2[0] + point + line1[1])
+                rt_triangle.append(line1[1] + point + line2[1])
+                rt_triangle.append(line2[1] + point + line1[0])
+
+            for rt in rt_triangle:
+                if rt in problem.conditions.items[cType.triangle]:
+                    update = problem.define_right_triangle(rt,
+                                                           premise + [problem.conditions.get_index(rt, cType.triangle)],
+                                                           3) or update
+
+            i = i + rep.count_perpendicular
 
         return update
 
@@ -335,21 +389,18 @@ class Theorem:
     def theorem_26_isosceles_triangle_property_angle_equal(problem):
         """
         等腰三角形 性质
-        等腰△  ==>  腰相等、底角相等
+        等腰△  ==>  底角相等
         """
         update = False
         i = 0
         while i < len(problem.conditions.items[cType.isosceles_triangle]):
             tri = problem.conditions.items[cType.isosceles_triangle][i]
             premise = [problem.conditions.get_index(tri, cType.isosceles_triangle)]  # 前提
-            # 两腰相等
-            l_1 = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            l_2 = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
-            update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 11) or update
             # 底角相等
-            angle_1 = problem.get_sym_of_attr((aType.DA.name, tri))
-            angle_2 = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
+            angle_1 = problem.get_sym_of_attr((aType.MA, tri))
+            angle_2 = problem.get_sym_of_attr((aType.MA, tri[1:3] + tri[0]))
             update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 11) or update
+
             i = i + rep.count_iso_tri
 
         return update
@@ -358,7 +409,7 @@ class Theorem:
     def theorem_27_isosceles_triangle_property_side_equal(problem):
         """
         等腰三角形 性质
-        等腰△  ==>  腰相等、底角相等
+        等腰△  ==>  腰相等
         """
         update = False
         i = 0
@@ -366,13 +417,10 @@ class Theorem:
             tri = problem.conditions.items[cType.isosceles_triangle][i]
             premise = [problem.conditions.get_index(tri, cType.isosceles_triangle)]  # 前提
             # 两腰相等
-            l_1 = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            l_2 = problem.get_sym_of_attr((aType.LL.name, tri[0] + tri[2]))
+            l_1 = problem.get_sym_of_attr((aType.LL, tri[0:2]))
+            l_2 = problem.get_sym_of_attr((aType.LL, tri[0] + tri[2]))
             update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 11) or update
-            # 底角相等
-            angle_1 = problem.get_sym_of_attr((aType.DA.name, tri))
-            angle_2 = problem.get_sym_of_attr((aType.DA.name, tri[1:3] + tri[0]))
-            update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 11) or update
+
             i = i + rep.count_iso_tri
 
         return update
@@ -423,7 +471,47 @@ class Theorem:
 
     @staticmethod
     def theorem_39_perpendicular_property(problem):
-        pass
+        """
+        垂直 性质
+        垂直  ==>  角为90°
+        """
+        update = False
+        for perpendicular in problem.conditions.items[cType.perpendicular]:
+            point, line1, line2 = perpendicular
+            premise = [problem.conditions.get_index(perpendicular, cType.perpendicular)]
+            sym = []
+            if len(set(point + line1 + line2)) == 3:
+                if line1[0] == line2[1]:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2 + line1[1])))
+                elif line1[1] == line2[1]:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1 + line2[0])))
+                elif line1[1] == line2[0]:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2[::-1] + line1[0])))
+                elif line1[0] == line2[0]:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1[::-1] + line2[1])))
+            elif len(set(point + line1 + line2)) == 4:
+                if line2[1] == point:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1[0] + line2[::-1])))
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2 + line1[1])))
+                elif line1[1] == point:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2[1] + line1[::-1])))
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1 + line2[0])))
+                elif line2[0] == point:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1[1] + line2)))
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2[::-1] + line1[0])))
+                elif line1[0] == point:
+                    sym.append(problem.get_sym_of_attr((aType.MA, line2[0] + line1)))
+                    sym.append(problem.get_sym_of_attr((aType.MA, line1[::-1] + line2[1])))
+            elif len(set(point + line1 + line2)) == 5:
+                sym.append(problem.get_sym_of_attr((aType.MA, line1[0] + point + line2[0])))
+                sym.append(problem.get_sym_of_attr((aType.MA, line2[0] + point + line1[1])))
+                sym.append(problem.get_sym_of_attr((aType.MA, line1[1] + point + line2[1])))
+                sym.append(problem.get_sym_of_attr((aType.MA, line2[1] + point + line1[0])))
+
+            for s in sym:  # 设置直角为90°
+                problem.define_equation(s - 90, eType.theorem, premise, 39) or update
+
+        return update
 
     @staticmethod
     def theorem_40_perpendicular_judgment(problem):
@@ -530,7 +618,7 @@ class Theorem:
         pass
 
     @staticmethod
-    def theorem_61_congruent_property_line_euqal(problem):
+    def theorem_61_congruent_property_line_equal(problem):
         """
         全等三角形 性质
         两个三角形全等  ==>  对应角相等、对应边相等
@@ -546,13 +634,9 @@ class Theorem:
 
             for j in range(3):
                 # 对应边相等
-                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
-                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
+                l_1 = problem.get_sym_of_attr((aType.LL, tri1[j] + tri1[(j + 1) % 3]))
+                l_2 = problem.get_sym_of_attr((aType.LL, tri2[j] + tri2[(j + 1) % 3]))
                 update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
-                # 对应角相等
-                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
-                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
-                update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
 
             i = i + rep.count_congruent  # 一个全等关系有3种表示
 
@@ -574,13 +658,9 @@ class Theorem:
             premise = [problem.conditions.get_index(congruent, cType.congruent)]  # 前提
 
             for j in range(3):
-                # 对应边相等
-                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
-                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
-                update = problem.define_equation(l_1 - l_2, eType.theorem, premise, 8) or update
                 # 对应角相等
-                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
-                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
+                angle_1 = problem.get_sym_of_attr((aType.MA, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
+                angle_2 = problem.get_sym_of_attr((aType.MA, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
                 update = problem.define_equation(angle_1 - angle_2, eType.theorem, premise, 8) or update
 
             i = i + rep.count_congruent  # 一个全等关系有3种表示
@@ -612,7 +692,7 @@ class Theorem:
         pass
 
     @staticmethod
-    def theorem_69_similar_property_angle_euqal(problem):
+    def theorem_69_similar_property_angle_equal(problem):
         """
         相似三角形 性质
         相似△  ==>  对应角相等、对应边成比例
@@ -627,12 +707,12 @@ class Theorem:
             ratios = []  # 对应边的比
             for j in range(3):
                 # 对应边的比
-                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
-                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
+                l_1 = problem.get_sym_of_attr((aType.LL, tri1[j] + tri1[(j + 1) % 3]))
+                l_2 = problem.get_sym_of_attr((aType.LL, tri2[j] + tri2[(j + 1) % 3]))
                 ratios.append(l_1 / l_2)
                 # 对应角相等
-                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
-                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
+                angle_1 = problem.get_sym_of_attr((aType.MA, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
+                angle_2 = problem.get_sym_of_attr((aType.MA, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
                 update = problem.define_equation(angle_1 - angle_2, index, 6) or update
             update = problem.define_equation(ratios[0] - ratios[1], index, 6) or update  # 对应边的比值相等
             update = problem.define_equation(ratios[1] - ratios[2], index, 6) or update
@@ -657,12 +737,12 @@ class Theorem:
             ratios = []  # 对应边的比
             for j in range(3):
                 # 对应边的比
-                l_1 = problem.get_sym_of_attr((aType.LL.name, tri1[j] + tri1[(j + 1) % 3]))
-                l_2 = problem.get_sym_of_attr((aType.LL.name, tri2[j] + tri2[(j + 1) % 3]))
+                l_1 = problem.get_sym_of_attr((aType.LL, tri1[j] + tri1[(j + 1) % 3]))
+                l_2 = problem.get_sym_of_attr((aType.LL, tri2[j] + tri2[(j + 1) % 3]))
                 ratios.append(l_1 / l_2)
                 # 对应角相等
-                angle_1 = problem.get_sym_of_attr((aType.DA.name, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
-                angle_2 = problem.get_sym_of_attr((aType.DA.name, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
+                angle_1 = problem.get_sym_of_attr((aType.MA, tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3]))
+                angle_2 = problem.get_sym_of_attr((aType.MA, tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3]))
                 update = problem.define_equation(angle_1 - angle_2, index, 6) or update
             update = problem.define_equation(ratios[0] - ratios[1], index, 6) or update  # 对应边的比值相等
             update = problem.define_equation(ratios[1] - ratios[2], index, 6) or update
@@ -700,10 +780,10 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):  # 三角形
             tri = problem.conditions.items[cType.triangle][i]
-            p = problem.get_sym_of_attr((aType.P.name, tri))
-            a = problem.get_sym_of_attr((aType.LL.name, tri[0:2]))
-            b = problem.get_sym_of_attr((aType.LL.name, tri[1:3]))
-            c = problem.get_sym_of_attr((aType.LL.name, tri[2] + tri[0]))
+            p = problem.get_sym_of_attr((aType.PT, tri))
+            a = problem.get_sym_of_attr((aType.LL, tri[0:2]))
+            b = problem.get_sym_of_attr((aType.LL, tri[1:3]))
+            c = problem.get_sym_of_attr((aType.LL, tri[2] + tri[0]))
             premise = [problem.conditions.get_index(tri, cType.triangle)]
             update = problem.define_equation(p - a - b - c, eType.theorem, premise, 10) or update
             i = i + rep.count_tri
@@ -734,8 +814,8 @@ class Theorem:
             ratios_unit = []
             known_count = [0, 0, 0]  # 记录方程中已知变量的个数, =3方程才有意义
             for j in range(3):
-                line = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
-                angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
+                line = problem.get_sym_of_attr((aType.LL, tri[j] + tri[(j + 1) % 3]))
+                angle = problem.get_sym_of_attr((aType.MA, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
                 if problem.value_of_sym[line] is not None:
                     known_count[j] += 1
                 if problem.value_of_sym[angle] is not None:
@@ -762,10 +842,10 @@ class Theorem:
         while i < len(problem.conditions.items[cType.triangle]):
             tri = problem.conditions.items[cType.triangle][i]
             for j in range(3):
-                a = problem.get_sym_of_attr((aType.LL.name, tri[j] + tri[(j + 1) % 3]))
-                b = problem.get_sym_of_attr((aType.LL.name, tri[(j + 1) % 3] + tri[(j + 2) % 3]))
-                c = problem.get_sym_of_attr((aType.LL.name, tri[(j + 2) % 3] + tri[j]))
-                angle = problem.get_sym_of_attr((aType.DA.name, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
+                a = problem.get_sym_of_attr((aType.LL, tri[j] + tri[(j + 1) % 3]))
+                b = problem.get_sym_of_attr((aType.LL, tri[(j + 1) % 3] + tri[(j + 2) % 3]))
+                c = problem.get_sym_of_attr((aType.LL, tri[(j + 2) % 3] + tri[j]))
+                angle = problem.get_sym_of_attr((aType.MA, tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3]))
                 equation = a ** 2 - b ** 2 - c ** 2 + 2 * b * c * cos(angle * pi / 180)
                 premise = [problem.conditions.get_index(tri, cType.triangle)]
                 update = problem.define_equation(equation, eType.theorem, premise, 22) or update

@@ -8,7 +8,7 @@ generated_data = "../data/generated_data/gen.json"
 
 
 if __name__ == "__main__":
-    mode = 2    # 0 trans   1 temp    2 gen
+    mode = 0    # 0 trans   1 temp    2 gen
     solver = Solver()
     if mode == 0:
         while True:
