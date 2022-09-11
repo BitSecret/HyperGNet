@@ -39,13 +39,28 @@ class ProblemLogic:
             for point in shape:  # 添加构成shape的点
                 self.define_point(point, premise, -2)
 
+            for shape in rep.shape(shape):  # shape多种表示
+                self.conditions.add(shape, cType.shape, premise, -2)
+
+            i = 0  # 当前长度为3窗口起始的位置
+            while len(shape) > 2 and i < len(shape):  # 去掉共线点，得到实际图形
+                point1 = shape[i]
+                point2 = shape[(i + 1) % len(shape)]
+                point3 = shape[(i + 2) % len(shape)]
+
+                is_coll = False  # 判断是否共线
+                for coll in self.conditions.items[cType.collinear]:
+                    if point1 in coll and point2 in coll and point3 in coll:
+                        is_coll = True
+                        shape = shape.replace(point2, "")  # 三点共线，去掉中间的点
+                        break
+                if not is_coll:  # 不共线，窗口后移
+                    i += 1
+
             if len(shape) == 3:  # 三角形
                 self.define_triangle(shape, premise, -2)
             else:  # 多边形
                 self.define_polygon(shape, premise, -2)
-
-            for shape in rep.shape(shape):  # shape多种表示
-                self.conditions.add(shape, cType.shape, premise, -2)
             return True
         return False
 
@@ -185,7 +200,11 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.perpendicular_bisector, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.perpendicular_bisector)]
-            self.define_perpendicular((point, line1, line2), premise, -2, False)  # 垂直平分也是垂直
+            for all_shape in rep.perpendicular_bisector(ordered_pair):    # 2种表示
+                self.conditions.add(all_shape, cType.perpendicular_bisector, premise, theorem)
+            self.define_line(line1, premise, -2, False)
+            self.define_line(line2, premise, -2, False)
+            self.define_point(point, premise, -2)
             return True
         return False
 
@@ -287,10 +306,11 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.congruent, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.congruent)]
-            triangle1_all = rep.shape(triangle1)  # 6种
+            triangle1_all = rep.shape(triangle1)
             triangle2_all = rep.shape(triangle2)
-            for i in range(len(triangle1_all)):
+            for i in range(len(triangle1_all)):  # 6种
                 self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.congruent, premise, -2)
+                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.congruent, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
             return True
@@ -301,10 +321,41 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.similar, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.similar)]
-            triangle1_all = rep.shape(triangle1)  # 6种表示方式
+            triangle1_all = rep.shape(triangle1)
             triangle2_all = rep.shape(triangle2)
-            for i in range(len(triangle1_all)):
+            for i in range(len(triangle1_all)):  # 6种表示方式
                 self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.similar, premise, -2)
+                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.similar, premise, -2)
+            self.define_triangle(triangle1, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle2, premise, -2, False)
+            return True
+        return False
+
+    def define_mirror_congruent(self, ordered_pair, premise, theorem, root=True):  # 镜像全等
+        triangle1, triangle2 = ordered_pair
+        if self.conditions.add(ordered_pair, cType.mirror_congruent, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.mirror_congruent)]
+            triangle1_all = rep.shape(triangle1)
+            triangle2_all = rep.shape(triangle2)
+            for i in range(len(triangle1_all)):  # 6种
+                self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.mirror_congruent, premise, -2)
+                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.mirror_congruent, premise, -2)
+            self.define_triangle(triangle1, premise, -2, False)  # 定义实体
+            self.define_triangle(triangle2, premise, -2, False)
+            return True
+        return False
+
+    def define_mirror_similar(self, ordered_pair, premise, theorem, root=True):  # 镜像相似
+        triangle1, triangle2 = ordered_pair
+        if self.conditions.add(ordered_pair, cType.mirror_similar, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.mirror_similar)]
+            triangle1_all = rep.shape(triangle1)
+            triangle2_all = rep.shape(triangle2)
+            for i in range(len(triangle1_all)):  # 6种表示方式
+                self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.mirror_similar, premise, -2)
+                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.mirror_similar, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
             return True
@@ -324,26 +375,26 @@ class ProblemLogic:
 
     """------------Attr's Symbol------------"""
 
-    def get_sym_of_attr(self, attr):  # attr: (aType, entity_name)
-        if attr[0] in [aType.T, aType.M]:  # 表示目标/中间值类型的符号，不用存储在符号库
-            return symbols(attr[0].name.lower() + "_" + attr[1])
+    def get_sym_of_attr(self, entity, attr_type):  # attr: (aType, entity_name)
+        if attr_type in [aType.T, aType.M]:  # 表示目标/中间值类型的符号，不用存储在符号库
+            return symbols(attr_type.name.lower() + "_" + entity)
 
-        if attr not in self.sym_of_attr.keys():  # 若无符号，新建符号
-            if attr[0] in [aType.MA, aType.F]:
-                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower())  # 角、自由变量可以有负的
+        if (entity, attr_type) not in self.sym_of_attr.keys():  # 若无符号，新建符号
+            if attr_type in [aType.MA, aType.F]:
+                sym = symbols(attr_type.name.lower() + "_" + entity.lower())  # 角、自由变量可以有负的
             else:
-                sym = symbols(attr[0].name.lower() + "_" + attr[1].lower(), positive=True)  # 属性值没有负数
+                sym = symbols(attr_type.name.lower() + "_" + entity.lower(), positive=True)  # 属性值没有负数
 
             self.value_of_sym[sym] = None  # 符号值
 
-            if attr[0] in [aType.LL, aType.AS, aType.PT]:  # entity 有多种表示形式
-                for all_form in rep.shape(attr[1]):
-                    self.sym_of_attr[(attr[0], all_form)] = sym
+            if attr_type in [aType.LL, aType.AS, aType.PT]:  # entity 有多种表示形式
+                for all_form in rep.shape(entity):
+                    self.sym_of_attr[(all_form, attr_type)] = sym
             else:  # entity 只有一种形式
-                self.sym_of_attr[attr] = sym  # 符号
+                self.sym_of_attr[(entity, attr_type)] = sym  # 符号
 
         else:  # 有符号就返回符号
-            sym = self.sym_of_attr[attr]
+            sym = self.sym_of_attr[(entity, attr_type)]
 
         return sym
 
@@ -390,21 +441,6 @@ class Problem(ProblemLogic):
                         new_shape += shape2[same_length:len(shape2)]  # shape2不同的部分
                         new_shape += shape1[len(shape1) - 1]  # 第2个共点
 
-                        i = 0  # 当前长度为3窗口起始的位置
-                        while len(new_shape) > 2 and i < len(new_shape):
-                            point1 = new_shape[i]
-                            point2 = new_shape[(i + 1) % len(new_shape)]
-                            point3 = new_shape[(i + 2) % len(new_shape)]
-
-                            is_coll = False  # 判断是否共线
-                            for coll in self.conditions.items[cType.collinear]:
-                                if point1 in coll and point2 in coll and point3 in coll:
-                                    is_coll = True
-                                    new_shape = new_shape.replace(point2, "")  # 三点共线，去掉中间的点
-                                    break
-                            if not is_coll:  # 不共线，窗口后移
-                                i += 1
-
                         if 2 < len(new_shape) == len(set(new_shape)):  # 是图形且没有环
                             premise = [self.conditions.get_index(shape1, cType.shape),
                                        self.conditions.get_index(shape2, cType.shape)]
@@ -418,7 +454,7 @@ class Problem(ProblemLogic):
             a_points = angle[0]
             o_point = angle[1]
             b_points = angle[2]
-            sym = self.get_sym_of_attr((aType.MA, angle))
+            sym = self.get_sym_of_attr(angle, aType.MA)
 
             coll_a = None  # 与AO共线的collinear
             coll_b = None  # 与OB共线的collinear
@@ -439,13 +475,12 @@ class Problem(ProblemLogic):
 
             for a_point in a_points:  # 本质上相同的角安排一样的符号
                 for b_point in b_points:
-                    self.sym_of_attr[(aType.MA, a_point + o_point + b_point)] = sym
+                    self.sym_of_attr[(a_point + o_point + b_point, aType.MA)] = sym
 
     """------------解方程相关------------"""
 
     @func_set_timeout(5)  # 限时5s
     def solve_equations(self, target_sym=None, target_equation=None):  # 求解方程
-
         if target_sym is None:  # 只涉及basic、value、theorem
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解
                 return
@@ -463,10 +498,14 @@ class Problem(ProblemLogic):
                     if self.value_of_sym[sym] is None:  # 符号值未知，尝试求解
                         min_equations, premise = self.get_minimum_equations(set(), sym, False)
                         solved_result = solve(min_equations)  # 求解min_equations
+                        # print(sym)
+                        # print(equations)
+                        # print(solved_result)
+                        # print()
                         if len(solved_result) > 0:  # 有解
                             if isinstance(solved_result, list):  # 解不唯一，选第一个(涉及三角函数时可能有多个解)
                                 solved_result = solved_result[0]
-                            if sym in solved_result.keys() and\
+                            if sym in solved_result.keys() and \
                                     (isinstance(solved_result[sym], Float) or isinstance(solved_result[sym], Integer)):
                                 self.set_value_of_sym(sym, float(solved_result[sym]), premise, -3)
                                 update = True
@@ -477,6 +516,10 @@ class Problem(ProblemLogic):
             equations, premise = self.get_minimum_equations({target_sym}, target_equation, True)  # 使用value + basic
             equations.append(target_equation)
             solved_result = solve(equations)  # 求解target+value+basic equation
+            # print(target_sym)
+            # print(equations)
+            # print(solved_result)
+            # print()
             if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
                 solved_result = solved_result[0]
 
@@ -804,7 +847,7 @@ class Problem(ProblemLogic):
         self.get_premise()  # 生成条件树
 
         # Logic-Construction
-        print("\033[33mEntity:\033[0m")
+        print("\033[33mConstruction:\033[0m")
         for entity in Condition.construction_list:
             if len(self.conditions.items[entity]) > 0:
                 print("{}:".format(entity.name))
@@ -847,11 +890,16 @@ class Problem(ProblemLogic):
                                            str(self.conditions.get_premise(item, entity_relation)),
                                            self.conditions.get_theorem(item, entity_relation)))
         # Logic-Attribution&Symbol&Equation
-        print("\033[33mAttribution, Symbol and Value:\033[0m")
+        print("\033[33mEntity\'s Symbol and Value:\033[0m")
         for attr in self.sym_of_attr.keys():
-            print("{0:^15}{1:^10}{2:^20}".format(str(attr),
-                                                 str(self.sym_of_attr[attr]),
-                                                 str(self.value_of_sym[self.sym_of_attr[attr]])))
+            if isinstance(self.value_of_sym[self.sym_of_attr[attr]], Float):
+                print("{0:^10}{1:^10}{2:^15.3f}".format(attr[0],
+                                                        str(self.sym_of_attr[attr]),
+                                                        self.value_of_sym[self.sym_of_attr[attr]]))
+            else:
+                print("{0:^10}{1:^10}{2:^15}".format(attr[0],
+                                                     str(self.sym_of_attr[attr]),
+                                                     str(self.value_of_sym[self.sym_of_attr[attr]])))
 
         print("\033[33mEquations:\033[0m")
         if len(self.conditions.items[Condition.equation]) > 0:
@@ -874,7 +922,7 @@ class Problem(ProblemLogic):
 
         # target and answer
         print("\033[34mTarget Count:\033[0m {}".format(self.target_count))
-        for i in range(0, self.target_count):
+        for i in range(self.target_count):
             print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])), end="  ")
             print("\033[34mcorrect answer:\033[0m {}".format(self.answer[i]), end="  ")
             if self.target_solved[i] == "solved":

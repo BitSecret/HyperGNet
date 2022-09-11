@@ -761,7 +761,7 @@
 	},
 	"22": {
 		"problem_id": 22,
-		"annotation": "xiaokaizhang_2022-09-10",
+		"annotation": "xiaokaizhang_2022-09-09",
 		"source": "Geometry3k-61",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -790,7 +790,7 @@
 	},
 	"23": {
 		"problem_id": 23,
-		"annotation": "xiaokaizhang_2022-09-10",
+		"annotation": "xiaokaizhang_2022-09-09",
 		"source": "Geometry3k-66",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -821,7 +821,7 @@
 	},
 	"24": {
 		"problem_id": 24,
-		"annotation": "xiaokaizhang_2022-09-10",
+		"annotation": "xiaokaizhang_2022-09-09",
 		"source": "Geometry3k-67",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -855,7 +855,7 @@
 	},
 	"25": {
 		"problem_id": 25,
-		"annotation": "xiaokaizhang_2022-09-10",
+		"annotation": "xiaokaizhang_2022-09-09",
 		"source": "Geometry3k-68",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -892,128 +892,143 @@
 	},
 	"26": {
 		"problem_id": 26,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-69",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 2.",
+		"problem_text_en": "Find the measure of \\angle FDG.",
 		"problem_img": "26_g3k-69.png",
 		"problem_answer": [
 			"25"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(DEG)",
+			"Shape(DGF)",
+			"Collinear(EGF)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Measure(Angle(GDE)),Measure(angle1))",
-			"Equal(Measure(Angle(FDG)),Measure(angle2))",
 			"Equal(Measure(Angle(DEF)),25)",
-			"Equal(Measure(Angle(EFD)),65)",
-			"PointOn(Point(G),Line(EF))",
-			"Perpendicular(Point(G),Line(DG),Line(EG))",
-			"Find(Measure(Angle(2)))"
+			"Equal(Measure(Angle(GFD)),65)",
+			"Perpendicular(Point(G),Line(EF),Line(DG))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(Measure(Angle(FDG)))"
+		],
+		"theorem_seqs": [
+			39,
+			21
+		],
+		"completeness": "True"
 	},
 	"27": {
 		"problem_id": 27,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-71",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle E F G is equilateral, and E H bisects \\angle E. Find x.",
+		"problem_text_en": "\\triangle E F G is equilateral, and E H bisects \\triangle EFG. Find x.",
 		"problem_img": "27_g3k-71.png",
 		"problem_answer": [
 			"6"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(EFH)",
+			"Shape(EHG)",
+			"Collinear(FHG)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Measure(Angle(HEF)),Measure(angle1))",
-			"Equal(Measure(Angle(GEH)),Measure(angle2))",
 			"Equal(Measure(Angle(FHE)),15*x)",
-			"PointOn(Point(H),Line(FG))",
-			"Equilateral(Triangle(EFG))",
-			"BisectsAngle(Line(EH),Angle(E))",
+			"EquilateralTriangle(EFG)",
+			"Bisector(Line(EH),Triangle(EFG))"
+		],
+		"target_fls": [
 			"Find(x)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [
+			31,
+			3,
+			47,
+			21
+		],
+		"completeness": "True"
 	},
 	"28": {
 		"problem_id": 28,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-73",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find y in \\triangle P Q R.",
+		"problem_text_en": "Find y in \\triangle RPQ.",
 		"problem_img": "28_g3k-73.png",
 		"problem_answer": [
 			"2*{3^0.5}"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(RSQ)",
+			"Shape(SPQ)",
+			"Collinear(RSP)"
 		],
-		"text_fls": [],
+		"text_fls": [
+			"Triangle(RPQ)"
+		],
 		"image_fls": [
 			"Equal(Length(Line(SR)),4)",
 			"Equal(Length(Line(QR)),x)",
-			"Equal(Length(Line(SP)),5)",
 			"Equal(Length(Line(SP)),2)",
-			"PointOn(Point(S),Line(RP))",
-			"Perpendicular(Point(S),Line(SR),Line(QS))",
-			"Perpendicular(Point(Q),Line(QR),Line(QP))",
-			"Triangle(PQR)",
+			"Equal(Length(Line(PQ)),y)",
+			"Perpendicular(Point(S),Line(PR),Line(SQ))",
+			"Perpendicular(Point(Q),Line(PQ),Line(RQ))"
+		],
+		"target_fls": [
 			"Find(y)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [
+			25,
+			2,
+			22
+		],
+		"completeness": "True"
 	},
 	"29": {
 		"problem_id": 29,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-76",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the area of the triangle. Round to the nearest tenth if necessary.",
+		"problem_text_en": "Find the area of the triangle.",
 		"problem_img": "29_g3k-76.png",
 		"problem_answer": [
 			"129.9"
 		],
 		"construction_fls": [
 			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ACN)",
+			"Collinear(BCN)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(AN)),10)",
 			"Equal(Length(Line(BC)),30)",
 			"Equal(Length(Line(CN)),5)",
-			"PointOn(Point(C),Line(BN))",
-			"Perpendicular(Point(C),Line(AC),Line(CN))",
+			"Perpendicular(Point(C),Line(BN),Line(AC))"
+		],
+		"target_fls": [
 			"Find(Area(Triangle(ABC)))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [
+			25,
+			22,
+			52,
+			2,
+			77
+		],
+		"completeness": "True"
 	},
 	"30": {
 		"problem_id": 30,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-81",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1023,30 +1038,28 @@
 			"2"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ADBC)",
+			"Shape(DQB)",
+			"Collinear(ADQ)",
+			"Collinear(QBC)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(QC)),8)",
 			"Equal(Length(Line(BQ)),6)",
-			"Equal(Length(Line(BC)),x)",
-			"PointOn(Point(D),Line(QA))",
-			"PointOn(Point(B),Line(QC))",
+			"Equal(Length(Line(BC)),x)"
+		],
+		"target_fls": [
 			"Find(x)"
 		],
-		"target_fls": [],
 		"theorem_seqs": [
-			5,
-			3,
-			1
+			2
 		],
-		"completeness": "False"
+		"completeness": "True"
 	},
 	"31": {
 		"problem_id": 31,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-85",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1056,26 +1069,31 @@
 			"15.5"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(EFH)",
+			"Shape(HFG)",
+			"Shape(ABD)",
+			"Shape(DBC)",
+			"Collinear(EHG)",
+			"Collinear(ADC)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(AB)),32)",
 			"Equal(Length(Line(BC)),2*x-3)",
-			"PointOn(Point(D),Line(AC))",
 			"Equal(Length(Line(AD)),Length(Line(DC)))",
 			"Equal(Length(Line(EF)),12)",
 			"Equal(Length(Line(FG)),x-5)",
-			"PointOn(Point(H),Line(EG))",
 			"Equal(Length(Line(EH)),Length(Line(HG)))",
-			"Equal(Measure(Angle(BAD)),Measure(Angle(FEH)))",
-			"Equal(Measure(Angle(BCD)),Measure(Angle(FGH)))",
+			"Equal(Measure(Angle(DAB)),Measure(Angle(HEF)))",
+			"Equal(Measure(Angle(BCD)),Measure(Angle(FGH)))"
+		],
+		"target_fls": [
 			"Find(x)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
+		"theorem_seqs": [
+			75,
+			70
+		],
 		"completeness": "False"
 	},
 	"32": {
@@ -1090,9 +1108,12 @@
 			"1.8"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ABCG)",
+			"Shape(GCD)",
+			"Shape(GDEF)",
+			"Collinear(AGD)",
+			"Collinear(CGF)",
+			"Collinear(BCDE)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -1100,18 +1121,17 @@
 			"Equal(Length(Line(CE)),x+2)",
 			"Equal(Length(Line(EF)),8)",
 			"Equal(Length(Line(BA)),3)",
-			"PointOn(Point(C),Line(DB))",
-			"PointOn(Point(G),Line(DA))",
-			"PointOn(Point(D),Line(BE))",
-			"PointOn(Point(C),Line(BE))",
-			"PointOn(Point(D),Line(EC))",
-			"PointOn(Point(G),Line(CF))",
-			"Perpendicular(Point(B),Line(AB),Line(BC))",
-			"Perpendicular(Point(E),Line(FE),Line(ED))",
+			"Equal(Measure(Angle(GAB)),Measure(Angle(EFG)))",
+			"Perpendicular(Point(B),Line(BC),Line(AB))",
+			"Perpendicular(Point(E),Line(DE),Line(FE))"
+		],
+		"target_fls": [
 			"Find(Length(Line(BD)))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
+		"theorem_seqs": [
+			39,
+			75
+		],
 		"completeness": "False"
 	},
 	"33": {
@@ -1126,58 +1146,57 @@
 			"21"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(WZY)",
+			"Shape(WYX)",
+			"Collinear(ZYX)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"PointOn(Point(Y),Line(XZ))",
-			"PointOn(Point(W),Line(DY))",
-			"PointOn(Point(W),Line(DT))",
-			"PointOn(Point(Y),Line(DT))",
-			"PointOn(Point(Y),Line(WT))",
-			"Perpendicular(Point(Y),Line(XY),Line(YW))",
 			"Equal(Length(Line(XY)),Length(Line(YZ)))",
-			"PerpendicularBisector(Line(m),Line(XZ))",
+			"PerpendicularBisector(Point(Y),Line(WY),Line(XZ))",
 			"Equal(Length(Line(WZ)),4*a-15)",
-			"Equal(Length(Line(WZ)),a+12)",
+			"Equal(Length(Line(WZ)),a+12)"
+		],
+		"target_fls": [
 			"Find(Length(Line(WX)))"
 		],
-		"target_fls": [],
 		"theorem_seqs": [],
 		"completeness": "False"
 	},
 	"34": {
 		"problem_id": 34,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-100",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle R to the nearest tenth.",
+		"problem_text_en": "Find the measure of \\angle R.",
 		"problem_img": "34_g3k-100.png",
 		"problem_answer": [
-			"70.9"
+			"70.851"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(PQR)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(PQ)),72)",
 			"Equal(Length(Line(RQ)),25)",
-			"Perpendicular(Point(Q),Line(PQ),Line(RQ))",
-			"Find(Measure(Angle(R)))"
+			"Perpendicular(Point(Q),Line(PQ),Line(RQ))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(Measure(Angle(QRP)))"
+		],
+		"theorem_seqs": [
+			25,
+			22,
+			39,
+			80
+		],
+		"completeness": "True"
 	},
 	"35": {
 		"problem_id": 35,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-101",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1187,9 +1206,9 @@
 			"25/14"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(AYN)",
+			"Shape(ANB)",
+			"Collinear(YNB)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -1198,50 +1217,53 @@
 			"Equal(Length(Line(AB)),z)",
 			"Equal(Length(Line(YN)),y)",
 			"Equal(Length(Line(YB)),14)",
-			"PointOn(Point(N),Line(YB))",
-			"Perpendicular(Point(A),Line(AY),Line(AB))",
-			"Perpendicular(Point(N),Line(AN),Line(BN))",
+			"Perpendicular(Point(A),Line(YA),Line(AB))",
+			"Perpendicular(Point(N),Line(YB),Line(AN))"
+		],
+		"target_fls": [
 			"Find(y)"
 		],
-		"target_fls": [],
 		"theorem_seqs": [
-			5,
-			3,
-			1
+			25,
+			2,
+			22
 		],
 		"completeness": "False"
 	},
 	"36": {
 		"problem_id": 36,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-103",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle J K L.",
+		"problem_text_en": "Find measure of \\angle LKJ.",
 		"problem_img": "36_g3k-103.png",
 		"problem_answer": [
 			"31"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(KJL)",
+			"Shape(KLA)",
+			"Collinear(JLA)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Measure(Angle(JKL)),2*x-11)",
+			"Equal(Measure(Angle(LKJ)),2*x-11)",
 			"Equal(Measure(Angle(KJL)),2*x+27)",
-			"Equal(Measure(Angle(KLA)),100)",
-			"PointOn(Point(L),Line(JA))",
-			"Find(Measure(Angle(JKL)))"
+			"Equal(Measure(Angle(KLA)),100)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": [
+			"Find(Measure(Angle(LKJ)))"
+		],
+		"theorem_seqs": [
+			3,
+			21
+		],
+		"completeness": "True"
 	},
 	"37": {
 		"problem_id": 37,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-104",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1251,28 +1273,32 @@
 			"12*{3^0.5}"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(BCA)"
 		],
-		"text_fls": [],
+		"text_fls": [
+			"Equal(b,18)"
+		],
 		"image_fls": [
 			"Equal(Length(Line(AB)),c)",
 			"Equal(Measure(Angle(ABC)),60)",
 			"Equal(Length(Line(CB)),a)",
 			"Equal(Measure(Angle(CAB)),30)",
 			"Equal(Length(Line(CA)),b)",
-			"Perpendicular(Point(C),Line(CB),Line(CA))",
-			"Equal(b,18)",
+			"Perpendicular(Point(C),Line(CA),Line(BC))"
+		],
+		"target_fls": [
 			"Find(c)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [
+			25,
+			22,
+			23
+		],
+		"completeness": "True"
 	},
 	"38": {
 		"problem_id": 38,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-105",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1282,9 +1308,7 @@
 			"12"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(CBA)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -1292,12 +1316,16 @@
 			"Equal(Length(Line(BC)),6)",
 			"Equal(Measure(Angle(BAC)),30)",
 			"Equal(Length(Line(AB)),x)",
-			"Perpendicular(Point(C),Line(AC),Line(BC))",
+			"Perpendicular(Point(C),Line(CA),Line(CB))"
+		],
+		"target_fls": [
 			"Find(x)"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [
+			25,
+			23
+		],
+		"completeness": "True"
 	},
 	"39": {
 		"problem_id": 39,
@@ -1311,23 +1339,27 @@
 			"12"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
+			"Shape(ABP)",
+			"Shape(PBC)",
+			"Shape(APF)",
+			"Shape(PDE)",
+			"Shape(FPE)",
 			"Collinear(ABC)",
-			"Extended(False)"
+			"Collinear(CDE)",
+			"Collinear(EFA)",
+			"Collinear(BPE)",
+			"Collinear(CPF)",
+			"Collinear(APD)"
 		],
-		"text_fls": [],
-		"image_fls": [
-			"PointOn(Point(F),Line(EA))",
-			"PointOn(Point(D),Line(EC))",
-			"PointOn(Point(P),Line(EB))",
-			"PointOn(Point(B),Line(AC))",
-			"PointOn(Point(P),Line(AD))",
-			"PointOn(Point(P),Line(CF))",
+		"text_fls": [
 			"Triangle(ACE)",
 			"Centroid(Point(P),Triangle(ACE))",
 			"Equal(Length(Line(PF)),6)",
-			"Equal(Length(Line(AD)),15)",
-			"Find(Length(Line(PC)))"
+			"Equal(Length(Line(AD)),15)"
+		],
+		"image_fls": ["Median(Line(AD),Triangle(ACE))",
+		"Median(Line(EB),Triangle(EAC))",
+		"Median(Line(CF),Triangle(CEA))"
 		],
 		"target_fls": [],
 		"theorem_seqs": [],
@@ -1335,7 +1367,7 @@
 	},
 	"40": {
 		"problem_id": 40,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-10",
 		"source": "Geometry3k-109",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1345,23 +1377,20 @@
 			"1153"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(CBA)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Length(Line(BC)),5)",
-			"Equal(Length(Line(AC)),8*x)",
+			"Triangle(CBA)",
 			"Equal(Length(Line(BC)),110*x+53)",
-			"Equal(Length(Line(AC)),73)",
+			"Equal(Length(Line(AC)),73.8*x)",
 			"Equal(Length(Line(AB)),150*x+91)",
-			"Equal(Perimeter(Triangle(ABC)),3482)",
-			"Find(Length(CB))"
+			"Equal(Perimeter(Triangle(CBA)),3482)"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(Length(Line(CB)))"],
+		"theorem_seqs": [76],
+		"completeness": "True"
 	},
 	"41": {
 		"problem_id": 41,

@@ -18,6 +18,12 @@ import time
 2.编写完所有定理
 3.logic 转化为 FL 部分代码 编写  ok
 4.parse 部分 改写代码更易读     ok
+2022.09.09
+1.题目标注到25了    ok
+2.get_sym_of_attr   参数顺序改一下，太迷惑人了   ok
+2022.09.10
+1.继续标注题目   标注到40了  没搞的：39 重心的表示
+2.镜像全等、相似定理修饰一下    32 33 镜像的没标注    
 """
 
 
@@ -69,15 +75,15 @@ class Solver:
             39: Theorem.theorem_39_perpendicular_property,
             40: Theorem.theorem_40_perpendicular_judgment,
             41: Theorem.theorem_41_parallel_perpendicular_combination,
-            42: Theorem.theorem_42_perpendicular_bisector_property_perpendicular,
-            43: Theorem.theorem_43_perpendicular_bisector_property_bisector,
+            42: Theorem.theorem_42_perpendicular_bisector_property_relation,
+            43: Theorem.theorem_43_perpendicular_bisector_property_algebra,
             44: Theorem.theorem_44_perpendicular_bisector_property_distance_equal,
             45: Theorem.theorem_45_perpendicular_bisector_judgment,
             46: Theorem.theorem_46_bisector_property_line_ratio,
             47: Theorem.theorem_47_bisector_property_angle_equal,
-            48: Theorem.theorem_48_bisector_property_distance_equal,
-            49: Theorem.theorem_49_bisector_judgment_line_ratio,
-            50: Theorem.theorem_50_bisector_judgment_angle_equal,
+            48: Theorem.theorem_48_bisector_judgment_angle_equal,
+            49: Theorem.theorem_49_median_property,
+            50: Theorem.theorem_50_median_judgment,
             51: Theorem.theorem_51_altitude_property,
             52: Theorem.theorem_52_altitude_judgment,
             53: Theorem.theorem_53_neutrality_property_similar,
@@ -190,6 +196,10 @@ class Solver:
                 self.problem.define_congruent((fl[1][1], fl[2][1]), [-1], -1)
             elif fl[0] == "Similar":
                 self.problem.define_similar((fl[1][1], fl[2][1]), [-1], -1)
+            elif fl[0] == "MirrorCongruent":
+                self.problem.define_mirror_congruent((fl[1][1], fl[2][1]), [-1], -1)
+            elif fl[0] == "MirrorSimilar":
+                self.problem.define_mirror_similar((fl[1][1], fl[2][1]), [-1], -1)
             else:
                 raise RuntimeError("Unknown predicate <{}> when parse text/image FL. Please check FL.".format(fl[0]))
 
@@ -204,19 +214,19 @@ class Solver:
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
             self.problem.define_line(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.LL, fl[1][1]))
+            return self.problem.get_sym_of_attr(fl[1][1], aType.LL)
         elif fl[0] == "Measure":
             self.problem.define_angle(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.MA, fl[1][1]))
+            return self.problem.get_sym_of_attr(fl[1][1], aType.MA)
         elif fl[0] == "Area":
             self.problem.define_triangle(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.AS, fl[1][1]))
+            return self.problem.get_sym_of_attr(fl[1][1], aType.AS)
         elif fl[0] == "Perimeter":
             self.problem.define_triangle(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.PT, fl[1][1]))
+            return self.problem.get_sym_of_attr(fl[1][1], aType.PT)
         elif fl[0] == "Altitude":
             self.problem.define_triangle(fl[1][1], [-1], -1)
-            return self.problem.get_sym_of_attr((aType.AT, fl[1][1]))
+            return self.problem.get_sym_of_attr(fl[1][1], aType.AT)
         elif fl[0] == "Add":  # 生成运算的符号表示
             return self._generate_expr(fl[1]) + self._generate_expr(fl[2])
         elif fl[0] == "Sub":
@@ -298,7 +308,7 @@ class Solver:
                     elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
                         break
             else:  # 实数或符号
-                unit = self.problem.get_sym_of_attr((aType.F, unit)) if unit.isalpha() else float(unit)
+                unit = self.problem.get_sym_of_attr(unit, aType.F) if unit.isalpha() else float(unit)
                 expr_stack.append(unit)
                 i = i + 1
 
@@ -310,7 +320,7 @@ class Solver:
 
         if fl[0] == "Equal":  # 数值-验证型 解题目标
             self.problem.target_type.append(tType.equal)
-            target = self.problem.get_sym_of_attr((aType.T, str(format(self.problem.target_count))))
+            target = self.problem.get_sym_of_attr(str(format(self.problem.target_count)), aType.T)
             self.problem.target.append([target, target - self._generate_expr(fl), None, None])  # 求解目标 辅助方程 目标值 前提
         elif fl[0] in FormalLanguage.entity_predicates:  # 关系型解题目标(实体)
             self.problem.target_type.append(tType.entity)
@@ -326,7 +336,7 @@ class Solver:
                  tuple(target_list)])
         else:  # 数值-求解型 解题目标
             self.problem.target_type.append(tType.value)
-            target = self.problem.get_sym_of_attr((aType.T, str(format(self.problem.target_count))))
+            target = self.problem.get_sym_of_attr(str(format(self.problem.target_count)), aType.T)
             self.problem.target.append([target, target - self._generate_expr(fl), None, None])
 
     def solve(self):

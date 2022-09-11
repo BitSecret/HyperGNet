@@ -2,7 +2,7 @@ from pyparsing import oneOf, Combine, alphanums, Forward, Group, Word, Literal, 
 
 
 class Representation:
-
+    """多种表示的数量"""
     # count_shape
     count_collinear = 2
 
@@ -24,15 +24,18 @@ class Representation:
     count_median = 1
     count_is_altitude = 1
     count_neutrality = 1
-    count_circumcenter = count_triangle
-    count_incenter = count_triangle
-    count_centroid = count_triangle
-    count_orthocenter = count_triangle
-    count_congruent = count_triangle
-    count_similar = count_triangle
+    count_circumcenter = 3
+    count_incenter = 3
+    count_centroid = 3
+    count_orthocenter = 3
+    count_congruent = 6
+    count_similar = 6
+    count_mirror_congruent = 6
+    count_mirror_similar = 6
 
     # count_equation
 
+    """one to n"""
     @staticmethod
     def shape(entity):
         results = []
@@ -60,6 +63,13 @@ class Representation:
                    (point, line2, line1[::-1]),
                    (point, line1[::-1], line2[::-1]),
                    (point, line2[::-1], line1)]
+        return results
+
+    @staticmethod
+    def perpendicular_bisector(relation):
+        point, line1, line2 = relation
+        results = [(point, line1, line2),
+                   (point, line2, line1[::-1])]
         return results
 
 

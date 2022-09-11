@@ -29,8 +29,10 @@ class ConditionType(Enum):  # 条件的类型
     orthocenter = 23
     congruent = 24
     similar = 25
+    mirror_congruent = 26
+    mirror_similar = 27
 
-    equation = 52  # 代数方程
+    equation = 28  # 代数方程
 
 
 class AttributionType(Enum):  # 属性的类型
@@ -70,7 +72,8 @@ class Condition:  # 条件
                             ConditionType.perpendicular, ConditionType.perpendicular_bisector, ConditionType.bisector,
                             ConditionType.median, ConditionType.is_altitude, ConditionType.neutrality,
                             ConditionType.circumcenter, ConditionType.incenter, ConditionType.centroid,
-                            ConditionType.orthocenter, ConditionType.congruent, ConditionType.similar]
+                            ConditionType.orthocenter, ConditionType.congruent, ConditionType.similar,
+                            ConditionType.mirror_congruent, ConditionType.mirror_similar]
     equation = ConditionType.equation
     all = construction_list + entity_list + entity_relation_list + [ConditionType.equation]
 
@@ -130,7 +133,7 @@ class FormalLanguage:
                          "EquilateralTriangle", "Polygon"]
     entity_relation_predicates = ["Midpoint", "Intersect", "Parallel", "Perpendicular", "PerpendicularBisector",
                                   "Bisector", "Median", "IsAltitude", "Neutrality", "Circumcenter", "Incenter",
-                                  "Centroid", "Orthocenter", "Congruent", "Similar"]
+                                  "Centroid", "Orthocenter", "Congruent", "Similar", "MirrorCongruent", "MirrorSimilar"]
     attribute_predicates = ["Length", "Measure", "Area", "Perimeter", "Altitude"]
     equation = "Equation"
     all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]
