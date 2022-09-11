@@ -116,7 +116,6 @@ class ProblemLogic:
         if self.conditions.add(triangle, cType.isosceles_triangle, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(triangle, cType.isosceles_triangle)]
-            self.conditions.add(triangle[0] + triangle[2] + triangle[1], cType.isosceles_triangle, premise, -2)  # 两种表示
             self.define_triangle(triangle, premise, -2, False)  # 等腰三角形也是普通三角形
             return True
         return False
@@ -202,6 +201,9 @@ class ProblemLogic:
                 premise = [self.conditions.get_index(ordered_pair, cType.perpendicular_bisector)]
             for all_shape in rep.perpendicular_bisector(ordered_pair):    # 2种表示
                 self.conditions.add(all_shape, cType.perpendicular_bisector, premise, theorem)
+
+            self.define_perpendicular(ordered_pair, premise, -2, False)  # 垂直平分也是垂直
+            self.define_midpoint((point, line1), premise, -2, False)  # 垂直平分也是平分
             self.define_line(line1, premise, -2, False)
             self.define_line(line2, premise, -2, False)
             self.define_point(point, premise, -2)
@@ -336,11 +338,8 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.mirror_congruent, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.mirror_congruent)]
-            triangle1_all = rep.shape(triangle1)
-            triangle2_all = rep.shape(triangle2)
-            for i in range(len(triangle1_all)):  # 6种
-                self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.mirror_congruent, premise, -2)
-                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.mirror_congruent, premise, -2)
+            for all_shape in rep.mirror_tri(ordered_pair):    # 6种表示
+                self.conditions.add(all_shape, cType.mirror_congruent, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
             return True
@@ -351,11 +350,8 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.mirror_similar, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.mirror_similar)]
-            triangle1_all = rep.shape(triangle1)
-            triangle2_all = rep.shape(triangle2)
-            for i in range(len(triangle1_all)):  # 6种表示方式
-                self.conditions.add((triangle1_all[i], triangle2_all[i]), cType.mirror_similar, premise, -2)
-                self.conditions.add((triangle2_all[i], triangle1_all[i]), cType.mirror_similar, premise, -2)
+            for all_shape in rep.mirror_tri(ordered_pair):    # 6种表示
+                self.conditions.add(all_shape, cType.mirror_similar, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
             return True

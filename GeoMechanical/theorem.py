@@ -1,5 +1,3 @@
-import math
-
 from facts import AttributionType as aType
 from facts import EquationType as eType
 from facts import ConditionType as cType
@@ -411,7 +409,21 @@ class Theorem:
 
     @staticmethod
     def theorem_30_isosceles_triangle_judgment_side_equal(problem):
-        pass
+        """
+        等腰三角形 判定
+        两腰相等  ==>  等腰三角形
+        """
+        update = False
+        for tri in problem.conditions.items[cType.triangle]:
+            if tri not in problem.conditions.items[cType.isosceles_triangle]:
+                s1 = problem.get_sym_of_attr(tri[0:2], aType.LL)
+                s2 = problem.get_sym_of_attr(tri[2] + tri[0], aType.LL)
+                m = problem.get_sym_of_attr("1", aType.M)
+                result, premise = problem.solve_equations(m, m - s1 + s2)
+                if result is not None and abs(result) < 0.01:
+                    premise.append(problem.conditions.get_index(tri, cType.triangle))
+                    update = problem.define_isosceles_triangle(tri, premise, 30) or update
+        return update
 
     @staticmethod
     def theorem_31_equilateral_triangle_property_angle_equal(problem):
@@ -420,11 +432,18 @@ class Theorem:
         等边△  ==>  角相等为60°
         """
         update = False
-        for tri in problem.conditions.items[cType.equilateral_triangle]:
-            angle_sym = problem.get_sym_of_attr(tri, aType.MA)
-            update = problem.define_equation(angle_sym - 60, eType.theorem,
-                                             [problem.conditions.get_index(tri, cType.equilateral_triangle)],
-                                             31) or update
+        i = 0
+        while i < len(problem.conditions.items[cType.equilateral_triangle]):
+            tri = problem.conditions.items[cType.equilateral_triangle][i]
+            angle1 = problem.get_sym_of_attr(tri, aType.MA)
+            angle2 = problem.get_sym_of_attr(tri[1] + tri[2] + tri[0], aType.MA)
+            angle3 = problem.get_sym_of_attr(tri[2] + tri[0] + tri[1], aType.MA)
+            premise = [problem.conditions.get_index(tri, cType.equilateral_triangle)]
+            update = problem.define_equation(angle1 - 60, eType.theorem, premise, 31) or update
+            update = problem.define_equation(angle2 - 60, eType.theorem, premise, 31) or update
+            update = problem.define_equation(angle3 - 60, eType.theorem, premise, 31) or update
+            i += rep.count_equilateral_triangle   # 6种表示
+
         return update
 
     @staticmethod
@@ -528,27 +547,16 @@ class Theorem:
         return update
 
     @staticmethod
-    def theorem_42_perpendicular_bisector_property_relation(problem):
+    def theorem_42_midpoint_property(problem):
         """
-        垂直平分线 性质
+        中点 性质
         """
-        update = False
-        i = 0
-        while i < len(problem.conditions.items[cType.perpendicular_bisector]):
-            perpendicular_bisector = problem.conditions.items[cType.perpendicular_bisector][i]
-            point, line1, line2 = perpendicular_bisector
-            premise = [problem.conditions.get_index(perpendicular_bisector, cType.perpendicular_bisector)]
-            update = problem.define_perpendicular(perpendicular_bisector, premise, 42) or update  # 垂直平分也是垂直
-            if len(set(point + line1)) == 3:
-                update = problem.define_midpoint((point, line1), premise, 42) or update  # 垂直平分也是平分
-            if len(set(point + line2)) == 3:
-                update = problem.define_midpoint((point, line2), premise, 42) or update
-        return update
+        pass
 
     @staticmethod
-    def theorem_43_perpendicular_bisector_property_algebra(problem):
+    def theorem_43_midpoint_judgment(problem):
         """
-        垂直平分线 性质
+        中点 判定
         """
         pass
 
@@ -813,7 +821,30 @@ class Theorem:
 
     @staticmethod
     def theorem_63_congruent_property_area_equal(problem):
-        pass
+        """
+        全等三角形 性质
+        两个三角形全等  ==>  面积相等
+        """
+        update = False  # 存储应用定理是否更新了条件
+        i = 0
+        while i < len(problem.conditions.items[cType.congruent]):
+            congruent = problem.conditions.items[cType.congruent][i]
+            a1 = problem.get_sym_of_attr(congruent[0], aType.AS)
+            a2 = problem.get_sym_of_attr(congruent[1], aType.AS)
+            premise = [problem.conditions.get_index(congruent, cType.congruent)]
+            update = problem.define_equation(a1 - a2, eType.theorem, premise, 63) or update
+            i = i + rep.count_congruent
+
+        i = 0    # 镜像
+        while i < len(problem.conditions.items[cType.mirror_congruent]):
+            mirror_congruent = problem.conditions.items[cType.mirror_congruent][i]
+            a1 = problem.get_sym_of_attr(mirror_congruent[0], aType.AS)
+            a2 = problem.get_sym_of_attr(mirror_congruent[1], aType.AS)
+            premise = [problem.conditions.get_index(mirror_congruent, cType.mirror_congruent)]
+            update = problem.define_equation(a1 - a2, eType.theorem, premise, 63) or update
+            i = i + rep.count_mirror_congruent
+
+        return update
 
     @staticmethod
     def theorem_64_congruent_judgment_sss(problem):
@@ -821,7 +852,73 @@ class Theorem:
 
     @staticmethod
     def theorem_65_congruent_judgment_sas(problem):
-        pass
+        """
+        全等三角形 判定：SAS
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri1 = problem.conditions.items[cType.triangle][i]
+            j = i + rep.count_triangle
+            while j < len(problem.conditions.items[cType.triangle]):
+                tri2 = problem.conditions.items[cType.triangle][j]
+                for k in range(3):
+                    premise = [problem.conditions.get_index(tri1, cType.triangle),
+                               problem.conditions.get_index(tri2, cType.triangle)]
+                    m = problem.get_sym_of_attr("1", aType.M)
+
+                    s11 = problem.get_sym_of_attr(tri1[k] + tri1[(k + 1) % 3], aType.LL)
+                    s12 = problem.get_sym_of_attr(tri2[k] + tri2[(k + 1) % 3], aType.LL)
+                    a1 = problem.get_sym_of_attr(tri1[k] + tri1[(k + 1) % 3] + tri1[(k + 2) % 3], aType.MA)
+                    a2 = problem.get_sym_of_attr(tri2[k] + tri2[(k + 1) % 3] + tri2[(k + 2) % 3], aType.MA)
+                    s21 = problem.get_sym_of_attr(tri1[(k + 1) % 3] + tri1[(k + 2) % 3], aType.LL)
+                    s22 = problem.get_sym_of_attr(tri2[(k + 1) % 3] + tri2[(k + 2) % 3], aType.LL)
+
+                    result, eq_premise = problem.solve_equations(m, m - s11 + s12)
+                    if result is not None and abs(result) < 0.01:    # s1相等
+                        premise += eq_premise
+                    else:
+                        continue
+                    result, eq_premise = problem.solve_equations(m, m - a1 + a2)
+                    if result is not None and abs(result) < 0.01:    # a相等
+                        premise += eq_premise
+                    else:
+                        continue
+                    result, eq_premise = problem.solve_equations(m, m - s21 + s22)
+                    if result is not None and abs(result) < 0.01:   # s2相等
+                        premise += eq_premise
+                        update = problem.define_congruent((tri1, tri2), premise, 65) or update
+
+                for k in range(3):    # 镜像全等
+                    premise = [problem.conditions.get_index(tri1, cType.triangle),
+                               problem.conditions.get_index(tri2, cType.triangle)]
+                    m = problem.get_sym_of_attr("1", aType.M)
+
+                    s11 = problem.get_sym_of_attr(tri1[k] + tri1[(k + 1) % 3], aType.LL)
+                    m_s12 = problem.get_sym_of_attr(tri2[(3 - k) % 3] + tri2[2 - k], aType.LL)
+                    a1 = problem.get_sym_of_attr(tri1[k] + tri1[(k + 1) % 3] + tri1[(k + 2) % 3], aType.MA)
+                    m_a2 = problem.get_sym_of_attr(tri2[(4 - k) % 3] + tri2[2 - k] + tri2[(3 - k) % 3], aType.MA)
+                    s21 = problem.get_sym_of_attr(tri1[(k + 1) % 3] + tri1[(k + 2) % 3], aType.LL)
+                    m_s22 = problem.get_sym_of_attr(tri2[2 - k] + tri2[(4 - k) % 3], aType.LL)
+
+                    result, eq_premise = problem.solve_equations(m, m - s11 + m_s12)
+
+                    if result is not None and abs(result) < 0.01:  # s1相等
+                        premise += eq_premise
+                    else:
+                        continue
+                    result, eq_premise = problem.solve_equations(m, m - a1 + m_a2)
+                    if result is not None and abs(result) < 0.01:  # a相等
+                        premise += eq_premise
+                    else:
+                        continue
+                    result, eq_premise = problem.solve_equations(m, m - s21 + m_s22)
+                    if result is not None and abs(result) < 0.01:  # s2相等
+                        premise += eq_premise
+                        update = problem.define_mirror_congruent((tri1, tri2), premise, 65) or update
+
+                j = j + 1
+            i = i + rep.count_triangle
 
     @staticmethod
     def theorem_66_congruent_judgment_asa(problem):
@@ -942,7 +1039,7 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):
             tri1 = problem.conditions.items[cType.triangle][i]
-            j = i + 3
+            j = i + rep.count_triangle
             while j < len(problem.conditions.items[cType.triangle]):
                 tri2 = problem.conditions.items[cType.triangle][j]
                 if (tri1, tri2) not in problem.conditions.items[cType.similar]:
@@ -952,25 +1049,23 @@ class Theorem:
                                problem.conditions.get_index(tri2, cType.triangle)]
                     m_premise = [problem.conditions.get_index(tri1, cType.triangle),  # 镜像
                                  problem.conditions.get_index(tri2, cType.triangle)]
-                    for j in range(3):
+                    for k in range(3):
                         # 对应角相等
-                        angle_1 = problem.get_sym_of_attr(tri1[j] + tri1[(j + 1) % 3] + tri1[(j + 2) % 3], aType.MA)
-                        angle_2 = problem.get_sym_of_attr(tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3], aType.MA)
-                        m_angle_2 = problem.get_sym_of_attr(tri2[j] + tri2[(j + 1) % 3] + tri2[(j + 2) % 3], aType.MA)
+                        angle_1 = problem.get_sym_of_attr(tri1[k] + tri1[(k + 1) % 3] + tri1[(k + 2) % 3], aType.MA)
+                        angle_2 = problem.get_sym_of_attr(tri2[k] + tri2[(k + 1) % 3] + tri2[(k + 2) % 3], aType.MA)
+                        m_angle_2 = problem.get_sym_of_attr(tri2[(4 - k) % 3] + tri2[(5 - k) % 3] + tri2[(3 - k) % 3],
+                                                            aType.MA)
+
                         m = problem.get_sym_of_attr("1", aType.M)
                         result, eq_premise = problem.solve_equations(m, m - angle_1 + angle_2)
-                        # print("{} {}".format(tri1, tri2))
-                        # print(m - angle_1 + angle_2)
-                        # print(result)
-                        # print()
                         if result is not None and abs(result) < 0.01:
                             equal_count += 1
                             premise += eq_premise
-
                         result, eq_premise = problem.solve_equations(m, m - angle_1 + m_angle_2)
                         if result is not None and abs(result) < 0.01:
                             m_equal_count += 1
                             m_premise += eq_premise
+
                     if equal_count >= 2:
                         update = problem.define_similar((tri1, tri2), premise, 75) or update
                     if m_equal_count >= 2:
@@ -1063,7 +1158,6 @@ class Theorem:
                 ratios_unit.append(line / sin(angle * pi / 180))
 
             premise = [problem.conditions.get_index(tri, cType.triangle)]
-            print(ratios_unit)
             update = problem.define_equation(ratios_unit[0] - ratios_unit[1], eType.theorem, premise, 80) or update
             update = problem.define_equation(ratios_unit[1] - ratios_unit[2], eType.theorem, premise, 80) or update
 

@@ -69,7 +69,21 @@ class Representation:
     def perpendicular_bisector(relation):
         point, line1, line2 = relation
         results = [(point, line1, line2),
-                   (point, line2, line1[::-1])]
+                   (point, line1[::-1], line2[::-1])]
+        return results
+
+    @staticmethod
+    def mirror_tri(relation):
+        tri1, tri2 = relation
+        results = []
+        for i in range(3):
+            s1 = ""
+            s2 = ""
+            for j in range(3):
+                s1 += tri1[(i + j) % 3]
+                s2 += tri2[(j - i + 3) % 3]
+            results.append((s1, s2))
+            results.append((s2, s1))
         return results
 
 

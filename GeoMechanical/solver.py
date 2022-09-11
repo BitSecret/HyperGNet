@@ -23,7 +23,10 @@ import time
 2.get_sym_of_attr   参数顺序改一下，太迷惑人了   ok
 2022.09.10
 1.继续标注题目   标注到40了  没搞的：39 重心的表示
-2.镜像全等、相似定理修饰一下    32 33 镜像的没标注    
+2.镜像全等、相似定理修饰一下    32 33 镜像的没标注    ok
+2022.09.11
+1.   39四种心的表示  如何由心导出线？
+2.   新增两个nous  明天完成一下
 """
 
 
@@ -75,8 +78,8 @@ class Solver:
             39: Theorem.theorem_39_perpendicular_property,
             40: Theorem.theorem_40_perpendicular_judgment,
             41: Theorem.theorem_41_parallel_perpendicular_combination,
-            42: Theorem.theorem_42_perpendicular_bisector_property_relation,
-            43: Theorem.theorem_43_perpendicular_bisector_property_algebra,
+            42: Theorem.theorem_42_midpoint_property,
+            43: Theorem.theorem_43_midpoint_judgment,
             44: Theorem.theorem_44_perpendicular_bisector_property_distance_equal,
             45: Theorem.theorem_45_perpendicular_bisector_judgment,
             46: Theorem.theorem_46_bisector_property_line_ratio,

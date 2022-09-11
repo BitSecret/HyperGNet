@@ -1094,11 +1094,11 @@
 			75,
 			70
 		],
-		"completeness": "False"
+		"completeness": "True"
 	},
 	"32": {
 		"problem_id": 32,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-91",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1130,13 +1130,14 @@
 		],
 		"theorem_seqs": [
 			39,
-			75
+			75,
+			70
 		],
-		"completeness": "False"
+		"completeness": "True"
 	},
 	"33": {
 		"problem_id": 33,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-92",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1153,15 +1154,15 @@
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(XY)),Length(Line(YZ)))",
-			"PerpendicularBisector(Point(Y),Line(WY),Line(XZ))",
+			"PerpendicularBisector(Point(Y),Line(ZX),Line(WY))",
 			"Equal(Length(Line(WZ)),4*a-15)",
 			"Equal(Length(Line(WZ)),a+12)"
 		],
 		"target_fls": [
 			"Find(Length(Line(WX)))"
 		],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"theorem_seqs": [39, 65, 61],
+		"completeness": "True"
 	},
 	"34": {
 		"problem_id": 34,
@@ -1228,7 +1229,7 @@
 			2,
 			22
 		],
-		"completeness": "False"
+		"completeness": "True"
 	},
 	"36": {
 		"problem_id": 36,
@@ -1394,7 +1395,7 @@
 	},
 	"41": {
 		"problem_id": 41,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-111",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1404,9 +1405,7 @@
 			"8*{3^0.5}"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ACB)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -1415,12 +1414,12 @@
 			"Equal(Measure(Angle(BAC)),30)",
 			"Equal(Measure(Angle(ACB)),60)",
 			"Equal(Length(Line(AC)),y)",
-			"Perpendicular(Point(B),Line(AB),Line(BC))",
-			"Find(y)"
+			"Perpendicular(Point(B),Line(AB),Line(BC))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(y)"],
+		"theorem_seqs": [25, 23, 22],
+		"completeness": "True"
 	},
 	"42": {
 		"problem_id": 42,
@@ -1428,40 +1427,26 @@
 		"source": "Geometry3k-113",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m \\angle EAG.",
 		"problem_img": "42_g3k-113.png",
 		"problem_answer": [
 			"52"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(CDA)",
+			"Shape(EAG)",
+			"Shape(GFB)",
+			"Collinear(CAGB)",
+			"Collinear(EAD)",
+			"Collinear(EGF)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Measure(Angle(FEA)),Measure(angle3))",
-			"Equal(Measure(Angle(EAB)),Measure(angle2))",
 			"Equal(Measure(Angle(ACD)),50)",
-			"Equal(Measure(Angle(GAD)),Measure(angle1))",
 			"Equal(Measure(Angle(FGA)),120)",
-			"Equal(Measure(Angle(HGF)),Measure(angle4))",
-			"Equal(Measure(Angle(HBF)),Measure(angle5))",
-			"Equal(Measure(Angle(GFB)),56)",
 			"Equal(Measure(Angle(CDE)),78)",
-			"PointOn(Point(G),Line(AB))",
-			"PointOn(Point(B),Line(AH))",
-			"PointOn(Point(G),Line(AH))",
-			"PointOn(Point(A),Line(BC))",
-			"PointOn(Point(G),Line(BC))",
-			"PointOn(Point(A),Line(CG))",
-			"PointOn(Point(A),Line(CH))",
-			"PointOn(Point(B),Line(CH))",
-			"PointOn(Point(G),Line(CH))",
-			"PointOn(Point(A),Line(DE))",
-			"PointOn(Point(G),Line(EF))",
-			"PointOn(Point(B),Line(GH))",
-			"Find(Measure(Angle(2)))"
+			"Equal(Measure(Angle(GFB)),56)",
+			"Find(Measure(Angle(EAG)))"
 		],
 		"target_fls": [],
 		"theorem_seqs": [],
@@ -1469,31 +1454,29 @@
 	},
 	"43": {
 		"problem_id": 43,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-116",
 		"problem_level": 3,
 		"problem_text_cn": "",
 		"problem_text_en": "Find x. Round side measure to the nearest tenth.",
 		"problem_img": "43_g3k-116.png",
 		"problem_answer": [
-			"4.1"
+			"4.131"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(BCA)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Measure(Angle(ABC)),68)",
 			"Equal(Length(Line(BC)),x)",
 			"Equal(Measure(Angle(CAB)),50)",
-			"Equal(Length(Line(AC)),5)",
-			"Find(x)"
+			"Equal(Length(Line(AC)),5)"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(x)"],
+		"theorem_seqs": [80],
+		"completeness": "True"
 	},
 	"44": {
 		"problem_id": 44,
@@ -1501,36 +1484,35 @@
 		"source": "Geometry3k-119",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\cos A.",
+		"problem_text_en": "Find \\cos CAD.",
 		"problem_img": "44_g3k-119.png",
 		"problem_answer": [
 			"5*{26^0.5}/26"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(CAD)",
+			"Shape(CDB)",
+			"Collinear(ADB)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(AC)),5*{26^0.5})",
 			"Equal(Measure(Angle(DCA)),x)",
+			"Equal(Measure(Angle(BCD)),y)",
 			"Equal(Length(Line(CD)),5)",
 			"Equal(Length(Line(CB)),{26^0.5})",
 			"Equal(Length(Line(AD)),25)",
 			"Equal(Length(Line(DB)),1)",
-			"PointOn(Point(D),Line(AB))",
-			"Perpendicular(Point(C),Line(AC),Line(CB))",
-			"Perpendicular(Point($),Line(CD),Line(AB))",
-			"Find(Cos(Angle(A)))"
+			"Perpendicular(Point(D),Line(AB),Line(CD))",
+			"Perpendicular(Point(C),Line(AC),Line(CB))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
+		"target_fls": ["Find(Cos(Measure(Angle(CAD))))"],
+		"theorem_seqs": [25, 81],
 		"completeness": "False"
 	},
 	"45": {
 		"problem_id": 45,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-121",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1540,26 +1522,24 @@
 			"9"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(XWY)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(YX)),4*x+5)",
 			"Equal(Length(Line(WY)),6*x+3)",
 			"Equal(Length(Line(WX)),9*x)",
-			"Equal(Length(Line(X,x)),Length(Line(WY)))",
-			"Equal(Length(Line(WY)),Length(Line(YX)))",
-			"Find(Length(Line(XY)))"
+			"Equal(Length(Line(XW)),Length(Line(WY)))",
+			"Equal(Length(Line(WY)),Length(Line(YX)))"
+			
 		],
-		"target_fls": [],
+		"target_fls": ["Find(Length(Line(XY)))"],
 		"theorem_seqs": [],
-		"completeness": "False"
+		"completeness": "True"
 	},
 	"46": {
 		"problem_id": 46,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-122",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1569,39 +1549,26 @@
 			"2"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(RST)",
+			"Shape(TUV)",
+			"Collinear(STU)"
 		],
 		"text_fls": [],
 		"image_fls": [
+		    "MirrorCongruent(Triangle(RST),Triangle(VTU))",
 			"Equal(Length(Line(UV)),15*x)",
 			"Equal(Length(Line(ST)),11*x-2)",
 			"Equal(Length(Line(TU)),8*x+4)",
-			"PointOn(Point(D),Line(ST))",
-			"PointOn(Point(T),Line(SC))",
-			"PointOn(Point(D),Line(SC))",
-			"PointOn(Point(T),Line(SU))",
-			"PointOn(Point(C),Line(SU))",
-			"PointOn(Point(D),Line(SU))",
-			"PointOn(Point(B),Line(TV))",
-			"PointOn(Point(C),Line(TU))",
-			"PointOn(Point(T),Line(CD))",
-			"PointOn(Point(E),Line(UV))",
-			"PointOn(Point(T),Line(UD))",
-			"PointOn(Point(C),Line(UD))",
-			"Perpendicular(Point(S),Line(RS),Line(ST))",
-			"Perpendicular(Point(U),Line(VU),Line(UT))",
-			"Congruent(Triangle(RST),Triangle(VUT))",
-			"Find(x)"
+			"Perpendicular(Point(S),Line(RS),Line(TS))",
+			"Perpendicular(Point(U),Line(TU),Line(VU))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(x)"],
+		"theorem_seqs": [61],
+		"completeness": "True"
 	},
 	"47": {
 		"problem_id": 47,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-125",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1611,24 +1578,22 @@
 			"92"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(BAC)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(CB)),12)",
 			"Equal(Measure(Angle(BAC)),44)",
-			"Equal(Length(Line(CB)),Length(Line(AB)))",
-			"Find(Measure(Angle(B)))"
+			"Equal(Length(Line(CB)),Length(Line(AB)))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(Measure(Angle(CBA)))"],
+		"theorem_seqs": [30, 26, 21],
+		"completeness": "True"
 	},
 	"48": {
 		"problem_id": 48,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-128",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1638,30 +1603,24 @@
 			"2.5"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(ADC)",
+			"Shape(ACB)",
+			"Collinear(DCB)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(DA)),2.5)",
-			"PointOn(Point(C),Line(DB))",
-			"PointOn(Point(A),Line(CF))",
-			"PointOn(Point(C),Line(AG))",
-			"PointOn(Point(A),Line(FG))",
-			"PointOn(Point(C),Line(FG))",
-			"Perpendicular(Point(C),Line(AC),Line(CB))",
-			"Equal(Length(Line(DC)),Length(Line(CB)))",
-			"UseTheorem(Perpendicular_Bisector_Theorem)",
-			"Find(Length(Line(AB)))"
+			"Perpendicular(Point(C),Line(DB),Line(AC))",
+			"Equal(Length(Line(DC)),Length(Line(CB)))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(Length(Line(AB)))"],
+		"theorem_seqs": [39, 65, 61],
+		"completeness": "True"
 	},
 	"49": {
 		"problem_id": 49,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-131",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1671,25 +1630,23 @@
 			"0.8"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(TSR)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(TS)),4)",
 			"Equal(Length(Line(SR)),5)",
 			"Equal(Length(Line(TR)),3)",
-			"Perpendicular(Point(T),Line(TS),Line(TR))",
-			"Find(Cos(Angle(S)))"
+			"Perpendicular(Point(T),Line(ST),Line(TR))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(Cos(Measure(Angle(TSR))))"],
+		"theorem_seqs": [81],
+		"completeness": "True"
 	},
 	"50": {
 		"problem_id": 50,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-11",
 		"source": "Geometry3k-138",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -1699,24 +1656,20 @@
 			"2*{3^0.5}"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)",
-			"Extended(False)"
+			"Shape(BCA)"
 		],
-		"text_fls": [],
+		"text_fls": ["Equal(b,3)"],
 		"image_fls": [
 			"Equal(Measure(Angle(ABC)),60)",
-			"Equal(Length(Line(BA)),Length(c))",
-			"Equal(Length(Line(BC)),Length(a))",
+			"Equal(Length(Line(BA)),c)",
+			"Equal(Length(Line(BC)),a)",
 			"Equal(Measure(Angle(CAB)),30)",
-			"Equal(Length(Line(AC)),Length(b))",
-			"Perpendicular(Point(C),Line(BC),Line(AC))",
-			"Equal(b,3)",
-			"Find(c)"
+			"Equal(Length(Line(AC)),b)",
+			"Perpendicular(Point(C),Line(BC),Line(AC))"
 		],
-		"target_fls": [],
-		"theorem_seqs": [],
-		"completeness": "False"
+		"target_fls": ["Find(c)"],
+		"theorem_seqs": [25, 23],
+		"completeness": "True"
 	},
 	"51": {
 		"problem_id": 51,
