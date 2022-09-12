@@ -65,6 +65,11 @@ class ProblemLogic:
         if len(points) > 2 and self.conditions.add(points, cType.collinear, premise, theorem):
             premise = [self.conditions.get_index(points, cType.collinear)]
             self.conditions.add(points[::-1], cType.collinear, premise, -2)
+
+            for i in range(0, len(points) - 2):    # 定义平角
+                f_angle = points[i:i+3]
+                self.define_angle(f_angle, premise, -2, False)
+                self.define_angle(f_angle[::-1], premise, -2, False)
             return True
         return False
 
@@ -493,6 +498,13 @@ class Problem(ProblemLogic):
             for a_point in a_points:  # 相同的角设置一样的符号
                 for b_point in b_points:
                     self.sym_of_attr[(a_point + angle[1] + b_point, aType.MA)] = sym
+
+    def flat_angle(self):    # 平角赋予180°
+        for coll in self.conditions.items[cType.collinear]:
+            premise = [self.conditions.get_index(coll, cType.collinear)]
+            for i in range(0, len(coll) - 2):
+                sym_of_angle = self.get_sym_of_attr(coll[i:i + 3], aType.MA)
+                self.define_equation(sym_of_angle - 180, eType.basic, premise, -2)
 
     """------------解方程相关------------"""
 

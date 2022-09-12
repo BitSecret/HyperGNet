@@ -9,24 +9,9 @@ from sympy import sin, cos, tan, pi
 from utility import PreParse as pp
 import time
 
-"""后面改进
-2022.09.07
-1.float、integer、symbols，sympy求解的结果形式不一样（详见test），看看如何统一(不如就统一为实数)
-2.要转化的数据集：①interGPS的  ②几何瑰宝1有关三角形的
-2022.09.08
-1.去掉多于代码，只考虑三角形的    ok
-2.编写完所有定理
-3.logic 转化为 FL 部分代码 编写  ok
-4.parse 部分 改写代码更易读     ok
-2022.09.09
-1.题目标注到25了    ok
-2.get_sym_of_attr   参数顺序改一下，太迷惑人了   ok
-2022.09.10
-1.继续标注题目   标注到40了  没搞的：39 重心的表示   ok
-2.镜像全等、相似定理修饰一下    32 33 镜像的没标注    ok
-2022.09.11
-1.   39四种心的表示  如何由心导出线？  ok
-2.   新增两个nous  明天完成一下
+"""
+1.完成定理 标注题目 标注到75了
+2.68  74 没标注
 """
 
 
@@ -40,9 +25,9 @@ class Solver:
             1: Theorem.nous_1_area_addition,
             2: Theorem.nous_2_line_addition,
             3: Theorem.nous_3_angle_addition,
-            4: Theorem.nous_4_flat_angle,
-            5: Theorem.nous_5_intersect_extend,
-            6: Theorem.nous_6_perpendicular_extend,
+            4: Theorem.nous_4_intersect_extend,
+            5: Theorem.nous_5_perpendicular_extend,
+            6: Theorem.nous_6_,
             7: Theorem.nous_7_,
             8: Theorem.nous_8_,
             9: Theorem.nous_9_,
@@ -151,6 +136,7 @@ class Solver:
         """------构造图形------"""
         self.problem.construct_all_shape()    # 构造所有图形
         self.problem.angle_representation_alignment()  # 使角的符号表示一致
+        self.problem.flat_angle()  # 赋予平角180°
 
         """------题目条件------"""
         for fl in pp.pre_parse_fls(self.problem.fl.text_fls + self.problem.fl.image_fls):
