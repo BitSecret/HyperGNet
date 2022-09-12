@@ -1,5 +1,6 @@
 import json
 import time
+import xlrd
 trans_data_path = "../data/geo3k_trans_data/"
 gen_data_path = "../data/generated_data/"
 trans_filename = "trans.json"
@@ -16,14 +17,40 @@ def save_data(path, data_json):
         json.dump(data_json, f)
 
 
+def change_theorem_seqs_map(theorem_map, theorem_seqs):
+    new_theorem_seqs = []
+    for seq in theorem_seqs:
+        if theorem_map[seq] != -1:
+            new_theorem_seqs.append(theorem_map[seq])
+
+    return new_theorem_seqs
+
+
+def load_theorem_seqs_map():
+    file_theorem_map = "../GeoMechanical/doc/theorem_map.xlsx"
+    theorem_map = {}
+    table = xlrd.open_workbook(file_theorem_map).sheets()[0]
+    theorem_count = table.nrows  # 获取该sheet中的有效行数
+    for i in range(1, theorem_count):
+        if int(table.cell_value(i, 0)) == -1:
+            print("{}: Theorem.{},".format(int(table.cell_value(i, 1)), table.cell_value(i, 2)))
+        else:
+            theorem_map[int(table.cell_value(i, 0))] = int(table.cell_value(i, 1))
+            if int(table.cell_value(i, 1)) != -1:
+                print("{}: Theorem.{},".format(int(table.cell_value(i, 1)), table.cell_value(i, 2)))
+    return theorem_map
+
+
 def main():
+    theorem_map = load_theorem_seqs_map()
     data_old = load_data(trans_data_path + trans_filename)    # 载入数据
+    exit(0)
 
     data_new = {}    # 新数据保存
     for i in range(0, count):
         data_unit = {
             "problem_id": data_old[str(i)]["problem_id"],
-            "annotation": data_old[str(i)]["problem_id"],
+            "annotation": data_old[str(i)]["annotation"],
             "source": data_old[str(i)]["source"],
             "problem_level": data_old[str(i)]["problem_level"],
             "problem_text_cn": data_old[str(i)]["problem_text_cn"],
@@ -34,7 +61,7 @@ def main():
             "text_fls": data_old[str(i)]["text_fls"],
             "image_fls": data_old[str(i)]["image_fls"],
             "target_fls": data_old[str(i)]["target_fls"],
-            "theorem_seqs": data_old[str(i)]["theorem_seqs"],
+            "theorem_seqs": change_theorem_seqs_map(theorem_map, data_old[str(i)]["theorem_seqs"]),
             "completeness": data_old[str(i)]["completeness"]
         }
 

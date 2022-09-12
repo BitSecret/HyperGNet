@@ -1,4 +1,5 @@
 from utility import Representation as rep
+from utility import Utility as util
 from facts import AttributionType as aType
 from facts import EquationType as eType
 from facts import ConditionType as cType
@@ -48,13 +49,9 @@ class ProblemLogic:
                 point2 = shape[(i + 1) % len(shape)]
                 point3 = shape[(i + 2) % len(shape)]
 
-                is_coll = False  # 判断是否共线
-                for coll in self.conditions.items[cType.collinear]:
-                    if point1 in coll and point2 in coll and point3 in coll:
-                        is_coll = True
-                        shape = shape.replace(point2, "")  # 三点共线，去掉中间的点
-                        break
-                if not is_coll:  # 不共线，窗口后移
+                if util.is_collinear(point1, point2, point3, self):   # 三点共线，去掉中间的点
+                    shape = shape.replace(point2, "")
+                else:  # 不共线，窗口后移
                     i += 1
 
             if len(shape) == 3:  # 三角形
@@ -66,6 +63,8 @@ class ProblemLogic:
 
     def define_collinear(self, points, premise, theorem):  # 共线
         if len(points) > 2 and self.conditions.add(points, cType.collinear, premise, theorem):
+            premise = [self.conditions.get_index(points, cType.collinear)]
+            self.conditions.add(points[::-1], cType.collinear, premise, -2)
             return True
         return False
 
@@ -149,7 +148,12 @@ class ProblemLogic:
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.midpoint)]
             self.conditions.add((point, line[::-1]), cType.midpoint, premise, -2)  # 中点有两中表示形式
-            self.define_point(point, premise, -2)  # 定义点和弧
+
+            line1 = self.get_sym_of_attr(line[0] + point, aType.LL)    # 中点性质扩展
+            line2 = self.get_sym_of_attr(point + line[1], aType.LL)
+            self.define_equation(line1 - line2, eType.basic, premise, -2)
+
+            self.define_point(point, premise, -2)  # 定义点和线
             self.define_line(line, premise, -2, False)
             return True
         return False
@@ -183,12 +187,46 @@ class ProblemLogic:
         return False
 
     def define_perpendicular(self, ordered_pair, premise, theorem, root=True):
+        point, line1, line2 = ordered_pair
         if self.conditions.add(ordered_pair, cType.perpendicular, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
 
             for all_form in rep.intersect(ordered_pair):
                 self.conditions.add(all_form, cType.perpendicular, premise, -2)  # 垂直有4种表示
+            premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
+
+            sym = []    # 垂直的扩展：90°角
+            if len(set(point + line1 + line2)) == 3:
+                if line1[0] == line2[1]:
+                    sym.append(self.get_sym_of_attr(line2 + line1[1], aType.MA))
+                elif line1[1] == line2[1]:
+                    sym.append(self.get_sym_of_attr(line1 + line2[0], aType.MA))
+                elif line1[1] == line2[0]:
+                    sym.append(self.get_sym_of_attr(line2[::-1] + line1[0], aType.MA))
+                elif line1[0] == line2[0]:
+                    sym.append(self.get_sym_of_attr(line1[::-1] + line2[1], aType.MA))
+            elif len(set(point + line1 + line2)) == 4:
+                if line2[1] == point:
+                    sym.append(self.get_sym_of_attr(line1[0] + line2[::-1], aType.MA))
+                    sym.append(self.get_sym_of_attr(line2 + line1[1], aType.MA))
+                elif line1[1] == point:
+                    sym.append(self.get_sym_of_attr(line2[1] + line1[::-1], aType.MA))
+                    sym.append(self.get_sym_of_attr(line1 + line2[0], aType.MA))
+                elif line2[0] == point:
+                    sym.append(self.get_sym_of_attr(line1[1] + line2, aType.MA))
+                    sym.append(self.get_sym_of_attr(line2[::-1] + line1[0], aType.MA))
+                elif line1[0] == point:
+                    sym.append(self.get_sym_of_attr(line2[0] + line1, aType.MA))
+                    sym.append(self.get_sym_of_attr(line1[::-1] + line2[1], aType.MA))
+            elif len(set(point + line1 + line2)) == 5:
+                sym.append(self.get_sym_of_attr(line1[0] + point + line2[0], aType.MA))
+                sym.append(self.get_sym_of_attr(line2[0] + point + line1[1], aType.MA))
+                sym.append(self.get_sym_of_attr(line1[1] + point + line2[1], aType.MA))
+                sym.append(self.get_sym_of_attr(line2[1] + point + line1[0], aType.MA))
+
+            for s in sym:  # 设置直角为90°
+                self.define_equation(s - 90, eType.theorem, premise, -2)
 
             self.define_intersect(ordered_pair, premise, -2, False)  # 垂直也是相交
             return True
@@ -447,35 +485,18 @@ class Problem(ProblemLogic):
             if (aType.MA, angle) in self.sym_of_attr.keys():  # 有符号了就不用再赋予了
                 continue
 
-            a_points = angle[0]
-            o_point = angle[1]
-            b_points = angle[2]
             sym = self.get_sym_of_attr(angle, aType.MA)
 
-            coll_a = None  # 与AO共线的collinear
-            coll_b = None  # 与OB共线的collinear
-            for coll in self.conditions.items[cType.collinear]:
-                if a_points in coll and o_point in coll:
-                    coll_a = coll
-                if o_point in coll and b_points in coll:
-                    coll_b = coll
+            a_points = util.coll_points_one_side(angle[1], angle[0], self)  # 与AO共线、在O的A侧的点(包括A)
+            b_points = util.coll_points_one_side(angle[1], angle[2], self)  # 与BO共线、在O的B侧的点(包括B)
 
-            if coll_a is not None:  # 与AO共线的点
-                a_index = coll_a.find(angle[0])
-                o_index = coll_a.find(angle[1])
-                a_points = coll_a[0:a_index + 1] if a_index < o_index else coll_a[a_index:len(coll_a)]
-            if coll_b is not None:  # 与OB共线的点
-                o_index = coll_b.find(angle[1])
-                b_index = coll_b.find(angle[2])
-                b_points = coll_b[0:b_index + 1] if b_index < o_index else coll_b[b_index:len(coll_b)]
-
-            for a_point in a_points:  # 本质上相同的角安排一样的符号
+            for a_point in a_points:  # 相同的角设置一样的符号
                 for b_point in b_points:
-                    self.sym_of_attr[(a_point + o_point + b_point, aType.MA)] = sym
+                    self.sym_of_attr[(a_point + angle[1] + b_point, aType.MA)] = sym
 
     """------------解方程相关------------"""
 
-    @func_set_timeout(5)  # 限时5s
+    @func_set_timeout(8)  # 限时8s
     def solve_equations(self, target_sym=None, target_equation=None):  # 求解方程
         if target_sym is None:  # 只涉及basic、value、theorem
             if self.equation_solved:  # basic、theorem没有更新，不用重复求解

@@ -1,4 +1,5 @@
 from pyparsing import oneOf, Combine, alphanums, Forward, Group, Word, Literal, ZeroOrMore, nums, alphas, OneOrMore
+from facts import ConditionType as cType
 
 
 class Representation:
@@ -122,3 +123,49 @@ class PreParse:
         return fls_parse_tree
 
 
+class Utility:
+    @staticmethod
+    def is_compact_collinear(point1, point2, point3, problem):    # 紧凑共线，3点之间没有别的点
+        for collinear in problem.conditions.items[cType.collinear]:
+            if point1 in collinear and\
+                    point2 in collinear and\
+                    point3 in collinear and \
+                    collinear.index(point1) < collinear.index(point2) < collinear.index(point3) and \
+                    (collinear.index(point1) + collinear.index(point3)) == 2 * collinear.index(point2):
+                return True
+        return False
+
+    @staticmethod
+    def is_collinear(point1, point2, point3, problem):  # 简单共线，3点之间可有别的点
+        for collinear in problem.conditions.items[cType.collinear]:
+            if point1 in collinear and \
+                    point2 in collinear and \
+                    point3 in collinear and \
+                    collinear.index(point1) < collinear.index(point2) < collinear.index(point3):
+                return True
+        return False
+
+    @staticmethod
+    def is_inside_triangle(line, triangle, problem):    # 判断line是不是triangle的内线
+        if line[0] == triangle[0] and \
+                Utility.is_collinear(triangle[1], line[1], triangle[2], problem):
+            return True
+        return False
+
+    @staticmethod
+    def coll_points_one_side(vertex, point, problem):  # 与 vertex、point共线且与 point 同侧的点
+        points = [point]
+        for coll in problem.conditions.items[cType.collinear]:
+            if vertex in coll and point in coll:
+                if coll.index(vertex) < coll.index(point):    # .....V...P..
+                    i = coll.index(vertex) + 1
+                    while i < len(coll):
+                        points.append(coll[i])
+                        i += 1
+                else:    # ...P.....V...
+                    i = 0
+                    while i < coll.index(vertex):
+                        points.append(coll[i])
+                        i += 1
+                return list(set(points))
+        return points
