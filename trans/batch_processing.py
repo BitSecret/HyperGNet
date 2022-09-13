@@ -27,9 +27,9 @@ def change_theorem_seqs_map(theorem_map, theorem_seqs):
 
 
 def load_theorem_seqs_map():
-    file_theorem_map = "../GeoMechanical/doc/theorem_map.xlsx"
+    file_theorem_map = "../GeoMechanical/doc/formal_language.xlsx"
     theorem_map = {}
-    table = xlrd.open_workbook(file_theorem_map).sheets()[0]
+    table = xlrd.open_workbook(file_theorem_map).sheets()[1]
     theorem_count = table.nrows  # 获取该sheet中的有效行数
     for i in range(1, theorem_count):
         if int(table.cell_value(i, 0)) == -1:
@@ -41,10 +41,17 @@ def load_theorem_seqs_map():
     return theorem_map
 
 
+def delete(fls):
+    result = []
+    for fl in fls:
+        if not fl.startswith("Extended") and not fl.startswith("PointOn"):
+            result.append(fl)
+    return result
+
+
 def main():
     theorem_map = load_theorem_seqs_map()
     data_old = load_data(trans_data_path + trans_filename)    # 载入数据
-    exit(0)
 
     data_new = {}    # 新数据保存
     for i in range(0, count):
@@ -57,12 +64,11 @@ def main():
             "problem_text_en": data_old[str(i)]["problem_text_en"],
             "problem_img": data_old[str(i)]["problem_img"],
             "problem_answer": data_old[str(i)]["problem_answer"],
-            "construction_fls": data_old[str(i)]["construction_fls"],
+            "construction_fls": delete(data_old[str(i)]["construction_fls"]),
             "text_fls": data_old[str(i)]["text_fls"],
-            "image_fls": data_old[str(i)]["image_fls"],
+            "image_fls": delete(data_old[str(i)]["image_fls"]),
             "target_fls": data_old[str(i)]["target_fls"],
-            "theorem_seqs": change_theorem_seqs_map(theorem_map, data_old[str(i)]["theorem_seqs"]),
-            "completeness": data_old[str(i)]["completeness"]
+            "theorem_seqs": change_theorem_seqs_map(theorem_map, data_old[str(i)]["theorem_seqs"])
         }
 
         data_new[str(i)] = data_unit

@@ -16,7 +16,7 @@ class ProblemLogic:
         self.conditions = Condition()  # 题目条件
 
         """------------symbols and equation------------"""
-        self.sym_of_attr = {}  # 属性的符号表示 (aTpye, "name"): sym
+        self.sym_of_attr = {}  # 属性的符号表示 (entity, aType): sym
         self.value_of_sym = {}  # 符号的值 sym: value
         self.basic_equations = {}
         self.theorem_equations = {}
@@ -400,7 +400,7 @@ class ProblemLogic:
             return True
         return False
 
-    """------------Equation------------"""
+    """------------Equation and Symbol------------"""
 
     def define_equation(self, equation, equation_type, premise, theorem):  # 定义方程
         if equation_type is eType.basic and equation not in self.basic_equations.keys():
@@ -412,9 +412,7 @@ class ProblemLogic:
 
         return self.conditions.add(equation, cType.equation, premise, theorem)  # 返回是否添加了新条件
 
-    """------------Attr's Symbol------------"""
-
-    def get_sym_of_attr(self, entity, attr_type):  # attr: (aType, entity_name)
+    def get_sym_of_attr(self, entity, attr_type):     # 得到属性的符号表示
         if attr_type in [aType.T, aType.M]:  # 表示目标/中间值类型的符号，不用存储在符号库
             return symbols(attr_type.name.lower() + "_" + entity)
 
@@ -437,11 +435,13 @@ class ProblemLogic:
 
         return sym
 
-    def set_value_of_sym(self, sym, value, premise, theorem):  # 设置符号的值
-        if self.value_of_sym[sym] is None:
+    def set_value_of_sym(self, sym, value, premise, theorem, solved_by_equation=False):  # 设置符号的值
+        if self.value_of_sym[sym] is None:    # 如果当前符号未赋值
             self.value_of_sym[sym] = value
-            return self.define_equation(sym - value, eType.value, premise, theorem)
-        return False
+            if sym - value not in self.conditions.items[cType.equation]:    # 如果符号值没有保存在equation中
+                self.define_equation(sym - value, eType.value, premise, theorem)
+                if not solved_by_equation:    # 如果不是通过解方程得到的
+                    self.equation_solved = False
 
 
 class Problem(ProblemLogic):
@@ -528,7 +528,7 @@ class Problem(ProblemLogic):
                         min_equations, premise = self.get_minimum_equations(set(), sym, False)
                         solved_result = solve(min_equations)  # 求解min_equations
                         # print(sym)
-                        # print(equations)
+                        # print(min_equations)
                         # print(solved_result)
                         # print()
                         if len(solved_result) > 0:  # 有解
@@ -542,13 +542,33 @@ class Problem(ProblemLogic):
             self.theorem_equations = {}  # 清空 theorem_equations
             self.equation_solved = True  # 更新方程求解状态
         else:  # 求解target
+            # 不用求解的情况，equ_no_target在条件中
+            # print(target_sym)
+            # print(target_equation)
+            # print(equ_no_target)
+            # print(equ_no_target == 0)
+            equ_no_target = target_equation.subs(target_sym, 0)
+            premise = []
+            is_zero = False
+            if equ_no_target in self.conditions.items[cType.equation]:
+                premise.append(self.conditions.get_index(equ_no_target, cType.equation))
+                is_zero = True
+            if -equ_no_target in self.conditions.items[cType.equation]:
+                premise.append(self.conditions.get_index(-equ_no_target, cType.equation))
+                is_zero = True
+            if equ_no_target == 0:
+                is_zero = True
+            if is_zero:
+                return 0, premise
+
+            # 需要求解的情况
             equations, premise = self.get_minimum_equations({target_sym}, target_equation, True)  # 使用value + basic
             equations.append(target_equation)
             solved_result = solve(equations)  # 求解target+value+basic equation
-            # print(target_sym)
-            # print(equations)
-            # print(solved_result)
-            # print()
+            print(target_sym)
+            print(equations)
+            print(solved_result)
+            print()
             if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
                 solved_result = solved_result[0]
 
@@ -666,7 +686,7 @@ class Problem(ProblemLogic):
         self.conditions.clean()
 
         """------------symbols and equation------------"""
-        self.sym_of_attr = {}  # (ConditionType, "name"): sym
+        self.sym_of_attr = {}  # (entity, aType): sym
         self.value_of_sym = {}  # sym: value
         self.basic_equations = {}
         self.theorem_equations = {}

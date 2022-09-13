@@ -18,7 +18,7 @@ class Representation:
 
     count_midpoint = count_line
     count_intersect = 4
-    count_parallel = 4
+    count_parallel = 2
     count_perpendicular = count_intersect
     count_perpendicular_bisector = 2
     count_bisector = 1
@@ -52,8 +52,6 @@ class Representation:
     def parallel(relation):
         line1, line2 = relation
         results = [(line1, line2),
-                   (line1[::-1], line2[::-1]),
-                   (line2, line1),
                    (line2[::-1], line1[::-1])]
         return results
 
@@ -169,3 +167,13 @@ class Utility:
                         i += 1
                 return list(set(points))
         return points
+
+    @staticmethod
+    def coll_points(point1, point2, problem):  # 与 point1 point2 共线 的所有点
+        points = []
+        for coll in problem.conditions.items[cType.collinear]:
+            if point1 in coll and point2 in coll and coll.index(point1) < coll.index(point2):
+                for point in coll:
+                    points.append(point)
+                return points
+        return [point1, point2]

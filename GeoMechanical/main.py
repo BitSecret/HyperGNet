@@ -19,7 +19,7 @@ def mode_0(solver):
                                problem["problem_answer"])
             solver.solve()
             solver.problem.show()
-        except Exception as e:  # 一般报错
+        except Exception:  # 一般报错
             traceback.print_exc()
         except FunctionTimedOut as e:  # 超时报错
             print("求解方程组超时！")
