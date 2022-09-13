@@ -43,9 +43,8 @@ class AttributionType(Enum):  # 属性的类型
     AT = 5  # AltitudeOfTriangle 三角形高
 
     F = 6  # Free 自由符号
-    T = 7  # Target 代数型解题目标
 
-    M = 8  # Middle 解题中间过程需要引入的符号
+    M = 7  # Middle 解题中间过程需要引入的符号
 
 
 class TargetType(Enum):  # 解题目标类型
@@ -57,9 +56,9 @@ class TargetType(Enum):  # 解题目标类型
 
 
 class EquationType(Enum):  # 方程的类型
-    basic = 1  # 由构图语句和常识得到的方程
-    theorem = 2  # 定理得到的方程
-    value = 3  # value的值，用方程存储
+    basic = 1  # 简单方程，整个解题过程都存在
+    complex = 2  # 复杂方程，只存在解题中的一步
+    value = 3  # sym的值，用方程存储
 
 
 class Condition:  # 条件

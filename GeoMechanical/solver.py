@@ -317,12 +317,11 @@ class Solver:
 
         if fl[0] == "Equal":  # 数值-验证型 解题目标
             self.problem.target_type.append(tType.equal)
-            target = self.problem.get_sym_of_attr(str(format(self.problem.target_count)), aType.T)
-            self.problem.target.append([target, target - self._generate_expr(fl), None, None])  # 求解目标 辅助方程 目标值 前提
+            self.problem.target.append([self._generate_expr(fl), None, None])  # 求解目标 求解值 前提
         elif fl[0] in FormalLanguage.entity_predicates:  # 关系型解题目标(实体)
             self.problem.target_type.append(tType.entity)
             self.problem.target.append(
-                [Condition.entity_list[FormalLanguage.entity_predicates.index(fl[0])], fl[1]])
+                [Condition.entity_list[FormalLanguage.entity_predicates.index(fl[0])], fl[1], None])
         elif fl[0] in FormalLanguage.entity_relation_predicates:  # 关系型解题目标(实体关系)
             target_list = [fl[1][1], fl[2][1]]
             if fl[0] in ["Intersect", "Perpendicular", "PerpendicularBisector"]:
@@ -330,11 +329,10 @@ class Solver:
             self.problem.target_type.append(tType.relation)
             self.problem.target.append(
                 [Condition.entity_relation_list[FormalLanguage.entity_relation_predicates.index(fl[0])],
-                 tuple(target_list)])
+                 tuple(target_list), None])
         else:  # 数值-求解型 解题目标
             self.problem.target_type.append(tType.value)
-            target = self.problem.get_sym_of_attr(str(format(self.problem.target_count)), aType.T)
-            self.problem.target.append([target, target - self._generate_expr(fl), None, None])
+            self.problem.target.append([self._generate_expr(fl), None, None])
 
     def solve(self):
         self.problem.solve_equations()  # 求解初始方程
@@ -351,13 +349,13 @@ class Solver:
                 if self.problem.target[i][1] in self.problem.conditions.item[self.problem.target[i][0]]:
                     self.problem.target_solved[i] = "solved"
             else:  # 数量型
-                self.problem.target[i][2], self.problem.target[i][3] = \
-                    self.problem.solve_equations(self.problem.target[i][0], self.problem.target[i][1])  # 求解并保存至result
-                if self.problem.target[i][2] is not None:
+                self.problem.target[i][1], self.problem.target[i][2] =\
+                    self.problem.solve_target(self.problem.target[i][0])  # 求解并保存至result
+                if self.problem.target[i][1] is not None:
                     if self.problem.target_type[i] is tType.value and \
-                            abs(self.problem.target[i][2] - self._parse_expr(self.problem.answer[i])) < 0.01:  # 有解
+                            abs(self.problem.target[i][1] - self._parse_expr(self.problem.answer[i])) < 0.01:  # 有解
                         self.problem.target_solved[i] = "solved"
-                    elif self.problem.target_type[i] is tType.equal and self.problem.target[i][2] == 0:  # 验证型，且解为0
+                    elif self.problem.target_type[i] is tType.equal and self.problem.target[i][1] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"
             self.time_cons("solve target {}".format(i))  # 求解目标耗时
 
