@@ -123,6 +123,10 @@ class PreParse:
 
 class Utility:
     @staticmethod
+    def equal(a, b):    # 判断ab是否相等，考虑到浮点数的精度问题
+        return abs(a - b) < 0.01
+
+    @staticmethod
     def is_compact_collinear(point1, point2, point3, problem):    # 紧凑共线，3点之间没有别的点
         for collinear in problem.conditions.items[cType.collinear]:
             if point1 in collinear and\

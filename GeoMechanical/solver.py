@@ -46,7 +46,7 @@ class Solver:
             22: Theorem.theorem_22_triangle_property_equal_line_angle,
             23: Theorem.theorem_23_pythagorean,
             24: Theorem.theorem_24_right_triangle_property_rt,
-            25: Theorem.theorem_25_right_triangle_property_opposite_side,
+            25: Theorem.theorem_25_right_triangle_property_special_rt,
             26: Theorem.theorem_26_pythagorean_inverse,
             27: Theorem.theorem_27_right_triangle_judgment,
             28: Theorem.theorem_28_isosceles_triangle_property_angle_equal,
@@ -353,7 +353,7 @@ class Solver:
                     self.problem.solve_target(self.problem.target[i][0])  # 求解并保存至result
                 if self.problem.target[i][1] is not None:
                     if self.problem.target_type[i] is tType.value and \
-                            abs(self.problem.target[i][1] - self._parse_expr(self.problem.answer[i])) < 0.01:  # 有解
+                            abs(float(self.problem.target[i][1]) - self._parse_expr(self.problem.answer[i])) < 0.01:  # 有解
                         self.problem.target_solved[i] = "solved"
                     elif self.problem.target_type[i] is tType.equal and self.problem.target[i][1] == 0:  # 验证型，且解为0
                         self.problem.target_solved[i] = "solved"

@@ -2988,7 +2988,7 @@
 	},
 	"93": {
 		"problem_id": 93,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-246",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3014,11 +3014,11 @@
 			
 		],
 		"target_fls": ["Find(x)"],
-		"theorem_seqs": [2, 82]
+		"theorem_seqs": [2, 82, 78]
 	},
 	"94": {
 		"problem_id": 94,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-249",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3028,8 +3028,10 @@
 			"2.25"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(CBE)",
+			"Shape(EBA)",
+			"Shape(ABD)",
+			"Shape(DBF)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -3039,22 +3041,18 @@
 			"Equal(Measure(Angle(ABD)),30)",
 			"Equal(Measure(Angle(DBF)),30)",
 			"Equal(Length(Line(BF)),x)",
-			"Perpendicular(Point(E),Line(EC),Line(BE))",
-			"Perpendicular(Point(A),Line(AE),Line(AB))",
-			"Perpendicular(Point(D),Line(AD),Line(BD))",
-			"Perpendicular(Point(F),Line(DF),Line(BF))",
-			"Equal(Triangle($),Triangle($1,$2,$3))",
-			"Equal(Measure(Angle($1)),30)",
-			"Equal(Measure(Angle($2)),60)",
-			"Equal(Measure(Angle($3)),90)",
-			"Find(x)"
+			"Perpendicular(Point(E),Line(CE),Line(EB))",
+			"Perpendicular(Point(A),Line(EA),Line(AB))",
+			"Perpendicular(Point(D),Line(AD),Line(DB))",
+			"Perpendicular(Point(F),Line(DF),Line(FB))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(x)"],
+		"theorem_seqs": [27, 25]
 	},
 	"95": {
 		"problem_id": 95,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-250",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3064,27 +3062,24 @@
 			"3*{29^0.5}"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(CAB)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(BC)),15)",
 			"Equal(Length(Line(AC)),6)",
 			"Equal(Length(Line(AB)),x)",
-			"Perpendicular(Point(C),Line(BC),Line(AC))",
-			"Find(x)"
+			"Perpendicular(Point(C),Line(CB),Line(CA))"
+			
 		],
-		"target_fls": [],
+		"target_fls": ["Find(x)"],
 		"theorem_seqs": [
-			5,
-			3,
-			1
+			27, 23
 		]
 	},
 	"96": {
 		"problem_id": 96,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-255",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3094,23 +3089,22 @@
 			"15/16"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(BAC)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Length(Line(AB)),21)",
+			"Equal(Length(Line(AB)),481^0.5)",
 			"Equal(Length(Line(BC)),15)",
 			"Equal(Length(Line(AC)),16)",
-			"Perpendicular(Point(C),Line(BC),Line(AC))",
-			"Find(Tan(Angle(A)))"
+			"Perpendicular(Point(C),Line(AC),Line(BC))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Tan(Measure(Angle(BAC))))"],
+		"theorem_seqs": [88]
 	},
 	"97": {
 		"problem_id": 97,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-257",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3120,23 +3114,24 @@
 			"23"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(WXZ)",
+			"Shape(WZY)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(ZY)),5*x-7)",
 			"Equal(Length(Line(ZX)),3*x+5)",
 			"Perpendicular(Point(X),Line(WX),Line(ZX))",
-			"Perpendicular(Point(Y),Line(WY),Line(ZY))",
-			"Find(Length(Line(XZ)))"
+			"Perpendicular(Point(Y),Line(ZY),Line(WY))",
+			"Equal(Measure(Angle(ZWX)),Measure(Angle(YWZ)))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Length(Line(XZ)))"],
+		"theorem_seqs": [75, 69]
 	},
 	"98": {
 		"problem_id": 98,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-258",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3146,34 +3141,34 @@
 			"0.6"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(TSR)"
 		],
 		"text_fls": [],
 		"image_fls": [
 			"Equal(Length(Line(TR)),3)",
 			"Equal(Length(Line(TS)),4)",
 			"Equal(Length(Line(SR)),5)",
-			"Perpendicular(Point(T),Line(TS),Line(TR))",
-			"Find(Cos(Angle(R)))"
+			"Perpendicular(Point(T),Line(ST),Line(TR))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Cos(Measure(Angle(SRT))))"],
+		"theorem_seqs": [89]
 	},
 	"99": {
 		"problem_id": 99,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-259",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find y. Round to the nearest tenth.",
+		"problem_text_en": "Find y. ",
 		"problem_img": "99_g3k-259.png",
 		"problem_answer": [
-			"11.7"
+			"11.73"
 		],
 		"construction_fls": [
+			"Shape(DBA)",
 			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Collinear(DAC)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -3181,12 +3176,12 @@
 			"Equal(Length(Line(AC)),x)",
 			"Equal(Measure(Angle(BCA)),43)",
 			"Equal(Length(Line(BD)),y)",
-			"Perpendicular(Point(A),Line(AC),Line(AB))",
-			"Perpendicular(Point(B),Line(BD),Line(BC))",
-			"Find(y)"
+			"Perpendicular(Point(A),Line(DC),Line(AB))",
+			"Perpendicular(Point(B),Line(BC),Line(DB))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(y)"],
+		"theorem_seqs": [3, 21, 88]
 	},
 	"100": {
 		"problem_id": 100,
@@ -3200,24 +3195,25 @@
 			"47"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(BDF)",
+			"Shape(FCI)",
+			"Shape(FIA)",
+			"Collinear(BFI)",
+			"Collinear(AIC)"
 		],
 		"text_fls": [],
 		"image_fls": [
-			"Equal(Measure(Angle(i,AD)),Measure(angle2))",
-			"Equal(Measure(Angle(DBG)),Measure(angle1))",
-			"Equal(Measure(Angle(DFG)),65)",
+			"Equal(Measure(Angle(DFB)),65)",
 			"Equal(Measure(Angle(CIF)),112)",
 			"Equal(Measure(Angle(BDF)),47)",
-			"Find(Measure(Angle(2)))"
+			"Intersect(Point(F),Line(BI),Line(AD))"
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Measure(Angle(IAF)))"],
+		"theorem_seqs": [3, 38, 21]
 	},
 	"101": {
 		"problem_id": 101,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-262",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3228,7 +3224,9 @@
 		],
 		"construction_fls": [
 			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(BCDE)",
+			"Collinear(ABC)",
+			"Collinear(AED)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -3236,15 +3234,17 @@
 			"Equal(Length(Line(AB)),10)",
 			"Equal(Length(Line(DE)),x-1)",
 			"Equal(Length(Line(BC)),x+2)",
-			"Similar(Triangle(ABE),Triangle(ACD))",
-			"Find(Length(Line(BC)))"
+			"Equal(Length(Line(AC)),Add(10, x+2))",
+			"Equal(Length(Line(AD)),Add(6.25, x-1))",
+			"Similar(Triangle(ABE),Triangle(ACD))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Length(Line(BC)))"],
+		"theorem_seqs": [78]
 	},
 	"102": {
 		"problem_id": 102,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-266",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3254,8 +3254,8 @@
 			"42"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(ACB)",
+			"Shape(DFE)"
 		],
 		"text_fls": [],
 		"image_fls": [
@@ -3263,15 +3263,15 @@
 			"Equal(Length(Line(AC)),7)",
 			"Equal(Length(Line(FE)),14)",
 			"Equal(Length(Line(CB)),10)",
-			"Similar(Triangle(DEF),Triangle(ACB))",
-			"Find(Perimeter(Triangle(DEF)))"
+			"Similar(Triangle(ACB),Triangle(DFE))"
+			
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Perimeter(Triangle(DFE)))"],
+		"theorem_seqs": [84, 79]
 	},
 	"103": {
 		"problem_id": 103,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-269",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3281,26 +3281,23 @@
 			"0.28"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(BCA)"
 		],
-		"text_fls": [],
-		"image_fls": [
-			"Equal(Length(Line(AB)),Length(c))",
-			"Equal(Length(Line(CB)),Length(a))",
-			"Equal(Length(Line(AC)),Length(b))",
-			"Perpendicular(Point(C),Line(CB),Line(AC))",
-			"Equal(a,14)",
+		"text_fls": ["Equal(a,14)",
 			"Equal(b,48)",
-			"Equal(c,50)",
-			"Find(Cos(Angle(B)))"
+			"Equal(c,50)"],
+		"image_fls": [
+			"Equal(Length(Line(AB)),c)",
+			"Equal(Length(Line(CB)),a)",
+			"Equal(Length(Line(AC)),b)",
+			"Perpendicular(Point(C),Line(CA),Line(BC))"
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Cos(Measure(Angle(ABC))))"],
+		"theorem_seqs": [89]
 	},
 	"104": {
 		"problem_id": 104,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-273",
 		"problem_level": 3,
 		"problem_text_cn": "",
@@ -3310,53 +3307,52 @@
 			"0.29"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(BCA)"
 		],
-		"text_fls": [],
-		"image_fls": [
-			"Equal(Length(Line(BA)),Length(c))",
-			"Equal(Length(Line(BC)),Length(a))",
-			"Equal(Length(Line(AC)),Length(b))",
-			"Perpendicular(Point(C),Line(BC),Line(AC))",
-			"Equal(a,14)",
+		"text_fls": ["Equal(a,14)",
 			"Equal(b,48)",
-			"Equal(c,50)",
-			"Find(Tan(Angle(A)))"
+			"Equal(c,50)"],
+		"image_fls": [
+			"Equal(Length(Line(AB)),c)",
+			"Equal(Length(Line(CB)),a)",
+			"Equal(Length(Line(AC)),b)",
+			"Perpendicular(Point(C),Line(CA),Line(BC))"
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Tan(Measure(Angle(CAB))))"],
+		"theorem_seqs": [89]
 	},
 	"105": {
 		"problem_id": 105,
-		"annotation": "xiaokaizhang_2022-09-09",
+		"annotation": "xiaokaizhang_2022-09-14",
 		"source": "Geometry3k-278",
 		"problem_level": 3,
 		"problem_text_cn": "",
 		"problem_text_en": "Find D C if D G and J M are altitudes and \\triangle K J L \\sim \\triangle E D C.",
 		"problem_img": "105_g3k-278.png",
 		"problem_answer": [
-			"4"
+			"2"
 		],
 		"construction_fls": [
-			"Shape(ABC)",
-			"Collinear(ABC)"
+			"Shape(JKM)",
+			"Shape(JML)",
+			"Shape(DEG)",
+			"Shape(DGC)",
+			"Collinear(KML)",
+			"Collinear(EGC)"
 		],
-		"text_fls": [],
+		"text_fls": ["IsAltitude(Line(DG),Triangle(EDC))",
+		"IsAltitude(Line(JM),Triangle(KJL))",
+		"Similar(Triangle(KLJ),Triangle(ECD))"],
 		"image_fls": [
 			"Equal(Length(Line(JL)),4)",
 			"Equal(Length(Line(JM)),x)",
-			"Perpendicular(Point(M),Line(JM),Line(LM))",
+			"Perpendicular(Point(M),Line(KL),Line(JM))",
 			"Equal(Length(Line(DC)),6-x)",
 			"Equal(Length(Line(DG)),2)",
-			"Perpendicular(Point(G),Line(DG),Line(GC))",
-			"Altitude(Line(DG),Triangle(EDC))",
-			"Altitude(Line(JM),Triangle(KJL))",
-			"Similar(Triangle(KJL),Triangle(EDC))",
-			"Find(Length(Line(DC)))"
+			"Perpendicular(Point(G),Line(EC),Line(DG))"
 		],
-		"target_fls": [],
-		"theorem_seqs": []
+		"target_fls": ["Find(Length(Line(DC)))"],
+		"theorem_seqs": [77, 83, 78]
 	},
 	"106": {
 		"problem_id": 106,

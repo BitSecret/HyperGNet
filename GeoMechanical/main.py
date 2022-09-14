@@ -76,7 +76,7 @@ def mode_3(solver):
 
 
 def main():
-    mode = 0
+    mode = int(input("mode:"))
     solver = Solver()
 
     if mode == 0:    # trans

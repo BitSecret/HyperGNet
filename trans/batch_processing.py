@@ -27,7 +27,7 @@ def change_theorem_seqs_map(theorem_map, theorem_seqs):
 
 
 def load_theorem_seqs_map():
-    file_theorem_map = "../GeoMechanical/doc/formal_language.xlsx"
+    file_theorem_map = "../doc/formal_language.xlsx"
     theorem_map = {}
     table = xlrd.open_workbook(file_theorem_map).sheets()[1]
     theorem_count = table.nrows  # 获取该sheet中的有效行数

@@ -49,7 +49,7 @@ class ProblemLogic:
                 point2 = shape[(i + 1) % len(shape)]
                 point3 = shape[(i + 2) % len(shape)]
 
-                if util.is_collinear(point1, point2, point3, self):   # 三点共线，去掉中间的点
+                if util.is_collinear(point1, point2, point3, self):  # 三点共线，去掉中间的点
                     shape = shape.replace(point2, "")
                 else:  # 不共线，窗口后移
                     i += 1
@@ -66,8 +66,8 @@ class ProblemLogic:
             premise = [self.conditions.get_index(points, cType.collinear)]
             self.conditions.add(points[::-1], cType.collinear, premise, -2)
 
-            for i in range(0, len(points) - 2):    # 定义平角
-                f_angle = points[i:i+3]
+            for i in range(0, len(points) - 2):  # 定义平角
+                f_angle = points[i:i + 3]
                 self.define_angle(f_angle, premise, -2, False)
                 self.define_angle(f_angle[::-1], premise, -2, False)
             return True
@@ -154,7 +154,7 @@ class ProblemLogic:
                 premise = [self.conditions.get_index(ordered_pair, cType.midpoint)]
             self.conditions.add((point, line[::-1]), cType.midpoint, premise, -2)  # 中点有两中表示形式
 
-            line1 = self.get_sym_of_attr(line[0] + point, aType.LL)    # 中点性质扩展
+            line1 = self.get_sym_of_attr(line[0] + point, aType.LL)  # 中点性质扩展
             line2 = self.get_sym_of_attr(point + line[1], aType.LL)
             self.define_equation(line1 - line2, eType.basic, premise, -2)
 
@@ -201,7 +201,7 @@ class ProblemLogic:
                 self.conditions.add(all_form, cType.perpendicular, premise, -2)  # 垂直有4种表示
             premise = [self.conditions.get_index(ordered_pair, cType.perpendicular)]
 
-            sym = []    # 垂直的扩展：90°角
+            sym = []  # 垂直的扩展：90°角
             if len(set(point + line1 + line2)) == 3:
                 if line1[0] == line2[1]:
                     sym.append(self.get_sym_of_attr(line2 + line1[1], aType.MA))
@@ -242,7 +242,7 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.perpendicular_bisector, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.perpendicular_bisector)]
-            for all_shape in rep.perpendicular_bisector(ordered_pair):    # 2种表示
+            for all_shape in rep.perpendicular_bisector(ordered_pair):  # 2种表示
                 self.conditions.add(all_shape, cType.perpendicular_bisector, premise, theorem)
 
             self.define_perpendicular(ordered_pair, premise, -2, False)  # 垂直平分也是垂直
@@ -381,7 +381,7 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.mirror_congruent, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.mirror_congruent)]
-            for all_shape in rep.mirror_tri(ordered_pair):    # 6种表示
+            for all_shape in rep.mirror_tri(ordered_pair):  # 6种表示
                 self.conditions.add(all_shape, cType.mirror_congruent, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
@@ -393,7 +393,7 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.mirror_similar, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.mirror_similar)]
-            for all_shape in rep.mirror_tri(ordered_pair):    # 6种表示
+            for all_shape in rep.mirror_tri(ordered_pair):  # 6种表示
                 self.conditions.add(all_shape, cType.mirror_similar, premise, -2)
             self.define_triangle(triangle1, premise, -2, False)  # 定义实体
             self.define_triangle(triangle2, premise, -2, False)
@@ -412,7 +412,7 @@ class ProblemLogic:
 
         return self.conditions.add(equation, cType.equation, premise, theorem)  # 返回是否添加了新条件
 
-    def get_sym_of_attr(self, entity, attr_type):     # 得到属性的符号表示
+    def get_sym_of_attr(self, entity, attr_type):  # 得到属性的符号表示
         if attr_type is aType.M:  # 表示目标/中间值类型的符号，不用存储在符号库
             return symbols(attr_type.name.lower() + "_" + entity)
 
@@ -436,11 +436,11 @@ class ProblemLogic:
         return sym
 
     def set_value_of_sym(self, sym, value, premise, theorem, solved_by_equation=False):  # 设置符号的值
-        if self.value_of_sym[sym] is None:    # 如果当前符号未赋值
+        if self.value_of_sym[sym] is None:  # 如果当前符号未赋值
             self.value_of_sym[sym] = value
-            if sym - value not in self.conditions.items[cType.equation]:    # 如果符号值没有保存在equation中
+            if sym - value not in self.conditions.items[cType.equation]:  # 如果符号值没有保存在equation中
                 self.define_equation(sym - value, eType.value, premise, theorem)
-                if not solved_by_equation:    # 如果不是通过解方程得到的
+                if not solved_by_equation:  # 如果不是通过解方程得到的
                     self.equation_solved = False
             return True
         return False
@@ -501,7 +501,7 @@ class Problem(ProblemLogic):
                 for b_point in b_points:
                     self.sym_of_attr[(a_point + angle[1] + b_point, aType.MA)] = sym
 
-    def flat_angle(self):    # 平角赋予180°
+    def flat_angle(self):  # 平角赋予180°
         for coll in self.conditions.items[cType.collinear]:
             premise = [self.conditions.get_index(coll, cType.collinear)]
             for i in range(0, len(coll) - 2):
@@ -509,33 +509,37 @@ class Problem(ProblemLogic):
                 self.set_value_of_sym(sym_of_angle, 180, premise, -2)
 
     """------------解方程相关------------"""
-    def solve_target(self, target_expr):    # 求解target_expr的值
+
+    def solve_target(self, target_expr):  # 求解target_expr的值
         # 无需求解的情况
-        if target_expr in self.conditions.items[cType.equation]:   # 如果是已知方程，那么target_expr=0
+        if target_expr in self.conditions.items[cType.equation]:  # 如果是已知方程，那么target_expr=0
             return 0.0, [self.conditions.get_index(target_expr, cType.equation)]
         if -target_expr in self.conditions.items[cType.equation]:
             return 0.0, [self.conditions.get_index(-target_expr, cType.equation)]
 
         # 简单替换就可求解的情况
         premise = []
-        for sym in target_expr.free_symbols:    # 替换掉target_expr中符号值已知的符号
+        for sym in target_expr.free_symbols:  # 替换掉target_expr中符号值已知的符号
             if self.value_of_sym[sym] is not None:
                 premise.append(self.conditions.get_index(sym - self.value_of_sym[sym], cType.equation))
                 target_expr = target_expr.subs(sym, self.value_of_sym[sym])
         if len(target_expr.free_symbols) == 0:
-            return target_expr, premise
+            return float(target_expr), premise
 
         # 需要求解的情况
-        equations, eq_premise = self.get_minimum_equations(target_expr)    # 最小依赖方程组
-        premise += eq_premise    # 上面替换掉的符号的premise
-        print(equations)
-        equations = self.high_level_simplify(equations)    # 高级化简
+        equations, eq_premise = self.get_minimum_equations(target_expr)  # 最小依赖方程组
+        premise += eq_premise  # 上面替换掉的符号的premise
+        # print("高级化简之前:", end="  ")
+        # print(equations, end=",  ")
+        # print(target_expr)
+        equations = self.high_level_simplify(equations, target_expr)  # 高级化简
         target_sym = symbols("t_s")
-        equations.append(target_sym - target_expr)    # 添加目标方程
-        print(equations)
-        solved_result = solve(equations)    # 求解最小方程组
-        print(solved_result)
-        print()
+        equations[-1] = target_sym - equations[-1]  # 添加目标方程
+        # print("高级化简之后:", end="  ")
+        # print(equations)
+        solved_result = solve(equations)  # 求解最小方程组
+        # print(solved_result)
+        # print()
 
         if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
             solved_result = solved_result[0]
@@ -548,42 +552,42 @@ class Problem(ProblemLogic):
 
         return None, None  # 无解，返回None
 
-    def get_minimum_equations(self, target_expr):    # 返回求解target_expr依赖的最小方程组
-        sym_set = target_expr.free_symbols    # 方程组涉及到的符号
-        min_equations = []    # 最小方程组
-        premise = []    # 每个方程的index，作为target_expr求解结果的premise
+    def get_minimum_equations(self, target_expr):  # 返回求解target_expr依赖的最小方程组
+        sym_set = target_expr.free_symbols  # 方程组涉及到的符号
+        min_equations = []  # 最小方程组
+        premise = []  # 每个方程的index，作为target_expr求解结果的premise
 
         # 循环添加依赖方程，得到最小方程组
         update = True
         while update:
             update = False
             for sym in sym_set:
-                if self.value_of_sym[sym] is None:    # 如果sym的值未求出，需要添加包含sym的依赖方程
-                    for key in self.basic_equations.keys():    # 添加简单依赖方程
+                if self.value_of_sym[sym] is None:  # 如果sym的值未求出，需要添加包含sym的依赖方程
+                    for key in self.basic_equations.keys():  # 添加简单依赖方程
                         if sym in self.basic_equations[key].free_symbols and \
                                 self.basic_equations[key] not in min_equations:
                             min_equations.append(self.basic_equations[key])
                             premise.append(self.conditions.get_index(key, cType.equation))
-                            sym_set = sym_set.union(key.free_symbols)    # 添加新方程会引入新符号(未化简的原方程的所有符号)
+                            sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号(未化简的原方程的所有符号)
                             update = True
-                    for key in self.complex_equations.keys():    # 添加复杂依赖方程
+                    for key in self.complex_equations.keys():  # 添加复杂依赖方程
                         if sym in self.complex_equations[key].free_symbols and \
                                 self.complex_equations[key] not in min_equations:
                             min_equations.append(self.complex_equations[key])
                             premise.append(self.conditions.get_index(key, cType.equation))
-                            sym_set = sym_set.union(key.free_symbols)    # 添加新方程会引入新符号
+                            sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号
                             update = True
         # 化简最小方程组
         for sym in sym_set:
             if self.value_of_sym[sym] is not None:
                 premise.append(self.conditions.get_index(sym - self.value_of_sym[sym], cType.equation))
-                for i in range(len(min_equations)):    # 替换方程中的已知sym
+                for i in range(len(min_equations)):  # 替换方程中的已知sym
                     min_equations[i] = min_equations[i].subs(sym, self.value_of_sym[sym])
-                target_expr = target_expr.subs(sym, self.value_of_sym[sym])    # 替换target_expr中的已知sym
+                target_expr = target_expr.subs(sym, self.value_of_sym[sym])  # 替换target_expr中的已知sym
 
-        return min_equations, premise   # 返回化简的target_expr、最小依赖方程组和前提
+        return min_equations, premise  # 返回化简的target_expr、最小依赖方程组和前提
 
-    def simplify_equations(self):    # 化简 basic、complex equations
+    def simplify_equations(self):  # 化简 basic、complex equations
         update = True
         while update:
             update = False
@@ -633,11 +637,29 @@ class Problem(ProblemLogic):
             for remove_eq in remove_lists:  # 删除所有符号值已知的方程
                 self.complex_equations.pop(remove_eq)
 
-    def high_level_simplify(self, equations):
+    @staticmethod
+    def high_level_simplify(equations, target_expr):    # 基于替换的高级化简
+        update = True
+        while update:
+            update = False
+            for equation in equations:    # 替换符号
+                if len(equation.free_symbols) == 2:
+                    result = solve(equation)
+                    if len(result) > 0:  # 有解
+                        if isinstance(result, list):  # 若解不唯一，选择第一个
+                            result = result[0]
+                        sym = list(result.keys())[0]
+                        target_expr = target_expr.subs(sym, result[sym])    # 符号替换
+                        for i in range(len(equations)):
+                            equations[i] = equations[i].subs(sym, result[sym])    # 符号替换
+                        update = True
+
+        equations.append(target_expr)
+
         return equations
 
     @func_set_timeout(8)  # 限时8s
-    def solve_equations(self):    # 求解basic、complex equations
+    def solve_equations(self):  # 求解basic、complex equations
         if self.equation_solved:  # equations没有更新，不用重复求解
             return
 
@@ -658,17 +680,17 @@ class Problem(ProblemLogic):
                 equations, premise = self.get_minimum_equations(sym)
                 result = solve(equations)  # 求解最小方程组
 
-                if len(result) > 0:    # 有解
+                if len(result) > 0:  # 有解
                     if isinstance(result, list):  # 若解不唯一，选择第一个
                         result = result[0]
-                    for key in result.keys():    # 遍历并保存所有解
+                    for key in result.keys():  # 遍历并保存所有解
                         if self.value_of_sym[key] is None \
                                 and (isinstance(result[key], Float) or isinstance(result[key], Integer)):
                             self.set_value_of_sym(key, float(result[key]), premise, -3, True)
                             update = True
 
         self.equation_solved = True
-        self.complex_equations = {}    # 清空 complex equations
+        self.complex_equations = {}  # 清空 complex equations
 
     """------------辅助功能------------"""
 
