@@ -35,9 +35,49 @@ class Theorem:
                         new_shape += shape2[same_length:len(shape2)]  # shape2不同的部分
                         new_shape += shape1[len(shape1) - 1]  # 第2个共点
 
+                        i = 0  # 当前长度为3窗口起始的位置
+                        while len(shape1) > 2 and i < len(shape1):  # 去掉共线点，得到实际图形
+                            point1 = shape1[i]
+                            point2 = shape1[(i + 1) % len(shape1)]
+                            point3 = shape1[(i + 2) % len(shape1)]
+
+                            if util.is_collinear(point1, point2, point3, problem):  # 三点共线，去掉中间的点
+                                shape1 = shape1.replace(point2, "")
+                            else:  # 不共线，窗口后移
+                                i += 1
+
+                        i = 0  # 当前长度为3窗口起始的位置
+                        while len(shape2) > 2 and i < len(shape2):  # 去掉共线点，得到实际图形
+                            point1 = shape2[i]
+                            point2 = shape2[(i + 1) % len(shape2)]
+                            point3 = shape2[(i + 2) % len(shape2)]
+
+                            if util.is_collinear(point1, point2, point3, problem):  # 三点共线，去掉中间的点
+                                shape2 = shape2.replace(point2, "")
+                            else:  # 不共线，窗口后移
+                                i += 1
+
+                        i = 0  # 当前长度为3窗口起始的位置
+                        while len(new_shape) > 2 and i < len(new_shape):  # 去掉共线点，得到实际图形
+                            point1 = new_shape[i]
+                            point2 = new_shape[(i + 1) % len(new_shape)]
+                            point3 = new_shape[(i + 2) % len(new_shape)]
+
+                            if util.is_collinear(point1, point2, point3, problem):  # 三点共线，去掉中间的点
+                                new_shape = new_shape.replace(point2, "")
+                            else:  # 不共线，窗口后移
+                                i += 1
+
                         if 2 < len(new_shape) == len(set(new_shape)):  # 是图形且没有环
-                            premise = [problem.conditions.get_index(shape1, cType.shape),
-                                       problem.conditions.get_index(shape2, cType.shape)]
+                            premise = []
+                            if len(shape1) > 3:
+                                premise.append(problem.conditions.get_index(shape1, cType.polygon))
+                            else:
+                                premise.append(problem.conditions.get_index(shape1, cType.triangle))
+                            if len(shape2) > 3:
+                                premise.append(problem.conditions.get_index(shape2, cType.polygon))
+                            else:
+                                premise.append(problem.conditions.get_index(shape2, cType.triangle))
 
                             a1 = problem.get_sym_of_attr(shape1, aType.AS)
                             a2 = problem.get_sym_of_attr(shape2, aType.AS)
@@ -75,12 +115,12 @@ class Theorem:
         注：之所以搞这么麻烦是因为会发生组合爆炸
         """
         update = False
-        init_shape = []    # 所有的初始shape
+        init_shape = []  # 所有的初始shape
         for shape in problem.conditions.items[cType.shape]:  # 得到构图图形
             if problem.conditions.get_premise(shape, cType.shape)[0] == -1:
                 init_shape.append(shape)
 
-        init_angle = []    # 初始shape中的所有角
+        init_angle = []  # 初始shape中的所有角
         for shape in init_shape:
             count = len(shape)
             i = 0
@@ -102,11 +142,11 @@ class Theorem:
         return update
 
     @staticmethod
-    def nous_4_intersect_extend(problem):
+    def nous_4_(problem):
         pass
 
     @staticmethod
-    def nous_5_perpendicular_extend(problem):
+    def nous_5_(problem):
         pass
 
     @staticmethod
@@ -267,22 +307,22 @@ class Theorem:
                 b = problem.get_sym_of_attr(rt[1:3], aType.LL)
                 c = problem.get_sym_of_attr(rt[2] + rt[0], aType.LL)  # 斜边
                 equations = []
-                if util.equal(result, 30):    # angle是30°角
+                if util.equal(result, 30):  # angle是30°角
                     equations.append(c - 2 * a)
                     equations.append(c - 2 / sqrt(3) * b)
                     equations.append(b - sqrt(3) * a)
-                elif util.equal(result, 60):    # angle是60°角
+                elif util.equal(result, 60):  # angle是60°角
                     equations.append(c - 2 * b)
                     equations.append(c - 2 / sqrt(3) * a)
                     equations.append(a - sqrt(3) * b)
-                elif util.equal(result, 45):    # angle是45°角
+                elif util.equal(result, 45):  # angle是45°角
                     equations.append(c - sqrt(2) * a)
                     equations.append(c - sqrt(2) * b)
                     equations.append(a - b)
                 for equation in equations:
                     update = problem.define_equation(equation, eType.complex, premise + eq_premise, 25) or update
 
-            angle = problem.get_sym_of_attr(rt[2] + rt[0] + rt[1], aType.MA)    # 看看另一个角能不能求解
+            angle = problem.get_sym_of_attr(rt[2] + rt[0] + rt[1], aType.MA)  # 看看另一个角能不能求解
             result, eq_premise = problem.solve_target(angle)
             if result is not None:
                 a = problem.get_sym_of_attr(rt[0:2], aType.LL)
@@ -604,7 +644,17 @@ class Theorem:
         垂直 判定
         角为90°  ==>  垂直
         """
-        pass
+        update = False
+        for key in problem.sym_of_attr.keys():
+            angle, a_type = key
+            sym = problem.sym_of_attr[key]
+            if a_type is aType.MA and\
+                    problem.value_of_sym[sym] is not None and\
+                    util.equal(problem.value_of_sym[sym], 90) and\
+                    (angle[1], angle[1:3], angle[0:2]) not in problem.conditions.items[cType.perpendicular]:
+                premise = [problem.conditions.get_index(sym - problem.value_of_sym[sym])]
+                update = problem.define_perpendicular((angle[1], angle[1:3], angle[0:2]), premise, 41) or update
+        return update
 
     @staticmethod
     def theorem_42_parallel_perpendicular_combination(problem):
@@ -622,8 +672,8 @@ class Theorem:
         update = False
         for line1 in problem.conditions.items[cType.line]:
             for line2 in problem.conditions.items[cType.line]:
-                if line1[1] == line2[0] and line1[0] != line2[1] and\
-                        (line1[1], line1[0] + line2[1]) not in problem.conditions.items[cType.midpoint] and\
+                if line1[1] == line2[0] and line1[0] != line2[1] and \
+                        (line1[1], line1[0] + line2[1]) not in problem.conditions.items[cType.midpoint] and \
                         util.is_collinear(line1[0], line1[1], line2[1], problem):
                     l1 = problem.get_sym_of_attr(line1, aType.LL)
                     l2 = problem.get_sym_of_attr(line2, aType.LL)
@@ -636,11 +686,41 @@ class Theorem:
 
     @staticmethod
     def theorem_44_perpendicular_bisector_property_distance_equal(problem):
-        pass
+        """
+        垂直平分线 性质
+        垂直平分线  ==>  垂直平分线上的点到两端的距离相等
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.perpendicular_bisector]):
+            pb = problem.conditions.items[cType.perpendicular_bisector][i]
+            for coll_point in util.coll_points(pb[2][0], pb[2][1], problem):
+                if coll_point + pb[1][0] in problem.conditions.items[cType.line] and \
+                        coll_point + pb[1][1] in problem.conditions.items[cType.line]:
+                    line1 = problem.get_sym_of_attr(coll_point + pb[1][0], aType.LL)
+                    line2 = problem.get_sym_of_attr(coll_point + pb[1][1], aType.LL)
+                    premise = [problem.conditions.get_index(pb, cType.perpendicular_bisector)]
+                    update = problem.define_equation(line1 - line2, eType.basic, premise, 44) or update
+            i += rep.count_perpendicular_bisector
+
+        return update
 
     @staticmethod
     def theorem_45_perpendicular_bisector_judgment(problem):
-        pass
+        """
+        垂直平分线 判定
+        垂直 and 平分  ==>  垂直平分线
+        """
+        update = False
+        Theorem.theorem_43_midpoint_judgment(problem)
+        Theorem.theorem_41_perpendicular_judgment(problem)
+        for midpoint in problem.conditions.items[cType.midpoint]:
+            for pp in problem.conditions.items[cType.perpendicular]:
+                if midpoint[0] == pp[0] and midpoint[1] == pp[1]:
+                    premise = [problem.conditions.get_index(midpoint, cType.midpoint),
+                               problem.conditions.get_index(pp, cType.perpendicular)]
+                    update = problem.define_perpendicular_bisector(pp, premise, 45) or update
+        return update
 
     @staticmethod
     def theorem_46_bisector_property_line_ratio(problem):
@@ -650,13 +730,14 @@ class Theorem:
         """
         update = False
         for bisector in problem.conditions.items[cType.bisector]:
-            line, tri = bisector
-            line11 = problem.get_sym_of_attr(tri[1] + line[1], aType.LL)
-            line12 = problem.get_sym_of_attr(line[1] + tri[2], aType.LL)
-            line21 = problem.get_sym_of_attr(tri[0] + tri[1], aType.LL)
-            line22 = problem.get_sym_of_attr(tri[2] + tri[0], aType.LL)
-            update = problem.define_equation(line11 * line22 - line12 * line21, eType.complex,
-                                             [problem.conditions.get_index(bisector, cType.bisector)], 46) or update
+            line, angle = bisector
+            if util.is_inside_triangle(line, angle[1] + angle[2] + angle[0], problem):    # 如果是三角形的内线
+                line11 = problem.get_sym_of_attr(angle[2] + line[1], aType.LL)
+                line12 = problem.get_sym_of_attr(line[1] + angle[0], aType.LL)
+                line21 = problem.get_sym_of_attr(angle[1] + angle[2], aType.LL)
+                line22 = problem.get_sym_of_attr(angle[0] + angle[1], aType.LL)
+                update = problem.define_equation(line11 * line22 - line12 * line21, eType.complex,
+                                                 [problem.conditions.get_index(bisector, cType.bisector)], 46) or update
         return update
 
     @staticmethod
@@ -667,10 +748,10 @@ class Theorem:
         """
         update = False
         for bisector in problem.conditions.items[cType.bisector]:
-            line, tri = bisector
+            line, angle = bisector
             premise = [problem.conditions.get_index(bisector, cType.bisector)]
-            angle1 = problem.get_sym_of_attr(line[1] + tri[0:2], aType.MA)
-            angle2 = problem.get_sym_of_attr(tri[2] + line, aType.MA)
+            angle1 = problem.get_sym_of_attr(angle[0:2] + line[1], aType.MA)
+            angle2 = problem.get_sym_of_attr(line[1] + angle[1:3], aType.MA)
             update = problem.define_equation(angle1 - angle2, eType.basic, premise, 47) or update
 
         return update
@@ -682,15 +763,18 @@ class Theorem:
         平分的两角相等  ==>  DA为△ABC的角平分线
         """
         update = False
-        for tri in problem.conditions.items[cType.triangle]:
-            for line in problem.conditions.items[cType.line]:
-                if (line, tri) not in problem.conditions.items[cType.bisector] and \
-                        util.is_inside_triangle(line, tri, problem):  # 是三角形的内线
-                    angle1 = problem.get_sym_of_attr(line[1] + tri[0:2], aType.MA)
-                    angle2 = problem.get_sym_of_attr(tri[2] + tri[0] + line[1], aType.MA)
-                    result, premise = problem.solve_target(angle2 - angle1)
-                    if result is not None and util.equal(result, 0):  # 且平分的两个角相等
-                        update = problem.define_bisector((line, tri), premise, 48) or update
+        for angle1 in problem.conditions.items[cType.angle]:
+            for angle2 in problem.conditions.items[cType.angle]:
+                line = angle1[1] + angle1[0]
+                angle = angle2[0] + angle1[1:3]
+                if angle1[1] == angle2[1] and\
+                        angle1[0] == angle2[2] and\
+                        (line, angle) not in problem.conditions.items[cType.bisector]:
+                    m1 = problem.get_sym_of_attr(angle1, aType.MA)
+                    m2 = problem.get_sym_of_attr(angle2, aType.MA)
+                    result, premise = problem.solve_target(m1 - m2)
+                    if result is not None and util.equal(result, 0):  # 平分的两个角相等
+                        update = problem.define_bisector((line, angle), premise, 48) or update
         return update
 
     @staticmethod
@@ -712,12 +796,12 @@ class Theorem:
         中线 判定
         底边中点  ==>  中线
         """
-        Theorem.theorem_43_midpoint_judgment(problem)    # 先寻找中点
+        Theorem.theorem_43_midpoint_judgment(problem)  # 先寻找中点
         update = False
         for midpoint in problem.conditions.items[cType.midpoint]:
             point, line = midpoint
             for f_point in problem.conditions.items[cType.point]:
-                if f_point + point in problem.conditions.items[cType.line] and\
+                if f_point + point in problem.conditions.items[cType.line] and \
                         point + line in problem.conditions.items[cType.triangle]:
                     premise = [problem.conditions.get_index[midpoint, cType.midpoint],
                                problem.conditions.get_index[f_point + point, cType.line],
@@ -727,7 +811,16 @@ class Theorem:
 
     @staticmethod
     def theorem_51_altitude_property(problem):
-        pass
+        """
+        高 性质
+        高  ==>  垂直于底边
+        """
+        update = False
+        for alt in problem.conditions.items[cType.is_altitude]:
+            line, tri = alt
+            premise = [problem.conditions.get_index(alt, cType.is_altitude)]
+            update = problem.define_perpendicular((line[1], tri[1] + line[1], line), premise, 51) or update
+        return update
 
     @staticmethod
     def theorem_52_altitude_judgment(problem):
@@ -735,7 +828,26 @@ class Theorem:
         高 判定
         垂直于底边  ==>  高
         """
-        pass
+        update = False
+        Theorem.theorem_41_perpendicular_judgment(problem)    # 先判定垂直关系
+        for perpendicular in problem.conditions.items[cType.perpendicular]:
+            point, line1, line2 = perpendicular
+            if point == line1[1] and point == line2[1]:
+                premise = [problem.conditions.get_index(perpendicular, cType.perpendicular)]
+                base_coll_points = util.coll_points(line2[0], line2[1], problem)    # line1为高
+                for base_point1 in base_coll_points:
+                    for base_point2 in base_coll_points:
+                        tri = line1[0] + base_point1 + base_point2
+                        if tri in problem.conditions.items[cType.triangle]:
+                            update = problem.define_is_altitude((line1, tri), premise, 52) or update
+                base_coll_points = util.coll_points(line1[0], line1[1], problem)  # line2为高
+                for base_point1 in base_coll_points:
+                    for base_point2 in base_coll_points:
+                        tri = line2[0] + base_point1 + base_point2
+                        if tri in problem.conditions.items[cType.triangle]:
+                            update = problem.define_is_altitude((line2, tri), premise, 52) or update
+
+        return update
 
     @staticmethod
     def theorem_53_neutrality_property_similar(problem):
@@ -771,7 +883,7 @@ class Theorem:
         update = False
         for tri in problem.conditions.items[cType.triangle]:
             for parallel in problem.conditions.items[cType.parallel]:
-                if tri[1:3] == parallel[1] and\
+                if tri[1:3] == parallel[1] and \
                         util.is_collinear(tri[0], parallel[0][0], tri[1], problem) and \
                         util.is_collinear(tri[0], parallel[0][1], tri[2], problem):
                     premise = [problem.conditions.get_index(tri, cType.triangle),
@@ -1787,7 +1899,7 @@ class Theorem:
         i = 0
         while i < len(problem.conditions.items[cType.triangle]):
             tri = problem.conditions.items[cType.triangle][i]
-            line_and_angle = [[], []]    # 边和角的符号表示
+            line_and_angle = [[], []]  # 边和角的符号表示
             for j in range(3):
                 line = problem.get_sym_of_attr(tri[j] + tri[(j + 1) % 3], aType.LL)
                 angle = problem.get_sym_of_attr(tri[(j + 1) % 3] + tri[(j + 2) % 3] + tri[(j + 3) % 3], aType.MA)

@@ -155,8 +155,15 @@ class Utility:
         return False
 
     @staticmethod
+    def coll_points(point1, point2, problem):  # 与 point1 point2 共线 的所有点
+        for coll in problem.conditions.items[cType.collinear]:
+            if point1 in coll and point2 in coll and coll.index(point1) < coll.index(point2):
+                return list(coll)
+        return [point1, point2]
+
+    @staticmethod
     def coll_points_one_side(vertex, point, problem):  # 与 vertex、point共线且与 point 同侧的点
-        points = [point]
+        points = []
         for coll in problem.conditions.items[cType.collinear]:
             if vertex in coll and point in coll:
                 if coll.index(vertex) < coll.index(point):    # .....V...P..
@@ -169,15 +176,89 @@ class Utility:
                     while i < coll.index(vertex):
                         points.append(coll[i])
                         i += 1
-                return list(set(points))
-        return points
+                return points
+        return [point]
 
     @staticmethod
-    def coll_points(point1, point2, problem):  # 与 point1 point2 共线 的所有点
-        points = []
-        for coll in problem.conditions.items[cType.collinear]:
-            if point1 in coll and point2 in coll and coll.index(point1) < coll.index(point2):
-                for point in coll:
-                    points.append(point)
-                return points
-        return [point1, point2]
+    def same_angles(angle, problem):
+        angles = []
+
+        a_points = Utility.coll_points_one_side(angle[1], angle[0], problem)  # 与AO共线、在O的A侧的点(包括A)
+        b_points = Utility.coll_points_one_side(angle[1], angle[2], problem)  # 与BO共线、在O的B侧的点(包括B)
+
+        if len(a_points) == 1 and len(b_points) == 1:    # 角只有一种表示
+            return [angle]
+
+        for a_point in a_points:
+            for b_point in b_points:
+                angles.append(a_point + angle[1] + b_point)  # 相同的角设置一样的符号
+        return angles
+
+    @staticmethod
+    def same_intersects(intersect, problem):
+        point, line1, line2 = intersect
+        intersects = []
+
+        left_points = Utility.coll_points_one_side(point, line1[0], problem)
+        up_points = Utility.coll_points_one_side(point, line2[0], problem)
+        right_points = Utility.coll_points(point, line1[0], problem)
+        down_points = Utility.coll_points(point, line1[0], problem)
+        for point in left_points + [point]:
+            if point in right_points:
+                right_points.remove(point)
+        for point in up_points + [point]:
+            if point in down_points:
+                down_points.remove(point)
+        for left_point in left_points:
+            for right_point in right_points:
+                for up_point in up_points:
+                    for down_point in down_points:
+                        intersects.append((point, left_point + right_point, up_point + down_point))
+
+        if intersect not in intersects:    # 确保第1个是原关系
+            return [intersect]
+        else:
+            intersects.remove(intersect)
+            return [intersect] + intersects
+
+    @staticmethod
+    def same_perpendiculars(perpendicular, problem):
+        point, line1, line2 = perpendicular
+        perpendiculars = []
+
+        left_points = Utility.coll_points_one_side(point, line1[0], problem)
+        up_points = Utility.coll_points_one_side(point, line2[0], problem)
+        right_points = Utility.coll_points(point, line1[0], problem)
+        down_points = Utility.coll_points(point, line2[0], problem)
+        for point in left_points + [point]:
+            if point in right_points:
+                right_points.remove(point)
+        for point in up_points + [point]:
+            if point in down_points:
+                down_points.remove(point)
+        left_points.append(point)
+        up_points.append(point)
+        right_points.append(point)
+        down_points.append(point)
+
+        for left_point in left_points:
+            for right_point in right_points:
+                if left_point != right_point:
+                    for up_point in up_points:
+                        for down_point in down_points:
+                            if up_point != down_point:
+                                perpendiculars.append((point, left_point + right_point, up_point + down_point))
+
+        if perpendicular not in perpendiculars:    # 确保第1个是原关系
+            return [perpendicular]
+        else:
+            perpendiculars.remove(perpendicular)
+            return [perpendicular] + perpendiculars
+
+    @staticmethod
+    def all_lines_in_coll(coll, problem):
+        lines = []
+        for point1 in coll:
+            for point2 in coll:
+                lines.append(point1 + point2)
+        return lines

@@ -904,7 +904,7 @@
 		"image_fls": [
 			"Equal(Measure(Angle(FHE)),15*x)",
 			"EquilateralTriangle(EFG)",
-			"Bisector(Line(EH),Triangle(EFG))"
+			"Bisector(Line(EH),Angle(GEF))"
 		],
 		"target_fls": [
 			"Find(x)"

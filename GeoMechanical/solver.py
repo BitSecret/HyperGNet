@@ -25,8 +25,8 @@ class Solver:
             1: Theorem.nous_1_area_addition,
             2: Theorem.nous_2_line_addition,
             3: Theorem.nous_3_angle_addition,
-            4: Theorem.nous_4_intersect_extend,
-            5: Theorem.nous_5_perpendicular_extend,
+            4: Theorem.nous_4_,
+            5: Theorem.nous_5_,
             6: Theorem.nous_6_,
             7: Theorem.nous_7_,
             8: Theorem.nous_8_,
@@ -140,6 +140,7 @@ class Solver:
 
         """------构造图形------"""
         self.problem.construct_all_shape()    # 构造所有图形
+        self.problem.construct_all_line()  # 构造所有线段
         self.problem.angle_representation_alignment()  # 使角的符号表示一致
         self.problem.flat_angle()  # 赋予平角180°
 

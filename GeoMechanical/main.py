@@ -2,6 +2,7 @@ import json
 from solver import Solver
 from func_timeout import FunctionTimedOut
 import traceback
+import time
 geo3k_trans_data = "../data/geo3k_trans_data/trans.json"
 template_data = "../data/generated_data/temp.json"
 generated_data = "../data/generated_data/gen.json"
@@ -28,11 +29,14 @@ def mode_0(solver):
 def mode_1(solver):
     count = int(input("problem max count:"))
     problems = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))
+    time_start = time.time()
+    theorems = []
 
     i = 0
     while i <= count:
         try:
             problem = problems[str(i)]
+            theorems += problem["theorem_seqs"]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
@@ -44,6 +48,12 @@ def mode_1(solver):
             print("求解方程组超时！")
 
         i += 1
+
+    print()
+    print("Used theorem list:", end=" ")
+    print(list(set(theorems)))
+    time_cons = time.time() - time_start
+    print("{} problems. time consuming: {:.6f}s. avg: {} s/problem".format(count, time_cons, time_cons / count))
 
 
 def mode_2(solver):
@@ -76,17 +86,18 @@ def mode_3(solver):
 
 
 def main():
-    mode = int(input("mode:"))
     solver = Solver()
-
-    if mode == 0:    # trans
+    mode = int(input("mode:"))
+    if mode == 0:  # trans
         mode_0(solver)
-    elif mode == 1:    # trans-auto
+    elif mode == 1:  # trans-auto
         mode_1(solver)
-    elif mode == 2:    # gen-temp
+    elif mode == 2:  # gen-temp
         mode_2(solver)
-    elif mode == 3:    # gen
+    elif mode == 3:  # gen
         mode_3(solver)
+    else:
+        print("mode selection error.")
 
 
 if __name__ == "__main__":
