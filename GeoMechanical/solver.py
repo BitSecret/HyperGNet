@@ -170,6 +170,8 @@ class Solver:
                 self.problem.define_intersect((fl[1][1], fl[2][1], fl[3][1]), [-1], -1)
             elif fl[0] == "Parallel":
                 self.problem.define_parallel((fl[1][1], fl[2][1]), [-1], -1)
+            elif fl[0] == "DisorderParallel":
+                self.problem.define_parallel((fl[1][1], fl[2][1]), [-1], -1)
             elif fl[0] == "Perpendicular":
                 self.problem.define_perpendicular((fl[1][1], fl[2][1], fl[3][1]), [-1], -1)
             elif fl[0] == "PerpendicularBisector":

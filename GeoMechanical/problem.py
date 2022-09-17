@@ -188,6 +188,21 @@ class ProblemLogic:
             for parallel in rep.parallel(ordered_pair):  # 平行的4种表示
                 self.conditions.add(parallel, cType.parallel, premise, -2)
 
+            self.define_disorder_parallel(ordered_pair, premise, -2, False)    # 无序平行
+            self.define_line(line1, premise, -2, False)  # 定义线
+            self.define_line(line2, premise, -2, False)
+            return True
+        return False
+
+    def define_disorder_parallel(self, ordered_pair, premise, theorem, root=True):  # 无序平行
+        line1, line2, = ordered_pair
+        if self.conditions.add(ordered_pair, cType.disorder_parallel, premise, theorem):
+            if root:
+                premise = [self.conditions.get_index(ordered_pair, cType.disorder_parallel)]
+
+            for disorder_parallel in rep.disorder_parallel(ordered_pair):  # 平行的4种表示
+                self.conditions.add(disorder_parallel, cType.disorder_parallel, premise, -2)
+
             self.define_line(line1, premise, -2, False)  # 定义线
             self.define_line(line2, premise, -2, False)
             return True

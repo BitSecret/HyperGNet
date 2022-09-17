@@ -56,6 +56,15 @@ class Representation:
         return results
 
     @staticmethod
+    def disorder_parallel(relation):
+        line1, line2 = relation
+        results = [(line1, line2),
+                   (line2, line1),
+                   (line2[::-1], line1[::-1]),
+                   (line1[::-1], line2[::-1])]
+        return results
+
+    @staticmethod
     def intersect(relation):
         point, line1, line2 = relation
         results = [(point, line1, line2),

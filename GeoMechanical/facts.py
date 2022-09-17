@@ -17,22 +17,23 @@ class ConditionType(Enum):  # 条件的类型
     midpoint = 11
     intersect = 12
     parallel = 13
-    perpendicular = 14
-    perpendicular_bisector = 15
-    bisector = 16
-    median = 17
-    is_altitude = 18
-    neutrality = 19
-    circumcenter = 20
-    incenter = 21
-    centroid = 22
-    orthocenter = 23
-    congruent = 24
-    similar = 25
-    mirror_congruent = 26
-    mirror_similar = 27
+    disorder_parallel = 14
+    perpendicular = 15
+    perpendicular_bisector = 16
+    bisector = 17
+    median = 18
+    is_altitude = 19
+    neutrality = 20
+    circumcenter = 21
+    incenter = 22
+    centroid = 23
+    orthocenter = 24
+    congruent = 25
+    similar = 26
+    mirror_congruent = 27
+    mirror_similar = 28
 
-    equation = 28  # 代数方程
+    equation = 29  # 代数方程
 
 
 class AttributionType(Enum):  # 属性的类型
@@ -68,7 +69,8 @@ class Condition:  # 条件
                    ConditionType.right_triangle, ConditionType.isosceles_triangle,
                    ConditionType.equilateral_triangle, ConditionType.polygon]
     entity_relation_list = [ConditionType.midpoint, ConditionType.intersect, ConditionType.parallel,
-                            ConditionType.perpendicular, ConditionType.perpendicular_bisector, ConditionType.bisector,
+                            ConditionType.disorder_parallel, ConditionType.perpendicular,
+                            ConditionType.perpendicular_bisector, ConditionType.bisector,
                             ConditionType.median, ConditionType.is_altitude, ConditionType.neutrality,
                             ConditionType.circumcenter, ConditionType.incenter, ConditionType.centroid,
                             ConditionType.orthocenter, ConditionType.congruent, ConditionType.similar,
@@ -130,9 +132,10 @@ class FormalLanguage:
     construction_predicates = ["Shape", "Collinear"]
     entity_predicates = ["Point", "Line", "Angle", "Triangle", "RightTriangle", "IsoscelesTriangle",
                          "EquilateralTriangle", "Polygon"]
-    entity_relation_predicates = ["Midpoint", "Intersect", "Parallel", "Perpendicular", "PerpendicularBisector",
-                                  "Bisector", "Median", "IsAltitude", "Neutrality", "Circumcenter", "Incenter",
-                                  "Centroid", "Orthocenter", "Congruent", "Similar", "MirrorCongruent", "MirrorSimilar"]
+    entity_relation_predicates = ["Midpoint", "Intersect", "Parallel", "DisorderParallel", "Perpendicular",
+                                  "PerpendicularBisector", "Bisector", "Median", "IsAltitude", "Neutrality",
+                                  "Circumcenter", "Incenter", "Centroid", "Orthocenter", "Congruent", "Similar",
+                                  "MirrorCongruent", "MirrorSimilar"]
     attribute_predicates = ["Length", "Measure", "Area", "Perimeter", "Altitude"]
     equation = "Equation"
     all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]

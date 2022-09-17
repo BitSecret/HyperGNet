@@ -530,25 +530,112 @@ class Theorem:
             update = problem.set_value_of_sym(angle2, 60, premise, 33) or update
             update = problem.set_value_of_sym(angle3, 60, premise, 33) or update
 
-            i += rep.count_equilateral_triangle  # 6种表示
+            i += rep.count_equilateral_triangle  # 3种表示
 
         return update
 
     @staticmethod
     def theorem_34_equilateral_triangle_property_side_equal(problem):
-        pass
+        """
+        等边三角形 性质
+        等边△  ==>  边相等
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.equilateral_triangle]):
+            tri = problem.conditions.items[cType.equilateral_triangle][i]
+            line1 = problem.get_sym_of_attr(tri[0:2], aType.LL)
+            line2 = problem.get_sym_of_attr(tri[1:3], aType.LL)
+            line3 = problem.get_sym_of_attr(tri[2] + tri[0], aType.LL)
+            premise = [problem.conditions.get_index(tri, cType.equilateral_triangle)]
+            update = problem.define_equation(line1 - line2, eType.basic, premise, 34) or update
+            update = problem.define_equation(line1 - line3, eType.basic, premise, 34) or update
+            update = problem.define_equation(line2 - line3, eType.basic, premise, 34) or update
+
+            i += rep.count_equilateral_triangle  # 3种表示
+
+        return update
 
     @staticmethod
     def theorem_35_equilateral_triangle_judgment_angle_equal(problem):
-        pass
+        """
+        等边三角形 判定
+        三个角相等为60°  ==>  等边三角形
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
+            premise = problem.conditions.get_index(tri, cType.triangle)
+            angle1 = problem.get_sym_of_attr(tri, aType.MA)
+            angle2 = problem.get_sym_of_attr(tri[1] + tri[2] + tri[0], aType.MA)
+            angle3 = problem.get_sym_of_attr(tri[2] + tri[0] + tri[1], aType.MA)
+            result, eq_premise = problem.solve_target(angle1 - angle2)
+            if result is not None and util.equal(result, 0):
+                premise += eq_premise
+            result, eq_premise = problem.solve_target(angle2 - angle3)
+            if result is not None and util.equal(result, 0):
+                premise += eq_premise
+                update = problem.define_equilateral_triangle(tri, list(set(premise)), 35) or update
+
+            i += rep.count_triangle  # 3种表示
+
+        return update
 
     @staticmethod
     def theorem_36_equilateral_triangle_judgment_side_equal(problem):
-        pass
+        """
+        等边三角形 判定
+        三个边相等  ==>  等边三角形
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.triangle]):
+            tri = problem.conditions.items[cType.triangle][i]
+            premise = problem.conditions.get_index(tri, cType.triangle)
+            line1 = problem.get_sym_of_attr(tri[0:2], aType.LL)
+            line2 = problem.get_sym_of_attr(tri[1:3], aType.LL)
+            line3 = problem.get_sym_of_attr(tri[2] + tri[0], aType.LL)
+            result, eq_premise = problem.solve_target(line1 - line2)
+            if result is not None and util.equal(result, 0):
+                premise += eq_premise
+            result, eq_premise = problem.solve_target(line2 - line3)
+            if result is not None and util.equal(result, 0):
+                premise += eq_premise
+                update = problem.define_equilateral_triangle(tri, list(set(premise)), 36) or update
+
+            i += rep.count_triangle  # 3种表示
+
+        return update
 
     @staticmethod
     def theorem_37_equilateral_triangle_judgment_isos_and_angle60(problem):
-        pass
+        """
+        等边三角形 判定
+        等腰、角60°  ==>  等边三角形
+        """
+        update = False
+        for tri in problem.conditions.items[cType.isosceles_triangle]:
+            premise = [problem.condition.get_index(tri, cType.triangle)]
+            angle1 = problem.get_sym_of_attr(tri, aType.MA)
+            angle2 = problem.get_sym_of_attr(tri[1] + tri[2] + tri[0], aType.MA)
+            angle3 = problem.get_sym_of_attr(tri[2] + tri[0] + tri[1], aType.MA)
+            result, eq_premise = problem.solve_target(angle1)
+            if result is not None and util.equal(result, 60):
+                premise += eq_premise
+                update = problem.define_equilateral_triangle(tri, premise, 35) or update
+                continue
+            result, eq_premise = problem.solve_target(angle2)
+            if result is not None and util.equal(result, 60):
+                premise += eq_premise
+                update = problem.define_equilateral_triangle(tri, premise, 35) or update
+                continue
+            result, eq_premise = problem.solve_target(angle3)
+            if result is not None and util.equal(result, 60):
+                premise += eq_premise
+                update = problem.define_equilateral_triangle(tri, premise, 35) or update
+
+        return update
 
     @staticmethod
     def theorem_38_intersect_property(problem):
@@ -660,7 +747,9 @@ class Theorem:
     def theorem_42_parallel_perpendicular_combination(problem):
         """
         平行、垂直的组合推导
-        AB ⊥ CD, CD // EF  ==>  AB ⊥ EF
+        AB // CD, CD // EF  ==>  AB // EF
+        AB // CD, CD ⊥ EF  ==>  AB ⊥ EF
+        AB ⊥ CD, CD ⊥ EF  ==>  AB // FE
         """
         pass
 
@@ -851,11 +940,34 @@ class Theorem:
 
     @staticmethod
     def theorem_53_neutrality_property_similar(problem):
-        pass
+        """
+        中位线 性质
+        中位线  ==>  两个三角形相似
+        """
+        update = False
+        for neutrality in problem.conditions.items[cType.neutrality]:
+            line, tri = neutrality
+            premise = [problem.conditions.get_index(neutrality, cType.neutrality)]
+            update = problem.define_similar((tri[0] + line, tri), premise, 53) or update
+        return update
 
     @staticmethod
     def theorem_54_neutrality_property_angle_equal(problem):
-        pass
+        """
+        中位线 性质
+        中位线  ==>  两组角相等
+        """
+        update = False
+        for neutrality in problem.conditions.items[cType.neutrality]:
+            line, tri = neutrality
+            angle11 = problem.get_sym_of_attr(tri[0] + line, aType.MA)
+            angle12 = problem.get_sym_of_attr(tri, aType.MA)
+            angle21 = problem.get_sym_of_attr(line + tri[0], aType.MA)
+            angle22 = problem.get_sym_of_attr(tri[1:3] + tri[0], aType.MA)
+            premise = [problem.conditions.get_index(neutrality, cType.neutrality)]
+            update = problem.define_equation(angle11 - angle12, eType.basic, premise, 54) or update
+            update = problem.define_equation(angle21 - angle22, eType.basic, premise, 54) or update
+        return update
 
     @staticmethod
     def theorem_55_neutrality_property_line_ratio(problem):
@@ -893,7 +1005,26 @@ class Theorem:
 
     @staticmethod
     def theorem_57_circumcenter_property_line_equal(problem):
-        pass
+        """
+        外心 性质
+        外心  ==>  到三角形三点距离相等
+        """
+        update = False
+        i = 0
+        while i < len(problem.conditions.items[cType.circumcenter]):
+            circumcenter = problem.conditions.items[cType.circumcenter][i]
+            point, tri = circumcenter
+            premise = [problem.conditions.get_index(circumcenter, cType.circumcenter)]
+            line1 = problem.get_sym_of_attr(point + tri[0], aType.LL)
+            line2 = problem.get_sym_of_attr(point + tri[1], aType.LL)
+            line3 = problem.get_sym_of_attr(point + tri[2], aType.LL)
+            update = problem.define_equation(line1 - line2, eType.basic, premise, 57) or update
+            update = problem.define_equation(line1 - line3, eType.basic, premise, 57) or update
+            update = problem.define_equation(line2 - line3, eType.basic, premise, 57) or update
+
+            i += rep.count_equilateral_triangle  # 3种表示
+
+        return update
 
     @staticmethod
     def theorem_58_circumcenter_property_intersect(problem):
