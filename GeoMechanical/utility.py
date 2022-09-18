@@ -19,6 +19,7 @@ class Representation:
     count_midpoint = count_line
     count_intersect = 4
     count_parallel = 2
+    count_disorder_parallel = 2
     count_perpendicular = count_intersect
     count_perpendicular_bisector = 2
     count_bisector = 1

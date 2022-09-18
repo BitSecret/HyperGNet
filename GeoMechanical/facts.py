@@ -76,55 +76,68 @@ class Condition:  # 条件
                             ConditionType.orthocenter, ConditionType.congruent, ConditionType.similar,
                             ConditionType.mirror_congruent, ConditionType.mirror_similar]
     equation = ConditionType.equation
+
     all = construction_list + entity_list + entity_relation_list + [ConditionType.equation]
 
     def __init__(self):
         self.count = 0  # 条件计数
-        self.items = {}  # 条件集  key:ConditionType  value:[]
-        self.item_list = []  # 按序号顺序存储条件
-        self.indexes = {}  # 每个条件的序号
-        self.premises = {}  # 推出条件需要的前提
-        self.theorems = {}  # 推出条件应用的定理
+        self.items = {}  # 条件集  key: cType  value:[item]
+        self.item_list = []  # 按序号顺序存储条件  [(item, cType)]
+        self.index = {}  # 条件序号映射  key: (item, cType)  value: index
+        self.premise = {}  # 条件的前提映射  key: (item, cType)  value: premise
+        self.theorem = {}  # 条件的定理映射  key: (item, cType)  value: theorem
 
         for entity in Condition.all:  # 初始化
             self.items[entity] = []
-            self.indexes[entity] = {}
-            self.premises[entity] = {}
-            self.theorems[entity] = {}
 
-    def add(self, item, condition_type, premise, theorem):
-        if item not in self.items[condition_type]:  # 如果是新条件，添加
-            self.items[condition_type].append(item)
-            self.item_list.append([item, condition_type])
-            self.indexes[condition_type][item] = self.count
-            self.premises[condition_type][item] = sorted(premise)
-            self.theorems[condition_type][item] = theorem
+    def add(self, item, cType, premise, theorem):
+        if item not in self.items[cType]:  # 如果是新条件，添加
+            self.items[cType].append(item)
+            self.item_list.append((item, cType))
+            self.index[(item, cType)] = self.count
+            self.premise[(item, cType)] = sorted(premise)
+            self.theorem[(item, cType)] = theorem
             self.count += 1  # 更新条件总数
             return True
         return False
 
-    def get_index(self, item, condition_type):
-        return self.indexes[condition_type][item]
+    def get_index(self, item, cType):
+        return self.index[(item, cType)]
 
-    def get_premise(self, item, condition_type):
-        return self.premises[condition_type][item]
+    def get_premise(self, item, cType):
+        return self.premise[(item, cType)]
 
-    def get_theorem(self, item, condition_type):
-        return self.theorems[condition_type][item]
+    def get_theorem(self, item, cType):
+        return self.theorem[(item, cType)]
+
+    def get_premise_by_index(self, index):
+        return self.premise[self.item_list[index]]
+
+    def get_theorem_by_index(self, index):
+        return self.theorem[self.item_list[index]]
 
     def clean(self):
         self.count = 0  # 条件计数
         self.items = {}  # 条件集  key:ConditionType  value:[]
         self.item_list = []  # 按序号顺序存储条件
-        self.indexes = {}  # 每个条件的序号
-        self.premises = {}  # 推出条件需要的前提
-        self.theorems = {}  # 推出条件应用的定理
+        self.index = {}  # 每个条件的序号
+        self.premise = {}  # 推出条件需要的前提
+        self.theorem = {}  # 推出条件应用的定理
 
         for entity in Condition.all:  # 初始化
             self.items[entity] = []
-            self.indexes[entity] = {}
-            self.premises[entity] = {}
-            self.theorems[entity] = {}
+
+
+class Target:
+
+    def __int__(self):
+        self.target_type = None  # 目标类型
+        self.target_solved = False  # 求解情况
+
+        self.target = None  # 求解目标
+        self.solved_answer = None  # 求解值
+        self.premise = None  # 求解值的前提
+        self.theorem = None  # 求解值的定理
 
 
 class FormalLanguage:
@@ -138,6 +151,7 @@ class FormalLanguage:
                                   "MirrorCongruent", "MirrorSimilar"]
     attribute_predicates = ["Length", "Measure", "Area", "Perimeter", "Altitude"]
     equation = "Equation"
+
     all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]
 
     def __init__(self, construction_fls, text_fls, image_fls, target_fls):

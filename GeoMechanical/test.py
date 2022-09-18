@@ -1,9 +1,11 @@
-from sympy import *
-import math
-import json
-from facts import ConditionType as cType
-test_define_file = "./test_data/test_define.json"
-test_problem_file = "./test_data/problem.json"
+# from sympy import *
+# import math
+# import json
+# from facts import ConditionType as cType
+# import string
+# from graphviz import Digraph
+# test_define_file = "./test_data/test_define.json"
+# test_problem_file = "./test_data/problem.json"
 
 
 # def solve_test():
@@ -156,88 +158,88 @@ test_problem_file = "./test_data/problem.json"
 # print(result)
 
 
-def test1():
-    print(180 * -1.12788528272126 / math.pi)
-    print(180 * 1.12788528272126 / math.pi)
-    print(180 * 2.01370737086854 / math.pi)
-    print(180 * 4.26947793631105 / math.pi)
-
-    print(4.26947793631105 - math.pi)
-
-    a = symbols("a", positive=True)
-    b = symbols("b", positive=True)
-    A = symbols("A", positive=True)
-    c = symbols("c", positive=True)
-    B = symbols("B", positive=True)
-    C = symbols("C", positive=True)
-    t_1 = symbols("t_1")
-
-    f1 = a - 9.89949493661167
-    f2 = b - 4.24264068711929
-    f3 = A - pi / 2
-    f4 = c ** 2 - a ** 2 + b ** 2
-    f5 = a / sin(A) - b / sin(B)
-    f6 = -c / sin(C) + b / sin(B)
-    f7 = -180 * C / pi + t_1
-
-    for result in solve([f7, f6, f5, f4, f3, f2, f1]):
-        print(result)
-
-    print()
-
-    for result in solve([f1, f2, f3, f4, f5, f6, f7]):
-        print(result)
-
-
-def test2():
-    ll_rt = symbols("ll_rt", positive=True)
-    ll_ts = symbols("ll_ts", positive=True)
-    da_rst = symbols("da_rst", positive=True)
-    ll_rs = symbols("ll_rs", positive=True)
-    da_srt = symbols("da_srt", positive=True)
-    da_rts = symbols("da_rts", positive=True)
-    t_1 = symbols("t_1")
-
-    f1 = ll_rt - 9.89949493661167
-    f2 = ll_ts - 4.24264068711929
-    f3 = da_rst - pi / 2
-    f4 = ll_rs ** 2 - ll_rt ** 2 + ll_ts ** 2
-    f5 = ll_rt / sin(da_rst) - ll_ts / sin(da_srt)
-    f6 = -ll_rs / sin(da_rts) + ll_ts / sin(da_srt)
-    f7 = -180 * da_rts / pi + t_1
-
-    for result in solve([f7, f6, f5, f4, f3, f2, f1]):
-        print(result)
-
-    print()
-
-    for result in solve([f1, f2, f3, f4, f5, f6, f7]):
-        print(result)
+# def test1():
+#     print(180 * -1.12788528272126 / math.pi)
+#     print(180 * 1.12788528272126 / math.pi)
+#     print(180 * 2.01370737086854 / math.pi)
+#     print(180 * 4.26947793631105 / math.pi)
+#
+#     print(4.26947793631105 - math.pi)
+#
+#     a = symbols("a", positive=True)
+#     b = symbols("b", positive=True)
+#     A = symbols("A", positive=True)
+#     c = symbols("c", positive=True)
+#     B = symbols("B", positive=True)
+#     C = symbols("C", positive=True)
+#     t_1 = symbols("t_1")
+#
+#     f1 = a - 9.89949493661167
+#     f2 = b - 4.24264068711929
+#     f3 = A - pi / 2
+#     f4 = c ** 2 - a ** 2 + b ** 2
+#     f5 = a / sin(A) - b / sin(B)
+#     f6 = -c / sin(C) + b / sin(B)
+#     f7 = -180 * C / pi + t_1
+#
+#     for result in solve([f7, f6, f5, f4, f3, f2, f1]):
+#         print(result)
+#
+#     print()
+#
+#     for result in solve([f1, f2, f3, f4, f5, f6, f7]):
+#         print(result)
 
 
-def test3():
-    # 怎么起名字，还得斟酌一下，tm的...
-    ll_rt = symbols("ll_rt", positive=True)    # 换成a就可以求解，为什么？？
-    ll_ts = symbols("ll_ts", positive=True)
-    da_rst = symbols("da_rst", positive=True)
-    ll_rs = symbols("ll_rs", positive=True)
-    da_srt = symbols("da_srt", positive=True)
-    da_rts = symbols("da_rts", positive=True)
-    t_1 = symbols("t_1")
+# def test2():
+#     ll_rt = symbols("ll_rt", positive=True)
+#     ll_ts = symbols("ll_ts", positive=True)
+#     da_rst = symbols("da_rst", positive=True)
+#     ll_rs = symbols("ll_rs", positive=True)
+#     da_srt = symbols("da_srt", positive=True)
+#     da_rts = symbols("da_rts", positive=True)
+#     t_1 = symbols("t_1")
+#
+#     f1 = ll_rt - 9.89949493661167
+#     f2 = ll_ts - 4.24264068711929
+#     f3 = da_rst - pi / 2
+#     f4 = ll_rs ** 2 - ll_rt ** 2 + ll_ts ** 2
+#     f5 = ll_rt / sin(da_rst) - ll_ts / sin(da_srt)
+#     f6 = -ll_rs / sin(da_rts) + ll_ts / sin(da_srt)
+#     f7 = -180 * da_rts / pi + t_1
+#
+#     for result in solve([f7, f6, f5, f4, f3, f2, f1]):
+#         print(result)
+#
+#     print()
+#
+#     for result in solve([f1, f2, f3, f4, f5, f6, f7]):
+#         print(result)
 
-    f1 = ll_rt - 9.89949493661167
-    f2 = ll_ts - 4.24264068711929
-    f3 = da_rst - pi / 2
-    f4 = ll_rs ** 2 - ll_rt ** 2 + ll_ts ** 2
-    f5 = ll_rt / sin(da_rst) - ll_ts / sin(da_srt)
-    f6 = -ll_rs / sin(da_rts) + ll_ts / sin(da_srt)
-    f7 = -180 * da_rts / pi + t_1
 
-    for result in solve([f7, f6, f5, f4, f3, f2, f1]):
-        print(result)
-
-    for i in [f7, f6, f5, f4, f3, f2, f1]:
-        print(i)
+# def test3():
+#     # 怎么起名字，还得斟酌一下，tm的...
+#     ll_rt = symbols("ll_rt", positive=True)    # 换成a就可以求解，为什么？？
+#     ll_ts = symbols("ll_ts", positive=True)
+#     da_rst = symbols("da_rst", positive=True)
+#     ll_rs = symbols("ll_rs", positive=True)
+#     da_srt = symbols("da_srt", positive=True)
+#     da_rts = symbols("da_rts", positive=True)
+#     t_1 = symbols("t_1")
+#
+#     f1 = ll_rt - 9.89949493661167
+#     f2 = ll_ts - 4.24264068711929
+#     f3 = da_rst - pi / 2
+#     f4 = ll_rs ** 2 - ll_rt ** 2 + ll_ts ** 2
+#     f5 = ll_rt / sin(da_rst) - ll_ts / sin(da_srt)
+#     f6 = -ll_rs / sin(da_rts) + ll_ts / sin(da_srt)
+#     f7 = -180 * da_rts / pi + t_1
+#
+#     for result in solve([f7, f6, f5, f4, f3, f2, f1]):
+#         print(result)
+#
+#     for i in [f7, f6, f5, f4, f3, f2, f1]:
+#         print(i)
 
 
 # test3()
@@ -336,6 +338,32 @@ def test3():
 # print(solve([f1, f2, f3, f4, f5, f6, f7, f11]))    # 去掉f6 7 就可以求出结果
 
 
-a = ["a", "b", "c"]
+# a = ["a", "b", "c"]
+#
+# print(a.index("b"))
 
-print(a.index("b"))
+# dot = Digraph()
+# print(dot)
+# dot.node("1", "one")
+# dot.node("2", "two")
+# dot.node("3", "three")
+# dot.node("4", "fore")
+# dot.edge("1", ["2", "3"], "test7")
+# dot.edge("1", "4", "test7")
+# dot.edge("3", "4", "test8")
+# dot.view()
+
+# import graphviz
+#
+#
+# g = graphviz.Digraph(name=str(1), format="png")
+#
+# # red, green, blue = 64, 224, 208
+# # assert f'#{red:x}{green:x}{blue:x}' == '#40e0d0'
+#
+# g.node('a', 'a', style='filled', fillcolor='red')
+#
+# g.node('b', 'b', style='filled', fillcolor='green')
+# g.edge('a', 'b')
+#
+# g.render(directory="./solution_tree/", view=True)

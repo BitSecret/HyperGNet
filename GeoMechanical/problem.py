@@ -5,6 +5,7 @@ from facts import EquationType as eType
 from facts import ConditionType as cType
 from facts import Condition
 from facts import FormalLanguage
+from visualize import SolutionTree
 from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
 
@@ -24,11 +25,7 @@ class ProblemLogic:
 
         """----------Target----------"""
         self.target_count = 0  # 目标个数
-        self.target_type = []  # 解题目标的类型
-        self.target = []  # 解题目标
-        self.target_solved = []  # 条件求解情况
-        self.answer = []  # 答案
-        self.premise = []  # 前提条件集合
+        self.targets = []  # 解题目标
 
     """------------Construction------------"""
 
@@ -476,10 +473,14 @@ class Problem(ProblemLogic):
 
     def __init__(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
         super().__init__()
+        """------------题目输入------------"""
         self.problem_index = problem_index
         self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
+
+        """------------辅助功能------------"""
+        self.s_tree = SolutionTree(self)  # 前提条件集合
         self.solve_time_list = []
 
     """------------构造图形------------"""
@@ -731,10 +732,14 @@ class Problem(ProblemLogic):
     """------------辅助功能------------"""
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
+        """-------------------题目输入-------------------"""
         self.problem_index = problem_index
         self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
+
+        """-------------------辅助功能-------------------"""
+        self.s_tree = SolutionTree(self)  # 前提条件集合
         self.solve_time_list = []
 
         """------Entity, Entity Relation, Equation------"""
@@ -749,26 +754,7 @@ class Problem(ProblemLogic):
 
         """----------Target----------"""
         self.target_count = 0  # 目标个数
-        self.target_type = []  # 解题目标的类型
-        self.target = []  # 解题目标
-        self.target_solved = []  # 条件求解情况
-        self.premise = []  # 前提条件集合
-
-    def get_premise(self):  # 从结果往前遍历，找到所有所需条件
-        for i in range(self.target_count):  # 所有解题目标需要的条件
-            if self.target[i][2] is not None:
-                self.premise += self.target[i][2]
-        self.premise = list(set(self.premise))  # 快速去重
-
-        while True:  # 向上遍历，寻找添加其他条件
-            length = len(self.premise)
-            for index in self.premise:
-                if index != -1:
-                    item = self.conditions.item_list[index]
-                    self.premise = self.premise + self.conditions.get_premise(item[0], item[1])
-            self.premise = list(set(self.premise))  # 快速去重
-            if len(self.premise) == length:  # 如果没有更新，结束循环
-                break
+        self.targets = []  # 解题目标
 
     def anti_generate_fl_using_logic(self):
         """---------construction---------"""
@@ -837,6 +823,11 @@ class Problem(ProblemLogic):
             self.fl.add(("Parallel", item[0], item[1]))
             i = i + rep.count_parallel
         i = 0
+        while i < len(self.conditions.items[cType.disorder_parallel]):
+            item = self.conditions.items[cType.disorder_parallel][i]
+            self.fl.add(("DisorderParallel", item[0], item[1]))
+            i = i + rep.count_disorder_parallel
+        i = 0
         while i < len(self.conditions.items[cType.perpendicular]):
             item = self.conditions.items[cType.perpendicular][i]
             self.fl.add(("Perpendicular", item[0], item[1], item[2]))
@@ -896,24 +887,35 @@ class Problem(ProblemLogic):
             item = self.conditions.items[cType.similar][i]
             self.fl.add(("Similar", item[0], item[1]))
             i = i + rep.count_similar
+        i = 0
+        while i < len(self.conditions.items[cType.mirror_congruent]):
+            item = self.conditions.items[cType.mirror_congruent][i]
+            self.fl.add(("MirrorCongruent", item[0], item[1]))
+            i = i + rep.count_mirror_congruent
+        i = 0
+        while i < len(self.conditions.items[cType.mirror_similar]):
+            item = self.conditions.items[cType.mirror_similar][i]
+            self.fl.add(("MirrorSimilar", item[0], item[1]))
+            i = i + rep.count_mirror_similar
 
         """---------attribute---------"""
         processed = []
         for key in self.sym_of_attr.keys():
             sym = self.sym_of_attr[key]
             if self.value_of_sym[sym] is not None and sym not in processed:
-                if key[0] is aType.LL:
-                    self.fl.add(("Length", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
-                elif key[0] is aType.MA:
-                    self.fl.add(("Measure", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
-                elif key[0] is aType.AS:
-                    self.fl.add(("Area", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
-                elif key[0] is aType.PT:
-                    self.fl.add(("Perimeter", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
-                elif key[0] is aType.AT:
-                    self.fl.add(("Altitude", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
-                elif key[0] is aType.F:
-                    self.fl.add(("Free", key[1], "{:.3f}".format(float(self.value_of_sym[sym]))))
+                entity, a_type = key
+                if a_type is aType.LL:
+                    self.fl.add(("Length", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif a_type is aType.MA:
+                    self.fl.add(("Measure", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif a_type is aType.AS:
+                    self.fl.add(("Area", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif a_type is aType.PT:
+                    self.fl.add(("Perimeter", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif a_type is aType.AT:
+                    self.fl.add(("Altitude", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
+                elif a_type is aType.F:
+                    self.fl.add(("Free", entity, "{:.3f}".format(float(self.value_of_sym[sym]))))
                 processed.append(sym)
 
         """---------equation---------"""
@@ -922,6 +924,67 @@ class Problem(ProblemLogic):
                 self.fl.add(("Equation", equation))
 
         self.fl.step()  # step
+
+    def anti_generate_one_fl_by_index(self, index):
+        item, c_type = self.conditions.item_list[index]
+        if c_type is cType.equation:
+            return "Equation({})".format(str(item))
+        elif c_type is cType.shape:
+            return "Shape({})".format(item)
+        elif c_type is cType.collinear:
+            return "Collinear({})".format(item)
+        elif c_type is cType.point:
+            return "Point({})".format(item)
+        elif c_type is cType.line:
+            return "Line({})".format(item)
+        elif c_type is cType.angle:
+            return "Angle({})".format(item)
+        elif c_type is cType.triangle:
+            return "Triangle({})".format(item)
+        elif c_type is cType.right_triangle:
+            return "RightTriangle({})".format(item)
+        elif c_type is cType.isosceles_triangle:
+            return "IsoscelesTriangle({})".format(item)
+        elif c_type is cType.equilateral_triangle:
+            return "EquilateralTriangle({})".format(item)
+        elif c_type is cType.polygon:
+            return "Polygon({})".format(item)
+        elif c_type is cType.midpoint:
+            return "MidPoint(Point({}),Line({}))".format(item[0], item[1])
+        elif c_type is cType.intersect:
+            return "Intersect(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+        elif c_type is cType.parallel:
+            return "Parallel(Line({}),Line({}))".format(item[0], item[1])
+        elif c_type is cType.disorder_parallel:
+            return "DisorderParallel(Line({}),Line({}))".format(item[0], item[1])
+        elif c_type is cType.perpendicular:
+            return "Perpendicular(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+        elif c_type is cType.perpendicular_bisector:
+            return "PerpendicularBisector(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+        elif c_type is cType.bisector:
+            return "Bisector(Line({}),Angle({}))".format(item[0], item[1])
+        elif c_type is cType.median:
+            return "Median(Line({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.is_altitude:
+            return "IsAltitude(Line({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.neutrality:
+            return "Neutrality(Line({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.circumcenter:
+            return "Circumcenter(Point({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.incenter:
+            return "Incenter(Point({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.centroid:
+            return "Centroid(Point({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.orthocenter:
+            return "Orthocenter(Point({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.congruent:
+            return "Congruent(Triangle({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.similar:
+            return "Similar(Triangle({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.mirror_congruent:
+            return "MirrorCongruent(Triangle({}),Triangle({}))".format(item[0], item[1])
+        elif c_type is cType.mirror_similar:
+            return "MirrorSimilar(Triangle({}),Triangle({}))".format(item[0], item[1])
 
     def show(self):
         # Formal Language
@@ -948,7 +1011,7 @@ class Problem(ProblemLogic):
             print("step: {}".format(self.fl.reasoning_fls_steps[i]), end="  ")
             print(self.fl.reasoning_fls[i])
 
-        self.get_premise()  # 生成条件树
+        self.s_tree.generate_tree_for_human()    # 生成求解树
 
         # Logic-Construction
         print("\033[33mConstruction:\033[0m")
@@ -956,7 +1019,7 @@ class Problem(ProblemLogic):
             if len(self.conditions.items[entity]) > 0:
                 print("{}:".format(entity.name))
                 for item in self.conditions.items[entity]:
-                    if self.conditions.get_index(item, entity) not in self.premise:
+                    if self.conditions.get_index(item, entity) not in self.s_tree.used:
                         print_str = "{0:^6}{1:^15}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^15}{2:^25}{3:^6}\033[0m"
@@ -971,7 +1034,7 @@ class Problem(ProblemLogic):
             if len(self.conditions.items[entity]) > 0:
                 print("{}:".format(entity.name))
                 for item in self.conditions.items[entity]:
-                    if self.conditions.get_index(item, entity) not in self.premise:
+                    if self.conditions.get_index(item, entity) not in self.s_tree.used:
                         print_str = "{0:^6}{1:^15}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^15}{2:^25}{3:^6}\033[0m"
@@ -985,7 +1048,7 @@ class Problem(ProblemLogic):
             if len(self.conditions.items[entity_relation]) > 0:
                 print("{}:".format(entity_relation.name))
                 for item in self.conditions.items[entity_relation]:
-                    if self.conditions.get_index(item, entity_relation) not in self.premise:
+                    if self.conditions.get_index(item, entity_relation) not in self.s_tree.used:
                         print_str = "{0:^6}{1:^25}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^25}{2:^25}{3:^6}\033[0m"
@@ -1009,7 +1072,7 @@ class Problem(ProblemLogic):
         if len(self.conditions.items[Condition.equation]) > 0:
             print("{}:".format(Condition.equation.name))
             for item in self.conditions.items[Condition.equation]:
-                if self.conditions.get_index(item, Condition.equation) not in self.premise:
+                if self.conditions.get_index(item, Condition.equation) not in self.s_tree.used:
                     print_str = "{0:^6}{1:^70}{2:^25}{3:>6}"
                 else:
                     print_str = "\033[35m{0:^6}{1:^70}{2:^25}{3:>6}\033[0m"
@@ -1027,27 +1090,38 @@ class Problem(ProblemLogic):
         # target and answer
         print("\033[34mTarget Count:\033[0m {}".format(self.target_count))
         for i in range(self.target_count):
-            print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])), end="  ")
+            target = self.targets[i]
+            print("\033[34m{}:\033[0m".format(target.target_type.name), end="  ")
+            print(target.target, end="  ")
+            print(target.solved_answer, end="  ")
+            print(target.premise, end="  ")
+            print(target.theorem, end="  ")
             print("\033[34mcorrect answer:\033[0m {}".format(self.answer[i]), end="  ")
-            if self.target_solved[i] == "solved":
-                print("\033[32m{}\033[0m".format(self.target_solved[i]))
+            if target.target_solved:
+                print("\033[32msolved\033[0m")
             else:
-                print("\033[31m{}\033[0m".format(self.target_solved[i]))
+                print("\033[31munsolved\033[0m")
 
         # 求解时间
         for solve_time in self.solve_time_list:
             print(solve_time)
 
         print()
+        self.s_tree.show_tree()
 
     def simpel_show(self):
         print("\033[36mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
 
-        for i in range(0, self.target_count):
-            print("\033[34m{}:\033[0m {}".format(self.target_type[i].name, str(self.target[i])), end="  ")
+        for i in range(self.target_count):
+            target = self.targets[i]
+            print("\033[34m{}:\033[0m".format(target.target_type.name), end="  ")
+            print(target.target, end="  ")
+            print(target.solved_answer, end="  ")
+            print(target.premise, end="  ")
+            print(target.theorem, end="  ")
             print("\033[34mcorrect answer:\033[0m {}".format(self.answer[i]), end="  ")
-            if self.target_solved[i] == "solved":
-                print("\033[32m{}\033[0m".format(self.target_solved[i]))
+            if target.target_solved:
+                print("\033[32msolved\033[0m")
             else:
-                print("\033[31m{}\033[0m".format(self.target_solved[i]))
+                print("\033[31munsolved\033[0m")
