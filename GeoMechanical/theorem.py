@@ -2165,8 +2165,9 @@ theorem_map = {
 
 
 theorem_name_map = {
-    -3: "solve_eq",
-    -2: "extend",
+    -3: "-3_solve_eq",
+    -2: "-2_extend",
+    -1: "-1_default",
     1: "1_area_addition",
     2: "2_line_addition",
     3: "3_angle_addition",

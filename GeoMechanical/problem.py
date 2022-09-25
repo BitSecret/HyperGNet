@@ -480,7 +480,7 @@ class Problem(ProblemLogic):
         self.answer = answer
 
         """------------辅助功能------------"""
-        self.s_tree = SolutionTree(self)  # 前提条件集合
+        self.s_tree = SolutionTree()  # 前提条件集合
         self.solve_time_list = []
 
     """------------构造图形------------"""
@@ -739,7 +739,7 @@ class Problem(ProblemLogic):
         self.answer = answer
 
         """-------------------辅助功能-------------------"""
-        self.s_tree = SolutionTree(self)  # 前提条件集合
+        self.s_tree = SolutionTree()  # 前提条件集合
         self.solve_time_list = []
 
         """------Entity, Entity Relation, Equation------"""
@@ -1007,11 +1007,11 @@ class Problem(ProblemLogic):
             print(theorem, end=" ")
         print()
         print("\033[36mreasoning_fls:\033[0m")
-        for i in range(len(self.fl.reasoning_fls)):
-            print("step: {}".format(self.fl.reasoning_fls_steps[i]), end="  ")
-            print(self.fl.reasoning_fls[i])
+        for fl in self.fl.reasoning_fls:
+            print("step: {}".format(self.fl.reasoning_fls_step[fl]), end="  ")
+            print(fl)
 
-        self.s_tree.generate_tree_for_human()    # 生成求解树
+        self.s_tree.generate_tree(self)    # 生成求解树
 
         # Logic-Construction
         print("\033[33mConstruction:\033[0m")

@@ -161,13 +161,13 @@ class FormalLanguage:
         self.target_fls = target_fls
 
         self.reasoning_fls = []
-        self.reasoning_fls_steps = []
+        self.reasoning_fls_step = {}
         self.step_count = 0
 
     def add(self, fl):
         if fl not in self.reasoning_fls:
             self.reasoning_fls.append(fl)
-            self.reasoning_fls_steps.append(self.step_count)
+            self.reasoning_fls_step[fl] = self.step_count
 
     def step(self):
         self.step_count += 1

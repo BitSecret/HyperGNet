@@ -367,3 +367,6 @@
 # g.edge('a', 'b')
 #
 # g.render(directory="./solution_tree/", view=True)
+#
+# print("A" < "B")
+# print("a" < "b")

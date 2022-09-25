@@ -6,6 +6,7 @@ import time
 geo3k_trans_data = "../data/geo3k_trans_data/trans.json"
 template_data = "../data/generated_data/temp.json"
 generated_data = "../data/generated_data/gen.json"
+theorem_test_data = "../data/theorem_test_data/theo.json"
 
 
 def mode_0(solver):
@@ -85,6 +86,24 @@ def mode_3(solver):
         solver.problem.simpel_show()
 
 
+def mode_4(solver):
+    while True:
+        try:
+            problem_index = input("problem id:")
+            if problem_index == "-1":
+                break
+            problem = json.load(open(theorem_test_data, "r", encoding="utf-8"))[problem_index]
+            solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
+                               problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
+                               problem["problem_answer"])
+            solver.solve()
+            solver.problem.show()
+        except Exception:  # 一般报错
+            traceback.print_exc()
+        except FunctionTimedOut as e:  # 超时报错
+            print("求解方程组超时！")
+
+
 def main():
     solver = Solver()
     mode = int(input("mode:"))
@@ -96,6 +115,8 @@ def main():
         mode_2(solver)
     elif mode == 3:  # gen
         mode_3(solver)
+    elif mode == 4:  # theorem test
+        mode_4(solver)
     else:
         print("mode selection error.")
 

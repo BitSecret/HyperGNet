@@ -95,6 +95,35 @@ class Representation:
             results.append((s2, s1))
         return results
 
+    @staticmethod
+    def reorder_shape(entity):
+        shapes = Representation.shape(entity)
+        i = 0
+        for j in range(len(shapes)):
+            if shapes[i][0] < shapes[j][0]:
+                i = j
+        return shapes[i]
+
+    @staticmethod
+    def reorder_shape(entity):
+        pass
+
+    @staticmethod
+    def reorder_shape(entity):
+        pass
+
+    @staticmethod
+    def reorder_shape(entity):
+        pass
+
+    @staticmethod
+    def reorder_shape(entity):
+        pass
+
+    @staticmethod
+    def reorder_shape(entity):
+        pass
+
 
 class PreParse:
     # 解析formal language的idt: idt_fl
