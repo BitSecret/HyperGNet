@@ -5,7 +5,7 @@
 		"source": "Geometry3k-0",
 		"problem_level": 3,
 		"problem_text_cn": "如图所示，△RST与△XYZ全等，求y。",
-		"problem_text_en": "triangle RST and triangle XYZ are congruent, find y.",
+		"problem_text_en": "Triangle RST and triangle XYZ are congruent, find y.",
 		"problem_img": "0_g3k-0.png",
 		"problem_answer": [
 			"15",
@@ -78,7 +78,7 @@
 		"source": "Geometry3k-5",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the triangle ABD. Round to the nearest tenth if necessary.",
+		"problem_text_en": "Find the perimeter of the triangle ACD.",
 		"problem_img": "2_g3k-5.png",
 		"problem_answer": [
 			"80"
@@ -110,7 +110,7 @@
 		"source": "Geometry3k-6",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle BAC to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle BAC.",
 		"problem_img": "3_g3k-6.png",
 		"problem_answer": [
 			"64.623"
@@ -168,7 +168,7 @@
 		"source": "Geometry3k-10",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 4.",
+		"problem_text_en": "Find the measure of angle FEK.",
 		"problem_img": "5_g3k-10.png",
 		"problem_answer": [
 			"55"
@@ -234,7 +234,7 @@
 		"source": "Geometry3k-19",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\sin x.",
+		"problem_text_en": "Find sin(x).",
 		"problem_img": "7_g3k-19.png",
 		"problem_answer": [
 			"2*{2^0.5}/5"
@@ -273,7 +273,7 @@
 		"source": "Geometry3k-23",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find R S.",
+		"problem_text_en": "Find the length of line FEK.",
 		"problem_img": "8_g3k-23.png",
 		"problem_answer": [
 			"31"
@@ -364,7 +364,7 @@
 		"source": "Geometry3k-29",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x. Round to the nearest Measure.",
+		"problem_text_en": "Find x.",
 		"problem_img": "11_g3k-29.png",
 		"problem_answer": [
 			"28.031"
@@ -456,7 +456,7 @@
 		"source": "Geometry3k-41",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle M N P.",
+		"problem_text_en": "Find the measure of Angle MNP.",
 		"problem_img": "14_g3k-41.png",
 		"problem_answer": [
 			"130"
@@ -487,7 +487,7 @@
 		"source": "Geometry3k-42",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x so that G J \\parallel F K. G F = 12, H G = 6, H J = 8, J K = x - 4.",
+		"problem_text_en": "Line GJ is parallel to line FK, GF=12, HG=6, HJ=8, JK=x-4, find x.",
 		"problem_img": "15_g3k-42.png",
 		"problem_answer": [
 			"20"
@@ -551,7 +551,7 @@
 		"source": "Geometry3k-50",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle D E F if \\triangle D E F \\sim \\triangle G F H.",
+		"problem_text_en": "Find the perimeter of triangle DEF if triangle DEF similar to triangle GFH.",
 		"problem_img": "17_g3k-50.png",
 		"problem_answer": [
 			"12.75"
@@ -587,7 +587,7 @@
 		"source": "Geometry3k-52",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 1 if m \\angle D G F = 53 and m \\angle A G C = 40.",
+		"problem_text_en": "Find the measure of angle FDG if DGF=53 and AGC=40.",
 		"problem_img": "18_g3k-52.png",
 		"problem_answer": [
 			"37"
@@ -653,7 +653,7 @@
 		"source": "Geometry3k-56",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\triangle A E C. Find m \\angle D A C.",
+		"problem_text_en": "P is the incenter of triangle AEC. Find the measure of angle CAD.",
 		"problem_img": "20_g3k-56.png",
 		"problem_answer": [
 			"33"
@@ -825,7 +825,7 @@
 		"source": "Geometry3k-68",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle A C B, if \\triangle A C B \\sim \\triangle C D B, A D = 5, C D = 12, and B C = 31.2.",
+		"problem_text_en": "Find the perimeter of the triangle ACB, if triangle ACB is similar to triangle CDB, AD=5, CD=12, and BC=31.2.",
 		"problem_img": "25_g3k-68.png",
 		"problem_answer": [
 			"78"
@@ -861,7 +861,7 @@
 		"source": "Geometry3k-69",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle FDG.",
+		"problem_text_en": "Find the measure of angle FDG.",
 		"problem_img": "26_g3k-69.png",
 		"problem_answer": [
 			"25"
@@ -890,7 +890,7 @@
 		"source": "Geometry3k-71",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle E F G is equilateral, and E H bisects \\triangle EFG. Find x.",
+		"problem_text_en": "Triangle EFG is equilateral, and EH bisects triangle EFG. Find x.",
 		"problem_img": "27_g3k-71.png",
 		"problem_answer": [
 			"6"
@@ -922,7 +922,7 @@
 		"source": "Geometry3k-73",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find y in \\triangle RPQ.",
+		"problem_text_en": "Find y.",
 		"problem_img": "28_g3k-73.png",
 		"problem_answer": [
 			"2*{3^0.5}"
@@ -958,7 +958,7 @@
 		"source": "Geometry3k-76",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the area of the triangle.",
+		"problem_text_en": "Find the area of the triangle ABC.",
 		"problem_img": "29_g3k-76.png",
 		"problem_answer": [
 			"129.9"
@@ -1060,7 +1060,7 @@
 		"source": "Geometry3k-91",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find B D.",
+		"problem_text_en": "Find the length of line BD.",
 		"problem_img": "32_g3k-91.png",
 		"problem_answer": [
 			"1.8"
@@ -1097,7 +1097,7 @@
 		"source": "Geometry3k-92",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "m is the perpendicular bisector of X Z, W Z = 4 a - 15 and W Z = a + 12. Find W X.",
+		"problem_text_en": "Line WY is the perpendicular bisector of line ZX, WZ=4a-15 and WZ=a+12. Find the length of line WX.",
 		"problem_img": "33_g3k-92.png",
 		"problem_answer": [
 			"21"
@@ -1128,7 +1128,7 @@
 		"source": "Geometry3k-100",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle R.",
+		"problem_text_en": "Find the measure of angle QRP.",
 		"problem_img": "34_g3k-100.png",
 		"problem_answer": [
 			"70.851"
@@ -1192,7 +1192,7 @@
 		"source": "Geometry3k-103",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find measure of \\angle LKJ.",
+		"problem_text_en": "Find measure of angle LKJ.",
 		"problem_img": "36_g3k-103.png",
 		"problem_answer": [
 			"31"
@@ -1222,7 +1222,7 @@
 		"source": "Geometry3k-104",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If b = 18, find c.",
+		"problem_text_en": "If b=18, find c.",
 		"problem_img": "37_g3k-104.png",
 		"problem_answer": [
 			"12*{3^0.5}"
@@ -1285,7 +1285,7 @@
 		"source": "Geometry3k-106",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A C E, P is the centroid. P F = 6 and A D = 15. Find P C.",
+		"problem_text_en": "In triangle ACE, P is the centroid. PF=6 and AD=15. Find the length of line PC.",
 		"problem_img": "39_g3k-106.png",
 		"problem_answer": [
 			"12"
@@ -1322,7 +1322,7 @@
 		"source": "Geometry3k-109",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "A plane travels from Des Moines to Phoenix, on to Atlanta, and back to Des Moines, as shown below. Find the distance in miles from Des Moines to Phoenix if the total trip was 3482 miles.",
+		"problem_text_en": "Find the length of line CB.",
 		"problem_img": "40_g3k-109.png",
 		"problem_answer": [
 			"1153"
@@ -1382,7 +1382,7 @@
 		"source": "Geometry3k-113",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle EAG.",
+		"problem_text_en": "Find the measure of angle EAG.",
 		"problem_img": "42_g3k-113.png",
 		"problem_answer": [
 			"52"
@@ -1418,7 +1418,7 @@
 		"source": "Geometry3k-116",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x. Round side measure to the nearest tenth.",
+		"problem_text_en": "Find x.",
 		"problem_img": "43_g3k-116.png",
 		"problem_answer": [
 			"4.131"
@@ -1446,7 +1446,7 @@
 		"source": "Geometry3k-119",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\cos CAD.",
+		"problem_text_en": "Find cos(CAD).",
 		"problem_img": "44_g3k-119.png",
 		"problem_answer": [
 			"5*{26^0.5}/26"
@@ -1482,7 +1482,7 @@
 		"source": "Geometry3k-121",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the length of X Y.",
+		"problem_text_en": "Find the length of line XY.",
 		"problem_img": "45_g3k-121.png",
 		"problem_answer": [
 			"9"
@@ -1509,7 +1509,7 @@
 		"source": "Geometry3k-122",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S T \\cong \\triangle V U T. Find x.",
+		"problem_text_en": "Triangle RST is congruent to triangle VUT. Find x.",
 		"problem_img": "46_g3k-122.png",
 		"problem_answer": [
 			"2"
@@ -1541,7 +1541,7 @@
 		"source": "Geometry3k-125",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle B.",
+		"problem_text_en": "Find the measure of angle CBA.",
 		"problem_img": "47_g3k-125.png",
 		"problem_answer": [
 			"92"
@@ -1569,7 +1569,7 @@
 		"source": "Geometry3k-128",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "According to the Perpendicular Bisector Theorem, what is the length of segment A B below?",
+		"problem_text_en": "Find the length of line AB.",
 		"problem_img": "48_g3k-128.png",
 		"problem_answer": [
 			"2.5"
@@ -1599,7 +1599,7 @@
 		"source": "Geometry3k-131",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\cos S.",
+		"problem_text_en": "find cos(TSR).",
 		"problem_img": "49_g3k-131.png",
 		"problem_answer": [
 			"0.8"
@@ -1627,7 +1627,7 @@
 		"source": "Geometry3k-138",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If b = 3, find c.",
+		"problem_text_en": "If b=3, find c.",
 		"problem_img": "50_g3k-138.png",
 		"problem_answer": [
 			"2*{3^0.5}"
@@ -1689,7 +1689,7 @@
 		"source": "Geometry3k-142",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find J K.",
+		"problem_text_en": "Find the length of line JK.",
 		"problem_img": "52_g3k-142.png",
 		"problem_answer": [
 			"12"
@@ -1770,7 +1770,7 @@
 		"source": "Geometry3k-147",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\tan ABC.",
+		"problem_text_en": "If a=14, b=48, and c=50, find tan(ABC).",
 		"problem_img": "55_g3k-147.png",
 		"problem_answer": [
 			"3.429"
@@ -1802,7 +1802,7 @@
 		"source": "Geometry3k-149",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle LNM.",
+		"problem_text_en": "Find the measure of angle LNM.",
 		"problem_img": "56_g3k-149.png",
 		"problem_answer": [
 			"59"
@@ -1832,7 +1832,7 @@
 		"source": "Geometry3k-150",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\sin SRT.",
+		"problem_text_en": "find sin(SRT).",
 		"problem_img": "57_g3k-150.png",
 		"problem_answer": [
 			"0.8"
@@ -1889,7 +1889,7 @@
 		"source": "Geometry3k-165",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find J M.",
+		"problem_text_en": "Find the length of line JM.",
 		"problem_img": "59_g3k-165.png",
 		"problem_answer": [
 			"5.5"
@@ -1921,7 +1921,7 @@
 		"source": "Geometry3k-166",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C is isosceles, \\triangle D C E is equilateral, and \\triangle F C G is isosceles. Find the measure of the \\angle 3 at vertex C.",
+		"problem_text_en": "Triangle CAB is isosceles, triangle CDE is equilateral, and triangle CFG is isosceles. Find the measure of the angle GCF.",
 		"problem_img": "60_g3k-166.png",
 		"problem_answer": [
 			"26"
@@ -1957,7 +1957,7 @@
 		"source": "Geometry3k-169",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find h in the triangle.",
+		"problem_text_en": "Find h.",
 		"problem_img": "61_g3k-169.png",
 		"problem_answer": [
 			"15*{2^0.5}/2"
@@ -2017,7 +2017,7 @@
 		"source": "Geometry3k-173",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle K L N and \\triangle L M N are isosceles and m \\angle J K N = 130. Find the measure of \\angle M.",
+		"problem_text_en": "Triangle LNK and triangle MNL are isosceles and NKJ=130. Find the measure of angle LMN.",
 		"problem_img": "63_g3k-173.png",
 		"problem_answer": [
 			"140"
@@ -2053,7 +2053,7 @@
 		"source": "Geometry3k-178",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C is isosceles, \\triangle D C E is equilateral, and \\triangle F C G is isosceles. Find the measure of the \\angle 2 at vertex C.",
+		"problem_text_en": "Triangle CAB is isosceles, triangle CDE is equilateral, and triangle CFG is isosceles. Find the measure of angle FCD.",
 		"problem_img": "64_g3k-178.png",
 		"problem_answer": [
 			"17"
@@ -2120,7 +2120,7 @@
 		"source": "Geometry3k-189",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find B C.",
+		"problem_text_en": "Find the length of line BC.",
 		"problem_img": "66_g3k-189.png",
 		"problem_answer": [
 			"23"
@@ -2146,7 +2146,7 @@
 		"source": "Geometry3k-191",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J is the incenter of \\triangle CBA. Find m \\angle J A C.",
+		"problem_text_en": "J is the incenter of triangle CBA. Find the measure of angle JAC.",
 		"problem_img": "67_g3k-191.png",
 		"problem_answer": [
 			"24"
@@ -2189,7 +2189,7 @@
 		"source": "Geometry3k-193",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find W X.",
+		"problem_text_en": "Find the length of line WX.",
 		"problem_img": "68_g3k-193.png",
 		"problem_answer": [
 			"10"
@@ -2259,7 +2259,7 @@
 		"source": "Geometry3k-198",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x. Round side measure to the nearest tenth.",
+		"problem_text_en": "Find x.",
 		"problem_img": "70_g3k-198.png",
 		"problem_answer": [
 			"22.768"
@@ -2287,7 +2287,7 @@
 		"source": "Geometry3k-202",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x. Round to the nearest tenth.",
+		"problem_text_en": "Find x.",
 		"problem_img": "71_g3k-202.png",
 		"problem_answer": [
 			"12.689"
@@ -2316,7 +2316,7 @@
 		"source": "Geometry3k-203",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find the measure of angle GHF.",
 		"problem_img": "72_g3k-203.png",
 		"problem_answer": [
 			"39"
@@ -2353,7 +2353,7 @@
 		"source": "Geometry3k-205",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find the measure of angle BEA.",
 		"problem_img": "73_g3k-205.png",
 		"problem_answer": [
 			"110"
@@ -2385,7 +2385,7 @@
 		"source": "Geometry3k-211",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\frac { I J } { X J } = \\frac { H J } { Y J }, m \\angle W X J = 130, and m \\angle YZI = 20, find m \\angle HIJ.",
+		"problem_text_en": "If IJ/XJ=HJ/YJ, WXH=130, and YZI=20, find the measure of angle HIJ.",
 		"problem_img": "74_g3k-211.png",
 		"problem_answer": [
 			"50"
@@ -2452,7 +2452,7 @@
 		"source": "Geometry3k-213",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x. Round to the nearest hundredth.",
+		"problem_text_en": "Find x.",
 		"problem_img": "76_g3k-213.png",
 		"problem_answer": [
 			"15.20"
@@ -2481,7 +2481,7 @@
 		"source": "Geometry3k-215",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "m \\angle B = 76. The measure of \\angle A is half the measure of \\angle B. What is m \\angle C?",
+		"problem_text_en": "The measure of angle CAB is half of the measure of angle ABC and ABC=76. Find the measure of angle BCA.",
 		"problem_img": "77_g3k-215.png",
 		"problem_answer": [
 			"66"
@@ -2507,7 +2507,7 @@
 		"source": "Geometry3k-216",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, F J \\cong F H and G F \\cong G H. If m \\angle J F H = 34, find m \\angle J.",
+		"problem_text_en": "If HFJ=34, FJ=FH and GF=GH, find the measure of angle FJH.",
 		"problem_img": "78_g3k-216.png",
 		"problem_answer": [
 			"73"
@@ -2536,7 +2536,7 @@
 		"source": "Geometry3k-218",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle T U V.",
+		"problem_text_en": "Find the measure of angle TUV.",
 		"problem_img": "79_g3k-218.png",
 		"problem_answer": [
 			"53"
@@ -2563,7 +2563,7 @@
 		"source": "Geometry3k-221",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle C P D if the perimeter of \\triangle B P A is 12, AP = \\sqrt { 13 }, and PD = 3 \\sqrt { 13 }.",
+		"problem_text_en": "Find the perimeter of triangle CPD if the perimeter of triangle BPA is 12, AP=sqrt(13), and PD=3*sqrt(13).",
 		"problem_img": "80_g3k-221.png",
 		"problem_answer": [
 			"36"
@@ -2601,7 +2601,7 @@
 		"source": "Geometry3k-222",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A C E, P is the centroid. P F = 6 and A D = 15. Find A P.",
+		"problem_text_en": "In triangle ACE, P is the centroid. PF=6 and AD=15. Find the length of line AP.",
 		"problem_img": "81_g3k-222.png",
 		"problem_answer": [
 			"10"
@@ -2670,7 +2670,7 @@
 		"source": "Geometry3k-230",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of A C.",
+		"problem_text_en": "Find the length of line AC.",
 		"problem_img": "83_g3k-230.png",
 		"problem_answer": [
 			"38"
@@ -2703,7 +2703,7 @@
 		"source": "Geometry3k-231",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x to the nearest tenth.",
+		"problem_text_en": "Find x.",
 		"problem_img": "84_g3k-231.png",
 		"problem_answer": [
 			"9.67"
@@ -2733,7 +2733,7 @@
 		"source": "Geometry3k-232",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If X M = 4, X N = 6, and N Z = 9, find X Y.",
+		"problem_text_en": "If XM=4, XN=6, and NZ=9, find the length of line XY.",
 		"problem_img": "85_g3k-232.png",
 		"problem_answer": [
 			"10"
@@ -2766,7 +2766,7 @@
 		"source": "Geometry3k-234",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the exact value of D E, given A D = 12 and B D = 4.",
+		"problem_text_en": "Find the length of line DE, if AD=12 and BD=4.",
 		"problem_img": "86_g3k-234.png",
 		"problem_answer": [
 			"2*{3^0.5}"
@@ -2802,7 +2802,7 @@
 		"source": "Geometry3k-236",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find XY.",
+		"problem_text_en": "Find the length of line XY.",
 		"problem_img": "87_g3k-236.png",
 		"problem_answer": [
 			"9.423"
@@ -2833,7 +2833,7 @@
 		"source": "Geometry3k-239",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\angle R S T is a right angle, S U \\perp R T, U V \\perp S T, and m \\angle R T S = 47, find m \\angle R S U.",
+		"problem_text_en": "If Line RS is perpendicular to line SV, Line ST is perpendicular to line VU, Line RT is perpendicular to line SU, and UTV=47, find the measure of angle USR.",
 		"problem_img": "88_g3k-239.png",
 		"problem_answer": [
 			"47"
@@ -2866,7 +2866,7 @@
 		"source": "Geometry3k-241",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle J K L, P T = 2. Find K P.",
+		"problem_text_en": "If PT=2, find the length of line KP.",
 		"problem_img": "89_g3k-241.png",
 		"problem_answer": [
 			"4"
@@ -2906,7 +2906,7 @@
 		"source": "Geometry3k-242",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle T R S.",
+		"problem_text_en": "Find the measure of angle TRS.",
 		"problem_img": "90_g3k-242.png",
 		"problem_answer": [
 			"65"
@@ -2932,8 +2932,8 @@
 		"annotation": "xiaokaizhang_2022-09-13",
 		"source": "Geometry3k-244",
 		"problem_level": 3,
-		"problem_text_cn": "Equal(Length(Line(PM)),Mul(Length(Line(KP)),2))   Equal(Div(Length(Line(PM)), Length(Line(KP))),2)  这样的形式无法求解",
-		"problem_text_en": "If P R \\parallel K L, L R = 10, P M = 2K P, find RM.",
+		"problem_text_cn": "",
+		"problem_text_en": "If line PR is parallel to line KL, LR=10, PM=2*KP, find the length of line RM.",
 		"problem_img": "91_g3k-244.png",
 		"problem_answer": [
 			"20"
@@ -2966,7 +2966,7 @@
 		"source": "Geometry3k-245",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If T R = 8, L R = 3, and R W = 6, find W S.",
+		"problem_text_en": "If TR=8, LR=3, and RW=6, find the length of line WS.",
 		"problem_img": "92_g3k-245.png",
 		"problem_answer": [
 			"10"
@@ -3022,7 +3022,7 @@
 		"source": "Geometry3k-249",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Each triangle in the figure is a 30 - 60 - 90 triangle. Find x.",
+		"problem_text_en": "Find x.",
 		"problem_img": "94_g3k-249.png",
 		"problem_answer": [
 			"2.25"
@@ -3083,7 +3083,7 @@
 		"source": "Geometry3k-255",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\tan A.",
+		"problem_text_en": "Find tan(BAC).",
 		"problem_img": "96_g3k-255.png",
 		"problem_answer": [
 			"15/16"
@@ -3108,7 +3108,7 @@
 		"source": "Geometry3k-257",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find X Z.",
+		"problem_text_en": "Find the length of line XZ.",
 		"problem_img": "97_g3k-257.png",
 		"problem_answer": [
 			"23"
@@ -3135,7 +3135,7 @@
 		"source": "Geometry3k-258",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\cos R.",
+		"problem_text_en": "find cos(SRT).",
 		"problem_img": "98_g3k-258.png",
 		"problem_answer": [
 			"0.6"
@@ -3189,7 +3189,7 @@
 		"source": "Geometry3k-260",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\angle 2.",
+		"problem_text_en": "Find the measure of angle IAF.",
 		"problem_img": "100_g3k-260.png",
 		"problem_answer": [
 			"47"
@@ -3217,7 +3217,7 @@
 		"source": "Geometry3k-262",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Each pair of polygons is similar. Find B C.",
+		"problem_text_en": "Triangle ABE similar to triangle ACD. Find the length of line BC.",
 		"problem_img": "101_g3k-262.png",
 		"problem_answer": [
 			"8"
@@ -3248,7 +3248,7 @@
 		"source": "Geometry3k-266",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle D E F, if \\triangle D E F \\sim \\triangle A C B.",
+		"problem_text_en": "Find the perimeter of triangle DFE, if triangle ACB is similar to triangle DFE.",
 		"problem_img": "102_g3k-266.png",
 		"problem_answer": [
 			"42"
@@ -3275,7 +3275,7 @@
 		"source": "Geometry3k-269",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\cos B.",
+		"problem_text_en": "If a=14, b=48, and c=50, find cos(ABC).",
 		"problem_img": "103_g3k-269.png",
 		"problem_answer": [
 			"0.28"
@@ -3301,7 +3301,7 @@
 		"source": "Geometry3k-273",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\tan A.",
+		"problem_text_en": "if a=14, b=48, and c=50, find tan(CAB).",
 		"problem_img": "104_g3k-273.png",
 		"problem_answer": [
 			"0.29"
@@ -3327,7 +3327,7 @@
 		"source": "Geometry3k-278",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find D C if D G and J M are altitudes and \\triangle K J L \\sim \\triangle E D C.",
+		"problem_text_en": "Find the length of line DC if line DG and line JM are altitudes and triangle KLJ is similar to triangle ECD.",
 		"problem_img": "105_g3k-278.png",
 		"problem_answer": [
 			"2"
@@ -3360,7 +3360,7 @@
 		"source": "Geometry3k-280",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find E C.",
+		"problem_text_en": "Find the length of line EC.",
 		"problem_img": "106_g3k-280.png",
 		"problem_answer": [
 			"4.8"
@@ -3376,10 +3376,9 @@
 			"Equal(Length(Line(EF)),8)",
 			"Equal(Length(Line(BA)),3)",
 			"Perpendicular(Point(B),Line(AB),Line(BC))",
-			"Perpendicular(Point(E),Line(FE),Line(ED))",
-			"Find(Length(Line(EC)))"
+			"Perpendicular(Point(E),Line(DE),Line(FE))"
 		],
-		"target_fls": [],
+		"target_fls": ["Find(Length(Line(EC)))"],
 		"theorem_seqs": []
 	},
 	"107": {
@@ -3550,7 +3549,7 @@
 		"source": "Geometry3k-291",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle A. Round to the nearest Measure.",
+		"problem_text_en": "Find the measure of angle A. Round to the nearest Measure.",
 		"problem_img": "113_g3k-291.png",
 		"problem_answer": [
 			"74"
@@ -3658,7 +3657,7 @@
 		"source": "Geometry3k-304",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H, J P, and P H are midsegments of \\triangle K L M. Find x.",
+		"problem_text_en": "J H, J P, and P H are midsegments of triangle K L M. Find x.",
 		"problem_img": "117_g3k-304.png",
 		"problem_answer": [
 			"1.35"
@@ -3737,7 +3736,7 @@
 		"source": "Geometry3k-311",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 2.",
+		"problem_text_en": "Find the measure of angle 2.",
 		"problem_img": "120_g3k-311.png",
 		"problem_answer": [
 			"25"
@@ -3887,7 +3886,7 @@
 		"source": "Geometry3k-322",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find U B if \\triangle R S T \\sim \\triangle U V W, T A and W B are medians, T A = 8, R A = 3, W B = 3 x - 6, and U B = x + 2.",
+		"problem_text_en": "Find U B if triangle R S T sim triangle U V W, T A and W B are medians, T A = 8, R A = 3, W B = 3 x - 6, and U B = x + 2.",
 		"problem_img": "125_g3k-322.png",
 		"problem_answer": [
 			"36"
@@ -3916,7 +3915,7 @@
 		"source": "Geometry3k-326",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\tan B.",
+		"problem_text_en": "Find tan B.",
 		"problem_img": "126_g3k-326.png",
 		"problem_answer": [
 			"5"
@@ -3978,7 +3977,7 @@
 		"source": "Geometry3k-331",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos M as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos M as a decimal to the nearest hundredth.",
 		"problem_img": "128_g3k-331.png",
 		"problem_answer": [
 			"0.92"
@@ -4004,7 +4003,7 @@
 		"source": "Geometry3k-335",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "129_g3k-335.png",
 		"problem_answer": [
 			"66"
@@ -4033,7 +4032,7 @@
 		"source": "Geometry3k-337",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 6.",
+		"problem_text_en": "Find m angle 6.",
 		"problem_img": "130_g3k-337.png",
 		"problem_answer": [
 			"49"
@@ -4063,7 +4062,7 @@
 		"source": "Geometry3k-338",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\tan R.",
+		"problem_text_en": "find tan R.",
 		"problem_img": "131_g3k-338.png",
 		"problem_answer": [
 			"4/3"
@@ -4121,7 +4120,7 @@
 		"source": "Geometry3k-346",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of \\angle A C B, and R is the midpoint of A B. Find x if m \\angle A P C = 72 + x.",
+		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of angle A C B, and R is the midpoint of A B. Find x if m angle A P C = 72 + x.",
 		"problem_img": "133_g3k-346.png",
 		"problem_answer": [
 			"18"
@@ -4147,7 +4146,7 @@
 		"source": "Geometry3k-348",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find A C if \\triangle A B C is an isosceles triangle with A B \\cong B C.",
+		"problem_text_en": "Find A C if triangle A B C is an isosceles triangle with A B cong B C.",
 		"problem_img": "134_g3k-348.png",
 		"problem_answer": [
 			"4"
@@ -4202,7 +4201,7 @@
 		"source": "Geometry3k-353",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the given triangle \\triangle D E F, if \\triangle A B C \\sim \\triangle D E F, A B = 5, B C = 6, A C = 7, and D E = 3.",
+		"problem_text_en": "Find the perimeter of the given triangle triangle D E F, if triangle A B C sim triangle D E F, A B = 5, B C = 6, A C = 7, and D E = 3.",
 		"problem_img": "136_g3k-353.png",
 		"problem_answer": [
 			"10.8"
@@ -4343,7 +4342,7 @@
 		"source": "Geometry3k-363",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin B as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin B as a decimal to the nearest hundredth.",
 		"problem_img": "141_g3k-363.png",
 		"problem_answer": [
 			"0.92"
@@ -4423,7 +4422,7 @@
 		"source": "Geometry3k-367",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan B as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan B as a decimal to the nearest hundredth.",
 		"problem_img": "144_g3k-367.png",
 		"problem_answer": [
 			"2.40"
@@ -4564,7 +4563,7 @@
 		"source": "Geometry3k-375",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "What is the measure of \\angle K L M.",
+		"problem_text_en": "What is the measure of angle K L M.",
 		"problem_img": "149_g3k-375.png",
 		"problem_answer": [
 			"32"
@@ -4678,7 +4677,7 @@
 		"source": "Geometry3k-386",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If x = 7 \\sqrt { 3 }, find y.",
+		"problem_text_en": "If x = 7 sqrt { 3 }, find y.",
 		"problem_img": "153_g3k-386.png",
 		"problem_answer": [
 			"21*{3^0.5}"
@@ -4793,7 +4792,7 @@
 		"source": "Geometry3k-393",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If W P is a median and an angle bisector, A P = 3 y + 11, P H = 7 y - 5, m \\angle H W P = x + 12, m \\angle P A W = 3 x - 2, and m \\angle H W A = 4 x - 16, find y.",
+		"problem_text_en": "If W P is a median and an angle bisector, A P = 3 y + 11, P H = 7 y - 5, m angle H W P = x + 12, m angle P A W = 3 x - 2, and m angle H W A = 4 x - 16, find y.",
 		"problem_img": "157_g3k-393.png",
 		"problem_answer": [
 			"4"
@@ -4848,7 +4847,7 @@
 		"source": "Geometry3k-398",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P Q \\cong U Q, P R \\cong R T and m \\angle P Q U = 40, find m \\angle R.",
+		"problem_text_en": "If P Q cong U Q, P R cong R T and m angle P Q U = 40, find m angle R.",
 		"problem_img": "159_g3k-398.png",
 		"problem_answer": [
 			"40"
@@ -4928,7 +4927,7 @@
 		"source": "Geometry3k-404",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle J K L.",
+		"problem_text_en": "Find m angle J K L.",
 		"problem_img": "162_g3k-404.png",
 		"problem_answer": [
 			"60"
@@ -4955,7 +4954,7 @@
 		"source": "Geometry3k-407",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "163_g3k-407.png",
 		"problem_answer": [
 			"62"
@@ -4990,7 +4989,7 @@
 		"source": "Geometry3k-408",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P Q \\cong U Q and m \\angle P = 32, find m \\angle P U Q.",
+		"problem_text_en": "If P Q cong U Q and m angle P = 32, find m angle P U Q.",
 		"problem_img": "164_g3k-408.png",
 		"problem_answer": [
 			"32"
@@ -5014,7 +5013,7 @@
 		"source": "Geometry3k-409",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Q.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Q.",
 		"problem_img": "165_g3k-409.png",
 		"problem_answer": [
 			"6"
@@ -5045,7 +5044,7 @@
 		"source": "Geometry3k-411",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle C. Round to the nearest Measure.",
+		"problem_text_en": "Find the measure of angle C. Round to the nearest Measure.",
 		"problem_img": "166_g3k-411.png",
 		"problem_answer": [
 			"56"
@@ -5070,7 +5069,7 @@
 		"source": "Geometry3k-415",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle A C D.",
+		"problem_text_en": "Find m angle A C D.",
 		"problem_img": "167_g3k-415.png",
 		"problem_answer": [
 			"44"
@@ -5230,7 +5229,7 @@
 		"source": "Geometry3k-435",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find C D if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + \\frac { 10 } { 3 }.",
+		"problem_text_en": "Find C D if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + frac { 10 } { 3 }.",
 		"problem_img": "173_g3k-435.png",
 		"problem_answer": [
 			"9"
@@ -5260,7 +5259,7 @@
 		"source": "Geometry3k-436",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle P Q S.",
+		"problem_text_en": "Find m angle P Q S.",
 		"problem_img": "174_g3k-436.png",
 		"problem_answer": [
 			"42"
@@ -5287,7 +5286,7 @@
 		"source": "Geometry3k-438",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "175_g3k-438.png",
 		"problem_answer": [
 			"12"
@@ -5374,7 +5373,7 @@
 		"source": "Geometry3k-442",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "178_g3k-442.png",
 		"problem_answer": [
 			"75"
@@ -5652,7 +5651,7 @@
 		"source": "Geometry3k-491",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "H is the incenter of \\triangle A B C. Find D H.",
+		"problem_text_en": "H is the incenter of triangle A B C. Find D H.",
 		"problem_img": "188_g3k-491.png",
 		"problem_answer": [
 			"7"
@@ -5683,7 +5682,7 @@
 		"source": "Geometry3k-493",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "189_g3k-493.png",
 		"problem_answer": [
 			"151"
@@ -5771,7 +5770,7 @@
 		"source": "Geometry3k-504",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\angle R S T is a right angle, S U \\perp R T, U V \\perp S T, and m \\angle R T S = 47, find m \\angle T U V.",
+		"problem_text_en": "If angle R S T is a right angle, S U perp R T, U V perp S T, and m angle R T S = 47, find m angle T U V.",
 		"problem_img": "192_g3k-504.png",
 		"problem_answer": [
 			"43"
@@ -5800,7 +5799,7 @@
 		"source": "Geometry3k-509",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle J L K.",
+		"problem_text_en": "Find m angle J L K.",
 		"problem_img": "193_g3k-509.png",
 		"problem_answer": [
 			"40"
@@ -5853,7 +5852,7 @@
 		"source": "Geometry3k-513",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan A as a decimal to the nearest hundredth.",
 		"problem_img": "195_g3k-513.png",
 		"problem_answer": [
 			"0.42"
@@ -5905,7 +5904,7 @@
 		"source": "Geometry3k-517",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 3 if m \\angle D G F = 53 and m \\angle A G C = 40.",
+		"problem_text_en": "Find the measure of angle 3 if m angle D G F = 53 and m angle A G C = 40.",
 		"problem_img": "197_g3k-517.png",
 		"problem_answer": [
 			"50"
@@ -5998,7 +5997,7 @@
 		"source": "Geometry3k-522",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle P Q S \\cong \\triangle R Q S. Find x.",
+		"problem_text_en": "triangle P Q S cong triangle R Q S. Find x.",
 		"problem_img": "200_g3k-522.png",
 		"problem_answer": [
 			"16"
@@ -6163,7 +6162,7 @@
 		"source": "Geometry3k-534",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If W P is a perpendicular bisector, m \\angle W H A = 8 q + 17, m \\angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find q.",
+		"problem_text_en": "If W P is a perpendicular bisector, m angle W H A = 8 q + 17, m angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find q.",
 		"problem_img": "206_g3k-534.png",
 		"problem_answer": [
 			"7"
@@ -6190,7 +6189,7 @@
 		"source": "Geometry3k-535",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A B C, B D is a median. If A D = 3 x + 5 and C D = 5 x - 1, find A C.",
+		"problem_text_en": "In triangle A B C, B D is a median. If A D = 3 x + 5 and C D = 5 x - 1, find A C.",
 		"problem_img": "207_g3k-535.png",
 		"problem_answer": [
 			"28"
@@ -6245,7 +6244,7 @@
 		"source": "Geometry3k-540",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Point S is the incenter of \\triangle J P L. Find m \\angle M P Q.",
+		"problem_text_en": "Point S is the incenter of triangle J P L. Find m angle M P Q.",
 		"problem_img": "209_g3k-540.png",
 		"problem_answer": [
 			"56"
@@ -6332,7 +6331,7 @@
 		"source": "Geometry3k-546",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C is isosceles, \\triangle D C E is equilateral, and \\triangle F C G is isosceles. Find the measure of the \\angle 5 at vertex C.",
+		"problem_text_en": "In the figure, triangle A B C is isosceles, triangle D C E is equilateral, and triangle F C G is isosceles. Find the measure of the angle 5 at vertex C.",
 		"problem_img": "212_g3k-546.png",
 		"problem_answer": [
 			"18"
@@ -6364,7 +6363,7 @@
 		"source": "Geometry3k-548",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 1.",
+		"problem_text_en": "Find the measure of angle 1.",
 		"problem_img": "213_g3k-548.png",
 		"problem_answer": [
 			"85"
@@ -6391,7 +6390,7 @@
 		"source": "Geometry3k-552",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find y if \\triangle J L M \\sim \\triangle Q S T.",
+		"problem_text_en": "Find y if triangle J L M sim triangle Q S T.",
 		"problem_img": "214_g3k-552.png",
 		"problem_answer": [
 			"4"
@@ -6539,7 +6538,7 @@
 		"source": "Geometry3k-561",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If x = 7 \\sqrt { 3 }, find b.",
+		"problem_text_en": "If x = 7 sqrt { 3 }, find b.",
 		"problem_img": "219_g3k-561.png",
 		"problem_answer": [
 			"42"
@@ -6597,7 +6596,7 @@
 		"source": "Geometry3k-564",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H, J P, and P H are midsegments of \\triangle K L M. Find x.",
+		"problem_text_en": "J H, J P, and P H are midsegments of triangle K L M. Find x.",
 		"problem_img": "221_g3k-564.png",
 		"problem_answer": [
 			"57"
@@ -6624,7 +6623,7 @@
 		"source": "Geometry3k-568",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H, J P, and P H are midsegments of \\triangle K L M. Find x.",
+		"problem_text_en": "J H, J P, and P H are midsegments of triangle K L M. Find x.",
 		"problem_img": "222_g3k-568.png",
 		"problem_answer": [
 			"60"
@@ -6652,7 +6651,7 @@
 		"source": "Geometry3k-574",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle F G H is an equilateral triangle. Find F G.",
+		"problem_text_en": "triangle F G H is an equilateral triangle. Find F G.",
 		"problem_img": "223_g3k-574.png",
 		"problem_answer": [
 			"19"
@@ -6786,7 +6785,7 @@
 		"source": "Geometry3k-602",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\sin A.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find sin A.",
 		"problem_img": "228_g3k-602.png",
 		"problem_answer": [
 			"0.47"
@@ -6897,7 +6896,7 @@
 		"source": "Geometry3k-611",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, A B \\parallel C E. If D A = 6, what is D B?",
+		"problem_text_en": "In the figure, A B parallel C E. If D A = 6, what is D B?",
 		"problem_img": "232_g3k-611.png",
 		"problem_answer": [
 			"6"
@@ -6951,7 +6950,7 @@
 		"source": "Geometry3k-616",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find y if A D is an altitude of \\triangle A B C.",
+		"problem_text_en": "Find y if A D is an altitude of triangle A B C.",
 		"problem_img": "234_g3k-616.png",
 		"problem_answer": [
 			"48"
@@ -7030,7 +7029,7 @@
 		"source": "Geometry3k-623",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle A B C is an isosceles triangle with base B C. What is the perimeter of the triangle?",
+		"problem_text_en": "triangle A B C is an isosceles triangle with base B C. What is the perimeter of the triangle?",
 		"problem_img": "237_g3k-623.png",
 		"problem_answer": [
 			"40"
@@ -7057,7 +7056,7 @@
 		"source": "Geometry3k-626",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Point S is the incenter of \\triangle J P L. Find m \\angle S J P.",
+		"problem_text_en": "Point S is the incenter of triangle J P L. Find m angle S J P.",
 		"problem_img": "238_g3k-626.png",
 		"problem_answer": [
 			"37.5"
@@ -7087,7 +7086,7 @@
 		"source": "Geometry3k-627",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "239_g3k-627.png",
 		"problem_answer": [
 			"133"
@@ -7254,7 +7253,7 @@
 		"source": "Geometry3k-639",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if P S is a median of \\triangle P Q R.",
+		"problem_text_en": "Find x if P S is a median of triangle P Q R.",
 		"problem_img": "245_g3k-639.png",
 		"problem_answer": [
 			"2"
@@ -7362,7 +7361,7 @@
 		"source": "Geometry3k-648",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find F E if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + \\frac { 10 } { 3 }.",
+		"problem_text_en": "Find F E if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + frac { 10 } { 3 }.",
 		"problem_img": "249_g3k-648.png",
 		"problem_answer": [
 			"40/3"
@@ -7419,7 +7418,7 @@
 		"source": "Geometry3k-652",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If a = 10 \\sqrt { 3 }, find y.",
+		"problem_text_en": "If a = 10 sqrt { 3 }, find y.",
 		"problem_img": "251_g3k-652.png",
 		"problem_answer": [
 			"15*{3^0.5}"
@@ -7449,7 +7448,7 @@
 		"source": "Geometry3k-653",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle A B C \\cong \\triangle F G H. Find x.",
+		"problem_text_en": "triangle A B C cong triangle F G H. Find x.",
 		"problem_img": "252_g3k-653.png",
 		"problem_answer": [
 			"3"
@@ -7591,7 +7590,7 @@
 		"source": "Geometry3k-663",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "What is the value of \\tan x?",
+		"problem_text_en": "What is the value of tan x?",
 		"problem_img": "257_g3k-663.png",
 		"problem_answer": [
 			"5/12"
@@ -7648,7 +7647,7 @@
 		"source": "Geometry3k-671",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P Q \\cong Q S, Q R \\cong R S, and m \\angle P R S = 72, what is the measure of \\angle Q P S?",
+		"problem_text_en": "If P Q cong Q S, Q R cong R S, and m angle P R S = 72, what is the measure of angle Q P S?",
 		"problem_img": "259_g3k-671.png",
 		"problem_answer": [
 			"27"
@@ -7699,7 +7698,7 @@
 		"source": "Geometry3k-676",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle E D F, T is the centroid and F T = 12. Find T Q.",
+		"problem_text_en": "In triangle E D F, T is the centroid and F T = 12. Find T Q.",
 		"problem_img": "261_g3k-676.png",
 		"problem_answer": [
 			"6"
@@ -7728,7 +7727,7 @@
 		"source": "Geometry3k-678",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "The orthocenter of \\triangle A B C is located 6.4 units from point D. Find B C.",
+		"problem_text_en": "The orthocenter of triangle A B C is located 6.4 units from point D. Find B C.",
 		"problem_img": "262_g3k-678.png",
 		"problem_answer": [
 			"10.03"
@@ -7839,7 +7838,7 @@
 		"source": "Geometry3k-685",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle A C B.",
+		"problem_text_en": "Find m angle A C B.",
 		"problem_img": "266_g3k-685.png",
 		"problem_answer": [
 			"136"
@@ -7921,7 +7920,7 @@
 		"source": "Geometry3k-695",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 5.",
+		"problem_text_en": "Find m angle 5.",
 		"problem_img": "269_g3k-695.png",
 		"problem_answer": [
 			"85"
@@ -8008,7 +8007,7 @@
 		"source": "Geometry3k-703",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In quadrilateral A B C D, A C = 188, B D = 214, m \\angle B P C = 70, and P is the midpoint of A C and B D. Find the perimeter of quadrilateral A B C D.",
+		"problem_text_en": "In quadrilateral A B C D, A C = 188, B D = 214, m angle B P C = 70, and P is the midpoint of A C and B D. Find the perimeter of quadrilateral A B C D.",
 		"problem_img": "272_g3k-703.png",
 		"problem_answer": [
 			"561.2"
@@ -8063,7 +8062,7 @@
 		"source": "Geometry3k-707",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If K H is parallel to J I, find the measure of \\angle 1.",
+		"problem_text_en": "If K H is parallel to J I, find the measure of angle 1.",
 		"problem_img": "274_g3k-707.png",
 		"problem_answer": [
 			"66"
@@ -8092,7 +8091,7 @@
 		"source": "Geometry3k-709",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\tan A.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find tan A.",
 		"problem_img": "275_g3k-709.png",
 		"problem_answer": [
 			"0.53"
@@ -8195,7 +8194,7 @@
 		"source": "Geometry3k-713",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle P N M.",
+		"problem_text_en": "Find m angle P N M.",
 		"problem_img": "279_g3k-713.png",
 		"problem_answer": [
 			"88"
@@ -8223,7 +8222,7 @@
 		"source": "Geometry3k-716",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If x = 7 \\sqrt { 3 }, find C E.",
+		"problem_text_en": "If x = 7 sqrt { 3 }, find C E.",
 		"problem_img": "280_g3k-716.png",
 		"problem_answer": [
 			"21"
@@ -8253,7 +8252,7 @@
 		"source": "Geometry3k-717",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, and P M = 2K P, find K P.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, and P M = 2K P, find K P.",
 		"problem_img": "281_g3k-717.png",
 		"problem_answer": [
 			"5"
@@ -8336,7 +8335,7 @@
 		"source": "Geometry3k-730",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle E F G, H L \\parallel E F, E H = 9, H G = 21, and F L = 6. Find L G.",
+		"problem_text_en": "In triangle E F G, H L parallel E F, E H = 9, H G = 21, and F L = 6. Find L G.",
 		"problem_img": "284_g3k-730.png",
 		"problem_answer": [
 			"14"
@@ -8391,7 +8390,7 @@
 		"source": "Geometry3k-737",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "286_g3k-737.png",
 		"problem_answer": [
 			"128"
@@ -8474,7 +8473,7 @@
 		"source": "Geometry3k-746",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of \\angle A C B, and R is the midpoint of A B. Find A B if A R = 3 x + 6 and R B = 5 x - 14.",
+		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of angle A C B, and R is the midpoint of A B. Find A B if A R = 3 x + 6 and R B = 5 x - 14.",
 		"problem_img": "289_g3k-746.png",
 		"problem_answer": [
 			"72"
@@ -8501,7 +8500,7 @@
 		"source": "Geometry3k-747",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If Q R \\parallel X Y, X Q = 15, Q Z = 12, and Y R = 20, what is the length of R Z.",
+		"problem_text_en": "If Q R parallel X Y, X Q = 15, Q Z = 12, and Y R = 20, what is the length of R Z.",
 		"problem_img": "290_g3k-747.png",
 		"problem_answer": [
 			"16"
@@ -8527,7 +8526,7 @@
 		"source": "Geometry3k-749",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Q.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Q.",
 		"problem_img": "291_g3k-749.png",
 		"problem_answer": [
 			"6"
@@ -8558,7 +8557,7 @@
 		"source": "Geometry3k-750",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "292_g3k-750.png",
 		"problem_answer": [
 			"16"
@@ -8586,7 +8585,7 @@
 		"source": "Geometry3k-751",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If G H \\cong H K, H J \\cong Y K, and m \\angle G J K = 100, what is the measure of \\angle H G K?",
+		"problem_text_en": "If G H cong H K, H J cong Y K, and m angle G J K = 100, what is the measure of angle H G K?",
 		"problem_img": "293_g3k-751.png",
 		"problem_answer": [
 			"20"
@@ -8725,7 +8724,7 @@
 		"source": "Geometry3k-762",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If Q R \\parallel X Y, X Q \\cong Q Z, and Q R = 9.5 units, what is the length of X Y.",
+		"problem_text_en": "If Q R parallel X Y, X Q cong Q Z, and Q R = 9.5 units, what is the length of X Y.",
 		"problem_img": "298_g3k-762.png",
 		"problem_answer": [
 			"19"
@@ -8750,7 +8749,7 @@
 		"source": "Geometry3k-763",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\triangle J K L \\sim \\triangle P Q R and the area of \\triangle J K L is 30 square inches, find the area of \\triangle P Q R.",
+		"problem_text_en": "If triangle J K L sim triangle P Q R and the area of triangle J K L is 30 square inches, find the area of triangle P Q R.",
 		"problem_img": "299_g3k-763.png",
 		"problem_answer": [
 			"46.9"
@@ -8921,7 +8920,7 @@
 		"source": "Geometry3k-774",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\angle R S T is a right angle, S U \\perp R T, U V \\perp S T, and m \\angle R T S = 47, find m \\angle R.",
+		"problem_text_en": "If angle R S T is a right angle, S U perp R T, U V perp S T, and m angle R T S = 47, find m angle R.",
 		"problem_img": "305_g3k-774.png",
 		"problem_answer": [
 			"43"
@@ -8977,7 +8976,7 @@
 		"source": "Geometry3k-777",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle D B A.",
+		"problem_text_en": "Find m angle D B A.",
 		"problem_img": "307_g3k-777.png",
 		"problem_answer": [
 			"17"
@@ -9084,7 +9083,7 @@
 		"source": "Geometry3k-781",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 5.",
+		"problem_text_en": "Find m angle 5.",
 		"problem_img": "311_g3k-781.png",
 		"problem_answer": [
 			"57"
@@ -9116,7 +9115,7 @@
 		"source": "Geometry3k-782",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, J M \\cong P M and M L \\cong P L. If m \\angle P L J = 34, find m \\angle J P M.",
+		"problem_text_en": "In the figure, J M cong P M and M L cong P L. If m angle P L J = 34, find m angle J P M.",
 		"problem_img": "312_g3k-782.png",
 		"problem_answer": [
 			"36.5"
@@ -9168,7 +9167,7 @@
 		"source": "Geometry3k-796",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan V as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan V as a decimal to the nearest hundredth.",
 		"problem_img": "314_g3k-796.png",
 		"problem_answer": [
 			"0.29"
@@ -9194,7 +9193,7 @@
 		"source": "Geometry3k-797",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle P Q R, R S = 3 and Q S = 14. Find P S.",
+		"problem_text_en": "In triangle P Q R, R S = 3 and Q S = 14. Find P S.",
 		"problem_img": "315_g3k-797.png",
 		"problem_answer": [
 			"42^0.5"
@@ -9307,7 +9306,7 @@
 		"source": "Geometry3k-801",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m \\angle G J N = 6 y - 3, m \\angle N J H = 4 y + 23 and m \\angle H M G = 4 z + 14. Find m \\angle G J H if J N is an angle bisector.",
+		"problem_text_en": "In triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m angle G J N = 6 y - 3, m angle N J H = 4 y + 23 and m angle H M G = 4 z + 14. Find m angle G J H if J N is an angle bisector.",
 		"problem_img": "319_g3k-801.png",
 		"problem_answer": [
 			"150"
@@ -9336,7 +9335,7 @@
 		"source": "Geometry3k-806",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S V \\cong \\triangle T V S. Find y.",
+		"problem_text_en": "triangle R S V cong triangle T V S. Find y.",
 		"problem_img": "320_g3k-806.png",
 		"problem_answer": [
 			"12.5"
@@ -9397,7 +9396,7 @@
 		"source": "Geometry3k-810",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos Q as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos Q as a decimal to the nearest hundredth.",
 		"problem_img": "322_g3k-810.png",
 		"problem_answer": [
 			"0.88"
@@ -9533,7 +9532,7 @@
 		"source": "Geometry3k-822",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If K H is parallel to J I, find the measure of \\angle 2.",
+		"problem_text_en": "If K H is parallel to J I, find the measure of angle 2.",
 		"problem_img": "327_g3k-822.png",
 		"problem_answer": [
 			"54"
@@ -9588,7 +9587,7 @@
 		"source": "Geometry3k-825",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if A D is a median of \\triangle A B C.",
+		"problem_text_en": "Find x if A D is a median of triangle A B C.",
 		"problem_img": "329_g3k-825.png",
 		"problem_answer": [
 			"5"
@@ -9642,7 +9641,7 @@
 		"source": "Geometry3k-828",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin Q as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin Q as a decimal to the nearest hundredth.",
 		"problem_img": "331_g3k-828.png",
 		"problem_answer": [
 			"0.47"
@@ -9668,7 +9667,7 @@
 		"source": "Geometry3k-829",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "332_g3k-829.png",
 		"problem_answer": [
 			"55"
@@ -9842,7 +9841,7 @@
 		"source": "Geometry3k-841",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 5.",
+		"problem_text_en": "Find m angle 5.",
 		"problem_img": "338_g3k-841.png",
 		"problem_answer": [
 			"55"
@@ -10022,7 +10021,7 @@
 		"source": "Geometry3k-860",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find S Y.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find S Y.",
 		"problem_img": "344_g3k-860.png",
 		"problem_answer": [
 			"4"
@@ -10053,7 +10052,7 @@
 		"source": "Geometry3k-862",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle M H J \\cong \\triangle P Q J. Find y.",
+		"problem_text_en": "triangle M H J cong triangle P Q J. Find y.",
 		"problem_img": "345_g3k-862.png",
 		"problem_answer": [
 			"5"
@@ -10131,7 +10130,7 @@
 		"source": "Geometry3k-867",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle M R P.",
+		"problem_text_en": "Find m angle M R P.",
 		"problem_img": "348_g3k-867.png",
 		"problem_answer": [
 			"60"
@@ -10182,7 +10181,7 @@
 		"source": "Geometry3k-869",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If T U \\perp U V and U V \\perp V W, find m \\angle 1.",
+		"problem_text_en": "If T U perp U V and U V perp V W, find m angle 1.",
 		"problem_img": "350_g3k-869.png",
 		"problem_answer": [
 			"45"
@@ -10353,7 +10352,7 @@
 		"source": "Geometry3k-886",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle Y.",
+		"problem_text_en": "Find m angle Y.",
 		"problem_img": "356_g3k-886.png",
 		"problem_answer": [
 			"60"
@@ -10462,7 +10461,7 @@
 		"source": "Geometry3k-900",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\cos B.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find cos B.",
 		"problem_img": "360_g3k-900.png",
 		"problem_answer": [
 			"0.47"
@@ -10522,7 +10521,7 @@
 		"source": "Geometry3k-904",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m \\angle P R Z = 4 b - 17, m \\angle Z R Q = 3 b - 4, m \\angle Q Y R = 7 b + 6, and m \\angle P X R = 2 a + 10. Find P R if Q Y is a median.",
+		"problem_text_en": "In triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m angle P R Z = 4 b - 17, m angle Z R Q = 3 b - 4, m angle Q Y R = 7 b + 6, and m angle P X R = 2 a + 10. Find P R if Q Y is a median.",
 		"problem_img": "362_g3k-904.png",
 		"problem_answer": [
 			"18"
@@ -10692,7 +10691,7 @@
 		"source": "Geometry3k-926",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find S Y.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find S Y.",
 		"problem_img": "368_g3k-926.png",
 		"problem_answer": [
 			"4"
@@ -10954,7 +10953,7 @@
 		"source": "Geometry3k-938",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\angle 6.",
+		"problem_text_en": "Find angle 6.",
 		"problem_img": "377_g3k-938.png",
 		"problem_answer": [
 			"123"
@@ -11038,7 +11037,7 @@
 		"source": "Geometry3k-946",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle R S T, Z is the centroid and R Z = 18. Find S Z.",
+		"problem_text_en": "In triangle R S T, Z is the centroid and R Z = 18. Find S Z.",
 		"problem_img": "380_g3k-946.png",
 		"problem_answer": [
 			"10"
@@ -11066,7 +11065,7 @@
 		"source": "Geometry3k-951",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan A as a decimal to the nearest hundredth.",
 		"problem_img": "381_g3k-951.png",
 		"problem_answer": [
 			"1.33"
@@ -11093,7 +11092,7 @@
 		"source": "Geometry3k-953",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find J N if \\triangle J M N is an isosceles triangle with J M \\cong M N.",
+		"problem_text_en": "Find J N if triangle J M N is an isosceles triangle with J M cong M N.",
 		"problem_img": "382_g3k-953.png",
 		"problem_answer": [
 			"2"
@@ -11179,7 +11178,7 @@
 		"source": "Geometry3k-961",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "H is the incenter of \\triangle A B C. Find m \\angle H A C.",
+		"problem_text_en": "H is the incenter of triangle A B C. Find m angle H A C.",
 		"problem_img": "385_g3k-961.png",
 		"problem_answer": [
 			"32"
@@ -11210,7 +11209,7 @@
 		"source": "Geometry3k-963",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\tan B.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find tan B.",
 		"problem_img": "386_g3k-963.png",
 		"problem_answer": [
 			"1.88"
@@ -11291,7 +11290,7 @@
 		"source": "Geometry3k-969",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, G K \\cong G H and H K \\cong K J. If m \\angle H G K = 28, find m \\angle H J K.",
+		"problem_text_en": "In the figure, G K cong G H and H K cong K J. If m angle H G K = 28, find m angle H J K.",
 		"problem_img": "389_g3k-969.png",
 		"problem_answer": [
 			"38"
@@ -11401,7 +11400,7 @@
 		"source": "Geometry3k-982",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Segments A D and C E are medians of \\triangle A C B, A D \\perp C E, A B = 10, and C E = 9. Find C A.",
+		"problem_text_en": "Segments A D and C E are medians of triangle A C B, A D perp C E, A B = 10, and C E = 9. Find C A.",
 		"problem_img": "393_g3k-982.png",
 		"problem_answer": [
 			"52^0.5"
@@ -11428,7 +11427,7 @@
 		"source": "Geometry3k-986",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle F E D.",
+		"problem_text_en": "Find m angle F E D.",
 		"problem_img": "394_g3k-986.png",
 		"problem_answer": [
 			"82"
@@ -11453,7 +11452,7 @@
 		"source": "Geometry3k-988",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\triangle A E C. Find D E. Rounded to the nearest hundredth.",
+		"problem_text_en": "P is the incenter of triangle A E C. Find D E. Rounded to the nearest hundredth.",
 		"problem_img": "395_g3k-988.png",
 		"problem_answer": [
 			"13.11"
@@ -11793,7 +11792,7 @@
 		"source": "Geometry3k-1008",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A B C, C D is an altitude and m \\angle A C B = 90. If A D = 12 and B D = 3, find A C to the nearest tenth.",
+		"problem_text_en": "In triangle A B C, C D is an altitude and m angle A C B = 90. If A D = 12 and B D = 3, find A C to the nearest tenth.",
 		"problem_img": "407_g3k-1008.png",
 		"problem_answer": [
 			"13.4"
@@ -11851,7 +11850,7 @@
 		"source": "Geometry3k-1011",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 2.",
+		"problem_text_en": "Find the measure of angle 2.",
 		"problem_img": "409_g3k-1011.png",
 		"problem_answer": [
 			"110"
@@ -11879,7 +11878,7 @@
 		"source": "Geometry3k-1013",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle R S T, Z is the centroid and R Z = 18. Find S R.",
+		"problem_text_en": "In triangle R S T, Z is the centroid and R Z = 18. Find S R.",
 		"problem_img": "410_g3k-1013.png",
 		"problem_answer": [
 			"28"
@@ -11989,7 +11988,7 @@
 		"source": "Geometry3k-1019",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the given triangle. \\triangle A B C, if \\triangle A B C \\sim \\triangle C B D, C D = 4, D B = 3, and C B = 5.",
+		"problem_text_en": "Find the perimeter of the given triangle. triangle A B C, if triangle A B C sim triangle C B D, C D = 4, D B = 3, and C B = 5.",
 		"problem_img": "414_g3k-1019.png",
 		"problem_answer": [
 			"20"
@@ -12021,7 +12020,7 @@
 		"source": "Geometry3k-1025",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find Q R if \\triangle Q R S is an equilateral triangle.",
+		"problem_text_en": "Find Q R if triangle Q R S is an equilateral triangle.",
 		"problem_img": "415_g3k-1025.png",
 		"problem_answer": [
 			"2"
@@ -12158,7 +12157,7 @@
 		"source": "Geometry3k-1044",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If A C = 12 and A B = 25, what is the measure of \\angle B to the nearest tenth?",
+		"problem_text_en": "If A C = 12 and A B = 25, what is the measure of angle B to the nearest tenth?",
 		"problem_img": "420_g3k-1044.png",
 		"problem_answer": [
 			"28.7"
@@ -12240,7 +12239,7 @@
 		"source": "Geometry3k-1060",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 4.",
+		"problem_text_en": "Find m angle 4.",
 		"problem_img": "423_g3k-1060.png",
 		"problem_answer": [
 			"15"
@@ -12270,7 +12269,7 @@
 		"source": "Geometry3k-1061",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\sin A.",
+		"problem_text_en": "Find sin A.",
 		"problem_img": "424_g3k-1061.png",
 		"problem_answer": [
 			"{26^0.5}/26"
@@ -12327,7 +12326,7 @@
 		"source": "Geometry3k-1066",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle J K L \\sim \\triangle W Y Z. Find y.",
+		"problem_text_en": "triangle J K L sim triangle W Y Z. Find y.",
 		"problem_img": "426_g3k-1066.png",
 		"problem_answer": [
 			"65"
@@ -12763,7 +12762,7 @@
 		"source": "Geometry3k-1102",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If M N \\parallel P Q, use a proportion to find the value of x.",
+		"problem_text_en": "If M N parallel P Q, use a proportion to find the value of x.",
 		"problem_img": "441_g3k-1102.png",
 		"problem_answer": [
 			"10"
@@ -12818,7 +12817,7 @@
 		"source": "Geometry3k-1110",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan Q as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan Q as a decimal to the nearest hundredth.",
 		"problem_img": "443_g3k-1110.png",
 		"problem_answer": [
 			"0.53"
@@ -12871,7 +12870,7 @@
 		"source": "Geometry3k-1112",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle T to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle T to the nearest tenth.",
 		"problem_img": "445_g3k-1112.png",
 		"problem_answer": [
 			"33.7"
@@ -13092,7 +13091,7 @@
 		"source": "Geometry3k-1133",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 8.",
+		"problem_text_en": "Find m angle 8.",
 		"problem_img": "453_g3k-1133.png",
 		"problem_answer": [
 			"28.5"
@@ -13124,7 +13123,7 @@
 		"source": "Geometry3k-1136",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle T Q R.",
+		"problem_text_en": "Find m angle T Q R.",
 		"problem_img": "454_g3k-1136.png",
 		"problem_answer": [
 			"43"
@@ -13286,7 +13285,7 @@
 		"source": "Geometry3k-1147",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle R to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle R to the nearest tenth.",
 		"problem_img": "460_g3k-1147.png",
 		"problem_answer": [
 			"39.6"
@@ -13341,7 +13340,7 @@
 		"source": "Geometry3k-1149",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\frac { I J } { X J } = \\frac { H J } { Y J }, m \\angle W X J = 130, and m \\angle W Z G = 20, find m \\angle J H G.",
+		"problem_text_en": "If frac { I J } { X J } = frac { H J } { Y J }, m angle W X J = 130, and m angle W Z G = 20, find m angle J H G.",
 		"problem_img": "462_g3k-1149.png",
 		"problem_answer": [
 			"110"
@@ -13451,7 +13450,7 @@
 		"source": "Geometry3k-1157",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "B C \\parallel D F. A B = x + 5, B D = 12, A C = 3 x + 1, and C F = 15. Find x.",
+		"problem_text_en": "B C parallel D F. A B = x + 5, B D = 12, A C = 3 x + 1, and C F = 15. Find x.",
 		"problem_img": "466_g3k-1157.png",
 		"problem_answer": [
 			"3"
@@ -13561,7 +13560,7 @@
 		"source": "Geometry3k-1166",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find K P.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find K P.",
 		"problem_img": "470_g3k-1166.png",
 		"problem_answer": [
 			"5"
@@ -13732,7 +13731,7 @@
 		"source": "Geometry3k-1178",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S T \\cong \\triangle V U T. What is the area of \\triangle R S T?",
+		"problem_text_en": "triangle R S T cong triangle V U T. What is the area of triangle R S T?",
 		"problem_img": "476_g3k-1178.png",
 		"problem_answer": [
 			"300"
@@ -13824,7 +13823,7 @@
 		"source": "Geometry3k-1186",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle D F G and \\triangle F G H are isosceles, m \\angle F D H = 28 and D G \\cong F G \\cong F H. Find the measure of \\angle D F G.",
+		"problem_text_en": "triangle D F G and triangle F G H are isosceles, m angle F D H = 28 and D G cong F G cong F H. Find the measure of angle D F G.",
 		"problem_img": "479_g3k-1186.png",
 		"problem_answer": [
 			"28"
@@ -13880,7 +13879,7 @@
 		"source": "Geometry3k-1188",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\angle X Y Z. Find P K.",
+		"problem_text_en": "P is the incenter of angle X Y Z. Find P K.",
 		"problem_img": "481_g3k-1188.png",
 		"problem_answer": [
 			"16"
@@ -13909,7 +13908,7 @@
 		"source": "Geometry3k-1190",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "in \\triangle X Y Z, P is the centroid, K P = 3, and X J = 8. Find X K.",
+		"problem_text_en": "in triangle X Y Z, P is the centroid, K P = 3, and X J = 8. Find X K.",
 		"problem_img": "482_g3k-1190.png",
 		"problem_answer": [
 			"9"
@@ -14151,7 +14150,7 @@
 		"source": "Geometry3k-1212",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In right triangle A B C shown below, what is the measure of \\angle A to the nearest tenth of a Measure?",
+		"problem_text_en": "In right triangle A B C shown below, what is the measure of angle A to the nearest tenth of a Measure?",
 		"problem_img": "491_g3k-1212.png",
 		"problem_answer": [
 			"38.9"
@@ -14261,7 +14260,7 @@
 		"source": "Geometry3k-1221",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S T \\cong \\triangle X Y Z. Find x.",
+		"problem_text_en": "triangle R S T cong triangle X Y Z. Find x.",
 		"problem_img": "495_g3k-1221.png",
 		"problem_answer": [
 			"35"
@@ -14368,7 +14367,7 @@
 		"source": "Geometry3k-1230",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if A D is an altitude of \\triangle A B C.",
+		"problem_text_en": "Find x if A D is an altitude of triangle A B C.",
 		"problem_img": "499_g3k-1230.png",
 		"problem_answer": [
 			"24"
@@ -14395,7 +14394,7 @@
 		"source": "Geometry3k-1237",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A B C, B D is a median. If A D = 3 x + 5 and C D = 5 x - 1, find A C.",
+		"problem_text_en": "In triangle A B C, B D is a median. If A D = 3 x + 5 and C D = 5 x - 1, find A C.",
 		"problem_img": "500_g3k-1237.png",
 		"problem_answer": [
 			"28"
@@ -14451,7 +14450,7 @@
 		"source": "Geometry3k-1240",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of \\triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find y.",
+		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find y.",
 		"problem_img": "502_g3k-1240.png",
 		"problem_answer": [
 			"3"
@@ -14485,7 +14484,7 @@
 		"source": "Geometry3k-1242",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\angle R S T is a right angle, S U \\perp R T, U V \\perp S T, and m \\angle R T S = 47, find m \\angle S U V.",
+		"problem_text_en": "If angle R S T is a right angle, S U perp R T, U V perp S T, and m angle R T S = 47, find m angle S U V.",
 		"problem_img": "503_g3k-1242.png",
 		"problem_answer": [
 			"47"
@@ -14514,7 +14513,7 @@
 		"source": "Geometry3k-1244",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle P Q S \\cong \\triangle R Q S. Find y.",
+		"problem_text_en": "triangle P Q S cong triangle R Q S. Find y.",
 		"problem_img": "504_g3k-1244.png",
 		"problem_answer": [
 			"8"
@@ -14785,7 +14784,7 @@
 		"source": "Geometry3k-1259",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle C B H, if \\triangle C B H \\sim \\triangle F E H, A D E G is a parallelogram, C H = 7, F H = 10, F E = 11, and E H = 6.",
+		"problem_text_en": "Find the perimeter of triangle C B H, if triangle C B H sim triangle F E H, A D E G is a parallelogram, C H = 7, F H = 10, F E = 11, and E H = 6.",
 		"problem_img": "514_g3k-1259.png",
 		"problem_answer": [
 			"18.9"
@@ -14923,7 +14922,7 @@
 		"source": "Geometry3k-1267",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m \\angle P R Z = 4 b - 17, m \\angle Z R Q = 3 b - 4, m \\angle Q Y R = 7 b + 6, and m \\angle P X R = 2 a + 10. P X is an altitude of \\triangle P Q R. Find a.",
+		"problem_text_en": "In triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m angle P R Z = 4 b - 17, m angle Z R Q = 3 b - 4, m angle Q Y R = 7 b + 6, and m angle P X R = 2 a + 10. P X is an altitude of triangle P Q R. Find a.",
 		"problem_img": "519_g3k-1267.png",
 		"problem_answer": [
 			"40"
@@ -15070,7 +15069,7 @@
 		"source": "Geometry3k-1276",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x in \\triangle P Q R.",
+		"problem_text_en": "Find x in triangle P Q R.",
 		"problem_img": "524_g3k-1276.png",
 		"problem_answer": [
 			"2*{6^0.5}"
@@ -15099,7 +15098,7 @@
 		"source": "Geometry3k-1278",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If M S is a median of \\triangle M N Q, Q S = 3 a - 14, S N = 2 a + 1, and m \\angle M S Q = 7 a + 1, find the value of a.",
+		"problem_text_en": "If M S is a median of triangle M N Q, Q S = 3 a - 14, S N = 2 a + 1, and m angle M S Q = 7 a + 1, find the value of a.",
 		"problem_img": "525_g3k-1278.png",
 		"problem_answer": [
 			"15"
@@ -15184,7 +15183,7 @@
 		"source": "Geometry3k-1286",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle J L P, m \\angle J M P = 3 x - 6, J K = 3 y - 2, and L K = 5 y - 8. Find L K if P K is a median.",
+		"problem_text_en": "In triangle J L P, m angle J M P = 3 x - 6, J K = 3 y - 2, and L K = 5 y - 8. Find L K if P K is a median.",
 		"problem_img": "528_g3k-1286.png",
 		"problem_answer": [
 			"7"
@@ -15211,7 +15210,7 @@
 		"source": "Geometry3k-1288",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find M N if \\triangle J M N is an isosceles triangle with J M \\cong M N.",
+		"problem_text_en": "Find M N if triangle J M N is an isosceles triangle with J M cong M N.",
 		"problem_img": "529_g3k-1288.png",
 		"problem_answer": [
 			"3"
@@ -15353,7 +15352,7 @@
 		"source": "Geometry3k-1293",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C is isosceles, \\triangle D C E is equilateral, and \\triangle F C G is isosceles. Find the measure of the \\angle 4 at vertex C.",
+		"problem_text_en": "In the figure, triangle A B C is isosceles, triangle D C E is equilateral, and triangle F C G is isosceles. Find the measure of the angle 4 at vertex C.",
 		"problem_img": "534_g3k-1293.png",
 		"problem_answer": [
 			"17"
@@ -15385,7 +15384,7 @@
 		"source": "Geometry3k-1295",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If W P is a perpendicular bisector, m \\angle W H A = 8 q + 17, m \\angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find r.",
+		"problem_text_en": "If W P is a perpendicular bisector, m angle W H A = 8 q + 17, m angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find r.",
 		"problem_img": "535_g3k-1295.png",
 		"problem_answer": [
 			"6"
@@ -15587,7 +15586,7 @@
 		"source": "Geometry3k-1305",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if M S is an altitude of \\triangle M N Q, m \\angle 1 = 3 x + 11, and m \\angle 2 = 7 x + 9.",
+		"problem_text_en": "Find x if M S is an altitude of triangle M N Q, m angle 1 = 3 x + 11, and m angle 2 = 7 x + 9.",
 		"problem_img": "542_g3k-1305.png",
 		"problem_answer": [
 			"7"
@@ -15615,7 +15614,7 @@
 		"source": "Geometry3k-1307",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 7.",
+		"problem_text_en": "Find m angle 7.",
 		"problem_img": "543_g3k-1307.png",
 		"problem_answer": [
 			"53"
@@ -15675,7 +15674,7 @@
 		"source": "Geometry3k-1309",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If E C is an altitude of \\triangle A E D, m \\angle 1 = 2 x + 7, and m \\angle 2 = 3 x + 13, find m \\angle 1.",
+		"problem_text_en": "If E C is an altitude of triangle A E D, m angle 1 = 2 x + 7, and m angle 2 = 3 x + 13, find m angle 1.",
 		"problem_img": "545_g3k-1309.png",
 		"problem_answer": [
 			"35"
@@ -15703,7 +15702,7 @@
 		"source": "Geometry3k-1310",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos C as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos C as a decimal to the nearest hundredth.",
 		"problem_img": "546_g3k-1310.png",
 		"problem_answer": [
 			"0.80"
@@ -15782,7 +15781,7 @@
 		"source": "Geometry3k-1320",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x so that G J \\parallel F K. H J = x - 5, J K = 15, F G = 18, H G = x - 4.",
+		"problem_text_en": "Find x so that G J parallel F K. H J = x - 5, J K = 15, F G = 18, H G = x - 4.",
 		"problem_img": "549_g3k-1320.png",
 		"problem_answer": [
 			"10"
@@ -15869,7 +15868,7 @@
 		"source": "Geometry3k-1324",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the area of \\triangle J K M.",
+		"problem_text_en": "Find the area of triangle J K M.",
 		"problem_img": "552_g3k-1324.png",
 		"problem_answer": [
 			"21"
@@ -16025,7 +16024,7 @@
 		"source": "Geometry3k-1340",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\triangle S R Y \\sim \\triangle W X Q, R T is an altitude of \\triangle S R Y, X V is an altitude of \\triangle W X Q, R T = 5, R Q = 4, Q Y = 6, and Y X = 2, find X V.",
+		"problem_text_en": "If triangle S R Y sim triangle W X Q, R T is an altitude of triangle S R Y, X V is an altitude of triangle W X Q, R T = 5, R Q = 4, Q Y = 6, and Y X = 2, find X V.",
 		"problem_img": "558_g3k-1340.png",
 		"problem_answer": [
 			"4"
@@ -16111,7 +16110,7 @@
 		"source": "Geometry3k-1346",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "561_g3k-1346.png",
 		"problem_answer": [
 			"59"
@@ -16198,7 +16197,7 @@
 		"source": "Geometry3k-1352",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle A to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle A to the nearest tenth.",
 		"problem_img": "564_g3k-1352.png",
 		"problem_answer": [
 			"78.5"
@@ -16246,7 +16245,7 @@
 		"source": "Geometry3k-1357",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "X Y and X Z are midsegments of \\triangle R S T. Find m \\angle R Y X.",
+		"problem_text_en": "X Y and X Z are midsegments of triangle R S T. Find m angle R Y X.",
 		"problem_img": "566_g3k-1357.png",
 		"problem_answer": [
 			"124"
@@ -16505,7 +16504,7 @@
 		"source": "Geometry3k-1381",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the triangle, what is the measure of \\angle Z?",
+		"problem_text_en": "In the triangle, what is the measure of angle Z?",
 		"problem_img": "575_g3k-1381.png",
 		"problem_answer": [
 			"18"
@@ -16586,7 +16585,7 @@
 		"source": "Geometry3k-1388",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "578_g3k-1388.png",
 		"problem_answer": [
 			"52"
@@ -16640,7 +16639,7 @@
 		"source": "Geometry3k-1395",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle M.",
+		"problem_text_en": "Find m angle M.",
 		"problem_img": "580_g3k-1395.png",
 		"problem_answer": [
 			"30"
@@ -16748,7 +16747,7 @@
 		"source": "Geometry3k-1407",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Q is the incenter of \\triangle J K L. Find m \\angle Q J K.",
+		"problem_text_en": "Q is the incenter of triangle J K L. Find m angle Q J K.",
 		"problem_img": "584_g3k-1407.png",
 		"problem_answer": [
 			"35"
@@ -16841,7 +16840,7 @@
 		"source": "Geometry3k-1428",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, and P M = 2K P, find M N.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, and P M = 2K P, find M N.",
 		"problem_img": "587_g3k-1428.png",
 		"problem_answer": [
 			"12"
@@ -16897,7 +16896,7 @@
 		"source": "Geometry3k-1430",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle L M N \\cong \\triangle Q R S. Find y.",
+		"problem_text_en": "triangle L M N cong triangle Q R S. Find y.",
 		"problem_img": "589_g3k-1430.png",
 		"problem_answer": [
 			"50"
@@ -17036,7 +17035,7 @@
 		"source": "Geometry3k-1442",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S T \\cong \\triangle A B C. Find y.",
+		"problem_text_en": "triangle R S T cong triangle A B C. Find y.",
 		"problem_img": "594_g3k-1442.png",
 		"problem_answer": [
 			"21"
@@ -17091,7 +17090,7 @@
 		"source": "Geometry3k-1447",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle K L N and \\triangle L M N are isosceles and m \\angle J K N = 130. Find the measure of \\angle L N M.",
+		"problem_text_en": "triangle K L N and triangle L M N are isosceles and m angle J K N = 130. Find the measure of angle L N M.",
 		"problem_img": "596_g3k-1447.png",
 		"problem_answer": [
 			"20"
@@ -17153,7 +17152,7 @@
 		"source": "Geometry3k-1450",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle T to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle T to the nearest tenth.",
 		"problem_img": "598_g3k-1450.png",
 		"problem_answer": [
 			"28.5"
@@ -17178,7 +17177,7 @@
 		"source": "Geometry3k-1451",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Given right triangle X Y Z with hypotenuse X Y, Y P is equal to Y Z. If m \\angle P Y Z = 26, find m \\angle X Z P.",
+		"problem_text_en": "Given right triangle X Y Z with hypotenuse X Y, Y P is equal to Y Z. If m angle P Y Z = 26, find m angle X Z P.",
 		"problem_img": "599_g3k-1451.png",
 		"problem_answer": [
 			"13"
@@ -17257,7 +17256,7 @@
 		"source": "Geometry3k-1460",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "602_g3k-1460.png",
 		"problem_answer": [
 			"99"
@@ -17285,7 +17284,7 @@
 		"source": "Geometry3k-1461",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "603_g3k-1461.png",
 		"problem_answer": [
 			"55"
@@ -17315,7 +17314,7 @@
 		"source": "Geometry3k-1462",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\sin A.",
+		"problem_text_en": "find sin A.",
 		"problem_img": "604_g3k-1462.png",
 		"problem_answer": [
 			"5/7"
@@ -17502,7 +17501,7 @@
 		"source": "Geometry3k-1497",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle C D F, K is the centroid and D K = 16. Find F G.",
+		"problem_text_en": "In triangle C D F, K is the centroid and D K = 16. Find F G.",
 		"problem_img": "611_g3k-1497.png",
 		"problem_answer": [
 			"18"
@@ -17529,7 +17528,7 @@
 		"source": "Geometry3k-1499",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If E B \\parallel D C, find x.",
+		"problem_text_en": "If E B parallel D C, find x.",
 		"problem_img": "612_g3k-1499.png",
 		"problem_answer": [
 			"9.5"
@@ -17557,7 +17556,7 @@
 		"source": "Geometry3k-1505",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find J M if \\triangle J M N is an isosceles triangle with J M \\cong M N.",
+		"problem_text_en": "Find J M if triangle J M N is an isosceles triangle with J M cong M N.",
 		"problem_img": "613_g3k-1505.png",
 		"problem_answer": [
 			"3"
@@ -17610,7 +17609,7 @@
 		"source": "Geometry3k-1509",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, F J \\cong F H and G F \\cong G H. If m \\angle G H J = 152 and m \\angle G = 32, find m \\angle J F H.",
+		"problem_text_en": "In the figure, F J cong F H and G F cong G H. If m angle G H J = 152 and m angle G = 32, find m angle J F H.",
 		"problem_img": "615_g3k-1509.png",
 		"problem_answer": [
 			"24"
@@ -17638,7 +17637,7 @@
 		"source": "Geometry3k-1511",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\sin B.",
+		"problem_text_en": "a = 14, b = 48, and c = 50, find sin B.",
 		"problem_img": "616_g3k-1511.png",
 		"problem_answer": [
 			"0.96"
@@ -17667,7 +17666,7 @@
 		"source": "Geometry3k-1512",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle D E F, if \\triangle D E F \\sim \\triangle C B F, perimeter of \\triangle C B F = 27, D F = 6, F C = 8.",
+		"problem_text_en": "Find the perimeter of the triangle D E F, if triangle D E F sim triangle C B F, perimeter of triangle C B F = 27, D F = 6, F C = 8.",
 		"problem_img": "617_g3k-1512.png",
 		"problem_answer": [
 			"20.25"
@@ -17693,7 +17692,7 @@
 		"source": "Geometry3k-1514",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m \\angle G J N = 6 y - 3, m \\angle N J H = 4 y + 23 and m \\angle H M G = 4 z + 14. If H M is an altitude of \\angle G H J, find the value of z.",
+		"problem_text_en": "In triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m angle G J N = 6 y - 3, m angle N J H = 4 y + 23 and m angle H M G = 4 z + 14. If H M is an altitude of angle G H J, find the value of z.",
 		"problem_img": "618_g3k-1514.png",
 		"problem_answer": [
 			"19"
@@ -17805,7 +17804,7 @@
 		"source": "Geometry3k-1529",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "622_g3k-1529.png",
 		"problem_answer": [
 			"108"
@@ -17939,7 +17938,7 @@
 		"source": "Geometry3k-1539",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle R S T, Z is the centroid and R Z = 18. Find Z V.",
+		"problem_text_en": "In triangle R S T, Z is the centroid and R Z = 18. Find Z V.",
 		"problem_img": "627_g3k-1539.png",
 		"problem_answer": [
 			"9"
@@ -18290,7 +18289,7 @@
 		"source": "Geometry3k-1576",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, J M \\cong P M and M L \\cong P L. If m \\angle P L J = 58, find m \\angle P J L.",
+		"problem_text_en": "In the figure, J M cong P M and M L cong P L. If m angle P L J = 58, find m angle P J L.",
 		"problem_img": "640_g3k-1576.png",
 		"problem_answer": [
 			"30.5"
@@ -18549,7 +18548,7 @@
 		"source": "Geometry3k-1599",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle v.",
+		"problem_text_en": "Find m angle v.",
 		"problem_img": "649_g3k-1599.png",
 		"problem_answer": [
 			"76"
@@ -18602,7 +18601,7 @@
 		"source": "Geometry3k-1603",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle D E F if \\triangle D E F \\sim \\triangle A B C.",
+		"problem_text_en": "Find the perimeter of triangle D E F if triangle D E F sim triangle A B C.",
 		"problem_img": "651_g3k-1603.png",
 		"problem_answer": [
 			"24"
@@ -18683,7 +18682,7 @@
 		"source": "Geometry3k-1610",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle C D F, K is the centroid and D K = 16. Find K H.",
+		"problem_text_en": "In triangle C D F, K is the centroid and D K = 16. Find K H.",
 		"problem_img": "654_g3k-1610.png",
 		"problem_answer": [
 			"8"
@@ -18769,7 +18768,7 @@
 		"source": "Geometry3k-1617",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of \\triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find x.",
+		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find x.",
 		"problem_img": "657_g3k-1617.png",
 		"problem_answer": [
 			"4"
@@ -18803,7 +18802,7 @@
 		"source": "Geometry3k-1619",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find X Z of isosceles \\triangle X Y Z.",
+		"problem_text_en": "Find X Z of isosceles triangle X Y Z.",
 		"problem_img": "658_g3k-1619.png",
 		"problem_answer": [
 			"12"
@@ -18995,7 +18994,7 @@
 		"source": "Geometry3k-1646",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle K L N and \\triangle L M N are isosceles and m \\angle J K N = 130. Find the measure of \\angle L K N.",
+		"problem_text_en": "triangle K L N and triangle L M N are isosceles and m angle J K N = 130. Find the measure of angle L K N.",
 		"problem_img": "665_g3k-1646.png",
 		"problem_answer": [
 			"81"
@@ -19407,7 +19406,7 @@
 		"source": "Geometry3k-1679",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Use a calculator to find the measure of \\angle J to the nearest Measure.",
+		"problem_text_en": "Use a calculator to find the measure of angle J to the nearest Measure.",
 		"problem_img": "680_g3k-1679.png",
 		"problem_answer": [
 			"45"
@@ -19458,7 +19457,7 @@
 		"source": "Geometry3k-1686",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin A as a decimal to the nearest hundredth.",
 		"problem_img": "682_g3k-1686.png",
 		"problem_answer": [
 			"0.38"
@@ -19565,7 +19564,7 @@
 		"source": "Geometry3k-1692",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin L as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin L as a decimal to the nearest hundredth.",
 		"problem_img": "686_g3k-1692.png",
 		"problem_answer": [
 			"0.38"
@@ -19591,7 +19590,7 @@
 		"source": "Geometry3k-1694",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle W X Y and \\triangle X Y Z are isosceles and m \\angle X Y Z = 128. Find the measure of \\angle Y Z X.",
+		"problem_text_en": "triangle W X Y and triangle X Y Z are isosceles and m angle X Y Z = 128. Find the measure of angle Y Z X.",
 		"problem_img": "687_g3k-1694.png",
 		"problem_answer": [
 			"26"
@@ -19652,7 +19651,7 @@
 		"source": "Geometry3k-1697",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle F G H is a right triangle with hypotenuse F H and G J = G H. What is the measure of \\angle J G H?",
+		"problem_text_en": "In the figure, triangle F G H is a right triangle with hypotenuse F H and G J = G H. What is the measure of angle J G H?",
 		"problem_img": "689_g3k-1697.png",
 		"problem_answer": [
 			"56"
@@ -19755,7 +19754,7 @@
 		"source": "Geometry3k-1708",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "693_g3k-1708.png",
 		"problem_answer": [
 			"29"
@@ -19809,7 +19808,7 @@
 		"source": "Geometry3k-1713",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin A as a decimal to the nearest hundredth.",
 		"problem_img": "695_g3k-1713.png",
 		"problem_answer": [
 			"0.80"
@@ -19835,7 +19834,7 @@
 		"source": "Geometry3k-1716",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find F B if S A and F B are altitudes and \\triangle R S T \\sim \\triangle E F G.",
+		"problem_text_en": "Find F B if S A and F B are altitudes and triangle R S T sim triangle E F G.",
 		"problem_img": "696_g3k-1716.png",
 		"problem_answer": [
 			"2"
@@ -19890,7 +19889,7 @@
 		"source": "Geometry3k-1722",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "698_g3k-1722.png",
 		"problem_answer": [
 			"26"
@@ -19925,7 +19924,7 @@
 		"source": "Geometry3k-1725",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H is a midsegment of \\triangle K L M. Find x.",
+		"problem_text_en": "J H is a midsegment of triangle K L M. Find x.",
 		"problem_img": "699_g3k-1725.png",
 		"problem_answer": [
 			"11"
@@ -19950,7 +19949,7 @@
 		"source": "Geometry3k-1728",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m \\angle P = 58. Find Q S.",
+		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m angle P = 58. Find Q S.",
 		"problem_img": "700_g3k-1728.png",
 		"problem_answer": [
 			"716.7"
@@ -20062,7 +20061,7 @@
 		"source": "Geometry3k-1736",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "704_g3k-1736.png",
 		"problem_answer": [
 			"24"
@@ -20091,7 +20090,7 @@
 		"source": "Geometry3k-1738",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If a = 10 \\sqrt { 3 }, find C E.",
+		"problem_text_en": "If a = 10 sqrt { 3 }, find C E.",
 		"problem_img": "705_g3k-1738.png",
 		"problem_answer": [
 			"15"
@@ -20121,7 +20120,7 @@
 		"source": "Geometry3k-1744",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle P Q R, if \\triangle P Q M \\sim \\triangle P R Q.",
+		"problem_text_en": "Find the perimeter of triangle P Q R, if triangle P Q M sim triangle P R Q.",
 		"problem_img": "706_g3k-1744.png",
 		"problem_answer": [
 			"78"
@@ -20148,7 +20147,7 @@
 		"source": "Geometry3k-1749",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "X Y and X Z are midsegments of \\triangle R S T. Find X Z.",
+		"problem_text_en": "X Y and X Z are midsegments of triangle R S T. Find X Z.",
 		"problem_img": "707_g3k-1749.png",
 		"problem_answer": [
 			"6.5"
@@ -20204,7 +20203,7 @@
 		"source": "Geometry3k-1752",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find M R.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find M R.",
 		"problem_img": "709_g3k-1752.png",
 		"problem_answer": [
 			"40/3"
@@ -20232,7 +20231,7 @@
 		"source": "Geometry3k-1754",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin C as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin C as a decimal to the nearest hundredth.",
 		"problem_img": "710_g3k-1754.png",
 		"problem_answer": [
 			"0.60"
@@ -20286,7 +20285,7 @@
 		"source": "Geometry3k-1759",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "712_g3k-1759.png",
 		"problem_answer": [
 			"68"
@@ -20317,7 +20316,7 @@
 		"source": "Geometry3k-1760",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "713_g3k-1760.png",
 		"problem_answer": [
 			"106"
@@ -20372,7 +20371,7 @@
 		"source": "Geometry3k-1763",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "715_g3k-1763.png",
 		"problem_answer": [
 			"39"
@@ -20429,7 +20428,7 @@
 		"source": "Geometry3k-1765",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If W P is a median and an angle bisector, A P = 3 y + 11, P H = 7 y - 5, m \\angle H W P = x + 12, m \\angle P A W = 3 x - 2, and m \\angle H W A = 4 x - 16, find x.",
+		"problem_text_en": "If W P is a median and an angle bisector, A P = 3 y + 11, P H = 7 y - 5, m angle H W P = x + 12, m angle P A W = 3 x - 2, and m angle H W A = 4 x - 16, find x.",
 		"problem_img": "717_g3k-1765.png",
 		"problem_answer": [
 			"20"
@@ -20458,7 +20457,7 @@
 		"source": "Geometry3k-1766",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan P as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan P as a decimal to the nearest hundredth.",
 		"problem_img": "718_g3k-1766.png",
 		"problem_answer": [
 			"1.88"
@@ -20597,7 +20596,7 @@
 		"source": "Geometry3k-1773",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle A B C, A D and D C are angle bisectors and m \\angle B = 76. What is the measure of \\angle A D C?",
+		"problem_text_en": "In triangle A B C, A D and D C are angle bisectors and m angle B = 76. What is the measure of angle A D C?",
 		"problem_img": "723_g3k-1773.png",
 		"problem_answer": [
 			"128"
@@ -20623,7 +20622,7 @@
 		"source": "Geometry3k-1774",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle D E F, if \\triangle A B C \\sim \\triangle D E F, A B = 5, B C = 6, A C = 7, and D E = 3.",
+		"problem_text_en": "Find the perimeter of the triangle D E F, if triangle A B C sim triangle D E F, A B = 5, B C = 6, A C = 7, and D E = 3.",
 		"problem_img": "724_g3k-1774.png",
 		"problem_answer": [
 			"10.8"
@@ -20654,7 +20653,7 @@
 		"source": "Geometry3k-1776",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle A B C.",
+		"problem_text_en": "Find the perimeter of triangle A B C.",
 		"problem_img": "725_g3k-1776.png",
 		"problem_answer": [
 			"30"
@@ -20819,7 +20818,7 @@
 		"source": "Geometry3k-1790",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle D F G and \\triangle F G H are isosceles, m \\angle F D H = 28 and D G \\cong F G \\cong F H. Find the measure of \\angle G F H.",
+		"problem_text_en": "triangle D F G and triangle F G H are isosceles, m angle F D H = 28 and D G cong F G cong F H. Find the measure of angle G F H.",
 		"problem_img": "731_g3k-1790.png",
 		"problem_answer": [
 			"68"
@@ -20849,7 +20848,7 @@
 		"source": "Geometry3k-1791",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\cos B.",
+		"problem_text_en": "find cos B.",
 		"problem_img": "732_g3k-1791.png",
 		"problem_answer": [
 			"5/7"
@@ -20903,7 +20902,7 @@
 		"source": "Geometry3k-1800",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle N D G \\cong \\triangle L G D. Find x.",
+		"problem_text_en": "triangle N D G cong triangle L G D. Find x.",
 		"problem_img": "734_g3k-1800.png",
 		"problem_answer": [
 			"54"
@@ -20959,7 +20958,7 @@
 		"source": "Geometry3k-1805",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find M L.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find M L.",
 		"problem_img": "736_g3k-1805.png",
 		"problem_answer": [
 			"20"
@@ -20987,7 +20986,7 @@
 		"source": "Geometry3k-1807",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\frac { I J } { X J } = \\frac { H J } { Y J }, m \\angle W X J = 130 and m \\angle W Z G = 20, find m \\angle J H I.",
+		"problem_text_en": "If frac { I J } { X J } = frac { H J } { Y J }, m angle W X J = 130 and m angle W Z G = 20, find m angle J H I.",
 		"problem_img": "737_g3k-1807.png",
 		"problem_answer": [
 			"70"
@@ -21014,7 +21013,7 @@
 		"source": "Geometry3k-1808",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If E C is an altitude of \\triangle A E D, m \\angle 1 = 2 x + 7, and m \\angle 2 = 3 x + 13, find m \\angle 2.",
+		"problem_text_en": "If E C is an altitude of triangle A E D, m angle 1 = 2 x + 7, and m angle 2 = 3 x + 13, find m angle 2.",
 		"problem_img": "738_g3k-1808.png",
 		"problem_answer": [
 			"55"
@@ -21100,7 +21099,7 @@
 		"source": "Geometry3k-1815",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle W X Y and \\triangle X Y Z are isosceles and m \\angle X Y Z = 128. Find the measure of \\angle W X Y.",
+		"problem_text_en": "triangle W X Y and triangle X Y Z are isosceles and m angle X Y Z = 128. Find the measure of angle W X Y.",
 		"problem_img": "741_g3k-1815.png",
 		"problem_answer": [
 			"76"
@@ -21128,7 +21127,7 @@
 		"source": "Geometry3k-1817",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan C as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan C as a decimal to the nearest hundredth.",
 		"problem_img": "742_g3k-1817.png",
 		"problem_answer": [
 			"0.75"
@@ -21240,7 +21239,7 @@
 		"source": "Geometry3k-1823",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if \\triangle J M N is an isosceles triangle with J M \\cong M N.",
+		"problem_text_en": "Find x if triangle J M N is an isosceles triangle with J M cong M N.",
 		"problem_img": "746_g3k-1823.png",
 		"problem_answer": [
 			"4"
@@ -21267,7 +21266,7 @@
 		"source": "Geometry3k-1837",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find Y Z of isosceles \\triangle X Y Z.",
+		"problem_text_en": "Find Y Z of isosceles triangle X Y Z.",
 		"problem_img": "747_g3k-1837.png",
 		"problem_answer": [
 			"7"
@@ -21320,7 +21319,7 @@
 		"source": "Geometry3k-1842",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find K M.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find K M.",
 		"problem_img": "749_g3k-1842.png",
 		"problem_answer": [
 			"15"
@@ -21424,7 +21423,7 @@
 		"source": "Geometry3k-1854",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H, J P, and P H are midsegments of \\triangle K L M. Find x.",
+		"problem_text_en": "J H, J P, and P H are midsegments of triangle K L M. Find x.",
 		"problem_img": "753_g3k-1854.png",
 		"problem_answer": [
 			"50"
@@ -21450,7 +21449,7 @@
 		"source": "Geometry3k-1859",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos L as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos L as a decimal to the nearest hundredth.",
 		"problem_img": "754_g3k-1859.png",
 		"problem_answer": [
 			"0.92"
@@ -21476,7 +21475,7 @@
 		"source": "Geometry3k-1862",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "m \\angle B A C = 40, m \\angle D A C = 40, and D C = 10, find B C.",
+		"problem_text_en": "m angle B A C = 40, m angle D A C = 40, and D C = 10, find B C.",
 		"problem_img": "755_g3k-1862.png",
 		"problem_answer": [
 			"10"
@@ -21503,7 +21502,7 @@
 		"source": "Geometry3k-1864",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle A to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle A to the nearest tenth.",
 		"problem_img": "756_g3k-1864.png",
 		"problem_answer": [
 			"16.7"
@@ -21582,7 +21581,7 @@
 		"source": "Geometry3k-1875",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "759_g3k-1875.png",
 		"problem_answer": [
 			"34"
@@ -21691,7 +21690,7 @@
 		"source": "Geometry3k-1887",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "763_g3k-1887.png",
 		"problem_answer": [
 			"59"
@@ -21745,7 +21744,7 @@
 		"source": "Geometry3k-1892",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J H is a midsegment of \\triangle K L M. Find x.",
+		"problem_text_en": "J H is a midsegment of triangle K L M. Find x.",
 		"problem_img": "765_g3k-1892.png",
 		"problem_answer": [
 			"10"
@@ -21770,7 +21769,7 @@
 		"source": "Geometry3k-1893",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "H is the incenter of \\triangle A B C. Find m \\angle D H G.",
+		"problem_text_en": "H is the incenter of triangle A B C. Find m angle D H G.",
 		"problem_img": "766_g3k-1893.png",
 		"problem_answer": [
 			"120"
@@ -21801,7 +21800,7 @@
 		"source": "Geometry3k-1894",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find E H if \\triangle A B C \\sim \\triangle D E F, B G is an altitude of \\triangle A B C, E H is an altitude of \\triangle D E F, B G = 3, B F = 4, F C = 2, and C E = 1.",
+		"problem_text_en": "Find E H if triangle A B C sim triangle D E F, B G is an altitude of triangle A B C, E H is an altitude of triangle D E F, B G = 3, B F = 4, F C = 2, and C E = 1.",
 		"problem_img": "767_g3k-1894.png",
 		"problem_answer": [
 			"3/2"
@@ -21898,7 +21897,7 @@
 		"source": "Geometry3k-1904",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "H is the incenter of \\triangle A B C. Find B D.",
+		"problem_text_en": "H is the incenter of triangle A B C. Find B D.",
 		"problem_img": "770_g3k-1904.png",
 		"problem_answer": [
 			"7*{3^0.5}"
@@ -21959,7 +21958,7 @@
 		"source": "Geometry3k-1912",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle Q R S if \\triangle Q R S \\sim \\triangle Q T P.",
+		"problem_text_en": "Find the perimeter of triangle Q R S if triangle Q R S sim triangle Q T P.",
 		"problem_img": "772_g3k-1912.png",
 		"problem_answer": [
 			"14"
@@ -22096,7 +22095,7 @@
 		"source": "Geometry3k-1923",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, G K \\cong G H and H K \\cong K J. If m \\angle H G K = 42, find m \\angle H J K.",
+		"problem_text_en": "In the figure, G K cong G H and H K cong K J. If m angle H G K = 42, find m angle H J K.",
 		"problem_img": "777_g3k-1923.png",
 		"problem_answer": [
 			"34.5"
@@ -22260,7 +22259,7 @@
 		"source": "Geometry3k-1932",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 3.",
+		"problem_text_en": "Find the measure of angle 3.",
 		"problem_img": "783_g3k-1932.png",
 		"problem_answer": [
 			"49"
@@ -22288,7 +22287,7 @@
 		"source": "Geometry3k-1935",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If K H is parallel to J I, find the measure of \\angle 3.",
+		"problem_text_en": "If K H is parallel to J I, find the measure of angle 3.",
 		"problem_img": "784_g3k-1935.png",
 		"problem_answer": [
 			"90"
@@ -22342,7 +22341,7 @@
 		"source": "Geometry3k-1939",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle T to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle T to the nearest tenth.",
 		"problem_img": "786_g3k-1939.png",
 		"problem_answer": [
 			"56.4"
@@ -22422,7 +22421,7 @@
 		"source": "Geometry3k-1943",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If x = 7 \\sqrt { 3 }, find a.",
+		"problem_text_en": "If x = 7 sqrt { 3 }, find a.",
 		"problem_img": "789_g3k-1943.png",
 		"problem_answer": [
 			"14*{3^0.5}"
@@ -22586,7 +22585,7 @@
 		"source": "Geometry3k-1966",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle C B H, if \\triangle C B H \\sim \\triangle F E H, A D E G is a parallelogram, C H = 7, F H = 10, F E = 11, and E H = 6. Rounded to the nearest tenth.",
+		"problem_text_en": "Find the perimeter of the triangle C B H, if triangle C B H sim triangle F E H, A D E G is a parallelogram, C H = 7, F H = 10, F E = 11, and E H = 6. Rounded to the nearest tenth.",
 		"problem_img": "795_g3k-1966.png",
 		"problem_answer": [
 			"18.9"
@@ -22618,7 +22617,7 @@
 		"source": "Geometry3k-1970",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If A B and J K are altitudes, \\triangle D A C \\sim \\triangle M J L, A B = 9, A D = 4 x - 8, J K = 21, and J M = 5 x + 3, find x.",
+		"problem_text_en": "If A B and J K are altitudes, triangle D A C sim triangle M J L, A B = 9, A D = 4 x - 8, J K = 21, and J M = 5 x + 3, find x.",
 		"problem_img": "796_g3k-1970.png",
 		"problem_answer": [
 			"5"
@@ -22709,7 +22708,7 @@
 		"source": "Geometry3k-1982",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "B C \\parallel D F. A C = 15, B D = 3 x - 2, C F = 3 x + 2, and A B = 12. Find x.",
+		"problem_text_en": "B C parallel D F. A C = 15, B D = 3 x - 2, C F = 3 x + 2, and A B = 12. Find x.",
 		"problem_img": "799_g3k-1982.png",
 		"problem_answer": [
 			"6"
@@ -22790,7 +22789,7 @@
 		"source": "Geometry3k-1988",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle J L P, m \\angle J M P = 3 x - 6, J K = 3 y - 2, and L K = 5 y - 8. If J M is an altitude of \\triangle J L P, find x.",
+		"problem_text_en": "In triangle J L P, m angle J M P = 3 x - 6, J K = 3 y - 2, and L K = 5 y - 8. If J M is an altitude of triangle J L P, find x.",
 		"problem_img": "802_g3k-1988.png",
 		"problem_answer": [
 			"32"
@@ -22843,7 +22842,7 @@
 		"source": "Geometry3k-1992",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\angle X Y Z. Find m \\angle L Z P.",
+		"problem_text_en": "P is the incenter of angle X Y Z. Find m angle L Z P.",
 		"problem_img": "804_g3k-1992.png",
 		"problem_answer": [
 			"32"
@@ -22872,7 +22871,7 @@
 		"source": "Geometry3k-1993",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m \\angle P = 58. Find m \\angle R.",
+		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m angle P = 58. Find m angle R.",
 		"problem_img": "805_g3k-1993.png",
 		"problem_answer": [
 			"77.8"
@@ -23007,7 +23006,7 @@
 		"source": "Geometry3k-2003",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "810_g3k-2003.png",
 		"problem_answer": [
 			"85"
@@ -23065,7 +23064,7 @@
 		"source": "Geometry3k-2008",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "812_g3k-2008.png",
 		"problem_answer": [
 			"123"
@@ -23250,7 +23249,7 @@
 		"source": "Geometry3k-2028",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan X as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan X as a decimal to the nearest hundredth.",
 		"problem_img": "819_g3k-2028.png",
 		"problem_answer": [
 			"3.43"
@@ -23337,7 +23336,7 @@
 		"source": "Geometry3k-2032",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "J is the incenter of \\angle A B C. Find J F.",
+		"problem_text_en": "J is the incenter of angle A B C. Find J F.",
 		"problem_img": "822_g3k-2032.png",
 		"problem_answer": [
 			"9"
@@ -23367,7 +23366,7 @@
 		"source": "Geometry3k-2033",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\angle 1.",
+		"problem_text_en": "Find angle 1.",
 		"problem_img": "823_g3k-2033.png",
 		"problem_answer": [
 			"112"
@@ -23447,7 +23446,7 @@
 		"source": "Geometry3k-2039",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If W P is a perpendicular bisector, m \\angle W H A = 8 q + 17, m \\angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find m \\angle H W P.",
+		"problem_text_en": "If W P is a perpendicular bisector, m angle W H A = 8 q + 17, m angle H W P = 10 + q, A P = 6 r + 4, and P H = 22 + 3 r, find m angle H W P.",
 		"problem_img": "826_g3k-2039.png",
 		"problem_answer": [
 			"17"
@@ -23681,7 +23680,7 @@
 		"source": "Geometry3k-2055",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 4.",
+		"problem_text_en": "Find m angle 4.",
 		"problem_img": "834_g3k-2055.png",
 		"problem_answer": [
 			"95"
@@ -23737,7 +23736,7 @@
 		"source": "Geometry3k-2060",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle Z to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle Z to the nearest tenth.",
 		"problem_img": "836_g3k-2060.png",
 		"problem_answer": [
 			"36.9"
@@ -23840,7 +23839,7 @@
 		"source": "Geometry3k-2072",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle F G H is an equilateral triangle. Find H G.",
+		"problem_text_en": "triangle F G H is an equilateral triangle. Find H G.",
 		"problem_img": "840_g3k-2072.png",
 		"problem_answer": [
 			"19"
@@ -23980,7 +23979,7 @@
 		"source": "Geometry3k-2083",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If R Q \\cong R S and m \\angle R Q S = 75, find m \\angle R.",
+		"problem_text_en": "If R Q cong R S and m angle R Q S = 75, find m angle R.",
 		"problem_img": "845_g3k-2083.png",
 		"problem_answer": [
 			"30"
@@ -24004,7 +24003,7 @@
 		"source": "Geometry3k-2085",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "R S bisects \\angle V R U. Solve for x.",
+		"problem_text_en": "R S bisects angle V R U. Solve for x.",
 		"problem_img": "846_g3k-2085.png",
 		"problem_answer": [
 			"10"
@@ -24142,7 +24141,7 @@
 		"source": "Geometry3k-2107",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If N Q and V X are medians, \\triangle P N R \\sim \\triangle W V Y, N Q = 8, P R = 12, W Y = 7 x - 1, and V X = 4 x + 2, find x.",
+		"problem_text_en": "If N Q and V X are medians, triangle P N R sim triangle W V Y, N Q = 8, P R = 12, W Y = 7 x - 1, and V X = 4 x + 2, find x.",
 		"problem_img": "851_g3k-2107.png",
 		"problem_answer": [
 			"4"
@@ -24171,7 +24170,7 @@
 		"source": "Geometry3k-2111",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos A as a decimal to the nearest hundredth.",
 		"problem_img": "852_g3k-2111.png",
 		"problem_answer": [
 			"0.92"
@@ -24197,7 +24196,7 @@
 		"source": "Geometry3k-2116",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If R Q \\cong R S, R P \\cong R T and m \\angle R Q S = 80, find m \\angle P.",
+		"problem_text_en": "If R Q cong R S, R P cong R T and m angle R Q S = 80, find m angle P.",
 		"problem_img": "853_g3k-2116.png",
 		"problem_answer": [
 			"80"
@@ -24249,7 +24248,7 @@
 		"source": "Geometry3k-2120",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if \\triangle Q R S is an equilateral triangle.",
+		"problem_text_en": "Find x if triangle Q R S is an equilateral triangle.",
 		"problem_img": "855_g3k-2120.png",
 		"problem_answer": [
 			"0.5"
@@ -24330,7 +24329,7 @@
 		"source": "Geometry3k-2129",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C is isosceles, \\triangle D C E is equilateral, and \\triangle F C G is isosceles. Find the measure of the \\angle 1 at vertex C.",
+		"problem_text_en": "In the figure, triangle A B C is isosceles, triangle D C E is equilateral, and triangle F C G is isosceles. Find the measure of the angle 1 at vertex C.",
 		"problem_img": "858_g3k-2129.png",
 		"problem_answer": [
 			"18"
@@ -24421,7 +24420,7 @@
 		"source": "Geometry3k-2133",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\tan S.",
+		"problem_text_en": "find tan S.",
 		"problem_img": "861_g3k-2133.png",
 		"problem_answer": [
 			"0.75"
@@ -24556,7 +24555,7 @@
 		"source": "Geometry3k-2140",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Q is the incenter of \\triangle J K L. Find Q P.",
+		"problem_text_en": "Q is the incenter of triangle J K L. Find Q P.",
 		"problem_img": "866_g3k-2140.png",
 		"problem_answer": [
 			"15"
@@ -24946,7 +24945,7 @@
 		"source": "Geometry3k-2169",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "880_g3k-2169.png",
 		"problem_answer": [
 			"61"
@@ -24974,7 +24973,7 @@
 		"source": "Geometry3k-2172",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "881_g3k-2172.png",
 		"problem_answer": [
 			"37.5"
@@ -25003,7 +25002,7 @@
 		"source": "Geometry3k-2174",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 4.",
+		"problem_text_en": "Find m angle 4.",
 		"problem_img": "882_g3k-2174.png",
 		"problem_answer": [
 			"56"
@@ -25113,7 +25112,7 @@
 		"source": "Geometry3k-2184",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle W X Y and \\triangle X Y Z are isosceles and m \\angle X Y Z = 128. Find the measure of \\angle X W Y.",
+		"problem_text_en": "triangle W X Y and triangle X Y Z are isosceles and m angle X Y Z = 128. Find the measure of angle X W Y.",
 		"problem_img": "886_g3k-2184.png",
 		"problem_answer": [
 			"52"
@@ -25141,7 +25140,7 @@
 		"source": "Geometry3k-2185",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle Z to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle Z to the nearest tenth.",
 		"problem_img": "887_g3k-2185.png",
 		"problem_answer": [
 			"44.4"
@@ -25193,7 +25192,7 @@
 		"source": "Geometry3k-2189",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\sin B.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find sin B.",
 		"problem_img": "889_g3k-2189.png",
 		"problem_answer": [
 			"0.88"
@@ -25412,7 +25411,7 @@
 		"source": "Geometry3k-2207",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "897_g3k-2207.png",
 		"problem_answer": [
 			"65"
@@ -25517,7 +25516,7 @@
 		"source": "Geometry3k-2224",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m \\angle G J N = 6 y - 3, m \\angle N J H = 4 y + 23 and m \\angle H M G = 4 z + 14. G P is a median of \\triangle G H J. Find H J.",
+		"problem_text_en": "In triangle G H J, H P = 5 x - 16, P J = 3 x + 8, m angle G J N = 6 y - 3, m angle N J H = 4 y + 23 and m angle H M G = 4 z + 14. G P is a median of triangle G H J. Find H J.",
 		"problem_img": "901_g3k-2224.png",
 		"problem_answer": [
 			"88"
@@ -25658,7 +25657,7 @@
 		"source": "Geometry3k-2237",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Y.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Y.",
 		"problem_img": "906_g3k-2237.png",
 		"problem_answer": [
 			"5"
@@ -25722,7 +25721,7 @@
 		"source": "Geometry3k-2240",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "908_g3k-2240.png",
 		"problem_answer": [
 			"80"
@@ -25854,7 +25853,7 @@
 		"source": "Geometry3k-2252",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find E G if \\triangle A C B \\sim \\triangle E G F, A D is an altitude of \\triangle A C B, E H is an altitude of \\triangle E G F, A C = 17, A D = 15, and E H = 7.5.",
+		"problem_text_en": "Find E G if triangle A C B sim triangle E G F, A D is an altitude of triangle A C B, E H is an altitude of triangle E G F, A C = 17, A D = 15, and E H = 7.5.",
 		"problem_img": "913_g3k-2252.png",
 		"problem_answer": [
 			"8.5"
@@ -25887,7 +25886,7 @@
 		"source": "Geometry3k-2253",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle T to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle T to the nearest tenth.",
 		"problem_img": "914_g3k-2253.png",
 		"problem_answer": [
 			"61.4"
@@ -25912,7 +25911,7 @@
 		"source": "Geometry3k-2259",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle D F G and \\triangle F G H are isosceles, m \\angle F D H = 28 and D G \\cong F G \\cong F H. Find the measure of \\angle D G F.",
+		"problem_text_en": "triangle D F G and triangle F G H are isosceles, m angle F D H = 28 and D G cong F G cong F H. Find the measure of angle D G F.",
 		"problem_img": "915_g3k-2259.png",
 		"problem_answer": [
 			"124"
@@ -25942,7 +25941,7 @@
 		"source": "Geometry3k-2261",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Point S is the incenter of \\triangle J P L. Find S Q.",
+		"problem_text_en": "Point S is the incenter of triangle J P L. Find S Q.",
 		"problem_img": "916_g3k-2261.png",
 		"problem_answer": [
 			"6"
@@ -25999,7 +25998,7 @@
 		"source": "Geometry3k-2264",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 2.",
+		"problem_text_en": "Find m angle 2.",
 		"problem_img": "918_g3k-2264.png",
 		"problem_answer": [
 			"21"
@@ -26102,7 +26101,7 @@
 		"source": "Geometry3k-2271",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Point S is the incenter of \\triangle J P L. Find Q J.",
+		"problem_text_en": "Point S is the incenter of triangle J P L. Find Q J.",
 		"problem_img": "922_g3k-2271.png",
 		"problem_answer": [
 			"8"
@@ -26132,7 +26131,7 @@
 		"source": "Geometry3k-2273",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 1.",
+		"problem_text_en": "Find the measure of angle 1.",
 		"problem_img": "923_g3k-2273.png",
 		"problem_answer": [
 			"60"
@@ -26186,7 +26185,7 @@
 		"source": "Geometry3k-2281",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find Q S if \\triangle Q R S is an equilateral triangle.",
+		"problem_text_en": "Find Q S if triangle Q R S is an equilateral triangle.",
 		"problem_img": "925_g3k-2281.png",
 		"problem_answer": [
 			"2"
@@ -26296,7 +26295,7 @@
 		"source": "Geometry3k-2289",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle E F G is equilateral, and E H bisects \\angle E. Find m \\angle 1.",
+		"problem_text_en": "triangle E F G is equilateral, and E H bisects angle E. Find m angle 1.",
 		"problem_img": "929_g3k-2289.png",
 		"problem_answer": [
 			"30"
@@ -26323,7 +26322,7 @@
 		"source": "Geometry3k-2290",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 8, b = 15, and c = 17, find \\cos A.",
+		"problem_text_en": "a = 8, b = 15, and c = 17, find cos A.",
 		"problem_img": "930_g3k-2290.png",
 		"problem_answer": [
 			"0.88"
@@ -26352,7 +26351,7 @@
 		"source": "Geometry3k-2292",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\triangle A E C. Find P B. Rounded to the nearest hundredth.",
+		"problem_text_en": "P is the incenter of triangle A E C. Find P B. Rounded to the nearest hundredth.",
 		"problem_img": "931_g3k-2292.png",
 		"problem_answer": [
 			"7.08"
@@ -26383,7 +26382,7 @@
 		"source": "Geometry3k-2293",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find D E if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + \\frac { 10 } { 3 }.",
+		"problem_text_en": "Find D E if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + frac { 10 } { 3 }.",
 		"problem_img": "932_g3k-2293.png",
 		"problem_answer": [
 			"15"
@@ -26413,7 +26412,7 @@
 		"source": "Geometry3k-2297",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "933_g3k-2297.png",
 		"problem_answer": [
 			"82"
@@ -26516,7 +26515,7 @@
 		"source": "Geometry3k-2306",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\overrightarrow A C bisects \\angle D A B, B C = 4 x + 8, and D C = 9 x - 7, find B C.",
+		"problem_text_en": "If overrightarrow A C bisects angle D A B, B C = 4 x + 8, and D C = 9 x - 7, find B C.",
 		"problem_img": "937_g3k-2306.png",
 		"problem_answer": [
 			"20"
@@ -26599,7 +26598,7 @@
 		"source": "Geometry3k-2309",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m \\angle P = 58. Find m \\angle P Q S.",
+		"problem_text_en": "In quadrilateral P Q R S, P Q = 721, Q R = 547, R S = 593, P S = 756, and m angle P = 58. Find m angle P Q S.",
 		"problem_img": "940_g3k-2309.png",
 		"problem_answer": [
 			"63.5"
@@ -26653,7 +26652,7 @@
 		"source": "Geometry3k-2312",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle D F G and \\triangle F G H are isosceles, m \\angle F D H = 28 and D G \\cong F G \\cong F H. Find the measure of \\angle F G H.",
+		"problem_text_en": "triangle D F G and triangle F G H are isosceles, m angle F D H = 28 and D G cong F G cong F H. Find the measure of angle F G H.",
 		"problem_img": "942_g3k-2312.png",
 		"problem_answer": [
 			"56"
@@ -26708,7 +26707,7 @@
 		"source": "Geometry3k-2314",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\sin x = 0.6 and A B = 12, what is the area of \\triangle A B C?",
+		"problem_text_en": "If sin x = 0.6 and A B = 12, what is the area of triangle A B C?",
 		"problem_img": "944_g3k-2314.png",
 		"problem_answer": [
 			"34.6"
@@ -26760,7 +26759,7 @@
 		"source": "Geometry3k-2319",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle B. Round to the nearest Measure.",
+		"problem_text_en": "Find the measure of angle B. Round to the nearest Measure.",
 		"problem_img": "946_g3k-2319.png",
 		"problem_answer": [
 			"50"
@@ -26846,7 +26845,7 @@
 		"source": "Geometry3k-2323",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle A D F, if \\triangle A D F \\sim \\triangle B C E, B C = 24, E B = 12, C E = 18, and D F = 21.",
+		"problem_text_en": "Find the perimeter of triangle A D F, if triangle A D F sim triangle B C E, B C = 24, E B = 12, C E = 18, and D F = 21.",
 		"problem_img": "949_g3k-2323.png",
 		"problem_answer": [
 			"63"
@@ -26873,7 +26872,7 @@
 		"source": "Geometry3k-2331",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m \\angle P R Z = 4 b - 17, m \\angle Z R Q = 3 b - 4, m \\angle Q Y R = 7 b + 6, and m \\angle P X R = 2 a + 10. If Q Y is a perpendicular bisector of P R, find b.",
+		"problem_text_en": "In triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m angle P R Z = 4 b - 17, m angle Z R Q = 3 b - 4, m angle Q Y R = 7 b + 6, and m angle P X R = 2 a + 10. If Q Y is a perpendicular bisector of P R, find b.",
 		"problem_img": "950_g3k-2331.png",
 		"problem_answer": [
 			"12"
@@ -26905,7 +26904,7 @@
 		"source": "Geometry3k-2333",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle D E F, P is the midpoint of D E, and Q is the midpoint of side D F. If E F = 3 x + 4 and P Q = 20, what is the value of x?",
+		"problem_text_en": "In triangle D E F, P is the midpoint of D E, and Q is the midpoint of side D F. If E F = 3 x + 4 and P Q = 20, what is the value of x?",
 		"problem_img": "951_g3k-2333.png",
 		"problem_answer": [
 			"12"
@@ -26932,7 +26931,7 @@
 		"source": "Geometry3k-2334",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle B A C.",
+		"problem_text_en": "Find m angle B A C.",
 		"problem_img": "952_g3k-2334.png",
 		"problem_answer": [
 			"60"
@@ -27006,7 +27005,7 @@
 		"source": "Geometry3k-2337",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 5 if A B \\perp B C.",
+		"problem_text_en": "Find the measure of angle 5 if A B perp B C.",
 		"problem_img": "955_g3k-2337.png",
 		"problem_answer": [
 			"64"
@@ -27041,7 +27040,7 @@
 		"source": "Geometry3k-2338",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of the \\triangle W Z X, if \\triangle W Z X \\sim \\triangle S R T, S T = 6, W X = 5, and the perimeter of \\triangle S R T = 15.",
+		"problem_text_en": "Find the perimeter of the triangle W Z X, if triangle W Z X sim triangle S R T, S T = 6, W X = 5, and the perimeter of triangle S R T = 15.",
 		"problem_img": "956_g3k-2338.png",
 		"problem_answer": [
 			"12.5"
@@ -27069,7 +27068,7 @@
 		"source": "Geometry3k-2339",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin V as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin V as a decimal to the nearest hundredth.",
 		"problem_img": "957_g3k-2339.png",
 		"problem_answer": [
 			"0.28"
@@ -27147,7 +27146,7 @@
 		"source": "Geometry3k-2352",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Y.",
+		"problem_text_en": "If P R parallel W X, W X = 10, X Y = 6, W Y = 8, R Y = 5, and P S = 3, find P Y.",
 		"problem_img": "960_g3k-2352.png",
 		"problem_answer": [
 			"5"
@@ -27601,7 +27600,7 @@
 		"source": "Geometry3k-2393",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle L M N \\cong \\triangle Q R S. Find y.",
+		"problem_text_en": "triangle L M N cong triangle Q R S. Find y.",
 		"problem_img": "976_g3k-2393.png",
 		"problem_answer": [
 			"18"
@@ -27657,7 +27656,7 @@
 		"source": "Geometry3k-2396",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 7.",
+		"problem_text_en": "Find m angle 7.",
 		"problem_img": "978_g3k-2396.png",
 		"problem_answer": [
 			"57"
@@ -27880,7 +27879,7 @@
 		"source": "Geometry3k-2423",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find A B if \\triangle A B C is an isosceles triangle with A B \\cong B C.",
+		"problem_text_en": "Find A B if triangle A B C is an isosceles triangle with A B cong B C.",
 		"problem_img": "986_g3k-2423.png",
 		"problem_answer": [
 			"7"
@@ -28104,7 +28103,7 @@
 		"source": "Geometry3k-2439",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle R S T.",
+		"problem_text_en": "Find m angle R S T.",
 		"problem_img": "994_g3k-2439.png",
 		"problem_answer": [
 			"55"
@@ -28128,7 +28127,7 @@
 		"source": "Geometry3k-2443",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "995_g3k-2443.png",
 		"problem_answer": [
 			"108"
@@ -28294,7 +28293,7 @@
 		"source": "Geometry3k-2451",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle R.",
+		"problem_text_en": "Find m angle R.",
 		"problem_img": "1001_g3k-2451.png",
 		"problem_answer": [
 			"29.1"
@@ -28477,7 +28476,7 @@
 		"source": "Geometry3k-2465",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of \\triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find z.",
+		"problem_text_en": "Lines l, m, and n are perpendicular bisectors of triangle P Q R and meet at T. If T Q = 2 x, P T = 3 y - 1, and T R = 8, find z.",
 		"problem_img": "1008_g3k-2465.png",
 		"problem_answer": [
 			"3"
@@ -28565,7 +28564,7 @@
 		"source": "Geometry3k-2472",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Triangle L M N is equilateral, and M P bisects L N. Find the measure of the side of \\triangle L M N.",
+		"problem_text_en": "Triangle L M N is equilateral, and M P bisects L N. Find the measure of the side of triangle L M N.",
 		"problem_img": "1011_g3k-2472.png",
 		"problem_answer": [
 			"10"
@@ -28619,7 +28618,7 @@
 		"source": "Geometry3k-2478",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\triangle L M N \\sim \\triangle Q R S, Q R = 35, R S = 37, S Q = 12, and N L = 5, find the perimeter of \\triangle L M N.",
+		"problem_text_en": "If triangle L M N sim triangle Q R S, Q R = 35, R S = 37, S Q = 12, and N L = 5, find the perimeter of triangle L M N.",
 		"problem_img": "1013_g3k-2478.png",
 		"problem_answer": [
 			"35"
@@ -28650,7 +28649,7 @@
 		"source": "Geometry3k-2480",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 6.",
+		"problem_text_en": "Find m angle 6.",
 		"problem_img": "1014_g3k-2480.png",
 		"problem_answer": [
 			"35"
@@ -28765,7 +28764,7 @@
 		"source": "Geometry3k-2491",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos B as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos B as a decimal to the nearest hundredth.",
 		"problem_img": "1018_g3k-2491.png",
 		"problem_answer": [
 			"0.38"
@@ -28824,7 +28823,7 @@
 		"source": "Geometry3k-2498",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "1020_g3k-2498.png",
 		"problem_answer": [
 			"79"
@@ -28876,7 +28875,7 @@
 		"source": "Geometry3k-2502",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 4.",
+		"problem_text_en": "Find m angle 4.",
 		"problem_img": "1022_g3k-2502.png",
 		"problem_answer": [
 			"33"
@@ -28927,7 +28926,7 @@
 		"source": "Geometry3k-2507",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x if \\triangle J L M \\sim \\triangle Q S T.",
+		"problem_text_en": "Find x if triangle J L M sim triangle Q S T.",
 		"problem_img": "1024_g3k-2507.png",
 		"problem_answer": [
 			"1.5"
@@ -29100,7 +29099,7 @@
 		"source": "Geometry3k-2515",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S T \\cong \\triangle A B C. Find x.",
+		"problem_text_en": "triangle R S T cong triangle A B C. Find x.",
 		"problem_img": "1030_g3k-2515.png",
 		"problem_answer": [
 			"10"
@@ -29127,7 +29126,7 @@
 		"source": "Geometry3k-2516",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle R S V \\cong \\triangle T V S. Find x.",
+		"problem_text_en": "triangle R S V cong triangle T V S. Find x.",
 		"problem_img": "1031_g3k-2516.png",
 		"problem_answer": [
 			"12"
@@ -29156,7 +29155,7 @@
 		"source": "Geometry3k-2518",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos X as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos X as a decimal to the nearest hundredth.",
 		"problem_img": "1032_g3k-2518.png",
 		"problem_answer": [
 			"0.28"
@@ -29182,7 +29181,7 @@
 		"source": "Geometry3k-2520",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "A B \\perp D C and G H \\perp F E. If \\triangle A C D \\sim \\triangle G E F, find A B.",
+		"problem_text_en": "A B perp D C and G H perp F E. If triangle A C D sim triangle G E F, find A B.",
 		"problem_img": "1033_g3k-2520.png",
 		"problem_answer": [
 			"2.2"
@@ -29318,7 +29317,7 @@
 		"source": "Geometry3k-2533",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find J Q if Q is the incenter of \\triangle J L N. Rounded to the nearest hundredth.",
+		"problem_text_en": "Find J Q if Q is the incenter of triangle J L N. Rounded to the nearest hundredth.",
 		"problem_img": "1038_g3k-2533.png",
 		"problem_answer": [
 			"18.79"
@@ -29380,7 +29379,7 @@
 		"source": "Geometry3k-2543",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle B C D, if \\triangle B C D \\sim \\triangle F D E, C D = 12, F D = 5, F E = 4, and D E = 8.",
+		"problem_text_en": "Find the perimeter of triangle B C D, if triangle B C D sim triangle F D E, C D = 12, F D = 5, F E = 4, and D E = 8.",
 		"problem_img": "1040_g3k-2543.png",
 		"problem_answer": [
 			"25.5"
@@ -29467,7 +29466,7 @@
 		"source": "Geometry3k-2558",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find R S if \\triangle Q R S is an equilateral triangle.",
+		"problem_text_en": "Find R S if triangle Q R S is an equilateral triangle.",
 		"problem_img": "1043_g3k-2558.png",
 		"problem_answer": [
 			"2"
@@ -29521,7 +29520,7 @@
 		"source": "Geometry3k-2565",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\tan X.",
+		"problem_text_en": "Find tan X.",
 		"problem_img": "1045_g3k-2565.png",
 		"problem_answer": [
 			"5/12"
@@ -29545,7 +29544,7 @@
 		"source": "Geometry3k-2572",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle M P Q.",
+		"problem_text_en": "Find m angle M P Q.",
 		"problem_img": "1046_g3k-2572.png",
 		"problem_answer": [
 			"101"
@@ -29569,7 +29568,7 @@
 		"source": "Geometry3k-2576",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find X Y of isosceles \\triangle X Y Z.",
+		"problem_text_en": "Find X Y of isosceles triangle X Y Z.",
 		"problem_img": "1047_g3k-2576.png",
 		"problem_answer": [
 			"7"
@@ -29655,7 +29654,7 @@
 		"source": "Geometry3k-2585",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin P as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin P as a decimal to the nearest hundredth.",
 		"problem_img": "1050_g3k-2585.png",
 		"problem_answer": [
 			"0.88"
@@ -29852,7 +29851,7 @@
 		"source": "Geometry3k-2598",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle R U W if \\triangle R U W \\sim \\triangle S T V, S T = 24, V S = 12, V T = 18 and U W = 21.",
+		"problem_text_en": "Find the perimeter of triangle R U W if triangle R U W sim triangle S T V, S T = 24, V S = 12, V T = 18 and U W = 21.",
 		"problem_img": "1057_g3k-2598.png",
 		"problem_answer": [
 			"63"
@@ -30015,7 +30014,7 @@
 		"source": "Geometry3k-2614",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle E F G is equilateral, and E H bisects \\angle E. Find m \\angle 2.",
+		"problem_text_en": "triangle E F G is equilateral, and E H bisects angle E. Find m angle 2.",
 		"problem_img": "1063_g3k-2614.png",
 		"problem_answer": [
 			"30"
@@ -30069,7 +30068,7 @@
 		"source": "Geometry3k-2617",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle D E F, m \\angle E = 108, m \\angle F = 26, and f = 20. Find d to the nearest whole number.",
+		"problem_text_en": "In triangle D E F, m angle E = 108, m angle F = 26, and f = 20. Find d to the nearest whole number.",
 		"problem_img": "1065_g3k-2617.png",
 		"problem_answer": [
 			"33"
@@ -30185,7 +30184,7 @@
 		"source": "Geometry3k-2626",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "What is the area of \\parallelogram A B C D?",
+		"problem_text_en": "What is the area of parallelogram A B C D?",
 		"problem_img": "1069_g3k-2626.png",
 		"problem_answer": [
 			"48"
@@ -30211,7 +30210,7 @@
 		"source": "Geometry3k-2630",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find B D if B F bisects \\angle A B C and A C \\parallel E D, B A = 6, B C = 7.5, A C = 9, and D E = 9.",
+		"problem_text_en": "Find B D if B F bisects angle A B C and A C parallel E D, B A = 6, B C = 7.5, A C = 9, and D E = 9.",
 		"problem_img": "1070_g3k-2630.png",
 		"problem_answer": [
 			"13.5"
@@ -30241,7 +30240,7 @@
 		"source": "Geometry3k-2632",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, \\triangle A B C \\sim \\triangle D E F. B G is a median of \\triangle A B C, and E H is a median of \\triangle D E F. Find E H if B C = 30, B G = 15, and E F = 15.",
+		"problem_text_en": "In the figure, triangle A B C sim triangle D E F. B G is a median of triangle A B C, and E H is a median of triangle D E F. Find E H if B C = 30, B G = 15, and E F = 15.",
 		"problem_img": "1071_g3k-2632.png",
 		"problem_answer": [
 			"7.5"
@@ -30269,7 +30268,7 @@
 		"source": "Geometry3k-2634",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "X Y and X Z are midsegments of \\triangle R S T. Find S T.",
+		"problem_text_en": "X Y and X Z are midsegments of triangle R S T. Find S T.",
 		"problem_img": "1072_g3k-2634.png",
 		"problem_answer": [
 			"14"
@@ -30326,7 +30325,7 @@
 		"source": "Geometry3k-2638",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle K L N and \\triangle L M N are isosceles and m \\angle J K N = 130. Find the measure of \\angle J.",
+		"problem_text_en": "triangle K L N and triangle L M N are isosceles and m angle J K N = 130. Find the measure of angle J.",
 		"problem_img": "1074_g3k-2638.png",
 		"problem_answer": [
 			"106"
@@ -30383,7 +30382,7 @@
 		"source": "Geometry3k-2641",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle A B C.",
+		"problem_text_en": "Find m angle A B C.",
 		"problem_img": "1076_g3k-2641.png",
 		"problem_answer": [
 			"51"
@@ -30435,7 +30434,7 @@
 		"source": "Geometry3k-2646",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle A to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle A to the nearest tenth.",
 		"problem_img": "1078_g3k-2646.png",
 		"problem_answer": [
 			"41.8"
@@ -30520,7 +30519,7 @@
 		"source": "Geometry3k-2652",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\sin A.",
+		"problem_text_en": "a = 14, b = 48, and c = 50, find sin A.",
 		"problem_img": "1081_g3k-2652.png",
 		"problem_answer": [
 			"0.28"
@@ -30663,7 +30662,7 @@
 		"source": "Geometry3k-2666",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "E B \\parallel D C. Find A B.",
+		"problem_text_en": "E B parallel D C. Find A B.",
 		"problem_img": "1086_g3k-2666.png",
 		"problem_answer": [
 			"7.5"
@@ -30831,7 +30830,7 @@
 		"source": "Geometry3k-2686",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle A B C.",
+		"problem_text_en": "Find m angle A B C.",
 		"problem_img": "1092_g3k-2686.png",
 		"problem_answer": [
 			"22"
@@ -30941,7 +30940,7 @@
 		"source": "Geometry3k-2702",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m \\angle P R Z = 4 b - 17, m \\angle Z R Q = 3 b - 4, m \\angle Q Y R = 7 b + 6, and m \\angle P X R = 2 a + 10. If R Z is an angle bisector, find m \\angle P R Z.",
+		"problem_text_en": "In triangle P Q R, Z Q = 3 a - 11, Z P = a + 5, P Y = 2 c - 1, Y R = 4 c - 11, m angle P R Z = 4 b - 17, m angle Z R Q = 3 b - 4, m angle Q Y R = 7 b + 6, and m angle P X R = 2 a + 10. If R Z is an angle bisector, find m angle P R Z.",
 		"problem_img": "1096_g3k-2702.png",
 		"problem_answer": [
 			"35"
@@ -31083,7 +31082,7 @@
 		"source": "Geometry3k-2718",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 1.",
+		"problem_text_en": "Find the measure of angle 1.",
 		"problem_img": "1101_g3k-2718.png",
 		"problem_answer": [
 			"65"
@@ -31110,7 +31109,7 @@
 		"source": "Geometry3k-2721",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, and P M = 2K P, find K M.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, and P M = 2K P, find K M.",
 		"problem_img": "1102_g3k-2721.png",
 		"problem_answer": [
 			"15"
@@ -31196,7 +31195,7 @@
 		"source": "Geometry3k-2724",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle L M N \\cong \\triangle Q R S. Find x.",
+		"problem_text_en": "triangle L M N cong triangle Q R S. Find x.",
 		"problem_img": "1105_g3k-2724.png",
 		"problem_answer": [
 			"20"
@@ -31250,7 +31249,7 @@
 		"source": "Geometry3k-2727",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle Z to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle Z to the nearest tenth.",
 		"problem_img": "1107_g3k-2727.png",
 		"problem_answer": [
 			"33.7"
@@ -31359,7 +31358,7 @@
 		"source": "Geometry3k-2738",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan L as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan L as a decimal to the nearest hundredth.",
 		"problem_img": "1111_g3k-2738.png",
 		"problem_answer": [
 			"0.42"
@@ -31440,7 +31439,7 @@
 		"source": "Geometry3k-2744",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle A B C if m \\angle C D A = 61.",
+		"problem_text_en": "Find m angle A B C if m angle C D A = 61.",
 		"problem_img": "1114_g3k-2744.png",
 		"problem_answer": [
 			"140"
@@ -31497,7 +31496,7 @@
 		"source": "Geometry3k-2751",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\frac { I J } { X J } = \\frac { H J } { Y J }, m \\angle W X J = 130 and m \\angle W Z G = 20, find m \\angle Y I Z.",
+		"problem_text_en": "If frac { I J } { X J } = frac { H J } { Y J }, m angle W X J = 130 and m angle W Z G = 20, find m angle Y I Z.",
 		"problem_img": "1116_g3k-2751.png",
 		"problem_answer": [
 			"50"
@@ -31524,7 +31523,7 @@
 		"source": "Geometry3k-2756",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle W Z X, if \\triangle W Z X \\sim \\triangle S R T, S T = 6, W X = 5, and the perimeter of \\triangle S R T = 15.",
+		"problem_text_en": "Find the perimeter of triangle W Z X, if triangle W Z X sim triangle S R T, S T = 6, W X = 5, and the perimeter of triangle S R T = 15.",
 		"problem_img": "1117_g3k-2756.png",
 		"problem_answer": [
 			"12.5"
@@ -31582,7 +31581,7 @@
 		"source": "Geometry3k-2762",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle A B C \\sim \\triangle F D G. Find the value of x.",
+		"problem_text_en": "triangle A B C sim triangle F D G. Find the value of x.",
 		"problem_img": "1119_g3k-2762.png",
 		"problem_answer": [
 			"10"
@@ -31663,7 +31662,7 @@
 		"source": "Geometry3k-2773",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "P is the incenter of \\triangle A E C. Find m \\angle D E P.",
+		"problem_text_en": "P is the incenter of triangle A E C. Find m angle D E P.",
 		"problem_img": "1122_g3k-2773.png",
 		"problem_answer": [
 			"28.5"
@@ -31806,7 +31805,7 @@
 		"source": "Geometry3k-2788",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "1127_g3k-2788.png",
 		"problem_answer": [
 			"70"
@@ -31890,7 +31889,7 @@
 		"source": "Geometry3k-2802",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle C A D.",
+		"problem_text_en": "Find m angle C A D.",
 		"problem_img": "1130_g3k-2802.png",
 		"problem_answer": [
 			"44"
@@ -32125,7 +32124,7 @@
 		"source": "Geometry3k-2828",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle J K L \\sim \\triangle W Y Z. Find x.",
+		"problem_text_en": "triangle J K L sim triangle W Y Z. Find x.",
 		"problem_img": "1139_g3k-2828.png",
 		"problem_answer": [
 			"21"
@@ -32152,7 +32151,7 @@
 		"source": "Geometry3k-2832",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 3.",
+		"problem_text_en": "Find m angle 3.",
 		"problem_img": "1140_g3k-2832.png",
 		"problem_answer": [
 			"66"
@@ -32180,7 +32179,7 @@
 		"source": "Geometry3k-2833",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In \\triangle C D F, K is the centroid and D K = 16. Find C D.",
+		"problem_text_en": "In triangle C D F, K is the centroid and D K = 16. Find C D.",
 		"problem_img": "1141_g3k-2833.png",
 		"problem_answer": [
 			"18"
@@ -32240,7 +32239,7 @@
 		"source": "Geometry3k-2838",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find P R.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find P R.",
 		"problem_img": "1143_g3k-2838.png",
 		"problem_answer": [
 			"50/3"
@@ -32268,7 +32267,7 @@
 		"source": "Geometry3k-2841",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos A as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos A as a decimal to the nearest hundredth.",
 		"problem_img": "1144_g3k-2841.png",
 		"problem_answer": [
 			"0.60"
@@ -32294,7 +32293,7 @@
 		"source": "Geometry3k-2843",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle L M N \\cong \\triangle Q R S. Find x.",
+		"problem_text_en": "triangle L M N cong triangle Q R S. Find x.",
 		"problem_img": "1145_g3k-2843.png",
 		"problem_answer": [
 			"5"
@@ -32373,7 +32372,7 @@
 		"source": "Geometry3k-2853",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "a = 14, b = 48, and c = 50, find \\cos A.",
+		"problem_text_en": "a = 14, b = 48, and c = 50, find cos A.",
 		"problem_img": "1148_g3k-2853.png",
 		"problem_answer": [
 			"0.96"
@@ -32488,7 +32487,7 @@
 		"source": "Geometry3k-2864",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos N as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos N as a decimal to the nearest hundredth.",
 		"problem_img": "1152_g3k-2864.png",
 		"problem_answer": [
 			"0.38"
@@ -32541,7 +32540,7 @@
 		"source": "Geometry3k-2874",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If P R \\parallel K L, K N = 9, L N = 16, P M = 2 K P, find M N.",
+		"problem_text_en": "If P R parallel K L, K N = 9, L N = 16, P M = 2 K P, find M N.",
 		"problem_img": "1154_g3k-2874.png",
 		"problem_answer": [
 			"12"
@@ -32599,7 +32598,7 @@
 		"source": "Geometry3k-2876",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the perimeter of \\triangle D E F, if \\triangle D E F \\sim \\triangle C B F, perimeter of \\triangle C B F = 27, D F = 6, and F C = 8.",
+		"problem_text_en": "Find the perimeter of triangle D E F, if triangle D E F sim triangle C B F, perimeter of triangle C B F = 27, D F = 6, and F C = 8.",
 		"problem_img": "1156_g3k-2876.png",
 		"problem_answer": [
 			"20.25"
@@ -32679,7 +32678,7 @@
 		"source": "Geometry3k-2881",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find E G if G is the incenter of \\triangle A B C.",
+		"problem_text_en": "Find E G if G is the incenter of triangle A B C.",
 		"problem_img": "1159_g3k-2881.png",
 		"problem_answer": [
 			"5"
@@ -32707,7 +32706,7 @@
 		"source": "Geometry3k-2884",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find B C if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + \\frac { 10 } { 3 }.",
+		"problem_text_en": "Find B C if A B = 6, A F = 8, B C = x, C D = y, D E = 2 y - 3, and F E = x + frac { 10 } { 3 }.",
 		"problem_img": "1160_g3k-2884.png",
 		"problem_answer": [
 			"10"
@@ -32821,7 +32820,7 @@
 		"source": "Geometry3k-2892",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "in \\triangle X Y Z, P is the centroid, K P = 3, and X J = 8. Find Y J.",
+		"problem_text_en": "in triangle X Y Z, P is the centroid, K P = 3, and X J = 8. Find Y J.",
 		"problem_img": "1164_g3k-2892.png",
 		"problem_answer": [
 			"8"
@@ -32848,7 +32847,7 @@
 		"source": "Geometry3k-2893",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\cos P as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of cos P as a decimal to the nearest hundredth.",
 		"problem_img": "1165_g3k-2893.png",
 		"problem_answer": [
 			"0.47"
@@ -32928,7 +32927,7 @@
 		"source": "Geometry3k-2901",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle W X Y \\cong \\triangle W X Z. Find y.",
+		"problem_text_en": "triangle W X Y cong triangle W X Z. Find y.",
 		"problem_img": "1168_g3k-2901.png",
 		"problem_answer": [
 			"4"
@@ -32981,7 +32980,7 @@
 		"source": "Geometry3k-2903",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\sin N as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of sin N as a decimal to the nearest hundredth.",
 		"problem_img": "1170_g3k-2903.png",
 		"problem_answer": [
 			"0.92"
@@ -33033,7 +33032,7 @@
 		"source": "Geometry3k-2907",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle J K L.",
+		"problem_text_en": "Find m angle J K L.",
 		"problem_img": "1172_g3k-2907.png",
 		"problem_answer": [
 			"37"
@@ -33088,7 +33087,7 @@
 		"source": "Geometry3k-2909",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle 1.",
+		"problem_text_en": "Find m angle 1.",
 		"problem_img": "1174_g3k-2909.png",
 		"problem_answer": [
 			"37.5"
@@ -33267,7 +33266,7 @@
 		"source": "Geometry3k-2918",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find x so that G J \\parallel F K. G H = x + 3.5, H J = x - 8.5, F H = 21, H K = 7.",
+		"problem_text_en": "Find x so that G J parallel F K. G H = x + 3.5, H J = x - 8.5, F H = 21, H K = 7.",
 		"problem_img": "1180_g3k-2918.png",
 		"problem_answer": [
 			"14.5"
@@ -33294,7 +33293,7 @@
 		"source": "Geometry3k-2921",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle T to the nearest tenth.",
+		"problem_text_en": "Find the measure of angle T to the nearest tenth.",
 		"problem_img": "1181_g3k-2921.png",
 		"problem_answer": [
 			"21.8"
@@ -33349,7 +33348,7 @@
 		"source": "Geometry3k-2924",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find \\cos C.",
+		"problem_text_en": "Find cos C.",
 		"problem_img": "1183_g3k-2924.png",
 		"problem_answer": [
 			"4/5"
@@ -33374,7 +33373,7 @@
 		"source": "Geometry3k-2928",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find C F if B F bisects \\angle A B C and A C \\parallel E D, B A = 6, B C = 7.5, A C = 9, and D E = 9.",
+		"problem_text_en": "Find C F if B F bisects angle A B C and A C parallel E D, B A = 6, B C = 7.5, A C = 9, and D E = 9.",
 		"problem_img": "1184_g3k-2928.png",
 		"problem_answer": [
 			"5"
@@ -33404,7 +33403,7 @@
 		"source": "Geometry3k-2929",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "If \\frac { I J } { X J } = \\frac { H J } { Y J }, m \\angle W X J = 130 and m \\angle W Z G = 20, find m \\angle J.",
+		"problem_text_en": "If frac { I J } { X J } = frac { H J } { Y J }, m angle W X J = 130 and m angle W Z G = 20, find m angle J.",
 		"problem_img": "1185_g3k-2929.png",
 		"problem_answer": [
 			"60"
@@ -33431,7 +33430,7 @@
 		"source": "Geometry3k-2930",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Use a calculator to find the measure of \\angle J to the nearest Measure.",
+		"problem_text_en": "Use a calculator to find the measure of angle J to the nearest Measure.",
 		"problem_img": "1186_g3k-2930.png",
 		"problem_answer": [
 			"40"
@@ -33483,7 +33482,7 @@
 		"source": "Geometry3k-2936",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Express the ratio of \\tan M as a decimal to the nearest hundredth.",
+		"problem_text_en": "Express the ratio of tan M as a decimal to the nearest hundredth.",
 		"problem_img": "1188_g3k-2936.png",
 		"problem_answer": [
 			"0.42"
@@ -33679,7 +33678,7 @@
 		"source": "Geometry3k-2953",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find the measure of \\angle 3.",
+		"problem_text_en": "Find the measure of angle 3.",
 		"problem_img": "1195_g3k-2953.png",
 		"problem_answer": [
 			"95"
@@ -33763,7 +33762,7 @@
 		"source": "Geometry3k-2960",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "find \\sin S.",
+		"problem_text_en": "find sin S.",
 		"problem_img": "1198_g3k-2960.png",
 		"problem_answer": [
 			"0.6"
@@ -33820,7 +33819,7 @@
 		"source": "Geometry3k-2963",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of \\angle A C B, and R is the midpoint of A B. Find m \\angle A C Q if m \\angle A C B = 123 - x and m \\angle Q C B = 42 + x.",
+		"problem_text_en": "In the figure, C P is an altitude, C Q is the angle bisector of angle A C B, and R is the midpoint of A B. Find m angle A C Q if m angle A C B = 123 - x and m angle Q C B = 42 + x.",
 		"problem_img": "1200_g3k-2963.png",
 		"problem_answer": [
 			"55"
@@ -33907,7 +33906,7 @@
 		"source": "Geometry3k-2970",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "Find m \\angle W Y Z.",
+		"problem_text_en": "Find m angle W Y Z.",
 		"problem_img": "1203_g3k-2970.png",
 		"problem_answer": [
 			"23"
@@ -34098,7 +34097,7 @@
 		"source": "Geometry3k-2991",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "m \\angle B A C = 38, B C = 5, and D C = 5, find m \\angle D A C.",
+		"problem_text_en": "m angle B A C = 38, B C = 5, and D C = 5, find m angle D A C.",
 		"problem_img": "1210_g3k-2991.png",
 		"problem_answer": [
 			"38"
@@ -34125,7 +34124,7 @@
 		"source": "Geometry3k-2995",
 		"problem_level": 3,
 		"problem_text_cn": "",
-		"problem_text_en": "\\triangle B C D \\cong \\triangle W X Y. Find x.",
+		"problem_text_en": "triangle B C D cong triangle W X Y. Find x.",
 		"problem_img": "1211_g3k-2995.png",
 		"problem_answer": [
 			"3"

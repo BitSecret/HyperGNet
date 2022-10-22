@@ -12,8 +12,6 @@ from utility import Utility as util
 import time
 
 """
-1.完成定理 标注题目 标注到75了  ok
-2.68  74 没标注  ok
 """
 
 

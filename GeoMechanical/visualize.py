@@ -56,7 +56,7 @@ class SolutionTree:
             node_index = self.node_count
             self.node_count += 1
             self.nodes.append((node_name, node_type, c_index))
-            self.dot.node(str(node_index), node_name)
+            self.dot.node(str(node_index), str(node_name))
             return node_index
 
         if (node_name, node_type, c_index) not in self.nodes:    # node_type == "condition"
@@ -73,12 +73,12 @@ class SolutionTree:
             self.edges.append((node1, node2))
             self.dot.edge(str(node1), str(node2))
 
-    def show_tree(self):
+    def save_tree(self, file_dir):
         if self.dot is not None:
-            self.dot.render(directory="./solution_tree/", view=False)
-            with open("./solution_tree/{}_nodes.pk".format(self.dot.name, ), 'wb') as f:
+            self.dot.render(directory=file_dir, view=False)
+            with open(file_dir + "{}_nodes.pk".format(self.dot.name, ), 'wb') as f:
                 pickle.dump(self.nodes, f)
-            with open("./solution_tree/{}_edges.pk".format(self.dot.name, ), 'wb') as f:
+            with open(file_dir + "{}_edges.pk".format(self.dot.name, ), 'wb') as f:
                 pickle.dump(self.edges, f)
         else:
             raise RuntimeError("Please generate the SolutionTree before showing.")

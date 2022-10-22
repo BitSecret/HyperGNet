@@ -1011,7 +1011,7 @@ class Problem(ProblemLogic):
             print("step: {}".format(self.fl.reasoning_fls_step[fl]), end="  ")
             print(fl)
 
-        self.s_tree.generate_tree(self)    # 生成求解树
+        self.s_tree.generate_tree(self)  # 生成求解树
 
         # Logic-Construction
         print("\033[33mConstruction:\033[0m")
@@ -1106,9 +1106,6 @@ class Problem(ProblemLogic):
         for solve_time in self.solve_time_list:
             print(solve_time)
 
-        print()
-        self.s_tree.show_tree()
-
     def simpel_show(self):
         print("\033[36mproblem_index:\033[0m", end=" ")
         print(self.problem_index)
@@ -1125,3 +1122,6 @@ class Problem(ProblemLogic):
                 print("\033[32msolved\033[0m")
             else:
                 print("\033[31munsolved\033[0m")
+
+    def save_solution_data(self, file_dir):
+        self.s_tree.save_tree(file_dir)  # 保存求解树

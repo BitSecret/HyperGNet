@@ -3,33 +3,36 @@ from solver import Solver
 from func_timeout import FunctionTimedOut
 import traceback
 import time
-geo3k_trans_data = "../data/geo3k_trans_data/trans.json"
-template_data = "../data/generated_data/temp.json"
-generated_data = "../data/generated_data/gen.json"
-theorem_test_data = "../data/theorem_test_data/theo.json"
+import config
 
 
-def mode_0(solver):
+# geo3k_trans_data, 一次运行1个题目，并输出解题过程
+def geo3k_normal_mode():
+    solver = Solver()
     while True:
         try:
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(config.geo3k_trans_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
             solver.solve()
             solver.problem.show()
+            solver.problem.save_solution_data(config.solution_data + "g3k_normal/")
+            solver.problem.s_tree.show_tree_data()
         except Exception:  # 一般报错
             traceback.print_exc()
         except FunctionTimedOut as e:  # 超时报错
             print("求解方程组超时！")
 
 
-def mode_1(solver):
+# geo3k_trans_data, 一次运行n个题目，并输出求解结果
+def geo3k_step_mode():
+    solver = Solver()
     count = int(input("problem max count:"))
-    problems = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))
+    problems = json.load(open(config.geo3k_trans_data, "r", encoding="utf-8"))
     time_start = time.time()
     theorems = []
 
@@ -57,13 +60,15 @@ def mode_1(solver):
     print("{} problems. time consuming: {:.6f}s. avg: {} s/problem".format(count, time_cons, time_cons / count))
 
 
-def mode_2(solver):
+# template_data, 一次运行1个题目，并输出解题过程
+def template_normal_mode():
+    solver = Solver()
     while True:
         try:
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(template_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(config.template_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
@@ -75,8 +80,10 @@ def mode_2(solver):
             print("求解方程组超时！")
 
 
-def mode_3(solver):
-    problems = json.load(open(generated_data, "r", encoding="utf-8"))
+# generated_data, 一次运行所有题目，并输出求解结果
+def generated_step_mode():
+    solver = Solver()
+    problems = json.load(open(config.generated_data, "r", encoding="utf-8"))
     for key in problems.keys():
         problem = problems[key]
         solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
@@ -86,13 +93,15 @@ def mode_3(solver):
         solver.problem.simpel_show()
 
 
-def mode_4(solver):
+# theorem_test_data, 一次运行1个题目，并输出解题过程
+def theorem_normal_mode():
+    solver = Solver()
     while True:
         try:
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(theorem_test_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(config.theorem_test_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
@@ -104,22 +113,5 @@ def mode_4(solver):
             print("求解方程组超时！")
 
 
-def main():
-    solver = Solver()
-    mode = int(input("mode:"))
-    if mode == 0:  # trans
-        mode_0(solver)
-    elif mode == 1:  # trans-auto
-        mode_1(solver)
-    elif mode == 2:  # gen-temp
-        mode_2(solver)
-    elif mode == 3:  # gen
-        mode_3(solver)
-    elif mode == 4:  # theorem test
-        mode_4(solver)
-    else:
-        print("mode selection error.")
-
-
 if __name__ == "__main__":
-    main()
+    geo3k_normal_mode()

@@ -2,7 +2,7 @@
 # import math
 # import json
 # from facts import ConditionType as cType
-# import string
+import string
 # from graphviz import Digraph
 # test_define_file = "./test_data/test_define.json"
 # test_problem_file = "./test_data/problem.json"
@@ -370,3 +370,6 @@
 #
 # print("A" < "B")
 # print("a" < "b")
+
+for i in string.ascii_lowercase:
+    print(i)
