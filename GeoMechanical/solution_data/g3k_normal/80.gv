@@ -1,0 +1,68 @@
+digraph 80 {
+	0 [label="('Target', 'pt_cpd')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'pt_cpd - 36.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'pt_bpa - 12.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'pt_bpa - 0.3333333336415*pt_cpd')" shape=box]
+	5 -> 3
+	6 [label="79_similar_property_perimeter_ratio"]
+	6 -> 5
+	7 [label="('Equation', 'll_ap - 3.60555127')" shape=box]
+	7 -> 6
+	8 [label="('Equation', 'll_pd - 10.8166538')" shape=box]
+	8 -> 6
+	9 [label="('Similar', 'ABP', 'DCP')" shape=box]
+	9 -> 6
+	10 [label="83_similar_judgment_aa"]
+	10 -> 9
+	11 [label="('Triangle', 'ABP')" shape=box]
+	11 -> 10
+	12 [label="('Triangle', 'DCP')" shape=box]
+	12 -> 10
+	13 [label="('Equation', 'ma_cpn - 90')" shape=box]
+	13 -> 10
+	14 [label="('Equation', 'ma_bpm - 90')" shape=box]
+	14 -> 10
+	15 [label="('Equation', 'ma_mab - ma_ndc')" shape=box]
+	15 -> 10
+	16 [label="-2_extend_3"]
+	16 -> 11
+	17 [label="('Shape', 'ABPM')" shape=box]
+	17 -> 16
+	18 [label="-2_extend_4"]
+	18 -> 12
+	19 [label="('Triangle', 'CPD')" shape=box]
+	19 -> 18
+	20 [label="-2_extend_5"]
+	20 -> 13
+	21 [label="('Perpendicular', 'P', 'MN', 'CB')" shape=box]
+	21 -> 20
+	22 [label="-2_extend_6"]
+	22 -> 14
+	21 -> 22
+	23 [label="-2_extend_7"]
+	23 -> 17
+	24 [label="('Shape', 'ABM')" shape=box]
+	24 -> 23
+	25 [label="('Shape', 'MBP')" shape=box]
+	25 -> 23
+	26 [label="-2_extend_8"]
+	26 -> 19
+	27 [label="('Shape', 'PNDC')" shape=box]
+	27 -> 26
+	28 [label="-2_extend_9"]
+	28 -> 27
+	29 [label="('Shape', 'PNC')" shape=box]
+	29 -> 28
+	30 [label="('Shape', 'CND')" shape=box]
+	30 -> 28
+	31 [label="-2_extend_10"]
+	31 -> 29
+	32 [label="('Shape', 'CPN')" shape=box]
+	32 -> 31
+}

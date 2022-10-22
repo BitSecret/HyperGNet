@@ -1,0 +1,48 @@
+digraph 48 {
+	0 [label="('Target', 'll_ab')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'll_ab - 2.5')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_da - 2.5')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-ll_ab + ll_da')" shape=box]
+	5 -> 3
+	6 [label="69_congruent_property_line_equal"]
+	6 -> 5
+	7 [label="('MirrorCongruent', 'CAD', 'CBA')" shape=box]
+	7 -> 6
+	8 [label="73_congruent_judgment_sas"]
+	8 -> 7
+	9 [label="('Triangle', 'CAD')" shape=box]
+	9 -> 8
+	10 [label="('Triangle', 'CBA')" shape=box]
+	10 -> 8
+	11 [label="('Equation', 'ma_dca - 90')" shape=box]
+	11 -> 8
+	12 [label="('Equation', 'ma_acb - 90')" shape=box]
+	12 -> 8
+	13 [label="('Equation', '-ll_cb + ll_dc')" shape=box]
+	13 -> 8
+	14 [label="-2_extend_3"]
+	14 -> 9
+	15 [label="('Shape', 'ADC')" shape=box]
+	15 -> 14
+	16 [label="-2_extend_4"]
+	16 -> 10
+	17 [label="('Triangle', 'BAC')" shape=box]
+	17 -> 16
+	18 [label="-2_extend_5"]
+	18 -> 11
+	19 [label="('Perpendicular', 'C', 'DB', 'AC')" shape=box]
+	19 -> 18
+	20 [label="-2_extend_6"]
+	20 -> 12
+	19 -> 20
+	21 [label="-2_extend_7"]
+	21 -> 17
+	22 [label="('Shape', 'ACB')" shape=box]
+	22 -> 21
+}

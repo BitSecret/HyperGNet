@@ -1,0 +1,104 @@
+digraph 28 {
+	0 [label="('Target', 'f_y')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_y - 3.46410161513775')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_sr - 4.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-f_x + ll_qr')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_sp - 2.0')" shape=box]
+	6 -> 3
+	7 [label="('Equation', '-f_y + ll_pq')" shape=box]
+	7 -> 3
+	8 [label="('Equation', 'll_rp - 6.0')" shape=box]
+	8 -> 3
+	9 [label="('Equation', '-ll_qr**2 + ll_sq**2 + ll_sr**2')" shape=box]
+	9 -> 3
+	10 [label="('Equation', '-ll_pq**2 + ll_sp**2 + ll_sq**2')" shape=box]
+	10 -> 3
+	11 [label="('Equation', 'll_pq**2 + ll_qr**2 - ll_rp**2')" shape=box]
+	11 -> 3
+	12 [label="-3_solve_eq_3"]
+	12 -> 8
+	4 -> 12
+	6 -> 12
+	13 [label="('Equation', '-ll_rp + ll_sp + ll_sr')" shape=box]
+	13 -> 12
+	14 [label="23_pythagorean"]
+	14 -> 9
+	15 [label="('RightTriangle', 'RSQ')" shape=box]
+	15 -> 14
+	16 [label="23_pythagorean"]
+	16 -> 10
+	17 [label="('RightTriangle', 'QSP')" shape=box]
+	17 -> 16
+	18 [label="23_pythagorean"]
+	18 -> 11
+	19 [label="('RightTriangle', 'PQR')" shape=box]
+	19 -> 18
+	20 [label="2_line_addition"]
+	20 -> 13
+	21 [label="('Collinear', 'RSP')" shape=box]
+	21 -> 20
+	22 [label="27_right_triangle_judgment"]
+	22 -> 15
+	23 [label="('Triangle', 'RSQ')" shape=box]
+	23 -> 22
+	24 [label="('Equation', 'ma_rsq - 90')" shape=box]
+	24 -> 22
+	25 [label="27_right_triangle_judgment"]
+	25 -> 17
+	26 [label="('Triangle', 'QSP')" shape=box]
+	26 -> 25
+	27 [label="('Equation', 'ma_qsp - 90')" shape=box]
+	27 -> 25
+	28 [label="27_right_triangle_judgment"]
+	28 -> 19
+	29 [label="('Triangle', 'PQR')" shape=box]
+	29 -> 28
+	30 [label="('Equation', 'ma_pqr - 90')" shape=box]
+	30 -> 28
+	31 [label="-2_extend_4"]
+	31 -> 23
+	32 [label="('Triangle', 'QRS')" shape=box]
+	32 -> 31
+	33 [label="-2_extend_5"]
+	33 -> 24
+	34 [label="('Perpendicular', 'S', 'PR', 'SQ')" shape=box]
+	34 -> 33
+	35 [label="-2_extend_6"]
+	35 -> 26
+	36 [label="('Shape', 'SPQ')" shape=box]
+	36 -> 35
+	37 [label="-2_extend_7"]
+	37 -> 27
+	34 -> 37
+	38 [label="-2_extend_8"]
+	38 -> 29
+	39 [label="('Triangle', 'QRP')" shape=box]
+	39 -> 38
+	40 [label="-2_extend_9"]
+	40 -> 30
+	41 [label="('Perpendicular', 'Q', 'PQ', 'RQ')" shape=box]
+	41 -> 40
+	42 [label="-2_extend_10"]
+	42 -> 32
+	43 [label="('Shape', 'RSQ')" shape=box]
+	43 -> 42
+	44 [label="-2_extend_11"]
+	44 -> 39
+	45 [label="('Shape', 'RSPQ')" shape=box]
+	45 -> 44
+	46 [label="-2_extend_12"]
+	46 -> 45
+	43 -> 46
+	47 [label="('Shape', 'QSP')" shape=box]
+	47 -> 46
+	48 [label="-2_extend_13"]
+	48 -> 47
+	36 -> 48
+}

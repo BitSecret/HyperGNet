@@ -1,0 +1,25 @@
+digraph 98 {
+	0 [label="('Target', 'cos(pi*ma_srt/180)')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_srt - 53.130102354156')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_tr - 3.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_ts - 4.0')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_sr - 5.0')" shape=box]
+	6 -> 3
+	7 [label="('Equation', '-ll_sr**2 + 2*ll_sr*ll_tr*cos(pi*ma_srt/180) - ll_tr**2 + ll_ts**2')" shape=box]
+	7 -> 3
+	8 [label="89_cosine"]
+	8 -> 7
+	9 [label="('Triangle', 'RTS')" shape=box]
+	9 -> 8
+	10 [label="-2_extend_3"]
+	10 -> 9
+	11 [label="('Shape', 'TSR')" shape=box]
+	11 -> 10
+}

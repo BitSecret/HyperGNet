@@ -475,7 +475,7 @@ class Problem(ProblemLogic):
         super().__init__()
         """------------题目输入------------"""
         self.problem_index = problem_index
-        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls, problem_index)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
 
@@ -734,7 +734,7 @@ class Problem(ProblemLogic):
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
         """-------------------题目输入-------------------"""
         self.problem_index = problem_index
-        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls)
+        self.fl = FormalLanguage(construction_fls, text_fls, image_fls, target_fls, problem_index)
         self.theorem_seqs = theorem_seqs
         self.answer = answer
 
@@ -921,70 +921,74 @@ class Problem(ProblemLogic):
         """---------equation---------"""
         for equation in self.conditions.items[cType.equation]:
             if len(equation.free_symbols) > 1:
-                self.fl.add(("Equation", equation))
+                self.fl.add(("Equation", str(equation)))
 
         self.fl.step()  # step
 
     def anti_generate_one_fl_by_index(self, index):
         item, c_type = self.conditions.item_list[index]
         if c_type is cType.equation:
-            return "Equation({})".format(str(item))
+            result = ("Equation", str(item))
         elif c_type is cType.shape:
-            return "Shape({})".format(item)
+            result = ("Shape", item)
         elif c_type is cType.collinear:
-            return "Collinear({})".format(item)
+            result = ("Collinear", item)
         elif c_type is cType.point:
-            return "Point({})".format(item)
+            result = ("Point", item)
         elif c_type is cType.line:
-            return "Line({})".format(item)
+            result = ("Line", item)
         elif c_type is cType.angle:
-            return "Angle({})".format(item)
+            result = ("Angle", item)
         elif c_type is cType.triangle:
-            return "Triangle({})".format(item)
+            result = ("Triangle", item)
         elif c_type is cType.right_triangle:
-            return "RightTriangle({})".format(item)
+            result = ("RightTriangle", item)
         elif c_type is cType.isosceles_triangle:
-            return "IsoscelesTriangle({})".format(item)
+            result = ("IsoscelesTriangle", item)
         elif c_type is cType.equilateral_triangle:
-            return "EquilateralTriangle({})".format(item)
+            result = ("EquilateralTriangle", item)
         elif c_type is cType.polygon:
-            return "Polygon({})".format(item)
+            result = ("Polygon", item)
         elif c_type is cType.midpoint:
-            return "MidPoint(Point({}),Line({}))".format(item[0], item[1])
+            result = ("MidPoint", item[0], item[1])
         elif c_type is cType.intersect:
-            return "Intersect(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+            result = ("Intersect", item[0], item[1], item[2])
         elif c_type is cType.parallel:
-            return "Parallel(Line({}),Line({}))".format(item[0], item[1])
+            result = ("Parallel", item[0], item[1])
         elif c_type is cType.disorder_parallel:
-            return "DisorderParallel(Line({}),Line({}))".format(item[0], item[1])
+            result = ("DisorderParallel", item[0], item[1])
         elif c_type is cType.perpendicular:
-            return "Perpendicular(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+            result = ("Perpendicular", item[0], item[1], item[2])
         elif c_type is cType.perpendicular_bisector:
-            return "PerpendicularBisector(Point({}),Line({}),Line({}))".format(item[0], item[1], item[2])
+            result = ("PerpendicularBisector", item[0], item[1], item[2])
         elif c_type is cType.bisector:
-            return "Bisector(Line({}),Angle({}))".format(item[0], item[1])
+            result = ("Bisector", item[0], item[1])
         elif c_type is cType.median:
-            return "Median(Line({}),Triangle({}))".format(item[0], item[1])
+            result = ("Median", item[0], item[1])
         elif c_type is cType.is_altitude:
-            return "IsAltitude(Line({}),Triangle({}))".format(item[0], item[1])
+            result = ("IsAltitude", item[0], item[1])
         elif c_type is cType.neutrality:
-            return "Neutrality(Line({}),Triangle({}))".format(item[0], item[1])
+            result = ("Neutrality", item[0], item[1])
         elif c_type is cType.circumcenter:
-            return "Circumcenter(Point({}),Triangle({}))".format(item[0], item[1])
+            result = ("Circumcenter", item[0], item[1])
         elif c_type is cType.incenter:
-            return "Incenter(Point({}),Triangle({}))".format(item[0], item[1])
+            result = ("Incenter", item[0], item[1])
         elif c_type is cType.centroid:
-            return "Centroid(Point({}),Triangle({}))".format(item[0], item[1])
+            result = ("Centroid", item[0], item[1])
         elif c_type is cType.orthocenter:
-            return "Orthocenter(Point({}),Triangle({}))".format(item[0], item[1])
+            result = ("Orthocenter", item[0], item[1])
         elif c_type is cType.congruent:
-            return "Congruent(Triangle({}),Triangle({}))".format(item[0], item[1])
+            result = ("Congruent", item[0], item[1])
         elif c_type is cType.similar:
-            return "Similar(Triangle({}),Triangle({}))".format(item[0], item[1])
+            result = ("Similar", item[0], item[1])
         elif c_type is cType.mirror_congruent:
-            return "MirrorCongruent(Triangle({}),Triangle({}))".format(item[0], item[1])
+            result = ("MirrorCongruent", item[0], item[1])
         elif c_type is cType.mirror_similar:
-            return "MirrorSimilar(Triangle({}),Triangle({}))".format(item[0], item[1])
+            result = ("MirrorSimilar", item[0], item[1])
+        else:
+            result = None
+
+        return result
 
     def show(self):
         # Formal Language
@@ -1007,11 +1011,10 @@ class Problem(ProblemLogic):
             print(theorem, end=" ")
         print()
         print("\033[36mreasoning_fls:\033[0m")
-        for fl in self.fl.reasoning_fls:
-            print("step: {}".format(self.fl.reasoning_fls_step[fl]), end="  ")
-            print(fl)
-
-        self.s_tree.generate_tree(self)  # 生成求解树
+        for step in self.fl.reasoning_fls.keys():
+            for fl in self.fl.reasoning_fls[step]:
+                print("step {}:".format(step), end="  ")
+                print(fl)
 
         # Logic-Construction
         print("\033[33mConstruction:\033[0m")
@@ -1122,6 +1125,3 @@ class Problem(ProblemLogic):
                 print("\033[32msolved\033[0m")
             else:
                 print("\033[31munsolved\033[0m")
-
-    def save_solution_data(self, file_dir):
-        self.s_tree.save_tree(file_dir)  # 保存求解树

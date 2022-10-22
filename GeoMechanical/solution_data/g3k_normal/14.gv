@@ -1,0 +1,72 @@
+digraph 14 {
+	0 [label="('Target', 'ma_mnp')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_mnp - 130.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_lnp + ma_mnl - ma_mnp')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'ma_mnl - 65.0')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'ma_lnp - 65.0')" shape=box]
+	6 -> 3
+	7 [label="3_angle_addition"]
+	7 -> 4
+	8 [label="('Angle', 'MNL')" shape=box]
+	8 -> 7
+	9 [label="('Angle', 'LNP')" shape=box]
+	9 -> 7
+	10 [label="-3_solve_eq_3"]
+	10 -> 5
+	11 [label="('Equation', 'ma_lmn - 90')" shape=box]
+	11 -> 10
+	12 [label="('Equation', 'ma_nlm - 25.0')" shape=box]
+	12 -> 10
+	13 [label="('Equation', 'ma_lmn + ma_mnl + ma_nlm - 180')" shape=box]
+	13 -> 10
+	14 [label="-3_solve_eq_4"]
+	14 -> 6
+	15 [label="('Equation', 'ma_pln - 25.0')" shape=box]
+	15 -> 14
+	16 [label="('Equation', 'ma_npl - 90')" shape=box]
+	16 -> 14
+	17 [label="('Equation', 'ma_lnp + ma_npl + ma_pln - 180')" shape=box]
+	17 -> 14
+	18 [label="-2_extend_5"]
+	18 -> 8
+	19 [label="('Triangle', 'NLM')" shape=box]
+	19 -> 18
+	20 [label="-2_extend_6"]
+	20 -> 9
+	21 [label="('Triangle', 'PLN')" shape=box]
+	21 -> 20
+	22 [label="-2_extend_7"]
+	22 -> 11
+	23 [label="('Perpendicular', 'M', 'MN', 'LM')" shape=box]
+	23 -> 22
+	24 [label="-3_solve_eq_8"]
+	24 -> 12
+	15 -> 24
+	25 [label="('Equation', 'ma_nlm - ma_pln')" shape=box]
+	25 -> 24
+	26 [label="21_triangle_property_angle_sum"]
+	26 -> 13
+	19 -> 26
+	27 [label="-2_extend_9"]
+	27 -> 16
+	28 [label="('Perpendicular', 'P', 'LP', 'PN')" shape=box]
+	28 -> 27
+	29 [label="21_triangle_property_angle_sum"]
+	29 -> 17
+	21 -> 29
+	30 [label="-2_extend_10"]
+	30 -> 19
+	31 [label="('Shape', 'LMN')" shape=box]
+	31 -> 30
+	32 [label="-2_extend_11"]
+	32 -> 21
+	33 [label="('Shape', 'LNP')" shape=box]
+	33 -> 32
+}

@@ -1,0 +1,87 @@
+digraph 84 {
+	0 [label="('Target', 'f_x')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_x - 9.66666666666667')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_dac - 180')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-4.0*f_x + ma_dab')" shape=box]
+	5 -> 3
+	6 [label="('Equation', '-f_x + ma_cba')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'ma_acb - 29.0')" shape=box]
+	7 -> 3
+	8 [label="('Equation', 'ma_abd + ma_cba - ma_cbd')" shape=box]
+	8 -> 3
+	9 [label="('Equation', 'ma_bac + ma_dab - ma_dac')" shape=box]
+	9 -> 3
+	10 [label="('Equation', 'ma_abd + ma_bda + ma_dab - 180')" shape=box]
+	10 -> 3
+	11 [label="('Equation', 'ma_acb + ma_bac + ma_cba - 180')" shape=box]
+	11 -> 3
+	12 [label="('Equation', 'ma_acb + ma_bda + ma_cbd - 180')" shape=box]
+	12 -> 3
+	13 [label="-2_extend_3"]
+	13 -> 4
+	14 [label="('Collinear', 'DAC')" shape=box]
+	14 -> 13
+	15 [label="3_angle_addition"]
+	15 -> 8
+	16 [label="('Angle', 'ABD')" shape=box]
+	16 -> 15
+	17 [label="('Angle', 'CBA')" shape=box]
+	17 -> 15
+	18 [label="3_angle_addition"]
+	18 -> 9
+	19 [label="('Angle', 'DAB')" shape=box]
+	19 -> 18
+	20 [label="('Angle', 'BAC')" shape=box]
+	20 -> 18
+	21 [label="21_triangle_property_angle_sum"]
+	21 -> 10
+	22 [label="('Triangle', 'BDA')" shape=box]
+	22 -> 21
+	23 [label="21_triangle_property_angle_sum"]
+	23 -> 11
+	24 [label="('Triangle', 'BAC')" shape=box]
+	24 -> 23
+	25 [label="21_triangle_property_angle_sum"]
+	25 -> 12
+	26 [label="('Triangle', 'BDC')" shape=box]
+	26 -> 25
+	27 [label="-2_extend_4"]
+	27 -> 16
+	22 -> 27
+	28 [label="-2_extend_5"]
+	28 -> 17
+	24 -> 28
+	29 [label="-2_extend_6"]
+	29 -> 19
+	22 -> 29
+	30 [label="-2_extend_7"]
+	30 -> 20
+	24 -> 30
+	31 [label="-2_extend_8"]
+	31 -> 22
+	32 [label="('Shape', 'DAB')" shape=box]
+	32 -> 31
+	33 [label="-2_extend_9"]
+	33 -> 24
+	34 [label="('Shape', 'ACB')" shape=box]
+	34 -> 33
+	35 [label="-2_extend_10"]
+	35 -> 26
+	36 [label="('Shape', 'DACB')" shape=box]
+	36 -> 35
+	37 [label="-2_extend_11"]
+	37 -> 36
+	32 -> 37
+	38 [label="('Shape', 'BAC')" shape=box]
+	38 -> 37
+	39 [label="-2_extend_12"]
+	39 -> 38
+	34 -> 39
+}

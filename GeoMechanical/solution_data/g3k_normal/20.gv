@@ -1,0 +1,17 @@
+digraph 20 {
+	0 [label="('Target', 'ma_bap')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_bap - 33.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_paf - 33.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-ma_bap + ma_paf')" shape=box]
+	5 -> 3
+	6 [label="61_incenter_property_intersect"]
+	6 -> 5
+	7 [label="('Incenter', 'P', 'AEC')" shape=box]
+	7 -> 6
+}

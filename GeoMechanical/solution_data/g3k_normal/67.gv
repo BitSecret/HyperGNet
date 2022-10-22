@@ -1,0 +1,313 @@
+digraph 67 {
+	0 [label="('Target', 'ma_jaf')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_jaf - 24.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_jbe - 34.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'ma_jea - 90')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'ma_afj - 90')" shape=box]
+	6 -> 3
+	7 [label="('Equation', '-ma_ajb + ma_aje + ma_ejb')" shape=box]
+	7 -> 3
+	8 [label="('Equation', 'ma_aje + ma_fja - ma_fje')" shape=box]
+	8 -> 3
+	9 [label="('Equation', '-ma_eaf + ma_eaj + ma_jaf')" shape=box]
+	9 -> 3
+	10 [label="('Equation', '-ma_cja + ma_cjf + ma_fja')" shape=box]
+	10 -> 3
+	11 [label="('Equation', '-ma_eaj + ma_jaf')" shape=box]
+	11 -> 3
+	12 [label="('Equation', 'ma_fcj - 32.0')" shape=box]
+	12 -> 3
+	13 [label="('Equation', 'ma_aje + ma_eaj + ma_jea - 180')" shape=box]
+	13 -> 3
+	14 [label="('Equation', 'ma_afj + ma_fja + ma_jaf - 180')" shape=box]
+	14 -> 3
+	15 [label="('Equation', 'ma_ajb + ma_eaj + ma_jbe - 180')" shape=box]
+	15 -> 3
+	16 [label="('Equation', 'ma_cja + ma_fcj + ma_jaf - 180')" shape=box]
+	16 -> 3
+	17 [label="('Equation', 'ma_ejb - 56.0')" shape=box]
+	17 -> 3
+	18 [label="('Equation', 'ma_cjf - 58.0')" shape=box]
+	18 -> 3
+	19 [label="('Equation', 'ma_eaf - 48.0')" shape=box]
+	19 -> 3
+	20 [label="-2_extend_3"]
+	20 -> 5
+	21 [label="('Perpendicular', 'E', 'BA', 'JE')" shape=box]
+	21 -> 20
+	22 [label="-2_extend_4"]
+	22 -> 6
+	23 [label="('Perpendicular', 'F', 'AC', 'JF')" shape=box]
+	23 -> 22
+	24 [label="3_angle_addition"]
+	24 -> 7
+	25 [label="('Angle', 'EJB')" shape=box]
+	25 -> 24
+	26 [label="('Angle', 'AJE')" shape=box]
+	26 -> 24
+	27 [label="3_angle_addition"]
+	27 -> 8
+	26 -> 27
+	28 [label="('Angle', 'FJA')" shape=box]
+	28 -> 27
+	29 [label="3_angle_addition"]
+	29 -> 9
+	30 [label="('Angle', 'EAJ')" shape=box]
+	30 -> 29
+	31 [label="('Angle', 'JAF')" shape=box]
+	31 -> 29
+	32 [label="3_angle_addition"]
+	32 -> 10
+	28 -> 32
+	33 [label="('Angle', 'CJF')" shape=box]
+	33 -> 32
+	34 [label="61_incenter_property_intersect"]
+	34 -> 11
+	35 [label="('Incenter', 'J', 'ACB')" shape=box]
+	35 -> 34
+	36 [label="-3_solve_eq_5"]
+	36 -> 12
+	37 [label="('Equation', 'ma_jcd - 32.0')" shape=box]
+	37 -> 36
+	38 [label="('Equation', '-ma_fcj + ma_jcd')" shape=box]
+	38 -> 36
+	39 [label="21_triangle_property_angle_sum"]
+	39 -> 13
+	40 [label="('Triangle', 'AJE')" shape=box]
+	40 -> 39
+	41 [label="21_triangle_property_angle_sum"]
+	41 -> 14
+	42 [label="('Triangle', 'FJA')" shape=box]
+	42 -> 41
+	43 [label="21_triangle_property_angle_sum"]
+	43 -> 15
+	44 [label="('Triangle', 'JBA')" shape=box]
+	44 -> 43
+	45 [label="21_triangle_property_angle_sum"]
+	45 -> 16
+	46 [label="('Triangle', 'JAC')" shape=box]
+	46 -> 45
+	47 [label="-3_solve_eq_6"]
+	47 -> 17
+	4 -> 47
+	48 [label="('Equation', 'ma_bej - 90')" shape=box]
+	48 -> 47
+	49 [label="('Equation', 'ma_bej + ma_ejb + ma_jbe - 180')" shape=box]
+	49 -> 47
+	50 [label="-3_solve_eq_7"]
+	50 -> 18
+	51 [label="('Equation', 'ma_jfc - 90')" shape=box]
+	51 -> 50
+	12 -> 50
+	52 [label="('Equation', 'ma_cjf + ma_fcj + ma_jfc - 180')" shape=box]
+	52 -> 50
+	53 [label="-3_solve_eq_8"]
+	53 -> 19
+	54 [label="('Equation', 'ma_fcd - 64.0')" shape=box]
+	54 -> 53
+	55 [label="('Equation', 'ma_dbe - 68.0')" shape=box]
+	55 -> 53
+	56 [label="('Equation', 'ma_dbe + ma_eaf + ma_fcd - 180')" shape=box]
+	56 -> 53
+	57 [label="-2_extend_9"]
+	57 -> 25
+	58 [label="('Triangle', 'EJB')" shape=box]
+	58 -> 57
+	59 [label="-2_extend_10"]
+	59 -> 26
+	40 -> 59
+	60 [label="-2_extend_11"]
+	60 -> 28
+	42 -> 60
+	61 [label="-2_extend_12"]
+	61 -> 30
+	40 -> 61
+	62 [label="-2_extend_13"]
+	62 -> 31
+	42 -> 62
+	63 [label="-2_extend_14"]
+	63 -> 33
+	64 [label="('Triangle', 'CJF')" shape=box]
+	64 -> 63
+	65 [label="-2_extend_15"]
+	65 -> 35
+	66 [label="('Incenter', 'J', 'CBA')" shape=box]
+	66 -> 65
+	67 [label="61_incenter_property_intersect"]
+	67 -> 38
+	66 -> 67
+	68 [label="-2_extend_16"]
+	68 -> 40
+	69 [label="('Shape', 'JEA')" shape=box]
+	69 -> 68
+	70 [label="-2_extend_17"]
+	70 -> 42
+	71 [label="('Shape', 'JAF')" shape=box]
+	71 -> 70
+	72 [label="-2_extend_18"]
+	72 -> 44
+	73 [label="('Shape', 'BEAJ')" shape=box]
+	73 -> 72
+	74 [label="-2_extend_19"]
+	74 -> 46
+	75 [label="('Shape', 'AFCJ')" shape=box]
+	75 -> 74
+	76 [label="-2_extend_20"]
+	76 -> 48
+	21 -> 76
+	77 [label="21_triangle_property_angle_sum"]
+	77 -> 49
+	58 -> 77
+	78 [label="-2_extend_21"]
+	78 -> 51
+	23 -> 78
+	79 [label="21_triangle_property_angle_sum"]
+	79 -> 52
+	64 -> 79
+	80 [label="-3_solve_eq_22"]
+	80 -> 54
+	37 -> 80
+	81 [label="('Equation', '-ma_fcd + ma_fcj + ma_jcd')" shape=box]
+	81 -> 80
+	12 -> 80
+	82 [label="-3_solve_eq_23"]
+	82 -> 55
+	4 -> 82
+	83 [label="('Equation', '-ma_dbe + ma_dbj + ma_jbe')" shape=box]
+	83 -> 82
+	84 [label="('Equation', 'ma_dbj - 34.0')" shape=box]
+	84 -> 82
+	85 [label="21_triangle_property_angle_sum"]
+	85 -> 56
+	86 [label="('Triangle', 'ACB')" shape=box]
+	86 -> 85
+	87 [label="-2_extend_24"]
+	87 -> 58
+	88 [label="('Shape', 'JBE')" shape=box]
+	88 -> 87
+	89 [label="-2_extend_25"]
+	89 -> 64
+	90 [label="('Shape', 'JFC')" shape=box]
+	90 -> 89
+	91 [label="-2_extend_26"]
+	91 -> 73
+	92 [label="('Shape', 'BEJ')" shape=box]
+	92 -> 91
+	69 -> 91
+	93 [label="-2_extend_27"]
+	93 -> 75
+	94 [label="('Shape', 'AFJ')" shape=box]
+	94 -> 93
+	90 -> 93
+	95 [label="3_angle_addition"]
+	95 -> 81
+	96 [label="('Angle', 'JCD')" shape=box]
+	96 -> 95
+	97 [label="('Angle', 'FCJ')" shape=box]
+	97 -> 95
+	98 [label="3_angle_addition"]
+	98 -> 83
+	99 [label="('Angle', 'DBJ')" shape=box]
+	99 -> 98
+	100 [label="('Angle', 'JBE')" shape=box]
+	100 -> 98
+	101 [label="-3_solve_eq_28"]
+	101 -> 84
+	4 -> 101
+	102 [label="('Equation', '-ma_dbj + ma_jbe')" shape=box]
+	102 -> 101
+	103 [label="-2_extend_29"]
+	103 -> 86
+	104 [label="('Shape', 'FCDBEA')" shape=box]
+	104 -> 103
+	105 [label="-2_extend_30"]
+	105 -> 92
+	88 -> 105
+	106 [label="-2_extend_31"]
+	106 -> 94
+	71 -> 106
+	107 [label="-2_extend_32"]
+	107 -> 96
+	108 [label="('Triangle', 'JCD')" shape=box]
+	108 -> 107
+	109 [label="-2_extend_33"]
+	109 -> 97
+	64 -> 109
+	110 [label="-2_extend_34"]
+	110 -> 99
+	111 [label="('Triangle', 'JDB')" shape=box]
+	111 -> 110
+	112 [label="-2_extend_35"]
+	112 -> 100
+	58 -> 112
+	113 [label="61_incenter_property_intersect"]
+	113 -> 102
+	114 [label="('Incenter', 'J', 'BAC')" shape=box]
+	114 -> 113
+	115 [label="-2_extend_36"]
+	115 -> 104
+	116 [label="('Shape', 'FJA')" shape=box]
+	116 -> 115
+	117 [label="('Shape', 'AJFCDBE')" shape=box]
+	117 -> 115
+	118 [label="-2_extend_37"]
+	118 -> 108
+	119 [label="('Shape', 'CDJ')" shape=box]
+	119 -> 118
+	120 [label="-2_extend_38"]
+	120 -> 111
+	121 [label="('Shape', 'DBJ')" shape=box]
+	121 -> 120
+	122 [label="-2_extend_39"]
+	122 -> 114
+	66 -> 122
+	123 [label="-2_extend_40"]
+	123 -> 116
+	71 -> 123
+	124 [label="-2_extend_41"]
+	124 -> 117
+	125 [label="('Shape', 'AJE')" shape=box]
+	125 -> 124
+	126 [label="('Shape', 'EJFCDB')" shape=box]
+	126 -> 124
+	127 [label="-2_extend_42"]
+	127 -> 125
+	69 -> 127
+	128 [label="-2_extend_43"]
+	128 -> 126
+	129 [label="('Shape', 'EJB')" shape=box]
+	129 -> 128
+	130 [label="('Shape', 'BJFCD')" shape=box]
+	130 -> 128
+	131 [label="-2_extend_44"]
+	131 -> 129
+	88 -> 131
+	132 [label="-2_extend_45"]
+	132 -> 130
+	133 [label="('Shape', 'BJD')" shape=box]
+	133 -> 132
+	134 [label="('Shape', 'DJFC')" shape=box]
+	134 -> 132
+	135 [label="-2_extend_46"]
+	135 -> 133
+	121 -> 135
+	136 [label="-2_extend_47"]
+	136 -> 134
+	137 [label="('Shape', 'DJC')" shape=box]
+	137 -> 136
+	138 [label="('Shape', 'CJF')" shape=box]
+	138 -> 136
+	139 [label="-2_extend_48"]
+	139 -> 137
+	119 -> 139
+	140 [label="-2_extend_49"]
+	140 -> 138
+	90 -> 140
+}

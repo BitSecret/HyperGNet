@@ -3,7 +3,11 @@ from solver import Solver
 from func_timeout import FunctionTimedOut
 import traceback
 import time
-import config
+geo3k_trans_data = "../data/geo3k_trans_data/trans.json"
+template_data = "../data/generated_data/temp.json"
+generated_data = "../data/generated_data/gen.json"
+theorem_test_data = "../data/theorem_test_data/theo.json"
+solution_data = "./solution_data/"
 
 
 # geo3k_trans_data, 一次运行1个题目，并输出解题过程
@@ -14,14 +18,15 @@ def geo3k_normal_mode():
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(config.geo3k_trans_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
             solver.solve()
             solver.problem.show()
-            solver.problem.save_solution_data(config.solution_data + "g3k_normal/")
             solver.problem.s_tree.show_tree_data()
+            solver.problem.s_tree.save(solution_data + "g3k_normal/")
+            solver.problem.fl.save(solution_data + "g3k_normal/")
         except Exception:  # 一般报错
             traceback.print_exc()
         except FunctionTimedOut as e:  # 超时报错
@@ -32,7 +37,7 @@ def geo3k_normal_mode():
 def geo3k_step_mode():
     solver = Solver()
     count = int(input("problem max count:"))
-    problems = json.load(open(config.geo3k_trans_data, "r", encoding="utf-8"))
+    problems = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))
     time_start = time.time()
     theorems = []
 
@@ -60,6 +65,31 @@ def geo3k_step_mode():
     print("{} problems. time consuming: {:.6f}s. avg: {} s/problem".format(count, time_cons, time_cons / count))
 
 
+# geo3k_trans_data, 一次运行1个题目，并输出解题过程
+def geo3k_embedding_mode():
+    solver = Solver()
+    count = int(input("problem max count:"))
+    problems = json.load(open(geo3k_trans_data, "r", encoding="utf-8"))
+
+    i = 0
+    while i <= count:
+        try:
+            problem = problems[str(i)]
+            solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
+                               problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
+                               problem["problem_answer"])
+            solver.solve()
+            solver.problem.simpel_show()
+            solver.problem.s_tree.save(solution_data + "g3k_normal/")
+            solver.problem.fl.save(solution_data + "g3k_normal/")
+        except Exception:  # 一般报错
+            traceback.print_exc()
+        except FunctionTimedOut as e:  # 超时报错
+            print("求解方程组超时！")
+
+        i += 1
+
+
 # template_data, 一次运行1个题目，并输出解题过程
 def template_normal_mode():
     solver = Solver()
@@ -68,7 +98,7 @@ def template_normal_mode():
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(config.template_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(template_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
@@ -83,7 +113,7 @@ def template_normal_mode():
 # generated_data, 一次运行所有题目，并输出求解结果
 def generated_step_mode():
     solver = Solver()
-    problems = json.load(open(config.generated_data, "r", encoding="utf-8"))
+    problems = json.load(open(generated_data, "r", encoding="utf-8"))
     for key in problems.keys():
         problem = problems[key]
         solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
@@ -101,7 +131,7 @@ def theorem_normal_mode():
             problem_index = input("problem id:")
             if problem_index == "-1":
                 break
-            problem = json.load(open(config.theorem_test_data, "r", encoding="utf-8"))[problem_index]
+            problem = json.load(open(theorem_test_data, "r", encoding="utf-8"))[problem_index]
             solver.new_problem(problem["problem_id"], problem["construction_fls"], problem["text_fls"],
                                problem["image_fls"], problem["target_fls"], problem["theorem_seqs"],
                                problem["problem_answer"])
@@ -114,4 +144,4 @@ def theorem_normal_mode():
 
 
 if __name__ == "__main__":
-    geo3k_normal_mode()
+    geo3k_embedding_mode()

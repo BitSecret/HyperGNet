@@ -1,0 +1,59 @@
+digraph 3 {
+	0 [label="('Target', 'ma_cab')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_cab - 64.6230665023011')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_ac - 4.24264068')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_bc - 8.94427190605836')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_ac*sin(pi*ma_cab/180) - ll_bc*sin(pi*ma_abc/180)')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'ma_abc - 25.3769334976986')" shape=box]
+	7 -> 3
+	8 [label="-3_solve_eq_3"]
+	8 -> 5
+	9 [label="('Equation', 'll_ab - 9.89949493')" shape=box]
+	9 -> 8
+	4 -> 8
+	10 [label="('Equation', '-ll_ab**2 + ll_ac**2 + ll_bc**2')" shape=box]
+	10 -> 8
+	11 [label="88_sine"]
+	11 -> 6
+	12 [label="('Triangle', 'CAB')" shape=box]
+	12 -> 11
+	13 [label="-3_solve_eq_4"]
+	13 -> 7
+	9 -> 13
+	4 -> 13
+	14 [label="('Equation', 'ma_bca - 90')" shape=box]
+	14 -> 13
+	15 [label="('Equation', '-ll_ab*sin(pi*ma_abc/180) + ll_ac*sin(pi*ma_bca/180)')" shape=box]
+	15 -> 13
+	16 [label="23_pythagorean"]
+	16 -> 10
+	17 [label="('RightTriangle', 'BCA')" shape=box]
+	17 -> 16
+	18 [label="-2_extend_5"]
+	18 -> 12
+	19 [label="('Shape', 'ABC')" shape=box]
+	19 -> 18
+	20 [label="-2_extend_6"]
+	20 -> 14
+	21 [label="('Perpendicular', 'C', 'BC', 'AC')" shape=box]
+	21 -> 20
+	22 [label="88_sine"]
+	22 -> 15
+	12 -> 22
+	23 [label="27_right_triangle_judgment"]
+	23 -> 17
+	24 [label="('Triangle', 'BCA')" shape=box]
+	24 -> 23
+	14 -> 23
+	25 [label="-2_extend_7"]
+	25 -> 24
+	12 -> 25
+}

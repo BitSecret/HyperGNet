@@ -1,0 +1,33 @@
+digraph 24 {
+	0 [label="('Target', 'f_x')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_x - 5.4')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', '-f_x + ll_qt')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_rq - 6.0')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_sq - 18.0')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'll_sr - 14.0')" shape=box]
+	7 -> 3
+	8 [label="('Equation', 'll_qt - ll_sq + ll_ts')" shape=box]
+	8 -> 3
+	9 [label="('Equation', 'll_qt*ll_sr - ll_rq*ll_ts')" shape=box]
+	9 -> 3
+	10 [label="2_line_addition"]
+	10 -> 8
+	11 [label="('Collinear', 'QTS')" shape=box]
+	11 -> 10
+	12 [label="46_bisector_property_line_ratio"]
+	12 -> 9
+	13 [label="('Bisector', 'RT', 'SRQ')" shape=box]
+	13 -> 12
+	14 [label="48_bisector_judgment_angle_equal"]
+	14 -> 13
+	15 [label="('Equation', '-ma_srt + ma_trq')" shape=box]
+	15 -> 14
+}

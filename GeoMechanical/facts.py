@@ -1,4 +1,5 @@
 from enum import Enum
+import pickle
 
 
 class ConditionType(Enum):  # 条件的类型
@@ -154,20 +155,26 @@ class FormalLanguage:
 
     all = construction_predicates + entity_predicates + entity_relation_predicates + attribute_predicates + [equation]
 
-    def __init__(self, construction_fls, text_fls, image_fls, target_fls):
+    def __init__(self, construction_fls, text_fls, image_fls, target_fls, problem_id):
         self.construction_fls = construction_fls
         self.text_fls = text_fls
         self.image_fls = image_fls
         self.target_fls = target_fls
+        self.problem_id = problem_id
 
-        self.reasoning_fls = []
-        self.reasoning_fls_step = {}
+        self.reasoning_fls = {}
         self.step_count = 0
 
     def add(self, fl):
-        if fl not in self.reasoning_fls:
-            self.reasoning_fls.append(fl)
-            self.reasoning_fls_step[fl] = self.step_count
+        if self.step_count not in self.reasoning_fls.keys():
+            self.reasoning_fls[self.step_count] = []
+
+        if fl not in self.reasoning_fls[self.step_count]:
+            self.reasoning_fls[self.step_count].append(fl)
 
     def step(self):
         self.step_count += 1
+
+    def save(self, file_dir):
+        with open(file_dir + "{}_steps.pk".format(self.problem_id), 'wb') as f:
+            pickle.dump(self.reasoning_fls, f)

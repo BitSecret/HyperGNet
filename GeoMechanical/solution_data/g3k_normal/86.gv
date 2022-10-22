@@ -1,0 +1,110 @@
+digraph 86 {
+	0 [label="('Target', 'll_de')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'll_de - 3.46410161513776')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_bd - 4.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_ab - 16.0')" shape=box]
+	5 -> 3
+	6 [label="('Equation', '-ll_ab*ll_de + ll_bd*ll_ca')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'll_ca - 13.856406460551')" shape=box]
+	7 -> 3
+	8 [label="-3_solve_eq_3"]
+	8 -> 5
+	9 [label="('Equation', 'll_ad - 12.0')" shape=box]
+	9 -> 8
+	4 -> 8
+	10 [label="('Equation', '-ll_ab + ll_ad + ll_bd')" shape=box]
+	10 -> 8
+	11 [label="78_similar_property_line_ratio"]
+	11 -> 6
+	12 [label="('Similar', 'BED', 'BCA')" shape=box]
+	12 -> 11
+	13 [label="-3_solve_eq_4"]
+	13 -> 7
+	9 -> 13
+	5 -> 13
+	14 [label="('Equation', 'll_ab*ll_ad - ll_ca**2')" shape=box]
+	14 -> 13
+	15 [label="2_line_addition"]
+	15 -> 10
+	16 [label="('Collinear', 'ADB')" shape=box]
+	16 -> 15
+	17 [label="83_similar_judgment_aa"]
+	17 -> 12
+	18 [label="('Triangle', 'BED')" shape=box]
+	18 -> 17
+	19 [label="('Triangle', 'BCA')" shape=box]
+	19 -> 17
+	20 [label="('Equation', 'ma_eca - 90')" shape=box]
+	20 -> 17
+	21 [label="('Equation', 'ma_bed - 90')" shape=box]
+	21 -> 17
+	22 [label="78_similar_property_line_ratio"]
+	22 -> 14
+	23 [label="('MirrorSimilar', 'DCA', 'CAB')" shape=box]
+	23 -> 22
+	24 [label="-2_extend_5"]
+	24 -> 18
+	25 [label="('Shape', 'EDB')" shape=box]
+	25 -> 24
+	26 [label="-2_extend_6"]
+	26 -> 19
+	27 [label="('Shape', 'BECAD')" shape=box]
+	27 -> 26
+	28 [label="-2_extend_7"]
+	28 -> 20
+	29 [label="('Perpendicular', 'C', 'AC', 'CE')" shape=box]
+	29 -> 28
+	30 [label="-2_extend_8"]
+	30 -> 21
+	31 [label="('Perpendicular', 'E', 'CB', 'ED')" shape=box]
+	31 -> 30
+	32 [label="83_similar_judgment_aa"]
+	32 -> 23
+	33 [label="('Triangle', 'DCA')" shape=box]
+	33 -> 32
+	34 [label="('Triangle', 'CAB')" shape=box]
+	34 -> 32
+	20 -> 32
+	35 [label="('Equation', 'ma_adc - 90')" shape=box]
+	35 -> 32
+	36 [label="-2_extend_9"]
+	36 -> 27
+	37 [label="('Shape', 'BED')" shape=box]
+	37 -> 36
+	38 [label="('Shape', 'DECA')" shape=box]
+	38 -> 36
+	39 [label="-2_extend_10"]
+	39 -> 33
+	40 [label="('Shape', 'CAD')" shape=box]
+	40 -> 39
+	41 [label="-2_extend_11"]
+	41 -> 34
+	19 -> 41
+	42 [label="-2_extend_12"]
+	42 -> 35
+	43 [label="('Perpendicular', 'D', 'AB', 'CD')" shape=box]
+	43 -> 42
+	44 [label="-2_extend_13"]
+	44 -> 37
+	25 -> 44
+	45 [label="-2_extend_14"]
+	45 -> 38
+	46 [label="('Shape', 'ADEC')" shape=box]
+	46 -> 45
+	47 [label="-2_extend_15"]
+	47 -> 46
+	48 [label="('Shape', 'ADC')" shape=box]
+	48 -> 47
+	49 [label="('Shape', 'CDE')" shape=box]
+	49 -> 47
+	50 [label="-2_extend_16"]
+	50 -> 48
+	40 -> 50
+}

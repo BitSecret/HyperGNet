@@ -1,0 +1,47 @@
+digraph 4 {
+	0 [label="('Target', 'f_x')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_x - 0.428571428571429')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', '-f_x + ll_ac')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_ac - 0.428571428571429')" shape=box]
+	5 -> 3
+	6 [label="-3_solve_eq_3"]
+	6 -> 5
+	7 [label="('Equation', 'll_ab - 0.571428571428571')" shape=box]
+	7 -> 6
+	8 [label="('Equation', 'll_bc - 0.714285714285714')" shape=box]
+	8 -> 6
+	9 [label="('Equation', 'll_ab**2 + ll_ac**2 - ll_bc**2')" shape=box]
+	9 -> 6
+	10 [label="-3_solve_eq_4"]
+	10 -> 7
+	11 [label="('Equation', 'll_ab - 0.57142857')" shape=box]
+	11 -> 10
+	12 [label="-3_solve_eq_5"]
+	12 -> 8
+	13 [label="('Equation', 'll_bc - 0.71428571')" shape=box]
+	13 -> 12
+	14 [label="23_pythagorean"]
+	14 -> 9
+	15 [label="('RightTriangle', 'BAC')" shape=box]
+	15 -> 14
+	16 [label="27_right_triangle_judgment"]
+	16 -> 15
+	17 [label="('Triangle', 'BAC')" shape=box]
+	17 -> 16
+	18 [label="('Equation', 'ma_bac - 90')" shape=box]
+	18 -> 16
+	19 [label="-2_extend_6"]
+	19 -> 17
+	20 [label="('Shape', 'ACB')" shape=box]
+	20 -> 19
+	21 [label="-2_extend_7"]
+	21 -> 18
+	22 [label="('Perpendicular', 'A', 'AB', 'AC')" shape=box]
+	22 -> 21
+}

@@ -1,5 +1,5 @@
 from graphviz import Digraph
-from theorem import theorem_name_map
+from theorem import TheoremMap
 import pickle
 
 
@@ -19,10 +19,10 @@ class SolutionTree:
         for i in range(problem.target_count):  # 所有解题目标
             target = problem.targets[i]
             if target.target_solved:
-                target_node_index = self.add_node(str(target.target),
+                target_node_index = self.add_node(("Target", str(target.target)),
                                                   "c", -1)    # 目标
                 visited.append(target_node_index)
-                theorem_node_index = self.add_node(theorem_name_map[target.theorem],
+                theorem_node_index = self.add_node(TheoremMap.get_theorem_name(target.theorem),
                                                    "t", -1)    # 定理
                 visited.append(theorem_node_index)
                 self.add_edge(theorem_node_index, target_node_index)
@@ -40,7 +40,7 @@ class SolutionTree:
                     theorem_number = problem.conditions.get_theorem_by_index(c_index)    # 定理标号
                     if theorem_number == -1:    # 如果是初始节点，就不用向上遍历了
                         continue
-                    theorem_node_index = self.add_node(theorem_name_map[theorem_number],
+                    theorem_node_index = self.add_node(TheoremMap.get_theorem_name(theorem_number),
                                                        "t", -1)  # 定理
                     visited.append(theorem_node_index)
                     self.add_edge(theorem_node_index, target_node_index)
@@ -64,7 +64,7 @@ class SolutionTree:
             node_index = self.node_count
             self.node_count += 1
             self.nodes.append((node_name, node_type, c_index))
-            self.dot.node(str(node_index), node_name, shape='box')
+            self.dot.node(str(node_index), str(node_name), shape='box')
             return node_index
         return self.nodes.index((node_name, node_type, c_index))
 
@@ -73,13 +73,25 @@ class SolutionTree:
             self.edges.append((node1, node2))
             self.dot.edge(str(node1), str(node2))
 
-    def save_tree(self, file_dir):
+    def save(self, file_dir):
         if self.dot is not None:
             self.dot.render(directory=file_dir, view=False)
-            with open(file_dir + "{}_nodes.pk".format(self.dot.name, ), 'wb') as f:
-                pickle.dump(self.nodes, f)
-            with open(file_dir + "{}_edges.pk".format(self.dot.name, ), 'wb') as f:
-                pickle.dump(self.edges, f)
+            solution_hyper_graph = {}
+            node_type = {"c": [], "t": []}
+            for edge in self.edges:
+                for i in range(2):
+                    node = self.nodes[edge[i]]
+                    if node[0] not in node_type[node[1]]:
+                        node_type[node[1]].append(node[0])
+                if self.nodes[edge[0]][0] not in solution_hyper_graph.keys():
+                    solution_hyper_graph[self.nodes[edge[0]][0]] = [self.nodes[edge[1]][0]]
+                else:
+                    solution_hyper_graph[self.nodes[edge[0]][0]].append(self.nodes[edge[1]][0])
+
+            with open(file_dir + "{}_graph.pk".format(self.dot.name), 'wb') as f:
+                pickle.dump(solution_hyper_graph, f)
+            with open(file_dir + "{}_ntype.pk".format(self.dot.name), 'wb') as f:
+                pickle.dump(node_type, f)
         else:
             raise RuntimeError("Please generate the SolutionTree before showing.")
 

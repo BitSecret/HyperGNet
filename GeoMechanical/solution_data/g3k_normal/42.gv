@@ -1,0 +1,33 @@
+digraph 42 {
+	0 [label="('Target', 'ma_eag')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_eag - 52.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_dac - 52.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-ma_dac + ma_eag')" shape=box]
+	5 -> 3
+	6 [label="-3_solve_eq_3"]
+	6 -> 4
+	7 [label="('Equation', 'ma_acd - 50.0')" shape=box]
+	7 -> 6
+	8 [label="('Equation', 'ma_cda - 78.0')" shape=box]
+	8 -> 6
+	9 [label="('Equation', 'ma_acd + ma_cda + ma_dac - 180')" shape=box]
+	9 -> 6
+	10 [label="38_intersect_property"]
+	10 -> 5
+	11 [label="('Intersect', 'A', 'CG', 'ED')" shape=box]
+	11 -> 10
+	12 [label="21_triangle_property_angle_sum"]
+	12 -> 9
+	13 [label="('Triangle', 'ACD')" shape=box]
+	13 -> 12
+	14 [label="-2_extend_4"]
+	14 -> 13
+	15 [label="('Shape', 'CDA')" shape=box]
+	15 -> 14
+}

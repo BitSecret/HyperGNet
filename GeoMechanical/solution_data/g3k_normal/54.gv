@@ -1,0 +1,35 @@
+digraph 54 {
+	0 [label="('Target', 'f_x')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_x - 4.99999999868091')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', '-f_x + ll_ab')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-f_x + ll_ac')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_bc - 7.07106781')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'll_ab**2 + ll_ac**2 - ll_bc**2')" shape=box]
+	7 -> 3
+	8 [label="23_pythagorean"]
+	8 -> 7
+	9 [label="('RightTriangle', 'CAB')" shape=box]
+	9 -> 8
+	10 [label="27_right_triangle_judgment"]
+	10 -> 9
+	11 [label="('Triangle', 'CAB')" shape=box]
+	11 -> 10
+	12 [label="('Equation', 'ma_cab - 90')" shape=box]
+	12 -> 10
+	13 [label="-2_extend_3"]
+	13 -> 11
+	14 [label="('Shape', 'ABC')" shape=box]
+	14 -> 13
+	15 [label="-2_extend_4"]
+	15 -> 12
+	16 [label="('Perpendicular', 'A', 'AC', 'AB')" shape=box]
+	16 -> 15
+}

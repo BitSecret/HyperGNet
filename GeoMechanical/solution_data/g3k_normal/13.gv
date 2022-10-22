@@ -1,0 +1,55 @@
+digraph 13 {
+	0 [label="('Target', 'f_x')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_x - 3.87298334620742')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', '-f_x + ll_bx')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'll_bx - 3.87298334620742')" shape=box]
+	5 -> 3
+	6 [label="-3_solve_eq_3"]
+	6 -> 5
+	7 [label="('Equation', 'll_ab - 8.0')" shape=box]
+	7 -> 6
+	8 [label="('Equation', 'll_ax - 7.0')" shape=box]
+	8 -> 6
+	9 [label="('Equation', '-ll_ab**2 + ll_ax**2 + ll_bx**2')" shape=box]
+	9 -> 6
+	10 [label="-3_solve_eq_4"]
+	10 -> 8
+	11 [label="('Equation', 'll_ac - 14.0')" shape=box]
+	11 -> 10
+	12 [label="('Equation', 'll_ax - ll_xc')" shape=box]
+	12 -> 10
+	13 [label="('Equation', '-ll_ac + ll_ax + ll_xc')" shape=box]
+	13 -> 10
+	14 [label="23_pythagorean"]
+	14 -> 9
+	15 [label="('RightTriangle', 'AXB')" shape=box]
+	15 -> 14
+	16 [label="2_line_addition"]
+	16 -> 13
+	17 [label="('Collinear', 'AXC')" shape=box]
+	17 -> 16
+	18 [label="27_right_triangle_judgment"]
+	18 -> 15
+	19 [label="('Triangle', 'AXB')" shape=box]
+	19 -> 18
+	20 [label="('Equation', 'ma_axb - 90')" shape=box]
+	20 -> 18
+	21 [label="-2_extend_5"]
+	21 -> 19
+	22 [label="('Triangle', 'XBA')" shape=box]
+	22 -> 21
+	23 [label="-2_extend_6"]
+	23 -> 20
+	24 [label="('Perpendicular', 'X', 'AC', 'BX')" shape=box]
+	24 -> 23
+	25 [label="-2_extend_7"]
+	25 -> 22
+	26 [label="('Shape', 'BAX')" shape=box]
+	26 -> 25
+}

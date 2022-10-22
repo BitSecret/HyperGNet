@@ -1,0 +1,66 @@
+digraph 88 {
+	0 [label="('Target', 'ma_usr')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_usr - 47.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_rus - 90')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'ma_rus + ma_sru + ma_usr - 180')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'ma_sru - 43.0')" shape=box]
+	6 -> 3
+	7 [label="-2_extend_3"]
+	7 -> 4
+	8 [label="('Perpendicular', 'U', 'RT', 'SU')" shape=box]
+	8 -> 7
+	9 [label="21_triangle_property_angle_sum"]
+	9 -> 5
+	10 [label="('Triangle', 'SRU')" shape=box]
+	10 -> 9
+	11 [label="-3_solve_eq_4"]
+	11 -> 6
+	12 [label="('Equation', 'ma_utv - 47.0')" shape=box]
+	12 -> 11
+	13 [label="('Equation', 'ma_vsr - 90')" shape=box]
+	13 -> 11
+	14 [label="('Equation', 'ma_sru + ma_utv + ma_vsr - 180')" shape=box]
+	14 -> 11
+	15 [label="-2_extend_5"]
+	15 -> 10
+	16 [label="('Shape', 'RUS')" shape=box]
+	16 -> 15
+	17 [label="-2_extend_6"]
+	17 -> 13
+	18 [label="('Perpendicular', 'S', 'RS', 'SV')" shape=box]
+	18 -> 17
+	19 [label="21_triangle_property_angle_sum"]
+	19 -> 14
+	20 [label="('Triangle', 'TSR')" shape=box]
+	20 -> 19
+	21 [label="-2_extend_7"]
+	21 -> 20
+	22 [label="('Shape', 'TVSRU')" shape=box]
+	22 -> 21
+	23 [label="-2_extend_8"]
+	23 -> 22
+	24 [label="('Shape', 'TVU')" shape=box]
+	24 -> 23
+	25 [label="('Shape', 'UVSR')" shape=box]
+	25 -> 23
+	26 [label="-2_extend_9"]
+	26 -> 24
+	27 [label="('Shape', 'VUT')" shape=box]
+	27 -> 26
+	28 [label="-2_extend_10"]
+	28 -> 25
+	29 [label="('Shape', 'RUVS')" shape=box]
+	29 -> 28
+	30 [label="-2_extend_11"]
+	30 -> 29
+	16 -> 30
+	31 [label="('Shape', 'SUV')" shape=box]
+	31 -> 30
+}

@@ -1,0 +1,51 @@
+digraph 97 {
+	0 [label="('Target', 'll_zx')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'll_zx - 23.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', '-5.0*f_x + ll_zy + 7.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-3.0*f_x + ll_zx - 5.0')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'll_zx - ll_zy')" shape=box]
+	6 -> 3
+	7 [label="69_congruent_property_line_equal"]
+	7 -> 6
+	8 [label="('MirrorCongruent', 'ZWX', 'ZYW')" shape=box]
+	8 -> 7
+	9 [label="75_congruent_judgment_aas"]
+	9 -> 8
+	10 [label="('Triangle', 'ZWX')" shape=box]
+	10 -> 9
+	11 [label="('Triangle', 'ZYW')" shape=box]
+	11 -> 9
+	12 [label="('Equation', 'ma_wxz - 90')" shape=box]
+	12 -> 9
+	13 [label="('Equation', 'ma_zyw - 90')" shape=box]
+	13 -> 9
+	14 [label="('Equation', '-ma_ywz + ma_zwx')" shape=box]
+	14 -> 9
+	15 [label="-2_extend_3"]
+	15 -> 10
+	16 [label="('Shape', 'WXZ')" shape=box]
+	16 -> 15
+	17 [label="-2_extend_4"]
+	17 -> 11
+	18 [label="('Triangle', 'YWZ')" shape=box]
+	18 -> 17
+	19 [label="-2_extend_5"]
+	19 -> 12
+	20 [label="('Perpendicular', 'X', 'WX', 'ZX')" shape=box]
+	20 -> 19
+	21 [label="-2_extend_6"]
+	21 -> 13
+	22 [label="('Perpendicular', 'Y', 'ZY', 'WY')" shape=box]
+	22 -> 21
+	23 [label="-2_extend_7"]
+	23 -> 18
+	24 [label="('Shape', 'WZY')" shape=box]
+	24 -> 23
+}

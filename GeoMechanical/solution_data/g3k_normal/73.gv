@@ -1,0 +1,42 @@
+digraph 73 {
+	0 [label="('Target', 'ma_bea')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_bea - 110.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_bea - ma_ced')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'ma_ced - 110.0')" shape=box]
+	5 -> 3
+	6 [label="38_intersect_property"]
+	6 -> 4
+	7 [label="('Intersect', 'E', 'BC', 'AD')" shape=box]
+	7 -> 6
+	8 [label="-3_solve_eq_3"]
+	8 -> 5
+	9 [label="('Equation', 'ma_deb - 70.0')" shape=box]
+	9 -> 8
+	10 [label="('Equation', 'ma_ced + ma_deb - 180')" shape=box]
+	10 -> 8
+	11 [label="-3_solve_eq_4"]
+	11 -> 9
+	12 [label="('Equation', 'ma_ebd - 75.0')" shape=box]
+	12 -> 11
+	13 [label="('Equation', 'ma_bde - 35.0')" shape=box]
+	13 -> 11
+	14 [label="('Equation', 'ma_bde + ma_deb + ma_ebd - 180')" shape=box]
+	14 -> 11
+	15 [label="38_intersect_property"]
+	15 -> 10
+	7 -> 15
+	16 [label="21_triangle_property_angle_sum"]
+	16 -> 14
+	17 [label="('Triangle', 'EBD')" shape=box]
+	17 -> 16
+	18 [label="-2_extend_5"]
+	18 -> 17
+	19 [label="('Shape', 'BDE')" shape=box]
+	19 -> 18
+}

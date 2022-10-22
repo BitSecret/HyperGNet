@@ -1,0 +1,108 @@
+digraph 35 {
+	0 [label="('Target', 'f_y')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'f_y - 1.78571428571429')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'll_ay - 5.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', '-f_x + ll_an')" shape=box]
+	5 -> 3
+	6 [label="('Equation', '-f_y + ll_yn')" shape=box]
+	6 -> 3
+	7 [label="('Equation', 'll_yb - 14.0')" shape=box]
+	7 -> 3
+	8 [label="('Equation', 'll_nb - ll_yb + ll_yn')" shape=box]
+	8 -> 3
+	9 [label="('Equation', 'll_an**2 - ll_ay**2 + ll_yn**2')" shape=box]
+	9 -> 3
+	10 [label="('Equation', '-ll_ab**2 + ll_an**2 + ll_nb**2')" shape=box]
+	10 -> 3
+	11 [label="('Equation', 'll_ab - 13.076696830622')" shape=box]
+	11 -> 3
+	12 [label="2_line_addition"]
+	12 -> 8
+	13 [label="('Collinear', 'YNB')" shape=box]
+	13 -> 12
+	14 [label="23_pythagorean"]
+	14 -> 9
+	15 [label="('RightTriangle', 'YNA')" shape=box]
+	15 -> 14
+	16 [label="23_pythagorean"]
+	16 -> 10
+	17 [label="('RightTriangle', 'ANB')" shape=box]
+	17 -> 16
+	18 [label="-3_solve_eq_3"]
+	18 -> 11
+	4 -> 18
+	7 -> 18
+	19 [label="('Equation', 'll_ab**2 + ll_ay**2 - ll_yb**2')" shape=box]
+	19 -> 18
+	20 [label="27_right_triangle_judgment"]
+	20 -> 15
+	21 [label="('Triangle', 'YNA')" shape=box]
+	21 -> 20
+	22 [label="('Equation', 'ma_yna - 90')" shape=box]
+	22 -> 20
+	23 [label="27_right_triangle_judgment"]
+	23 -> 17
+	24 [label="('Triangle', 'ANB')" shape=box]
+	24 -> 23
+	25 [label="('Equation', 'ma_anb - 90')" shape=box]
+	25 -> 23
+	26 [label="23_pythagorean"]
+	26 -> 19
+	27 [label="('RightTriangle', 'BAY')" shape=box]
+	27 -> 26
+	28 [label="-2_extend_4"]
+	28 -> 21
+	29 [label="('Triangle', 'NAY')" shape=box]
+	29 -> 28
+	30 [label="-2_extend_5"]
+	30 -> 22
+	31 [label="('Perpendicular', 'N', 'YB', 'AN')" shape=box]
+	31 -> 30
+	32 [label="-2_extend_6"]
+	32 -> 24
+	33 [label="('Triangle', 'BAN')" shape=box]
+	33 -> 32
+	34 [label="-2_extend_7"]
+	34 -> 25
+	31 -> 34
+	35 [label="27_right_triangle_judgment"]
+	35 -> 27
+	36 [label="('Triangle', 'BAY')" shape=box]
+	36 -> 35
+	37 [label="('Equation', 'ma_bay - 90')" shape=box]
+	37 -> 35
+	38 [label="-2_extend_8"]
+	38 -> 29
+	39 [label="('Shape', 'AYN')" shape=box]
+	39 -> 38
+	40 [label="-2_extend_9"]
+	40 -> 33
+	41 [label="('Shape', 'ANB')" shape=box]
+	41 -> 40
+	42 [label="-2_extend_10"]
+	42 -> 36
+	43 [label="('Triangle', 'AYB')" shape=box]
+	43 -> 42
+	44 [label="-2_extend_11"]
+	44 -> 37
+	45 [label="('Perpendicular', 'A', 'YA', 'AB')" shape=box]
+	45 -> 44
+	46 [label="-2_extend_12"]
+	46 -> 43
+	47 [label="('Shape', 'YNBA')" shape=box]
+	47 -> 46
+	48 [label="-2_extend_13"]
+	48 -> 47
+	49 [label="('Shape', 'YNA')" shape=box]
+	49 -> 48
+	41 -> 48
+	50 [label="-2_extend_14"]
+	50 -> 49
+	39 -> 50
+}

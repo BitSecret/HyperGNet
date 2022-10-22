@@ -1,0 +1,56 @@
+digraph 64 {
+	0 [label="('Target', 'ma_fcd')" shape=box]
+	1 [label="-3_solve_eq_1"]
+	1 -> 0
+	2 [label="('Equation', 'ma_fcd - 17.0')" shape=box]
+	2 -> 1
+	3 [label="-3_solve_eq_2"]
+	3 -> 2
+	4 [label="('Equation', 'ma_dfc - 103.0')" shape=box]
+	4 -> 3
+	5 [label="('Equation', 'ma_cdf - 60')" shape=box]
+	5 -> 3
+	6 [label="('Equation', 'ma_cdf + ma_dfc + ma_fcd - 180')" shape=box]
+	6 -> 3
+	7 [label="-3_solve_eq_3"]
+	7 -> 4
+	8 [label="('Equation', 'ma_dfg - 180')" shape=box]
+	8 -> 7
+	9 [label="('Equation', 'ma_cfg - 77.0')" shape=box]
+	9 -> 7
+	10 [label="('Equation', 'ma_cfg + ma_dfc - ma_dfg')" shape=box]
+	10 -> 7
+	11 [label="33_equilateral_triangle_property_angle_equal"]
+	11 -> 5
+	12 [label="('EquilateralTriangle', 'CDE')" shape=box]
+	12 -> 11
+	13 [label="21_triangle_property_angle_sum"]
+	13 -> 6
+	14 [label="('Triangle', 'FCD')" shape=box]
+	14 -> 13
+	15 [label="-2_extend_4"]
+	15 -> 8
+	16 [label="('Collinear', 'ADFGEB')" shape=box]
+	16 -> 15
+	17 [label="3_angle_addition"]
+	17 -> 10
+	18 [label="('Angle', 'DFC')" shape=box]
+	18 -> 17
+	19 [label="('Angle', 'CFG')" shape=box]
+	19 -> 17
+	20 [label="-2_extend_5"]
+	20 -> 14
+	21 [label="('Shape', 'CDF')" shape=box]
+	21 -> 20
+	22 [label="-2_extend_6"]
+	22 -> 18
+	14 -> 22
+	23 [label="-2_extend_7"]
+	23 -> 19
+	24 [label="('Triangle', 'GCF')" shape=box]
+	24 -> 23
+	25 [label="-2_extend_8"]
+	25 -> 24
+	26 [label="('Shape', 'CFG')" shape=box]
+	26 -> 25
+}

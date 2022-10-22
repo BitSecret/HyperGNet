@@ -1,5 +1,5 @@
 from problem import Problem
-from theorem import theorem_map
+from theorem import TheoremMap
 from facts import AttributionType as aType
 from facts import TargetType as tType
 from facts import EquationType as eType
@@ -24,6 +24,7 @@ class Solver:
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):  #
         self.last_time = time.time()
+        TheoremMap.count = 0
 
         if self.problem is None:  # 第一次，初始化
             self.problem = Problem(problem_index,
@@ -167,6 +168,9 @@ class Solver:
         elif fl[0] == "Equal":
             return self._generate_expr(fl[1]) - self._generate_expr(fl[2])
         else:
+            result = self._parse_expr(fl)
+            if isinstance(result, float):
+                return float(str(result)[0:10])
             return self._parse_expr(fl)
 
     def _parse_expr(self, expr):  # 解析表达式字符串为list，然后在组装成sym体系下的表示
@@ -252,7 +256,7 @@ class Solver:
         self.problem.anti_generate_fl_using_logic()    # 通过logic反向生成FL，以供embedding
 
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
-            theorem_map[theorem](self.problem)
+            TheoremMap.theorem_map[theorem](self.problem)
             self.problem.solve_equations()  # 求解定理添加的方程
             self.problem.anti_generate_fl_using_logic()  # 通过logic反向生成FL，以供embedding
             self.time_cons("apply and solve theorem {}".format(theorem))  # 耗时
@@ -275,6 +279,8 @@ class Solver:
                         target.target_solved = True
 
             self.time_cons("solve target {}".format(i))  # 求解目标耗时
+
+        self.problem.s_tree.generate_tree(self.problem)  # 求解结束后生成求解树
 
     """------------auxiliary function------------"""
 
