@@ -1,12 +1,10 @@
-from gen_data import gen_for_predicate, gen_for_sentence
+from vectorization import vector_for_predicate, vector_for_sentence
 solution_data = "../GeoMechanical/solution_data/g3k_normal/"
 
 
 def main():
-    for data in gen_for_predicate(solution_data):
-        pass
-    for step_data in gen_for_sentence(solution_data):
-        pass
+    vector_for_predicate(solution_data)
+    vector_for_sentence(solution_data)
 
 
 if __name__ == '__main__':
