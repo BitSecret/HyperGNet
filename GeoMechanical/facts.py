@@ -1,5 +1,6 @@
 from enum import Enum
 import pickle
+import os
 
 
 class ConditionType(Enum):  # 条件的类型
@@ -176,5 +177,8 @@ class FormalLanguage:
         self.step_count += 1
 
     def save(self, file_dir):
+        if "{}_steps.pk".format(self.problem_id) in os.listdir(file_dir):
+            return
+
         with open(file_dir + "{}_steps.pk".format(self.problem_id), 'wb') as f:
             pickle.dump(self.reasoning_fls, f)

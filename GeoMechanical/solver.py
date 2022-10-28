@@ -18,12 +18,10 @@ import time
 class Solver:
 
     def __init__(self):
-        self.last_time = time.time()
         self.problem = None
         self.problem_define_map = None
 
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):  #
-        self.last_time = time.time()
         TheoremMap.count = 0
 
         if self.problem is None:  # 第一次，初始化
@@ -35,9 +33,13 @@ class Solver:
                                      construction_fls, text_fls, image_fls, target_fls,
                                      theorem_seqs, answer)
 
+        s_start_time = time.time()
         self.parse()  # 解析形式化语句到logic形式
-        self.time_cons("init_problem, parse_and_expand_fl, first_solve")  # 初始化问题、解析语句、扩充语句和求解方程耗时
+        self.problem.solve_time_list.append(
+            "\033[32minit_problem, parse_and_expand_fl, first_solve\033[0m time consuming:{:.6f}s".
+            format(time.time() - s_start_time))  # 耗时
 
+    """------------问题解析------------"""
     def parse(self):
         """------构图语句------"""
         for fl in pp.pre_parse_fls(self.problem.fl.construction_fls):
@@ -120,6 +122,10 @@ class Solver:
                 self._parse_find(fl[1])
             else:
                 raise RuntimeError("Unknown predicate <{}> when parse target FL. Please check FL.".format(fl[0]))
+
+        """------求解初始方程------"""
+        self.problem.solve_equations()  # 求解初始方程
+        self.problem.anti_generate_all_fl_by_step()  # 通过logic反向生成FL，以供embedding
 
     def _generate_expr(self, fl):  # 将FL解析成代数表达式
         if fl[0] == "Length":  # 生成属性的符号表示
@@ -251,17 +257,25 @@ class Solver:
 
         self.problem.targets.append(target)    # 添加到解题目标
 
+    """------------问题求解------------"""
     def solve(self):
-        self.problem.solve_equations()  # 求解初始方程
-        self.problem.anti_generate_fl_using_logic()    # 通过logic反向生成FL，以供embedding
-
         for theorem in self.problem.theorem_seqs:  # 应用定理序列
-            TheoremMap.theorem_map[theorem](self.problem)
-            self.problem.solve_equations()  # 求解定理添加的方程
-            self.problem.anti_generate_fl_using_logic()  # 通过logic反向生成FL，以供embedding
-            self.time_cons("apply and solve theorem {}".format(theorem))  # 耗时
+            self.apply_theorem(theorem)
 
+        self.solve_target()    # 求解解题目标
+
+    def apply_theorem(self, theorem_index):
+        s_start_time = time.time()
+        TheoremMap.theorem_map[theorem_index](self.problem)
+        self.problem.solve_equations()  # 求解定理添加的方程
+        self.problem.anti_generate_all_fl_by_step()  # 通过logic反向生成FL，以供embedding
+        self.problem.solve_time_list.append(
+            "\033[32mapply and solve theorem {}\033[0m time consuming:{:.6f}s".
+            format(theorem_index, time.time() - s_start_time))  # 耗时
+
+    def solve_target(self):
         for i in range(self.problem.target_count):
+            s_start_time = time.time()
             target = self.problem.targets[i]
             if target.target_type in [tType.entity, tType.relation]:  # 实体、实体关系
                 if target.solved_answer in self.problem.conditions.item[target.target]:
@@ -278,13 +292,6 @@ class Solver:
                     elif target.target_type is tType.equal and util.equal(target.solved_answer, 0):  # 验证型，且解为0
                         target.target_solved = True
 
-            self.time_cons("solve target {}".format(i))  # 求解目标耗时
-
-        self.problem.s_tree.generate_tree(self.problem)  # 求解结束后生成求解树
-
-    """------------auxiliary function------------"""
-
-    def time_cons(self, keyword):
-        self.problem.solve_time_list.append(
-            "\033[32m{}\033[0m time consuming:{:.6f}s".format(keyword, time.time() - self.last_time))
-        self.last_time = time.time()
+            self.problem.solve_time_list.append(
+                "\033[32msolve target {}\033[0m time consuming:{:.6f}s".
+                format(i, time.time() - s_start_time))  # 耗时

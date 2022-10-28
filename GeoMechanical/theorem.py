@@ -2261,8 +2261,6 @@ class TheoremMap:
 
     @staticmethod
     def get_theorem_name(t_index):
-        if t_index in [-1, -2, -3]:
-            TheoremMap.count += 1
-            return TheoremMap.theorem_name_map[t_index] + "_{}".format(TheoremMap.count)
-        else:
-            return TheoremMap.theorem_name_map[t_index]
+        theorem_name = TheoremMap.theorem_name_map[t_index] + "_{}".format(TheoremMap.count)
+        TheoremMap.count += 1
+        return theorem_name

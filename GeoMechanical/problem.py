@@ -5,9 +5,12 @@ from facts import EquationType as eType
 from facts import ConditionType as cType
 from facts import Condition
 from facts import FormalLanguage
-from visualize import SolutionTree
 from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
+import os
+from graphviz import Digraph
+from theorem import TheoremMap
+import pickle
 
 
 class ProblemLogic:
@@ -480,8 +483,14 @@ class Problem(ProblemLogic):
         self.answer = answer
 
         """------------辅助功能------------"""
-        self.s_tree = SolutionTree()  # 前提条件集合
-        self.solve_time_list = []
+        self.solve_time_list = []    # 求解时间
+
+        self.dot = None    # 以下是求解树相关数据结构
+        self.nodes = []  # 点集 (node_name, node_type, c_index) 三元组
+        self.node_count = 0  # 结点计数
+        self.edges = {}  # 边集 key:start_node value:end_node
+
+        self.used = []  # 解题过程中用到的 problem 条件的 index
 
     """------------构造图形------------"""
 
@@ -729,8 +738,7 @@ class Problem(ProblemLogic):
         # 注释掉下列语句相当于合并complex和basic
         self.complex_equations = {}  # 清空 complex equations
 
-    """------------辅助功能------------"""
-
+    """------------辅助功能: 初始化新问题------------"""
     def new_problem(self, problem_index, construction_fls, text_fls, image_fls, target_fls, theorem_seqs, answer):
         """-------------------题目输入-------------------"""
         self.problem_index = problem_index
@@ -739,8 +747,12 @@ class Problem(ProblemLogic):
         self.answer = answer
 
         """-------------------辅助功能-------------------"""
-        self.s_tree = SolutionTree()  # 前提条件集合
         self.solve_time_list = []
+        self.dot = None  # 以下是求解树相关数据结构
+        self.nodes = []  # 点集 (node_name, node_type, c_index) 三元组
+        self.node_count = 0  # 结点计数
+        self.edges = {}  # 边集 (node_index, node_index) 二元组
+        self.used = []  # 解题过程中用到的 problem 条件的 index
 
         """------Entity, Entity Relation, Equation------"""
         self.conditions.clean()
@@ -756,7 +768,8 @@ class Problem(ProblemLogic):
         self.target_count = 0  # 目标个数
         self.targets = []  # 解题目标
 
-    def anti_generate_fl_using_logic(self):
+    """------------辅助功能: 反向生成形式化语句------------"""
+    def anti_generate_all_fl_by_step(self):
         """---------construction---------"""
         # i = 0
         # while i < len(self.conditions.items[cType.shape]):    # shape 没必要生成FL
@@ -926,6 +939,9 @@ class Problem(ProblemLogic):
         self.fl.step()  # step
 
     def anti_generate_one_fl_by_index(self, index):
+        if index == -1:
+            return tuple(["Premise", "-1"])
+
         item, c_type = self.conditions.item_list[index]
         if c_type is cType.equation:
             result = ("Equation", str(item))
@@ -990,6 +1006,7 @@ class Problem(ProblemLogic):
 
         return result
 
+    """------------辅助功能: show------------"""
     def show(self):
         # Formal Language
         print("\033[36mproblem_index:\033[0m", end=" ")
@@ -1016,13 +1033,27 @@ class Problem(ProblemLogic):
                 print("step {}:".format(step), end="  ")
                 print(fl)
 
+        for i in range(self.target_count):  # 找到所有解题需要的条件
+            target = self.targets[i]
+            if target.target_solved:
+                self.used += target.premise
+        self.used = list(set(self.used))
+        update = True
+        while update:
+            update = False
+            for i in self.used:
+                for j in self.conditions.get_premise_by_index(i):
+                    if j not in self.used:
+                        self.used.append(j)
+                        update = True
+
         # Logic-Construction
         print("\033[33mConstruction:\033[0m")
         for entity in Condition.construction_list:
             if len(self.conditions.items[entity]) > 0:
                 print("{}:".format(entity.name))
                 for item in self.conditions.items[entity]:
-                    if self.conditions.get_index(item, entity) not in self.s_tree.used:
+                    if self.conditions.get_index(item, entity) not in self.used:
                         print_str = "{0:^6}{1:^15}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^15}{2:^25}{3:^6}\033[0m"
@@ -1037,7 +1068,7 @@ class Problem(ProblemLogic):
             if len(self.conditions.items[entity]) > 0:
                 print("{}:".format(entity.name))
                 for item in self.conditions.items[entity]:
-                    if self.conditions.get_index(item, entity) not in self.s_tree.used:
+                    if self.conditions.get_index(item, entity) not in self.used:
                         print_str = "{0:^6}{1:^15}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^15}{2:^25}{3:^6}\033[0m"
@@ -1051,7 +1082,7 @@ class Problem(ProblemLogic):
             if len(self.conditions.items[entity_relation]) > 0:
                 print("{}:".format(entity_relation.name))
                 for item in self.conditions.items[entity_relation]:
-                    if self.conditions.get_index(item, entity_relation) not in self.s_tree.used:
+                    if self.conditions.get_index(item, entity_relation) not in self.used:
                         print_str = "{0:^6}{1:^25}{2:^25}{3:^6}"
                     else:
                         print_str = "\033[35m{0:^6}{1:^25}{2:^25}{3:^6}\033[0m"
@@ -1075,7 +1106,7 @@ class Problem(ProblemLogic):
         if len(self.conditions.items[Condition.equation]) > 0:
             print("{}:".format(Condition.equation.name))
             for item in self.conditions.items[Condition.equation]:
-                if self.conditions.get_index(item, Condition.equation) not in self.s_tree.used:
+                if self.conditions.get_index(item, Condition.equation) not in self.used:
                     print_str = "{0:^6}{1:^70}{2:^25}{3:>6}"
                 else:
                     print_str = "\033[35m{0:^6}{1:^70}{2:^25}{3:>6}\033[0m"
@@ -1125,3 +1156,73 @@ class Problem(ProblemLogic):
                 print("\033[32msolved\033[0m")
             else:
                 print("\033[31munsolved\033[0m")
+
+    """------------辅助功能: 求解树生成和保存相关------------"""
+    def generate_tree(self):
+        self.dot = Digraph(name=str(self.problem_index))  # 求解树
+
+        group = {}    # 将题目条件分组，有相同前提和定理的放一块
+        fl = []    # 条件反向解析为形式化语句
+        for i in range(len(self.conditions.item_list)):
+            fl.append(self.anti_generate_one_fl_by_index(i))
+            p = tuple(self.conditions.get_premise_by_index(i))
+            t = self.conditions.get_theorem_by_index(i)
+            if (p, t) not in group.keys():
+                group[(p, t)] = [i]
+            else:
+                group[(p, t)].append(i)
+        fl.append(self.anti_generate_one_fl_by_index(-1))
+
+        for key in group.keys():    # 生成求解树
+            premise, theorem = key
+            condition = group[key]
+            t_index = self.add_node(TheoremMap.get_theorem_name(theorem))
+            for p in premise:
+                p_index = self.add_node(fl[p])
+                self.add_edge(p_index, t_index)
+            for c in condition:
+                c_index = self.add_node(fl[c])
+                self.add_edge(t_index, c_index)
+
+        for i in range(self.target_count):   # 添加解题目标到求解树
+            target = self.targets[i]
+            if target.target_solved:
+                t_index = self.add_node(TheoremMap.get_theorem_name(target.theorem))  # 定理
+                target_index = self.add_node(("Target", str(target.target)))  # 目标
+                self.add_edge(t_index, target_index)
+                for premise in target.premise:
+                    p_index = self.add_node(self.anti_generate_one_fl_by_index(premise))  # 前提
+                    self.add_edge(p_index, t_index)
+
+    def add_node(self, node):    # 添加点
+        if node in self.nodes:    # node 已经添加
+            return self.nodes.index(node)
+
+        new_node_index = self.node_count    # 新node，添加进点集
+        self.nodes.append(node)
+        self.node_count += 1
+        if isinstance(node, tuple):
+            self.dot.node(str(new_node_index), str(node), shape='box')  # 条件结点
+        else:
+            self.dot.node(str(new_node_index), str(node))    # 定理结点
+        return new_node_index
+
+    def add_edge(self, node_start_index, node_end_index):    # 添加边
+        if self.nodes[node_start_index] not in self.edges:
+            self.edges[self.nodes[node_start_index]] = [self.nodes[node_end_index]]
+        else:
+            self.edges[self.nodes[node_start_index]].append(self.nodes[node_end_index])
+        self.dot.edge(str(node_start_index), str(node_end_index))
+
+    def save(self, file_dir):    # 保存求解树
+        if "{}_graph.pk".format(self.problem_index) in os.listdir(file_dir):    # 已经求解过就不用再求解了
+            return
+
+        if self.dot is None:    # 若未生成求解树，先生成
+            self.generate_tree()
+
+        with open(file_dir + "{}_graph.pk".format(self.problem_index), "wb") as f:    # 保存求解树
+            pickle.dump(self.edges, f)
+        self.dot.render(directory=file_dir, view=False, format="png")
+        os.remove(file_dir + "{}.gv".format(self.problem_index))    # 这个文件不需要
+        os.rename(file_dir + "{}.gv.png".format(self.problem_index), file_dir + "{}.png".format(self.problem_index))

@@ -2,8 +2,34 @@ from utility import load_data, save_data
 import os
 import re
 walking_depth = 2    # 随机游走的深度
-character = ["+", "-", "*", "/", "^", "@", "#", "$", "(", ")",
-             "nums", "ll_", "ma_", "as_", "pt_", "at_", "f_"]    # 表达式词表
+expr_word_list = ["+", "-", "*", "/", "^", "@", "#", "$", "(", ")",
+                  "nums", "ll_", "ma_", "as_", "pt_", "at_", "f_"]  # 表达式词表
+
+
+# 谓词embedding
+def gen_for_predicate(data_path):
+    if "predicate.pk" in os.listdir("./output/"):
+        return
+
+    raw_data = []
+    for i in range(106):
+        raw_data.append([load_data(data_path + "{}_graph.pk".format(i)),
+                         load_data(data_path + "{}_ntype.pk".format(i))])
+
+    data = []
+    for graph, node_type in raw_data:
+        one_problem = []
+        for s_node in graph.keys():  # 从每一个node开始随机游走
+            if isinstance(s_node, tuple):
+                random_walking(s_node, s_node, graph, node_type, 0, one_problem)
+            elif not s_node.startswith("-2") and not s_node.startswith("-3"):
+                random_walking(s_node, s_node, graph, node_type, 0, one_problem)
+        for i in list(set(one_problem)):    # 快速去重
+            data.append(i)
+            print(i)
+        print()
+
+    save_data(data, "./output/predicate.pk")
 
 
 # 提取谓词和定理
@@ -37,30 +63,21 @@ def random_walking(root_node, current_node, graph, node_type, depth, data):
                 random_walking(root_node, next_node, graph, node_type, depth + 1, data)
 
 
-# 谓词embedding
-def gen_for_predicate(data_path):
-    if "predicate.pk" in os.listdir("./output/"):
+# 个体词embedding
+def gen_for_sentence(data_path):
+    if "sentence.pk" in os.listdir("./output/"):
         return
 
-    raw_data = []
-    for i in range(106):
-        raw_data.append([load_data(data_path + "{}_graph.pk".format(i)),
-                         load_data(data_path + "{}_ntype.pk".format(i))])
-
     data = []
-    for graph, node_type in raw_data:
-        one_problem = []
-        for s_node in graph.keys():  # 从每一个node开始随机游走
-            if isinstance(s_node, tuple):
-                random_walking(s_node, s_node, graph, node_type, 0, one_problem)
-            elif not s_node.startswith("-2") and not s_node.startswith("-3"):
-                random_walking(s_node, s_node, graph, node_type, 0, one_problem)
-        for i in list(set(one_problem)):    # 快速去重
-            data.append(i)
-            print(i)
-        print()
+    for filename in os.listdir(data_path):
+        if filename.endswith("steps.pk"):
+            one_problem = load_data(data_path + filename)
+            for step in one_problem.keys():
+                for item in one_problem[step]:
 
-    save_data(data, "./output/predicate.pk")
+                    data.append(sentence_format(item))    # 在这里生成训练数据
+
+    save_data(data, "./output/sentence.pk")
 
 
 def equation_format(equation):
@@ -85,7 +102,7 @@ def equation_format(equation):
     result = []
     while len(equation) > 0:
         length = len(equation)
-        for c in character:
+        for c in expr_word_list:
             if equation.startswith(c):
                 result.append(equation[0:len(c)])
                 equation = equation[len(c):len(equation)]
@@ -97,34 +114,14 @@ def equation_format(equation):
 
 
 def sentence_format(sentence):
-    result = [sentence[0]]
     if sentence[0] == "Equation":
-        result.append(equation_format(sentence[1]))
+        return equation_format(sentence[1])
     elif sentence[0] in ["Length", "Measure", "Area", "Perimeter", "Altitude", "Free"]:
-        result.append([])
-        for item in sentence[1]:
-            result[1].append(item)
+        return list(sentence[1])
     else:
-        result.append([])
+        result = []
         for i in range(1, len(sentence)):
-            for item in sentence[i]:
-                result[1].append(item)
+            result += list(sentence[i])
             if i < len(sentence) - 1:
-                result[1].append(",")
-    return result
-
-
-# 个体词embedding
-def gen_for_sentence(data_path):
-    if "sentence.pk" in os.listdir("./output/"):
-        return
-
-    data = []
-    for filename in os.listdir(data_path):
-        if filename.endswith("steps.pk"):
-            one_problem = load_data(data_path + filename)
-            for step in one_problem.keys():
-                for item in one_problem[step]:
-                    data.append(sentence_format(item))
-
-    save_data(data, "./output/sentence.pk")
+                result.append(",")
+        return result

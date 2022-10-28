@@ -24,9 +24,7 @@ def geo3k_normal_mode():
                                problem["problem_answer"])
             solver.solve()
             solver.problem.show()
-            solver.problem.s_tree.show_tree_data()
-            solver.problem.s_tree.save(solution_data + "g3k_normal/")
-            solver.problem.fl.save(solution_data + "g3k_normal/")
+            solver.problem.save(solution_data + "g3k_normal/")    # 保存求解树和每一步解题
         except Exception:  # 一般报错
             traceback.print_exc()
         except FunctionTimedOut as e:  # 超时报错
@@ -65,7 +63,7 @@ def geo3k_step_mode():
     print("{} problems. time consuming: {:.6f}s. avg: {} s/problem".format(count, time_cons, time_cons / count))
 
 
-# geo3k_trans_data, 一次运行1个题目，并输出解题过程
+# geo3k_trans_data, 一次运行n个题目，并输出求解结果
 def geo3k_embedding_mode():
     solver = Solver()
     count = int(input("problem max count:"))
@@ -80,8 +78,7 @@ def geo3k_embedding_mode():
                                problem["problem_answer"])
             solver.solve()
             solver.problem.simpel_show()
-            solver.problem.s_tree.save(solution_data + "g3k_normal/")
-            solver.problem.fl.save(solution_data + "g3k_normal/")
+            solver.problem.save(solution_data + "g3k_normal/")
         except Exception:  # 一般报错
             traceback.print_exc()
         except FunctionTimedOut as e:  # 超时报错
