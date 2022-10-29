@@ -1,4 +1,5 @@
 import pickle
+import torch
 
 
 def load_data(filename):
