@@ -25,7 +25,7 @@ sentence_word_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"
 # 谓词embedding
 def gen_for_predicate(data_path):
     if "predicate.pk" in os.listdir("./output/"):
-        return
+        return load_data("./output/predicate.pk")
 
     data = []
     for filename in os.listdir(data_path):
@@ -42,9 +42,10 @@ def gen_for_predicate(data_path):
 
     save_data(data, "./output/predicate.pk")
 
+    return data
 
-# 提取谓词和定理
-def node_format(current_node, next_node):
+
+def node_format(current_node, next_node):    # 提取谓词和定理
     data_item = []
     if isinstance(current_node, tuple):  # start_node_predicate
         data_item.append(current_node[0])
@@ -59,8 +60,7 @@ def node_format(current_node, next_node):
     return data_item
 
 
-# 递归随机游走
-def graph_walking(root_node, current_node, graph, depth, data):
+def graph_walking(root_node, current_node, graph, depth, data):    # 递归随机游走
     if depth == walking_depth:  # 游走到到预计深度，返回
         return
 
@@ -75,14 +75,17 @@ def graph_walking(root_node, current_node, graph, depth, data):
                 graph_walking(root_node, next_node, graph, depth + 1, data)
 
 
-def one_hot_for_predicate(data_path):
-    if "predicate_x.vec" in os.listdir("./output/"):
-        return load_data("./output/predicate_x.vec"), load_data("./output/predicate_y.vec")
+def one_hot_for_predicate():
+    if "predicate_x.onehot" in os.listdir("./output/"):
+        return load_data("./output/predicate_x.onehot"), load_data("./output/predicate_y.onehot")
+    
+    if "predicate.pk" not in os.listdir("./output/"):
+        raise RuntimeError("No predicate data generated. Please run <gen_data.gen_for_predicate(data_path)> first.")
+    
     zero = np.zeros(len(predicate_word_list), dtype=int)
     predicate_x = []
     predicate_y = []
 
-    gen_for_predicate(data_path)
     predicate = load_data("./output/predicate.pk")
     for x, y in predicate:
         item_x = zero.copy()
@@ -92,15 +95,32 @@ def one_hot_for_predicate(data_path):
         predicate_x.append(item_x)
         predicate_y.append(item_y)
 
-    save_data(predicate_x, "./output/predicate_x.vec")
-    save_data(predicate_y, "./output/predicate_y.vec")
+    save_data(predicate_x, "./output/predicate_x.onehot")
+    save_data(predicate_y, "./output/predicate_y.onehot")
     return predicate_x, predicate_y
+
+
+def get_predicate_embedding():
+    if "predicate.vec" in os.listdir("./output/"):
+        return load_data("./output/predicate.vec")
+
+    if "predicate.model" not in os.listdir("./train/"):
+        raise RuntimeError("No predicate embedding model trained. Please run <model.train_predicate()> first.")
+
+    predicate_embedding = {}
+    state_dict = load_data("./train/predicate.model")
+    weight = state_dict["input.weight"].T
+    for i in range(len(predicate_word_list)):
+        predicate_embedding[predicate_word_list[i]] = weight[i]
+    save_data(predicate_embedding, "./output/predicate.vec")
+
+    return predicate_embedding
 
 
 # 个体词embedding
 def gen_for_sentence(data_path):
     if "sentence.pk" in os.listdir("./output/"):
-        return
+        return load_data("./output/sentence.pk")
 
     words = []
     for filename in os.listdir(data_path):
@@ -118,6 +138,8 @@ def gen_for_sentence(data_path):
         data += sentence_walking(word)    # 滑动窗口生成训练数据
 
     save_data(data, "./output/sentence.pk")
+
+    return data
 
 
 def equation_format(equation):
@@ -177,15 +199,17 @@ def sentence_walking(sentence):
     return result
 
 
-def one_hot_for_sentence(data_path):
-    if "sentence_x.vec" in os.listdir("./output/"):
-        return load_data("./output/sentence_x.vec"), load_data("./output/sentence_y.vec")
+def one_hot_for_sentence():
+    if "sentence_x.onehot" in os.listdir("./output/"):
+        return load_data("./output/sentence_x.onehot"), load_data("./output/sentence_y.onehot")
+
+    if "sentence.pk" not in os.listdir("./output/"):
+        raise RuntimeError("No sentence data generated. Please run <gen_data.gen_for_sentence(data_path)> first.")
 
     zero = np.zeros(len(sentence_word_list), dtype=int)
     sentence_x = []
     sentence_y = []
 
-    gen_for_sentence(data_path)
     sentence = load_data("./output/sentence.pk")
     for x, y in sentence:
         item_x = zero.copy()
@@ -195,6 +219,23 @@ def one_hot_for_sentence(data_path):
         sentence_x.append(item_x)
         sentence_y.append(item_y)
 
-    save_data(sentence_x, "./output/sentence_x.vec")
-    save_data(sentence_y, "./output/sentence_y.vec")
+    save_data(sentence_x, "./output/sentence_x.onehot")
+    save_data(sentence_y, "./output/sentence_y.onehot")
     return sentence_x, sentence_y
+
+
+def get_sentence_embedding():
+    if "sentence.vec" in os.listdir("./output/"):
+        return load_data("./output/sentence.vec")
+
+    if "sentence.model" not in os.listdir("./train/"):
+        raise RuntimeError("No sentence embedding model trained. Please run <model.train_sentence()> first.")
+
+    sentence_embedding = {}
+    state_dict = load_data("./train/sentence.model")
+    weight = state_dict["input.weight"].T
+    for i in range(len(sentence_word_list)):
+        sentence_embedding[sentence_word_list[i]] = weight[i]
+    save_data(sentence_embedding, "./output/sentence.vec")
+
+    return sentence_embedding
