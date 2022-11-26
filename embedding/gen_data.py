@@ -2,6 +2,7 @@ from utility import load_data, save_data
 import os
 import re
 import numpy as np
+
 walking_depth = 2  # 随机游走的深度
 expr_word_list = ["+", "-", "*", "/", "^", "@", "#", "$", "(", ")",
                   "nums", "ll_", "ma_", "as_", "pt_", "at_", "f_"]  # 表达式词表
@@ -17,9 +18,11 @@ predicate_word_list = ["Shape", "Collinear", "Point", "Line", "Angle", "Triangle
                        "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76",
                        "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90"]
 sentence_word_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
-                      "T", "U", "V", "W", "X", "Y", "Z", ",", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
-                      "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "+", "-", "*", "/",
-                      "^", "@", "#", "$", "(", ")", "nums", "ll_", "ma_", "as_", "pt_", "at_", "f_"]
+                      "T", "U", "V", "W", "X", "Y", "Z", ",",
+                      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+                      "t", "u", "v", "w", "x", "y", "z",
+                      "+", "-", "*", "/", "^", "@", "#", "$", "(", ")",
+                      "nums", "ll_", "ma_", "as_", "pt_", "at_", "f_"]
 
 
 # 谓词embedding
@@ -45,7 +48,7 @@ def gen_for_predicate(data_path):
     return data
 
 
-def node_format(current_node, next_node):    # 提取谓词和定理
+def node_format(current_node, next_node):  # 提取谓词和定理
     data_item = []
     if isinstance(current_node, tuple):  # start_node_predicate
         data_item.append(current_node[0])
@@ -60,7 +63,7 @@ def node_format(current_node, next_node):    # 提取谓词和定理
     return data_item
 
 
-def graph_walking(root_node, current_node, graph, depth, data):    # 递归随机游走
+def graph_walking(root_node, current_node, graph, depth, data):  # 递归随机游走
     if depth == walking_depth:  # 游走到到预计深度，返回
         return
 
@@ -78,10 +81,10 @@ def graph_walking(root_node, current_node, graph, depth, data):    # 递归随�
 def one_hot_for_predicate():
     if "predicate_x.onehot" in os.listdir("./output/"):
         return load_data("./output/predicate_x.onehot"), load_data("./output/predicate_y.onehot")
-    
+
     if "predicate.pk" not in os.listdir("./output/"):
         raise RuntimeError("No predicate data generated. Please run <gen_data.gen_for_predicate(data_path)> first.")
-    
+
     zero = np.zeros(len(predicate_word_list), dtype=int)
     predicate_x = []
     predicate_y = []
@@ -135,7 +138,7 @@ def gen_for_sentence(data_path):
 
     data = []
     for word in words:
-        data += sentence_walking(word)    # 滑动窗口生成训练数据
+        data += sentence_walking(word)  # 滑动窗口生成训练数据
 
     save_data(data, "./output/sentence.pk")
 

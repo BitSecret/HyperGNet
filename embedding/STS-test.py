@@ -8,6 +8,8 @@ from torch.autograd import Variable
 import math
 import hiddenlayer as hl
 import torch.utils.data as data
+import numpy as np
+import scipy
 
 random.seed(3407)
 torch.manual_seed(3407)  # 随机数种子
@@ -16,8 +18,9 @@ sentence_word_list = ["padding", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j
                       "r", "s", "t", "u", "v", "w", "x", "y", "z",
                       "+", "-", "*", "/", "^", "@", "#", "$", "(", ")",
                       "1", "2", "3", "4", "5", "6", "7"]
+
 re_map = {"1": "nums", "2": "ll_", "3": "ma_", "4": "as_", "5": "pt_", "6": "at_", "7": "f_",
-          "@": "sin", "#": "cos", "$": "tan"}
+          "@": "sin", "#": "cos", "$": "tan"}    # 映射回原始的符号
 
 
 class Embedding(nn.Module):
@@ -136,7 +139,7 @@ def main():
 
 
 def pretrain():
-    raw_data = torch.tensor(load_data("./data/500_padding.pk"))
+    raw_data = torch.tensor(load_data("STS-data/500_padding.pk"))
     data_loader = data.DataLoader(
         dataset=data.TensorDataset(raw_data, raw_data),
         batch_size=32,
@@ -165,14 +168,14 @@ def pretrain():
 
             history.log(epoch * step_num + step, step_loss=loss.item())  # 以下为训练可视化和模型保存
             canvas.draw_plot(history["step_loss"])
-            canvas.save("./train/pretrain_loss.png")
+            canvas.save("./STS-train/pretrain_loss.png")
             print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
 
-    save_data(model.state_dict(), "./train/pretrain.model")
+    save_data(model.state_dict(), "./train/STS-pretrain.model")
 
 
 def train():
-    raw_data = torch.tensor(load_data("./data/500_padding.pk"))
+    raw_data = torch.tensor(load_data("STS-data/500_padding.pk"))
     data_loader = data.DataLoader(
         dataset=data.TensorDataset(raw_data, raw_data),
         batch_size=32,
@@ -181,7 +184,7 @@ def train():
     )
 
     model = make_model(vocab=len(sentence_word_list), h=4, N=3, padding_size=36, d_model=32, pos=True)
-    model.load_state_dict(load_data("./train/pretrain.model"))  # 载入预训练的模型
+    model.load_state_dict(load_data("STS-train/pretrain.model"))  # 载入预训练的模型
 
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  # 优化器
     pre_loss = nn.CrossEntropyLoss()  # 交叉熵损失
@@ -211,20 +214,20 @@ def train():
 
             history.log(epoch * step_num + step, step_loss=loss.item())  # 以下为训练可视化和模型保存
             canvas.draw_plot(history["step_loss"])
-            canvas.save("./train/train_loss.png")
+            canvas.save("./STS-train/train_loss.png")
             print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
 
-    save_data(model.state_dict(), "./train/train.model")
+    save_data(model.state_dict(), "STS-train/train.model")
 
 
-def evaluation():
-    # sim = load_data("./data/500_sim.pk")
+def eval_rebuilt():
+    # sim = load_data("./STS-data/500_sim.pk")
 
-    raw_data = load_data("./data/500.pk")    # 原始数据
-    data_vec = torch.tensor(load_data("./data/500_padding.pk"))    # 原始数据向量形式
+    raw_data = load_data("STS-data/500.pk")    # 原始数据
+    data_vec = torch.tensor(load_data("STS-data/500_padding.pk"))    # 原始数据向量形式
     output_data = []
     model = make_model(vocab=len(sentence_word_list), h=4, N=3, padding_size=36, d_model=32, pos=True)
-    model.load_state_dict(load_data("./train/train.model"))  # 载入预训练的模型
+    model.load_state_dict(load_data("STS-train/train.model"))  # 载入预训练的模型
     s, x = model(data_vec)
     x = torch.softmax(x, dim=-1)
     for i in range(len(x)):
@@ -247,5 +250,40 @@ def evaluation():
         print()
 
 
+def eval_similarity():
+    sim = load_data("./STS-data/500_sim.pk")
+    if "500_sim_output.pk" not in os.listdir("./STS-data/"):
+        sim_output = np.zeros((500, 500))
+        data_vec = torch.tensor(load_data("STS-data/500_padding.pk"))  # 原始数据向量形式
+        model = make_model(vocab=len(sentence_word_list), h=4, N=3, padding_size=36, d_model=32, pos=True)
+        model.load_state_dict(load_data("STS-train/train.model"))  # 载入预训练的模型
+        s, x = model(data_vec)
+        for i in range(len(s)):
+            for j in range(len(s)):
+                sim_output[i][j] = torch.cosine_similarity(s[i], s[j], dim=0).item()
+        save_data(sim_output, "./STS-data/500_sim_output.pk")
+    else:
+        sim_output = load_data("./STS-data/500_sim_output.pk")
+
+    # 以下是各种相关性度量
+    corr_sum = 0
+    for i in range(len(sim)):
+        corr = scipy.stats.pearsonr(sim[i], sim_output[i])[0]
+        corr_sum += corr
+    print("Pearson corr: {}".format(corr_sum / len(sim)))
+
+    corr_sum = 0
+    for i in range(len(sim)):
+        corr = scipy.stats.spearmanr(sim[i], sim_output[i])[0]
+        corr_sum += corr
+    print("Spearmanr corr: {}".format(corr_sum / len(sim)))
+
+    corr_sum = 0
+    for i in range(len(sim)):
+        corr = scipy.stats.kendalltau(sim[i], sim_output[i])[0]
+        corr_sum += corr
+    print("Kendalltau corr: {}".format(corr_sum / len(sim)))
+
+
 if __name__ == '__main__':
-    evaluation()
+    eval_rebuilt()

@@ -1,14 +1,12 @@
-import copy
-
-from utility import save_data
+import hiddenlayer as hl
+import torch
+import torch.nn as nn
+import torch.utils.data as data
 from gen_data import one_hot_for_predicate, one_hot_for_sentence
 from gen_data import predicate_word_list, sentence_word_list
-import torch
-import torch.utils.data as data
-import torch.nn as nn
-import hiddenlayer as hl
+from utility import save_data
 torch.manual_seed(3407)    # 随机数种子
-dim = 64    # 谓词、定理和个体词的嵌入向量维度
+d_model = 32    # 谓词、定理和个体词的嵌入向量维度
 p_one_hot_dim = len(predicate_word_list)
 s_one_hot_dim = len(sentence_word_list)
 
@@ -37,7 +35,7 @@ def train_predicate():
         num_workers=1
     )
 
-    model = Word2Vec(p_one_hot_dim, dim)
+    model = Word2Vec(p_one_hot_dim, d_model)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)    # 优化器
     loss_func = nn.CrossEntropyLoss()    # 损失函数，默认先softmax，不需要在模型中再添加softmax
     history = hl.History()  # 训练损失可视化
@@ -72,7 +70,7 @@ def train_sentence():
         num_workers=1
     )
 
-    model = Word2Vec(s_one_hot_dim, dim)
+    model = Word2Vec(s_one_hot_dim, d_model)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # 优化器
     loss_func = nn.CrossEntropyLoss()  # 损失函数，默认先softmax，不需要在模型中再添加softmax
     history = hl.History()  # 训练损失可视化
@@ -92,31 +90,3 @@ def train_sentence():
             print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
 
     save_data(model.state_dict(), "./train/sentence.model")
-
-
-class Encoder(nn.Module):
-
-    def __init__(self, layer, N):
-        super(Encoder, self).__init__()
-        self.layers = clones(layer, N)
-        self.norm = LayerNorm(layer.size)
-
-
-class LayerNorm(nn.Module):
-
-    def __init__(self, features, eps=1e-6):    # features 是 layer.size
-        super(LayerNorm, self).__init__()
-        self.a = nn.Parameter(torch.ones(features))
-        self.b = nn.Parameter(torch.zeros(features))
-        self.eps = eps
-
-    def forward(self, x):
-        mean = x.mean(-1, keepdim=True)
-        std = x.std(-1, keepdim=True)
-        return self.a * (x - mean) / (std + self.eps) + self.b
-
-
-def clones(module, N):
-    return nn.ModuleList([copy.deepcopy(module) for _ in N])
-
-
