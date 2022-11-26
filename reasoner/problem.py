@@ -486,9 +486,9 @@ class Problem(ProblemLogic):
         self.solve_time_list = []    # 求解时间
 
         self.dot = None    # 以下是求解树相关数据结构
-        self.nodes = []  # 点集 (node_name, node_type, c_index) 三元组
+        self.nodes = []  # 点集 [node_name]
         self.node_count = 0  # 结点计数
-        self.edges = {}  # 边集 key:start_node value:end_node
+        self.edges = []  # 边集 [(start_nodes, edge, end_nodes)]
 
         self.used = []  # 解题过程中用到的 problem 条件的 index
 
@@ -749,9 +749,9 @@ class Problem(ProblemLogic):
         """-------------------辅助功能-------------------"""
         self.solve_time_list = []
         self.dot = None  # 以下是求解树相关数据结构
-        self.nodes = []  # 点集 (node_name, node_type, c_index) 三元组
+        self.nodes = []  # 点集 [node_name]
         self.node_count = 0  # 结点计数
-        self.edges = {}  # 边集 (node_index, node_index) 二元组
+        self.edges = []  # 边集 [(start_nodes, edge, end_nodes)]
         self.used = []  # 解题过程中用到的 problem 条件的 index
 
         """------Entity, Entity Relation, Equation------"""
@@ -1176,23 +1176,39 @@ class Problem(ProblemLogic):
         for key in group.keys():    # 生成求解树
             premise, theorem = key
             condition = group[key]
-            t_index = self.add_node(TheoremMap.get_theorem_name(theorem))
+
+            start_nodes = []
+            edge = TheoremMap.get_theorem_name(theorem)
+            end_nodes = []
+
+            t_index = self.add_node(edge)
             for p in premise:
                 p_index = self.add_node(fl[p])
                 self.add_edge(p_index, t_index)
+                start_nodes.append(fl[p])
             for c in condition:
                 c_index = self.add_node(fl[c])
                 self.add_edge(t_index, c_index)
+                end_nodes.append(fl[c])
+
+            self.edges.append([start_nodes, edge, end_nodes])
 
         for i in range(self.target_count):   # 添加解题目标到求解树
             target = self.targets[i]
             if target.target_solved:
-                t_index = self.add_node(TheoremMap.get_theorem_name(target.theorem))  # 定理
-                target_index = self.add_node(("Target", str(target.target)))  # 目标
+                start_nodes = []
+                edge = TheoremMap.get_theorem_name(target.theorem)
+                end_nodes = [("Target", str(target.target))]
+
+                t_index = self.add_node(edge)  # 定理
+                target_index = self.add_node(end_nodes[0])  # 目标
                 self.add_edge(t_index, target_index)
                 for premise in target.premise:
-                    p_index = self.add_node(self.anti_generate_one_fl_by_index(premise))  # 前提
+                    start_nodes.append(self.anti_generate_one_fl_by_index(premise))
+                    p_index = self.add_node(start_nodes[-1])  # 前提
                     self.add_edge(p_index, t_index)
+
+                self.edges.append([start_nodes, edge, end_nodes])
 
     def add_node(self, node):    # 添加点
         if node in self.nodes:    # node 已经添加
@@ -1208,21 +1224,18 @@ class Problem(ProblemLogic):
         return new_node_index
 
     def add_edge(self, node_start_index, node_end_index):    # 添加边
-        if self.nodes[node_start_index] not in self.edges:
-            self.edges[self.nodes[node_start_index]] = [self.nodes[node_end_index]]
-        else:
-            self.edges[self.nodes[node_start_index]].append(self.nodes[node_end_index])
         self.dot.edge(str(node_start_index), str(node_end_index))
 
     def save(self, file_dir):    # 保存求解树
-        if "{}_graph.pk".format(self.problem_index) in os.listdir(file_dir):    # 已经求解过就不用再求解了
+        if "{}_hyper.pk".format(self.problem_index) in os.listdir(file_dir):    # 已经求解过就不用再求解了
             return
 
         if self.dot is None:    # 若未生成求解树，先生成
             self.generate_tree()
 
-        with open(file_dir + "{}_graph.pk".format(self.problem_index), "wb") as f:    # 保存求解树
+        with open(file_dir + "{}_hyper.pk".format(self.problem_index), "wb") as f:    # 保存求解树
             pickle.dump(self.edges, f)
         self.dot.render(directory=file_dir, view=False, format="png")
+
         os.remove(file_dir + "{}.gv".format(self.problem_index))    # 这个文件不需要
         os.rename(file_dir + "{}.gv.png".format(self.problem_index), file_dir + "{}.png".format(self.problem_index))

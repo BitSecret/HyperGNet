@@ -1,3 +1,5 @@
+import copy
+
 from utility import save_data
 from gen_data import one_hot_for_predicate, one_hot_for_sentence
 from gen_data import predicate_word_list, sentence_word_list
@@ -90,3 +92,31 @@ def train_sentence():
             print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
 
     save_data(model.state_dict(), "./train/sentence.model")
+
+
+class Encoder(nn.Module):
+
+    def __init__(self, layer, N):
+        super(Encoder, self).__init__()
+        self.layers = clones(layer, N)
+        self.norm = LayerNorm(layer.size)
+
+
+class LayerNorm(nn.Module):
+
+    def __init__(self, features, eps=1e-6):    # features 是 layer.size
+        super(LayerNorm, self).__init__()
+        self.a = nn.Parameter(torch.ones(features))
+        self.b = nn.Parameter(torch.zeros(features))
+        self.eps = eps
+
+    def forward(self, x):
+        mean = x.mean(-1, keepdim=True)
+        std = x.std(-1, keepdim=True)
+        return self.a * (x - mean) / (std + self.eps) + self.b
+
+
+def clones(module, N):
+    return nn.ModuleList([copy.deepcopy(module) for _ in N])
+
+
