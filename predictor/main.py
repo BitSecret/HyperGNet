@@ -1,16 +1,30 @@
-# 这是一个示例 Python 脚本。
-
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
-
-
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
+from config import Config, Path
+from utils import load_data
+from model import TheoremPredictor
 
 
-# 按间距中的绿色按钮以运行脚本。
+def make_model():
+    predicate = load_data(Path.predicate2vec)
+    sentence = load_data(Path.sentence2vec_a)
+    model = TheoremPredictor(predicate2vec=predicate.predicate2vec,
+                             sentence2vec=sentence.sentence2vec,
+                             d_model=Config.d_model, h=Config.h, N=Config.N,
+                             p_drop=Config.p_drop, d_ff=Config.d_ff, vocab_theo=Config.vocab_theo)
+    return model
+
+
+def train():
+    pass
+
+
+def eval_model():
+    pass
+
+
+def main():
+    data = load_data(Path.solution_data_path + "2_hyper.pk")
+    print(data)
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+    main()

@@ -8,8 +8,7 @@
 		"problem_text_en": "Triangle RST and triangle XYZ are congruent, find y.",
 		"problem_img": "0_g3k-0.png",
 		"problem_answer": [
-			"15",
-			"35"
+			"15"
 		],
 		"construction_fls": [
 			"Shape(RST)",
@@ -25,11 +24,9 @@
 			"Equal(Length(Line(ZX)),2*x-14)"
 		],
 		"target_fls": [
-			"Find(y)",
-			"Find(x)"
+			"Find(y)"
 		],
 		"theorem_seqs": [
-			69,
 			70
 		]
 	},
@@ -42,9 +39,7 @@
 		"problem_text_en": "Find y.",
 		"problem_img": "1_g3k-4.png",
 		"problem_answer": [
-			"2*{21^0.5}",
-			"21",
-			"25"
+			"2*{21^0.5}"
 		],
 		"construction_fls": [
 			"Shape(CAB)",
@@ -62,9 +57,7 @@
 			"Perpendicular(Point(B),Line(AD),Line(CB))"
 		],
 		"target_fls": [
-			"Find(x)",
-			"Find(y)",
-			"Find(z)"
+			"Find(x)"
 		],
 		"theorem_seqs": [
 			2,
