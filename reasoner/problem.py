@@ -1227,15 +1227,35 @@ class Problem(ProblemLogic):
         self.dot.edge(str(node_start_index), str(node_end_index))
 
     def save(self, file_dir):    # 保存求解树
-        if "{}_hyper.pk".format(self.problem_index) in os.listdir(file_dir):    # 已经求解过就不用再求解了
-            return
+        if "{}_hyper.pk".format(self.problem_index) not in os.listdir(file_dir):    # 保存解题过程，字典
+            if self.dot is None:  # 若未生成求解树，先生成
+                self.generate_tree()
+            with open(file_dir + "{}_hyper.pk".format(self.problem_index), "wb") as f:  # 保存求解树
+                pickle.dump(self.edges, f)
 
-        if self.dot is None:    # 若未生成求解树，先生成
-            self.generate_tree()
+        if "{}.png".format(self.problem_index) not in os.listdir(file_dir):    # 保存解题过程，图像
+            self.dot.render(directory=file_dir, view=False, format="png")
+            os.remove(file_dir + "{}.gv".format(self.problem_index))  # 这个文件不需要
+            os.rename(file_dir + "{}.gv.png".format(self.problem_index), file_dir + "{}.png".format(self.problem_index))
 
-        with open(file_dir + "{}_hyper.pk".format(self.problem_index), "wb") as f:    # 保存求解树
-            pickle.dump(self.edges, f)
-        self.dot.render(directory=file_dir, view=False, format="png")
+        if "{}_step.pk".format(self.problem_index) not in os.listdir(file_dir):    # 保存解题过程，分步骤的
+            step = []
+            target = str(self.targets[0].target)
+            if target.startswith("ll"):
+                step.append(("Length", target[3:len(target)].upper()))
+            elif target.startswith("ma"):
+                step.append(("Measure", target[3:len(target)].upper()))
+            elif target.startswith("as"):
+                step.append(("Area", target[3:len(target)].upper()))
+            elif target.startswith("pt"):
+                step.append(("Perimeter", target[3:len(target)].upper()))
+            elif target.startswith("at"):
+                step.append(("Altitude", target[3:len(target)].upper()))
+            else:
+                step.append(("Equation", target))
+            step.append(self.theorem_seqs)
+            step.append(self.fl.reasoning_fls)
+            with open(file_dir + "{}_step.pk".format(self.problem_index), "wb") as f:  # 保存求解树
+                pickle.dump(step, f)
 
-        os.remove(file_dir + "{}.gv".format(self.problem_index))    # 这个文件不需要
-        os.rename(file_dir + "{}.gv.png".format(self.problem_index), file_dir + "{}.png".format(self.problem_index))
+
