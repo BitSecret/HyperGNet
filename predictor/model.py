@@ -66,9 +66,9 @@ class TheoremPredictor(nn.Module):
 
     def __init__(self, predicate2vec, sentence2vec, d_model, h, N, p_drop, d_ff, vocab_theo):
         super(TheoremPredictor, self).__init__()
-        self.N = N
         self.predicate2vec = predicate2vec
         self.sentence2vec = sentence2vec
+        self.N = N
 
         self.attentions = [MultiHeadAttention(h, d_model) for _ in range(N)]    # attention
         self.dp_attn = [nn.Dropout(p_drop) for _ in range(N)]  # attention层 后的dropout
@@ -78,10 +78,7 @@ class TheoremPredictor(nn.Module):
         self.dp_ffd = [nn.Dropout(p_drop) for _ in range(N)]  # ffd层 后的dropout
         self.ln_ffd = [LayerNorm(d_model) for _ in range(N)]  # ffd层 后的layer norm
 
-        self.linear = nn.Sequential(
-            nn.Linear(in_features=d_model, out_features=vocab_theo, bias=False),
-            nn.Linear(in_features=vocab_theo, out_features=vocab_theo, bias=False)
-        )
+        self.linear = nn.Linear(in_features=d_model, out_features=vocab_theo)    # 映射到定理
 
     def forward(self, predicate, sentence):
         p_vec = self.predicate2vec(predicate)

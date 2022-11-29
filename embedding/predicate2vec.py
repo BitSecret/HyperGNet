@@ -12,16 +12,22 @@ random.seed(Config.seed)
 torch.manual_seed(Config.seed)
 
 
+def weights_init(m):
+    if isinstance(m, nn.Linear):
+        torch.nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+
+
 def make_model():
     model = PredicateTrainer(vocab=Config.p_vocab, d_model=Config.p_eb_dim)
+    model.apply(weights_init)
     return model
 
 
-def train():
+def train(path):
     predicate_data_gen()    # 先生成数据
-    x = torch.tensor(load_data("./data/predicate2vec/predicate_vec_x({}).pk".format(Config.version)),
+    x = torch.tensor(load_data(path + "predicate_vec_x({}).pk".format(Config.version)),
                      dtype=torch.long)
-    y = torch.tensor(load_data("./data/predicate2vec/predicate_vec_y({}).pk".format(Config.version)),
+    y = torch.tensor(load_data(path + "predicate_vec_y({}).pk".format(Config.version)),
                      dtype=torch.long)
     data_loader = data.DataLoader(
         dataset=data.TensorDataset(x, y),
@@ -47,21 +53,21 @@ def train():
 
             history.log(epoch * step_num + step, step_loss=loss.item())  # 以下为训练可视化和模型保存
             canvas.draw_plot(history["step_loss"])
-            canvas.save("./data/predicate2vec/training({}).png".format(Config.version))
+            canvas.save(path + "training({}).png".format(Config.version))
             print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
 
-    save_data(model, "./data/predicate2vec/model({}).pk".format(Config.version))
+    save_data(model, path + "model({}).pk".format(Config.version))
 
 
-def eval_model():
+def eval_model(path):
     embedding = []
     label = []
 
-    for i in load_data("./data/predicate2vec/predicate({}).pk".format(Config.version)):     # 筛选出训练过的谓词
+    for i in load_data(path + "predicate({}).pk".format(Config.version)):     # 筛选出训练过的谓词
         label.append(i[0])
     label = list(set(label))
 
-    model = load_data("./data/predicate2vec/model({}).pk".format(Config.version))
+    model = load_data(path + "model({}).pk".format(Config.version))
     for i in label:    # 得到label的嵌入表示
         output = model.predicate2vec(torch.tensor(predicate_word_list.index(i), dtype=torch.long))
         embedding.append(output.detach().numpy().tolist())
@@ -70,6 +76,7 @@ def eval_model():
 
 
 if __name__ == '__main__':
-    # train()
-    eval_model()
+    data_path = "./data/predicate2vec/"
+    train(path=data_path)
+    eval_model(path=data_path)
 

@@ -92,22 +92,19 @@ class Encoder(nn.Module):
         return s
 
 
-class ReBuilderA(nn.Module):
+class ResNet(nn.Module):
 
-    def __init__(self, vocab, d_model, padding_size):
-        super(ReBuilderA, self).__init__()
-        self.d_model = d_model
-        self.padding_size = padding_size
-        self.linear = nn.Sequential(
-            nn.Linear(d_model, int(padding_size * d_model / 2), bias=True),
-            nn.Linear(int(padding_size * d_model / 2), padding_size * d_model, bias=True)
-        )  # 句子embedding到词列表embedding
-        self.output = nn.Linear(d_model, vocab)  # 词embedding升维到vocab
+    def __init__(self, d_model):
+        super(ResNet, self).__init__()
+        self.linear = nn.Linear(d_model, d_model)
+        self.a_2 = nn.Parameter(torch.ones(d_model))  # layer norm
+        self.b_2 = nn.Parameter(torch.zeros(d_model))
 
-    def forward(self, s):
-        x = self.linear(s)
-        x = x.contiguous().view(self.padding_size, self.d_model)
-        x = self.output(x)
+    def forward(self, x):
+        x = x + F.relu(self.linear(x))  # res connection
+        mean = x.mean(-1, keepdim=True)  # layer norm
+        std = x.std(-1, keepdim=True)
+        x = self.a_2 * (x - mean) / (std + 1e-6) + self.b_2
         return x
 
 
@@ -116,60 +113,45 @@ class SentenceTrainerA(nn.Module):
 
     def __init__(self, vocab, d_model, h, N, padding_size):
         super(SentenceTrainerA, self).__init__()
-        self.sentence2vec = Encoder(vocab, d_model, h, N)
-        self.rebuilder = ReBuilderA(vocab, d_model, padding_size)
+        self.d_model = d_model
+        self.padding_size = padding_size
 
-    def forward(self, x):
-        s = self.sentence2vec(x)
-        x = self.rebuilder(s)
-        return s, x
+        self.sentence2vec = Encoder(vocab, d_model, h, N)  # SE
 
-
-class ResNet(nn.Module):
-
-    def __init__(self, d_model):
-        super(ResNet, self).__init__()
-        self.linear = nn.Linear(d_model, d_model)
-        self.a_2 = nn.Parameter(torch.ones(d_model))    # layer norm
-        self.b_2 = nn.Parameter(torch.zeros(d_model))
-        self.eps = 1e-6
-
-    def forward(self, x):
-        x = x + F.relu(self.linear(x))    # res connection
-        mean = x.mean(-1, keepdim=True)    # layer norm
-        std = x.std(-1, keepdim=True)
-        x = self.a_2 * (x - mean) / (std + self.eps) + self.b_2
-        return x
-
-
-class ReBuilderB(nn.Module):
-    def __init__(self, d_model, vocab, N):
-        super(ReBuilderB, self).__init__()
-        self.input = nn.Linear(d_model * 2, d_model)
-        # self.input = nn.Sequential(nn.Linear(d_model * 2, int(d_model * 1.5)),
-        #                            nn.Linear(int(d_model * 1.5), d_model))
-        self.hidden = [ResNet(d_model) for _ in range(N)]
+        self.linear = nn.Sequential(  # decoder
+            nn.Linear(d_model, int(padding_size * d_model / 2), bias=True),
+            nn.ReLU(),
+            nn.Linear(int(padding_size * d_model / 2), padding_size * d_model, bias=True),
+            nn.ReLU()
+        )
         self.output = nn.Linear(d_model, vocab)
 
     def forward(self, x):
-        x = self.input(x)
-        for resnet in self.hidden:
-            x = resnet(x)
+        s = self.sentence2vec(x)
+        x = self.linear(s)
+        x = x.contiguous().view(self.padding_size, self.d_model)
         x = self.output(x)
-        return x
+        return s, x
 
 
 # 个体词embedding预训练 方案B
 class SentenceTrainerB(nn.Module):
 
-    def __init__(self, vocab, d_model, h, N_encoder, N_decoder):
+    def __init__(self, vocab, d_model, h, N):
         super(SentenceTrainerB, self).__init__()
-        self.sentence2vec = Encoder(vocab, d_model, h, N_encoder)
-        self.rebuilder = ReBuilderB(d_model, vocab, N_decoder)
+        self.sentence2vec = Encoder(vocab, d_model, h, N)    # SE
 
-    def forward(self, x):
-        s_input = self.sentence2vec(x[0])
-        s_output = self.sentence2vec(x[1])
-        s = torch.concat((s_input, s_output), dim=0)    # 拼接起来
+        self.rebuilder = nn.Sequential(
+            nn.Linear(d_model * 2, d_model * 4),
+            nn.ReLU(),
+            nn.Linear(d_model * 4, d_model * 6),
+            nn.ReLU(),
+            nn.Linear(d_model * 6, vocab)
+        )
+
+    def forward(self, xi, xo):
+        s_input = self.sentence2vec(xi)
+        s_output = self.sentence2vec(xo)
+        s = torch.concat((s_input, s_output), dim=0)  # 拼接起来
         w = self.rebuilder(s)
         return s_input, w

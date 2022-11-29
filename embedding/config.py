@@ -46,9 +46,7 @@ class Config:
     s_vocab = len(sentence_word_list)    # 个体词词表长度
     s_eb_dim = 32    # 嵌入的维度
     h = 4    # attention头的数量
-    N_encoder = 3    # attention层的数量
+    N = 3    # attention层的数量
 
     padding_size_a = words_max_len    # plan A  句子最大长度
-
     padding_size_b = words_max_len + 2    # plan B  句子最大长度 加了起始符
-    N_decoder = 3    # plan B  resnet层数

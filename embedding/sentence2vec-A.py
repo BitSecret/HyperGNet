@@ -2,26 +2,31 @@ import random
 from model import SentenceTrainerA
 from config import Config
 from config import sentence_word_list
-from utils import load_data, save_data, visualize_eb
+from utils import load_data, save_data, visualize_eb, eval_se_acc, eval_se_acc_, log
 from data_format import sentence_a_data_gen
 import torch
 import torch.nn as nn
 import hiddenlayer as hl
-import string
-
 torch.manual_seed(Config.seed)
 random.seed(Config.seed)
 
 
+def weights_init(m):
+    if isinstance(m, nn.Linear):
+        torch.nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+
+
 def make_model():
     model = SentenceTrainerA(vocab=Config.s_vocab, d_model=Config.s_eb_dim, h=Config.h,
-                             N=Config.N_encoder, padding_size=Config.padding_size_a)
+                             N=Config.N, padding_size=Config.padding_size_a)
+    model.apply(weights_init)
     return model
 
 
-def train():
+def train(path, note=""):
+    log(path, note, time_append=True)
     sentence_a_data_gen()
-    raw_data = load_data("./data/sentence2vec-A/train_vec({}).pk".format(Config.version))
+    raw_data = load_data(path + "train_vec({}).pk".format(Config.version))
 
     model = make_model()  # 模型
 
@@ -53,7 +58,7 @@ def train():
                 step_count += 1
                 history.log(step_count, loss=loss.item() / batch_size)  # 以下为训练可视化和模型保存
                 canvas.draw_plot(history["loss"])
-                canvas.save("./data/sentence2vec-A/training({}).png".format(Config.version))
+                canvas.save(path + "training({}).png".format(Config.version))
                 print("epoch {}/{}, step {}/{}, loss {}".format(epoch + 1, epoch_num,
                                                                 step_count, total_step,
                                                                 loss.item() / batch_size))
@@ -61,74 +66,56 @@ def train():
                 loss = 0
                 count = 0
 
-        l_acc, s_acc, acc = eval_model(show_result=False, model=model)  # early-stop
+        l_acc, s_acc, acc, sim = eval_acc(path=path, show_result=False, model=model)  # early-stop
+        msg = "epoch: {},  (l_acc, s_acc, acc, sim): ({}, {}, {})".format(epoch + 1, l_acc, s_acc, acc, sim)
+        log(path, msg)
+        print(msg)
         if s_acc > max_acc:  # 倾向于用结构预测正确率评估
             max_acc = s_acc
-            print("epoch: {},  (l_acc, s_acc, acc): ({}, {}, {})".format(epoch + 1, l_acc, s_acc, acc))
-            save_data(model, "./data/sentence2vec-A/model({}).pk".format(Config.version))
+            save_data(model, path + "model({}).pk".format(Config.version))
 
 
-def eval_model(show_result=False, model=None):
-    test_vec = load_data("./data/sentence2vec-A/test_vec({}).pk".format(Config.version))
+def eval_acc(path, show_result=False, model=None):
+    test_vec = load_data(path + "test_vec({}).pk".format(Config.version))
     if model is None:
-        model = load_data("./data/sentence2vec-A/model({}).pk".format(Config.version))
+        model = load_data(path + "model({}).pk".format(Config.version))
 
     ground_truth = []  # 真实值
     predict = []  # 预测值
     for i in range(len(test_vec)):
-        ground_truth.append([])
-        predict.append([])
-        for w in test_vec[i]:  # 实值转化为字符
-            ground_truth[i].append(sentence_word_list[w])
+        ground_truth.append([])  # 真实值
+        j = 0
+        while j < len(test_vec[i]) and test_vec[i][j] != sentence_word_list.index("padding"):
+            ground_truth[i].append(sentence_word_list[test_vec[i][j]])
+            j += 1
 
+        predict.append([])  # 预测值
         _, x = model(torch.tensor(test_vec[i]))
         x = torch.softmax(x, dim=-1)
         for w in x:
-            predict[i].append(sentence_word_list[torch.max(w, 0)[1]])
+            w = torch.max(w, 0)[1]
+            if w != sentence_word_list.index("padding"):
+                predict[i].append(sentence_word_list[w])
 
-    letter = 0
-    structure = 0
-    letter_right = 0
-    structure_right = 0
-    letters = list(string.ascii_letters)
-    for i in range(len(ground_truth)):
-        j = 0
-        while j < len(ground_truth[i]) and j < len(predict[i]) and ground_truth[i][j] != "padding":
-            if ground_truth[i][j] not in letters:  # 结构预测正确率
-                structure += 1
-                if ground_truth[i][j] == predict[i][j]:
-                    structure_right += 1
-            else:  # 字母预测正确率
-                letter += 1
-                if ground_truth[i][j] == predict[i][j]:
-                    letter_right += 1
-            j += 1
+    l_acc, s_acc, acc = eval_se_acc(ground_truth, predict, show_result=show_result)    # 计算准确率
+    sim = eval_se_acc_(ground_truth, predict, show_result=show_result)    # 编辑距离
 
-        if show_result:
-            print(ground_truth[i])
-            print(predict[i])
-            print()
-    if show_result:
-        print("Letter accuracy: {}({}/{})".format(letter_right / letter, letter_right, letter))
-        print("Structure accuracy: {}({}/{})".format(structure_right / structure, structure_right, structure))
-        print("Total accuracy: {}({}/{})".format((structure_right + letter_right) / (structure + letter),
-                                                 structure_right + letter_right, structure + letter))
-
-    return letter_right / letter, structure_right / structure, (structure_right + letter_right) / (structure + letter)
+    return l_acc, s_acc, acc, sim
 
 
-def eval_word_emb():
-    model = load_data("./data/sentence2vec-A/model({}).pk".format(Config.version))
+def eval_word_emb(path):
+    model = load_data(path + "model({}).pk".format(Config.version))
     embedding = []
     label = []
     for i in range(3, len(sentence_word_list)):
         embedding.append(model.sentence2vec.embedding[0](torch.tensor(i)).detach().numpy().tolist())
         label.append(sentence_word_list[i])
 
-    visualize_eb(embedding, label, dim=2, use_pca=True)  # 可视化嵌入效果
+    visualize_eb(embedding, label, dim=2, use_pca=False)  # 可视化嵌入效果
 
 
 if __name__ == '__main__':
-    # train()
-    eval_model(show_result=True)
-    # eval_word_emb()
+    data_path = "./data/sentence2vec-A/"
+    train(path=data_path, note="sentence2vec-A training start.")
+    eval_acc(path=data_path, show_result=True)
+    eval_word_emb(path=data_path)

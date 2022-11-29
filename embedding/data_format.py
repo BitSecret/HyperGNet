@@ -233,9 +233,11 @@ def sentence_b_data_gen():
 
     _, train, test = get_sentence()
 
-    train_vec_x = []  # 二元组，input embedding 和 output embedding
-    train_vec_y = []  # 1元组，下一个字符
-    test_vec = []  # 二元组，input embedding 和 <start>
+    train_vec_xi = []  # input seqs
+    train_vec_xo = []  # output seqs
+    train_vec_y = []  # next word
+
+    test_vec = []   # input seqs
 
     for s in train:    # 训练集
         s.insert(0, "<start>")    # 添加起始符
@@ -246,7 +248,8 @@ def sentence_b_data_gen():
             s_vec.append(sentence_word_list.index(i))
 
         for i in range(len(s_vec) - 1):    # 生成训练数据
-            train_vec_x.append([s_vec, s_vec[0:i + 1]])
+            train_vec_xi.append(s_vec)
+            train_vec_xo.append(s_vec[0:i + 1])
             train_vec_y.append(s_vec[i + 1])
 
     for s in test:    # 测试集
@@ -257,20 +260,9 @@ def sentence_b_data_gen():
         for i in s:
             s_vec.append(sentence_word_list.index(i))
 
-        test_vec.append([s_vec, [s_vec[0]]])
+        test_vec.append(s_vec)
 
-    for i in range(len(train_vec_x)):
-        while len(train_vec_x[i][0]) < Config.padding_size_b:
-            train_vec_x[i][0].append(0)
-        while len(train_vec_x[i][1]) < Config.padding_size_b:
-            train_vec_x[i][1].append(0)
-
-    for i in range(len(test_vec)):
-        while len(test_vec[i][0]) < Config.padding_size_b:
-            test_vec[i][0].append(0)
-        while len(test_vec[i][1]) < Config.padding_size_b:
-            test_vec[i][1].append(0)
-
-    save_data(train_vec_x, "./data/sentence2vec-B/train_vec_x({}).pk".format(Config.version))
+    save_data(train_vec_xi, "./data/sentence2vec-B/train_vec_xi({}).pk".format(Config.version))
+    save_data(train_vec_xo, "./data/sentence2vec-B/train_vec_xo({}).pk".format(Config.version))
     save_data(train_vec_y, "./data/sentence2vec-B/train_vec_y({}).pk".format(Config.version))
     save_data(test_vec, "./data/sentence2vec-B/test_vec({}).pk".format(Config.version))
