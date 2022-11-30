@@ -2,7 +2,7 @@ import random
 from model import SentenceTrainerA
 from config import Config
 from config import sentence_word_list
-from utils import load_data, save_data, visualize_eb, eval_se_acc, eval_se_acc_, log
+from utils import load_data, save_data, visualize_eb, eval_se_acc, eval_se_ed, log
 from data_format import sentence_a_data_gen
 import torch
 import torch.nn as nn
@@ -66,8 +66,10 @@ def train(path, note=""):
                 loss = 0
                 count = 0
 
-        l_acc, s_acc, acc, sim = eval_acc(path=path, show_result=False, model=model)  # early-stop
-        msg = "epoch: {},  (l_acc, s_acc, acc, sim): ({}, {}, {})".format(epoch + 1, l_acc, s_acc, acc, sim)
+        l_acc, s_acc, acc, l_ed, s_ed, ed = eval_acc(path=path, show_result=False, model=model)  # early-stop
+        msg = "epoch: {},  (l_acc, s_acc, acc, l_ed, s_ed, ed): ({}, {}, {}, {}, {}, {})".format(epoch + 1,
+                                                                                                 l_acc, s_acc, acc,
+                                                                                                 l_ed, s_ed, ed)
         log(path, msg)
         print(msg)
         if s_acc > max_acc:  # 倾向于用结构预测正确率评估
@@ -98,9 +100,9 @@ def eval_acc(path, show_result=False, model=None):
                 predict[i].append(sentence_word_list[w])
 
     l_acc, s_acc, acc = eval_se_acc(ground_truth, predict, show_result=show_result)    # 计算准确率
-    sim = eval_se_acc_(ground_truth, predict, show_result=show_result)    # 编辑距离
+    l_ed, s_ed, ed = eval_se_ed(ground_truth, predict, show_result=show_result)    # 编辑距离
 
-    return l_acc, s_acc, acc, sim
+    return l_acc, s_acc, acc, l_ed, s_ed, ed
 
 
 def eval_word_emb(path):
@@ -116,6 +118,6 @@ def eval_word_emb(path):
 
 if __name__ == '__main__':
     data_path = "./data/sentence2vec-A/"
-    train(path=data_path, note="sentence2vec-A training start.")
+    # train(path=data_path, note="sentence2vec-A training start.")
     eval_acc(path=data_path, show_result=True)
-    eval_word_emb(path=data_path)
+    # eval_word_emb(path=data_path)

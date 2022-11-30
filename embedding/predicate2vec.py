@@ -54,7 +54,7 @@ def train(path):
             history.log(epoch * step_num + step, step_loss=loss.item())  # 以下为训练可视化和模型保存
             canvas.draw_plot(history["step_loss"])
             canvas.save(path + "training({}).png".format(Config.version))
-            print("epoch {}, step {}/{}, loss {}".format(epoch, step, step_num, loss.item()))
+            print("epoch {}, step {}/{}, loss {}".format(epoch + 1, step, step_num, loss.item()))
 
     save_data(model, path + "model({}).pk".format(Config.version))
 
@@ -77,6 +77,6 @@ def eval_model(path):
 
 if __name__ == '__main__':
     data_path = "./data/predicate2vec/"
-    train(path=data_path)
+    # train(path=data_path)
     eval_model(path=data_path)
 

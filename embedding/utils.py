@@ -94,40 +94,71 @@ def eval_se_acc(target, predict, show_result=True):
             print(target[i])
             print(predict[i])
             print()
-        print("Letter accuracy: {}({}/{})".format(l_acc, letter_right, letter))
-        print("Structure accuracy: {}({}/{})".format(s_acc, structure_right, structure))
-        print("Total accuracy: {}({}/{})".format(acc, structure_right + letter_right, structure + letter))
+        print("Accuracy of Letter: {}({}/{})".format(l_acc, letter_right, letter))
+        print("Accuracy of Structure: {}({}/{})".format(s_acc, structure_right, structure))
+        print("Accuracy of Total: {}({}/{})".format(acc, structure_right + letter_right, structure + letter))
 
     return l_acc, s_acc, acc
 
 
-def eval_se_acc_(target, predict, show_result=True):
+def eval_se_ed(target, predict, show_result=True):
     replace_map = {"sin": "1", "cos": "2", "tan": "3", "nums": "4", "ll_": "5", "ma_": "6", "as_": "7", "pt_": "8",
                    "at_": "9", "f_": "0"}
-    for i in range(len(target)):
-        for j in range(len(target[i])):
-            if target[i][j] in replace_map:
-                target[i][j] = replace_map[target[i][j]]
-        target[i] = "".join(target[i])
-        for j in range(len(predict[i])):
-            if predict[i][j] in replace_map:
-                predict[i][j] = replace_map[predict[i][j]]
-        predict[i] = "".join(predict[i])
+    letters = list(string.ascii_letters)  # 大小写字母
 
+    for i in range(len(target)):
+        item = [[], [], []]
+        for j in range(len(target[i])):
+            if target[i][j] in letters:
+                item[0].append(target[i][j])    # l
+                item[2].append(target[i][j])    # t
+            else:
+                if target[i][j] in replace_map:
+                    item[1].append(replace_map[target[i][j]])  # s
+                    item[2].append(replace_map[target[i][j]])  # t
+                else:
+                    item[1].append(target[i][j])  # s
+                    item[2].append(target[i][j])  # t
+        target[i] = ["".join(item[0]), "".join(item[1]), "".join(item[2])]
+
+        item = [[], [], []]
+        for j in range(len(predict[i])):
+            if predict[i][j] in letters:
+                item[0].append(predict[i][j])  # l
+                item[2].append(predict[i][j])  # t
+            else:
+                if predict[i][j] in replace_map:
+                    item[1].append(replace_map[predict[i][j]])  # s
+                    item[2].append(replace_map[predict[i][j]])  # t
+                else:
+                    item[1].append(predict[i][j])  # s
+                    item[2].append(predict[i][j])  # t
+        predict[i] = ["".join(item[0]), "".join(item[1]), "".join(item[2])]
+
+    l_score = 0
+    l_len_sum = 0
+    s_score = 0
+    s_len_sum = 0
     score = 0
     len_sum = 0
     for i in range(len(target)):
-        score += Levenshtein.ratio(target[i], predict[i]) * len(target[i])
-        len_sum += len(target[i])
+        l_score += Levenshtein.ratio(target[i][0], predict[i][0]) * len(target[i][0])
+        l_len_sum += len(target[i][0])
+        s_score += Levenshtein.ratio(target[i][1], predict[i][1]) * len(target[i][1])
+        s_len_sum += len(target[i][1])
+        score += Levenshtein.ratio(target[i][2], predict[i][2]) * len(target[i][2])
+        len_sum += len(target[i][2])
 
     if show_result:
-        print("Editing distance: {}".format(score / len_sum))
+        print("Editing distance of Letter: {}".format(l_score / l_len_sum))
+        print("Editing distance of Structure: {}".format(s_score / s_len_sum))
+        print("Editing distance of Total: {}".format(score / len_sum))
 
-    return score / len_sum
+    return l_score / l_len_sum, s_score / s_len_sum, score / len_sum
 
 
 def log(path, s, time_append=False):
     with open(path + "log.txt", "a") as f:
         if time_append:
-            s = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + "  " + s
+            s = time.ctime() + "   " + s
         f.write(s + "\n")
