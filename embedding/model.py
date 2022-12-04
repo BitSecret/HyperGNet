@@ -4,8 +4,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-
 torch.manual_seed(Config.seed)
+# return self.linear(F.one_hot(torch.tensor(x), self.vocab).float())
+# 1.方案A 句子encoding部分，完全去掉padding
+# 2.参数用word2vec预训练初始化，会不会更快收敛？
 
 
 class Embedding(nn.Module):

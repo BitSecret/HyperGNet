@@ -126,5 +126,5 @@ def eval_word_emb(path):
 if __name__ == '__main__':
     data_path = "./data/sentence2vec-B/"
     # train(path=data_path, note="sentence2vec-B training start.")
-    eval_acc(path=data_path, show_result=True)
-    # eval_word_emb(path=data_path)
+    # eval_acc(path=data_path, show_result=True)
+    eval_word_emb(path=data_path)
