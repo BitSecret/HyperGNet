@@ -1,0 +1,254 @@
+{
+	"Entity": {
+		"1": {
+			"format": "Point(A)",
+			"extend": []
+		},
+		"2": {
+			"format": "Line(AB)",
+			"extend": [
+				"Line(BA)",
+				"Point(A)",
+				"Point(B)"
+			]
+		},
+		"3": {
+			"format": "Angle(ABC)",
+			"extend": [
+				"Line(BA)",
+				"Line(BC)"
+			]
+		},
+		"4": {
+			"format": "Triangle(ABC)",
+			"extend": [
+				"Triangle(BCA)",
+				"Triangle(CAB)",
+				"Shape(ABC)"
+			]
+		},
+		"5": {
+			"format": "RightTriangle(ABC)",
+			"extend": [
+				"Triangle(ABC)"
+			]
+		},
+		"6": {
+			"format": "IsoscelesTriangle(ABC)",
+			"extend": [
+				"Triangle(ABC)"
+			]
+		},
+		"7": {
+			"format": "EquilateralTriangle(ABC)",
+			"extend": [
+				"EquilateralTriangle(BCA)",
+				"EquilateralTriangle(CAB)",
+				"Triangle(ABC)"
+			]
+		}
+	},
+	"Relation": {
+		"1": {
+			"format": "Midpoint(M,AB)",
+			"extend": [
+				"Midpoint(M,BA)",
+				"Point(M)",
+				"Line(AB)"
+			]
+		},
+		"2": {
+			"format": "Intersect(O,AB,CD)",
+			"extend": [
+				"Intersect(O,CD,BA)",
+				"Intersect(O,BA,DC)",
+				"Intersect(O,DC,AB)",
+				"Point(O)",
+				"Line(AB)",
+				"Line(CD)"
+			]
+		},
+		"3": {
+			"format": "DisorderParallel(AB,CD)",
+			"extend": [
+				"DisorderParallel(DC,BA)",
+				"DisorderParallel(CD,AB)",
+				"DisorderParallel(BA,DC)",
+				"Line(AB)",
+				"Line(CD)"
+			]
+		},
+		"4": {
+			"format": "Parallel(AB,CD)",
+			"extend": [
+				"Parallel(DC,BA)",
+				"DisorderParallel(DC,BA)"
+			]
+		},
+		"5": {
+			"format": "Perpendicular(O,AB,CD)",
+			"extend": [
+				"Perpendicular(O,CD,BA)",
+				"Perpendicular(O,BA,DC)",
+				"Perpendicular(O,DC,AB)",
+				"Intersect(O,AB,CD)"
+			]
+		},
+		"6": {
+			"format": "PerpendicularBisector(O,AB,CD)",
+			"extend": [
+				"Perpendicular(O,AB,CD)"
+			]
+		},
+		"7": {
+			"format": "Bisector(BD,ABC)",
+			"extend": [
+				"Line(BD)",
+				"Angle(ABC)"
+			]
+		},
+		"8": {
+			"format": "Median(AD,ABC)",
+			"extend": [
+				"Line(AD)",
+				"Triangle(ABC)"
+			]
+		},
+		"9": {
+			"format": "IsAltitude(AD,ABC)",
+			"extend": [
+				"Line(AD)",
+				"Triangle(ABC)"
+			]
+		},
+		"10": {
+			"format": "Neutrality(DE,ABC)",
+			"extend": [
+				"Line(DE)",
+				"Triangle(ABC)"
+			]
+		},
+		"11": {
+			"format": "Circumcenter(O,ABC)",
+			"extend": [
+				"Circumcenter(O,BCA)",
+				"Circumcenter(O,CAB)",
+				"Point(O)",
+				"Triangle(ABC)"
+			]
+		},
+		"12": {
+			"format": "Incenter(O,ABC)",
+			"extend": [
+				"Circumcenter(O,BCA)",
+				"Circumcenter(O,CAB)",
+				"Point(O)",
+				"Triangle(ABC)"
+			]
+		},
+		"13": {
+			"format": "Centroid(O,ABC)",
+			"extend": [
+				"Circumcenter(O,BCA)",
+				"Circumcenter(O,CAB)",
+				"Point(O)",
+				"Triangle(ABC)"
+			]
+		},
+		"14": {
+			"format": "Orthocenter(O,ABC)",
+			"extend": [
+				"Circumcenter(O,BCA)",
+				"Circumcenter(O,CAB)",
+				"Point(O)",
+				"Triangle(ABC)"
+			]
+		},
+		"15": {
+			"format": "Congruent(ABC,DEF)",
+			"extend": [
+				"Congruent(DEF,ABC)",
+				"Congruent(BCA,EFD)",
+				"Congruent(EFD,BCA)",
+				"Congruent(CAB,FDE)",
+				"Congruent(FDE,CAB)",
+				"Triangle(ABC)",
+				"Triangle(DEF)"
+			]
+		},
+		"16": {
+			"format": "Similar(ABC,DEF)",
+			"extend": [
+				"Similar(DEF,ABC)",
+				"Similar(BCA,EFD)",
+				"Similar(EFD,BCA)",
+				"Similar(CAB,FDE)",
+				"Similar(FDE,CAB)",
+				"Triangle(ABC)",
+				"Triangle(DEF)"
+			]
+		},
+		"17": {
+			"format": "MirrorCongruent(ABC,DEF)",
+			"extend": [
+				"MirrorCongruent(DEF,ABC)",
+				"MirrorCongruent(BCA,FDE)",
+				"MirrorCongruent(FDE,BCA)",
+				"MirrorCongruent(CAB,EFD)",
+				"MirrorCongruent(EFD,CAB)",
+				"Triangle(ABC)",
+				"Triangle(DEF)"
+			]
+		},
+		"18": {
+			"format": "MirrorSimilar(ABC,DEF)",
+			"extend": [
+				"MirrorSimilar(DEF,ABC)",
+				"MirrorSimilar(BCA,FDE)",
+				"MirrorSimilar(FDE,BCA)",
+				"MirrorSimilar(CAB,EFD)",
+				"MirrorSimilar(EFD,CAB)",
+				"Triangle(ABC)",
+				"Triangle(DEF)"
+			]
+		}
+	},
+	"Attribution": {
+		"1": {
+			"format": "Length",
+			"sym": "l",
+			"multi_rep": "True",
+			"negative": "False"
+		},
+		"2": {
+			"format": "Measure",
+			"sym": "m",
+			"multi_rep": "False",
+			"negative": "True"
+		},
+		"3": {
+			"format": "Area",
+			"sym": "a",
+			"multi_rep": "True",
+			"negative": "False"
+		},
+		"4": {
+			"format": "Perimeter",
+			"sym": "p",
+			"multi_rep": "True",
+			"negative": "False"
+		},
+		"5": {
+			"format": "Altitude",
+			"sym": "a",
+			"multi_rep": "True",
+			"negative": "False"
+		},
+		"6": {
+			"format": "Free",
+			"sym": "f",
+			"multi_rep": "False",
+			"negative": "True"
+		}
+	}
+}

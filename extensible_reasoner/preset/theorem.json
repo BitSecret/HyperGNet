@@ -1,0 +1,41 @@
+{
+	"1": {
+		"name": "construction_test",
+		"premise": {
+			"entity_relation": [
+				"Shape(ABC)",
+				"Shape(CBD)"
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [
+				"Shape(ABD)"
+			],
+			"algebraic_relation": []
+		}
+	},
+	"2": {
+		"name": "attr_of_el",
+		"premise": {
+			"entity_relation": [
+				"Triangle(ABC)",
+				"Line(AB)",
+				"Line(AC)",
+				"Angle(ABC)",
+				"Angle(BCA)"
+			],
+			"algebraic_relation": [
+				"Equal(Length(AB),Length(AC))"
+			]
+		},
+		"conclusion": {
+			"entity_relation": [
+				"IsoscelesTriangle(ABC)"
+			],
+			"algebraic_relation": [
+				"Equal(Measure(ABC),Measure(BCA))"
+			]
+		}
+	}
+}

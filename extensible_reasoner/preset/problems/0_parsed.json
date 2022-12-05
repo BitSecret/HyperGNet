@@ -1,0 +1,117 @@
+{
+	"id": 0,
+	"fls": {
+		"construction_fls": [
+			"Shape(RST)",
+			"Shape(XYZ)"
+		],
+		"text_fls": [
+			"Congruent(RST,XYZ)"
+		],
+		"image_fls": [
+			"Equal(Length(TR),x+21)",
+			"Equal(Measure(TRS),4*y-10)",
+			"Equal(Measure(ZXY),3*y+5)",
+			"Equal(Length(ZX),2*x-14)"
+		],
+		"target_fls": "Value(y)",
+		"step_fls_id": {}
+	},
+	"parsed_fls": {
+		"construction_fls": [
+			[
+				"Shape",
+				[
+					"R",
+					"S",
+					"T"
+				]
+			],
+			[
+				"Shape",
+				[
+					"X",
+					"Y",
+					"Z"
+				]
+			]
+		],
+		"text_and_image_fls": [
+			[
+				"Congruent",
+				[
+					"R",
+					"S",
+					"T",
+					"X",
+					"Y",
+					"Z"
+				]
+			],
+			[
+				"Equation",
+				[
+					[
+						"Length",
+						[
+							"T",
+							"R"
+						]
+					],
+					"x+21"
+				]
+			],
+			[
+				"Equation",
+				[
+					[
+						"Measure",
+						[
+							"T",
+							"R",
+							"S"
+						]
+					],
+					"4*y-10"
+				]
+			],
+			[
+				"Equation",
+				[
+					[
+						"Measure",
+						[
+							"Z",
+							"X",
+							"Y"
+						]
+					],
+					"3*y+5"
+				]
+			],
+			[
+				"Equation",
+				[
+					[
+						"Length",
+						[
+							"Z",
+							"X"
+						]
+					],
+					"2*x-14"
+				]
+			]
+		],
+		"target": {
+			"type": "value",
+			"item": [
+				"Value",
+				[
+					"y"
+				]
+			],
+			"answer": "15"
+		}
+	}
+}
