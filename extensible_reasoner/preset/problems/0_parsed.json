@@ -1,24 +1,24 @@
 {
 	"id": 0,
-	"fls": {
-		"construction_fls": [
+	"cdl": {
+		"construction_cdl": [
 			"Shape(RST)",
-			"Shape(XYZ)"
+			"Shape(XYZ)",
+			"Collinear(ABCDE)"
 		],
-		"text_fls": [
+		"text_cdl": [
 			"Congruent(RST,XYZ)"
 		],
-		"image_fls": [
+		"image_cdl": [
 			"Equal(Length(TR),x+21)",
 			"Equal(Measure(TRS),4*y-10)",
 			"Equal(Measure(ZXY),3*y+5)",
 			"Equal(Length(ZX),2*x-14)"
 		],
-		"target_fls": "Value(y)",
-		"step_fls_id": {}
+		"goal_cdl": "Value(y)"
 	},
-	"parsed_fls": {
-		"construction_fls": [
+	"parsed_cdl": {
+		"construction_cdl": [
 			[
 				"Shape",
 				[
@@ -34,9 +34,19 @@
 					"Y",
 					"Z"
 				]
+			],
+			[
+				"Collinear",
+				[
+					"A",
+					"B",
+					"C",
+					"D",
+					"E"
+				]
 			]
 		],
-		"text_and_image_fls": [
+		"text_and_image_cdl": [
 			[
 				"Congruent",
 				[
@@ -49,7 +59,7 @@
 				]
 			],
 			[
-				"Equation",
+				"Equal",
 				[
 					[
 						"Length",
@@ -62,7 +72,7 @@
 				]
 			],
 			[
-				"Equation",
+				"Equal",
 				[
 					[
 						"Measure",
@@ -76,7 +86,7 @@
 				]
 			],
 			[
-				"Equation",
+				"Equal",
 				[
 					[
 						"Measure",
@@ -90,7 +100,7 @@
 				]
 			],
 			[
-				"Equation",
+				"Equal",
 				[
 					[
 						"Length",
@@ -103,7 +113,7 @@
 				]
 			]
 		],
-		"target": {
+		"goal": {
 			"type": "value",
 			"item": [
 				"Value",

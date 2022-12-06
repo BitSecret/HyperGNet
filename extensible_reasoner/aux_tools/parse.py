@@ -2,6 +2,23 @@
 # 1.解析定义语言(谓词啦、定理啦)
 # 2.解析描述语言（）
 # 3.反向生成FL
+from pyparsing import oneOf, Combine, Word, nums, alphas, OneOrMore
+from sympy import sin, cos, tan, pi
+from definition.exception import RuntimeException
+float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))  # 浮点数
+int_idt = OneOrMore(Word(nums))  # 整数
+alpha_idt = Word(alphas)  # 符号
+operator_idt = oneOf("+ - * / ^ { } @ # $ ~")  # 运算符
+idt_expr = OneOrMore(float_idt | int_idt | alpha_idt | operator_idt)
+operator = ["+", "-", "*", "/", "^", "{", "}", "@", "#", "$", "~"]
+stack_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
+                  "{": 0, "}": None,
+                  "@": 4, "#": 4, "$": 4, "~": 0}
+outside_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
+                    "{": 5, "}": 0,
+                    "@": 4, "#": 4, "$": 4, "~": 0}
+
+
 def parse_predicate(predicate_GDL):
     """parse predicate_GDL to parsed form."""
     parsed_GDL = {}
@@ -91,44 +108,42 @@ def parse_problem(problem_CDL):
     """parse problem_CDL to parsed form."""
     parsed_CDL = {
         "id": problem_CDL["problem_id"],
-        "fls": {
-            "construction_fls": problem_CDL["construction_fls"],
-            "text_fls": problem_CDL["text_fls"],
-            "image_fls": problem_CDL["image_fls"],
-            "target_fls": problem_CDL["target_fls"]
+        "cdl": {
+            "construction_cdl": problem_CDL["construction_cdl"],
+            "text_cdl": problem_CDL["text_cdl"],
+            "image_cdl": problem_CDL["image_cdl"],
+            "goal_cdl": problem_CDL["goal_cdl"]
         },
-        "parsed_fls": {
-            "construction_fls": [],
-            "text_and_image_fls": [],
-            "target": {},
+        "parsed_cdl": {
+            "construction_cdl": [],
+            "text_and_image_cdl": [],
+            "goal": {},
         }
     }
-    for fl in problem_CDL["construction_fls"]:
+    for fl in problem_CDL["construction_cdl"]:
         predicate, para = parse_one_predicate(fl)
-        parsed_CDL["parsed_fls"]["construction_fls"].append([predicate, para])
+        parsed_CDL["parsed_cdl"]["construction_cdl"].append([predicate, para])
 
-    for fl in problem_CDL["text_fls"] + problem_CDL["image_fls"]:
+    for fl in problem_CDL["text_cdl"] + problem_CDL["image_cdl"]:
         if fl.startswith("Equal"):
-            s = parse_equal_predicate(fl)
-            s[0] = "Equation"
-            parsed_CDL["parsed_fls"]["text_and_image_fls"].append(s)
+            parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append(parse_equal_predicate(fl))
         else:
             predicate, para = parse_one_predicate(fl)
-            parsed_CDL["parsed_fls"]["text_and_image_fls"].append([predicate, para])
+            parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append([predicate, para])
 
-    if problem_CDL["target_fls"].startswith("Value"):
-        parsed_CDL["parsed_fls"]["target"]["type"] = "value"
-        parsed_CDL["parsed_fls"]["target"]["item"] = parse_equal_predicate(problem_CDL["target_fls"])
-        parsed_CDL["parsed_fls"]["target"]["answer"] = problem_CDL["problem_answer"]
-    elif problem_CDL["target_fls"].startswith("Equal"):
-        parsed_CDL["parsed_fls"]["target"]["type"] = "equal"
-        parsed_CDL["parsed_fls"]["target"]["item"] = parse_equal_predicate(problem_CDL["target_fls"])
-        parsed_CDL["parsed_fls"]["target"]["answer"] = parse_equal_predicate(problem_CDL["target_fls"])
+    if problem_CDL["goal_cdl"].startswith("Value"):
+        parsed_CDL["parsed_cdl"]["goal"]["type"] = "value"
+        parsed_CDL["parsed_cdl"]["goal"]["item"] = parse_equal_predicate(problem_CDL["goal_cdl"])
+        parsed_CDL["parsed_cdl"]["goal"]["answer"] = problem_CDL["problem_answer"]
+    elif problem_CDL["goal_cdl"].startswith("Equal"):
+        parsed_CDL["parsed_cdl"]["goal"]["type"] = "equal"
+        parsed_CDL["parsed_cdl"]["goal"]["item"] = parse_equal_predicate(problem_CDL["goal_cdl"])
+        parsed_CDL["parsed_cdl"]["goal"]["answer"] = 0
     else:
-        parsed_CDL["parsed_fls"]["target"]["type"] = "relation"
-        predicate, para = parse_one_predicate(problem_CDL["target_fls"])
-        parsed_CDL["parsed_fls"]["target"]["item"] = [predicate, para]
-        parsed_CDL["parsed_fls"]["target"]["answer"] = [predicate, para]
+        parsed_CDL["parsed_cdl"]["goal"]["type"] = "relation"
+        predicate, para = parse_one_predicate(problem_CDL["goal_cdl"])
+        parsed_CDL["parsed_cdl"]["goal"]["item"] = predicate
+        parsed_CDL["parsed_cdl"]["goal"]["answer"] = para
 
     return parsed_CDL
 
@@ -243,3 +258,143 @@ def replace_letter_with_vars(s_tree, s_var):
         return [s_var.index(para) for para in s_tree]
     else:
         return [replace_letter_with_vars(para, s_var) for para in s_tree]
+
+
+def get_expr_from_tree(tree, equation, replaced=False, letters=None):
+    """
+    Recursively trans expr_tree to symbolic algebraic expression.
+    :param tree: An expression in the form of a list tree.
+    :param equation: Used to get symbolic representation for attr or free sym.
+    :param replaced: Optional. Set True when tree's item is expressed by vars.
+    :param letters: Optional. Letters that will replace vars.
+    >> get_expr_from_tree_data(['Length', ['T', 'R']], equation)
+    l_tr
+    >> get_expr_from_tree_data(['Add', [['Length', ['Z', 'X']], '2*x-14']], equation)
+    2.0*f_x + l_zx - 14.0
+    >> get_expr_from_tree_data(['Sin', [['Measure', ['Z', 'X', 'Y']]]], equation)
+    sin(pi*m_zxy/180)
+    """
+    if not isinstance(tree, list):  # expr
+        return parse_expr(tree, equation)
+
+    if tree[0] in equation.attr_GDL:    # attr
+        if not replaced:
+            return equation.get_sym_of_attr(tree[0], tuple(tree[1]))
+        else:
+            replaced_item = [letters[i] for i in tree[1]]
+            return equation.get_sym_of_attr(tree[0], tuple(replaced_item))
+
+    if tree[0] == "Add":    # operate
+        return get_expr_from_tree(tree[1][0], equation) + get_expr_from_tree(tree[1][1], equation)
+    elif tree[0] == "Sub":
+        return get_expr_from_tree(tree[1][0], equation) - get_expr_from_tree(tree[1][1], equation)
+    elif tree[0] == "Mul":
+        return get_expr_from_tree(tree[1][0], equation) * get_expr_from_tree(tree[1][1], equation)
+    elif tree[0] == "Div":
+        return get_expr_from_tree(tree[1][0], equation) / get_expr_from_tree(tree[1][1], equation)
+    elif tree[0] == "Pow":
+        return get_expr_from_tree(tree[1][0], equation) ** get_expr_from_tree(tree[1][1], equation)
+    elif tree[0] == "Sin":
+        return sin(get_expr_from_tree(tree[1][0], equation) * pi / 180)
+    elif tree[0] == "Cos":
+        return cos(get_expr_from_tree(tree[1][0], equation) * pi / 180)
+    elif tree[0] == "Tan":
+        return tan(get_expr_from_tree(tree[1][0], equation) * pi / 180)
+    else:
+        raise RuntimeException("OperatorNotDefined", "No operation {}, please check your expression.".format(tree[0]))
+
+
+def parse_expr(expr, equation):
+    """Parse the expression in <str> form into <symbolic> form"""
+    expr_list = idt_expr.parseString(expr + "~").asList()
+    expr_stack = []
+    operator_stack = ["~"]  # 栈底元素
+
+    i = 0
+    while i < len(expr_list):
+        unit = expr_list[i]
+        if unit in operator:  # 运算符
+            if stack_priority[operator_stack[-1]] < outside_priority[unit]:
+                operator_stack.append(unit)
+                i = i + 1
+            else:
+                operator_unit = operator_stack.pop()
+                if operator_unit == "+":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 + expr_2)
+                elif operator_unit == "-":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = 0 if len(expr_stack) == 0 else expr_stack.pop()
+                    expr_stack.append(expr_1 - expr_2)
+                elif operator_unit == "*":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 * expr_2)
+                elif operator_unit == "/":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 / expr_2)
+                elif operator_unit == "^":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 ** expr_2)
+                elif operator_unit == "{":  # 只有unit为"}"，才能到达这个判断
+                    i = i + 1
+                elif operator_unit == "@":  # sin
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(sin(expr_1))
+                elif operator_unit == "#":  # cos
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(cos(expr_1))
+                elif operator_unit == "$":  # tan
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(tan(expr_1))
+                elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
+                    break
+        else:  # 实数或符号
+            unit = equation.get_sym_of_attr("Free", (unit,)) if unit.isalpha() else float(unit)
+            expr_stack.append(unit)
+            i = i + 1
+
+    return expr_stack.pop()
+
+
+def get_equation_from_equal_tree_para(e_tree, equation, replaced=False, letters=None):
+    """
+    Refer to func <get_expr_from_tree> for details.
+    >> get_expr_from_tree_data([['Length', ['T', 'R']], ['Add', [['Length', ['Z', 'X']], '2*x-14']]], equation)
+    l_tr - 2.0*f_x - l_zx + 14.0
+    """
+    left_expr = get_expr_from_tree(e_tree[0], equation, replaced, letters)
+    right_expr = get_expr_from_tree(e_tree[1], equation, replaced, letters)
+    return left_expr - right_expr
+
+
+def anti_parse_logic_to_cdl(problem):
+    """Anti parse conditions of logic form to CDL"""
+    anti_parsed_cdl = {}
+    for step in range(len(problem.get_id_by_step)):
+        anti_parsed_cdl[step] = []
+        for _id in problem.get_id_by_step[step]:
+            predicate = problem.get_predicate_by_id[_id]
+            condition = problem.conditions[predicate]
+            if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"] + list(problem.predicate_GDL["Entity"]):
+                anti_parsed_cdl[step].append([predicate, "".join(condition.get_item_by_id[_id])])
+            elif predicate in problem.predicate_GDL["Relation"]:
+                item = []
+                i = 0
+                for l in problem.predicate_GDL["Relation"][predicate]["para_split"]:
+                    item.append("")
+                    for _ in range(l):
+                        item[-1] += condition.get_item_by_id[_id][i]
+                        i += 1
+                anti_parsed_cdl[step].append([predicate, item])
+            else:    # equation
+                equation = condition.get_item_by_id[_id]
+                if len(equation.free_symbols) > 1:
+                    anti_parsed_cdl[step].append(["Equation", str(condition.get_item_by_id[_id])])
+                else:
+                    item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
+                    anti_parsed_cdl[step].append(["predicate", "".join(item)])
+    return anti_parsed_cdl

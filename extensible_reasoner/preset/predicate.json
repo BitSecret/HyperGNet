@@ -1,10 +1,22 @@
 {
-	"Entity": {
+	"Basic": {
 		"1": {
+			"format": "Shape(*)",
+			"extend": [
+				"Angle(*)"
+			]
+		},
+		"2": {
+			"format": "Collinear(*)",
+			"extend": [
+				"Line(*)"
+			]
+		},
+		"3": {
 			"format": "Point(A)",
 			"extend": []
 		},
-		"2": {
+		"4": {
 			"format": "Line(AB)",
 			"extend": [
 				"Line(BA)",
@@ -12,14 +24,16 @@
 				"Point(B)"
 			]
 		},
-		"3": {
+		"5": {
 			"format": "Angle(ABC)",
 			"extend": [
 				"Line(BA)",
 				"Line(BC)"
 			]
-		},
-		"4": {
+		}
+	},
+	"Entity": {
+		"1": {
 			"format": "Triangle(ABC)",
 			"extend": [
 				"Triangle(BCA)",
@@ -27,19 +41,19 @@
 				"Shape(ABC)"
 			]
 		},
-		"5": {
+		"2": {
 			"format": "RightTriangle(ABC)",
 			"extend": [
 				"Triangle(ABC)"
 			]
 		},
-		"6": {
+		"3": {
 			"format": "IsoscelesTriangle(ABC)",
 			"extend": [
 				"Triangle(ABC)"
 			]
 		},
-		"7": {
+		"4": {
 			"format": "EquilateralTriangle(ABC)",
 			"extend": [
 				"EquilateralTriangle(BCA)",

@@ -6,20 +6,21 @@
 	"problem_text_cn": "如图所示，△RST与△XYZ全等，求y。",
 	"problem_text_en": "Triangle RST and triangle XYZ are congruent, find y.",
 	"problem_img": "0_g3k-0.png",
-	"construction_fls": [
+	"construction_cdl": [
 		"Shape(RST)",
-		"Shape(XYZ)"
+		"Shape(XYZ)",
+		"Collinear(ABCDE)"
 	],
-	"text_fls": [
+	"text_cdl": [
 		"Congruent(RST,XYZ)"
 	],
-	"image_fls": [
+	"image_cdl": [
 		"Equal(Length(TR),x+21)",
 		"Equal(Measure(TRS),4*y-10)",
 		"Equal(Measure(ZXY),3*y+5)",
 		"Equal(Length(ZX),2*x-14)"
 	],
-	"target_fls": "Value(y)",
+	"goal_cdl": "Value(y)",
 	"problem_answer": "15",
 	"theorem_seqs": [
 		70

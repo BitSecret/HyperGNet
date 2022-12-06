@@ -51,8 +51,3 @@ def constrained(r1_data, r2_data, union, op):
         if r1_data[u[0]] != r2_data[u[1]]:    # 存在对应item不一致
             return not op == "and"
     return op == "and"    # 对应item一致
-
-
-if __name__ == '__main__':
-    test = tuple({6, 2, 3} | {4, 5, 1})
-    print(test)
