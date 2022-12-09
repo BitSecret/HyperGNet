@@ -9,6 +9,7 @@
 	"construction_cdl": [
 		"Shape(RST)",
 		"Shape(XYZ)"
+		
 	],
 	"text_cdl": [
 		"Congruent(RST,XYZ)"
@@ -22,6 +23,6 @@
 	"goal_cdl": "Value(y)",
 	"problem_answer": "15",
 	"theorem_seqs": [
-		70
+		"congruent_property_angle_equal"
 	]
 }

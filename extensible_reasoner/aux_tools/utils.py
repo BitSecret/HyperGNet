@@ -6,14 +6,35 @@ import os
 
 
 def load_json(filename):
-    return json.load(open(filename, "r", encoding="utf-8"))
+    with open(filename, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def save_json(data, filename):
-    json.dump(data, open(filename, "w", encoding="utf-8"))
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f)
 
 
-def show(problem):
+def show(problem, simple=False):
+    """Show all information about problem."""
+    if simple:
+        if problem.goal["solved"]:
+            print("pid: {}, correct_answer: {}, solved: \033[32m{}\033[0m, solved_answer: {}".format(
+                problem.id,
+                str(problem.goal["answer"]),
+                str(problem.goal["solved"]),
+                str(problem.goal["solved_answer"])
+            ))
+        else:
+            print("pid: {}, correct_answer: {}, solved: \033[31m{}\033[0m, solved_answer: {}".format(
+                problem.id,
+                str(problem.goal["answer"]),
+                str(problem.goal["solved"]),
+                str(problem.goal["solved_answer"])
+            ))
+        return
+    problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
+
     """-----------Conditional Declaration Statement-----------"""
     print("\033[36mproblem_index:\033[0m", end=" ")
     print(problem.id)
@@ -56,9 +77,9 @@ def show(problem):
 
     """-----------Logic Form-----------"""
     print("\033[33mRelations:\033[0m")
-    predicates = ["Point", "Line", "Angle", "Shape", "Collinear"]  # preset
-    predicates += list(problem.predicate_GDL["Entity"].keys())
-    predicates += list(problem.predicate_GDL["Relation"].keys())
+    predicates = list(problem.predicate_GDL["Construction"])
+    predicates += list(problem.predicate_GDL["Entity"])
+    predicates += list(problem.predicate_GDL["Relation"])
     for predicate in predicates:
         condition = problem.conditions[predicate]
         if len(condition.get_item_by_id) > 0:
@@ -115,7 +136,7 @@ def show(problem):
     print("\033[34mSolving Goal:\033[0m")
     print("type: {}".format(str(problem.goal["type"])))
     print("goal: {}".format(str(problem.goal["item"])))
-    print("correct answer: {}".format(str(problem.goal["answer"])))
+    print("correct_answer: {}".format(str(problem.goal["answer"])))
     if problem.goal["solved"]:
         print("solved: \033[32m{}\033[0m".format(str(problem.goal["solved"])))
     else:
@@ -131,18 +152,15 @@ def show(problem):
         print(s)
 
 
-def simple_show(problem):
-    pass
-
-
 def save_solution_tree(problem, path):
     """Generate solution hyper tree and save."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
 
-    dot = Digraph(name=str(problem.id))  # Tree
-    nodes = []    # list of cdl and theorem
-    group = {}    # (premise, theorem): [_id]
-    cdl = {}      # _id: anti_parsed_cdl
+    st_dot = Digraph(name=str(problem.id))  # Tree
+    nodes = []    # list of cdl or theorem.
+    edges = {}      # node(cdl or theorem): node(cdl or theorem), used for DAG generating.
+    group = {}    # (premise, theorem): [_id], used for building hyper graph.
+    cdl = {}      # _id: anti_parsed_cdl, user for getting cdl by id.
 
     for _id in problem.get_predicate_by_id:    # summary information
         cdl[_id] = anti_parse_one_by_id(problem, _id)
@@ -155,24 +173,31 @@ def save_solution_tree(problem, path):
         else:
             group[(premise, theorem)].append(_id)
 
+    if problem.goal["solved"] and problem.goal["type"] in ["value", "equal"]:    # if target solved, add target
+        target_equation = "Equation(" + str(problem.goal["item"] - problem.goal["answer"]).replace(" ", "") + ")"
+        _id = len(cdl)
+        cdl[_id] = target_equation
+        group[(problem.goal["premise"], problem.goal["theorem"])] = [_id]
+
     count = 0
     solution_tree = {}
     for key in group:  # generate solution tree
         premise, theorem = key
 
-        t_node_id = _add_node(dot, nodes, theorem + "_{}".format(count))
+        theorem_node = theorem + "_{}".format(count)    # theorem name in hyper
+        _add_node(st_dot, nodes, theorem_node)
 
         start_nodes = []
         for _id in premise:
-            node_id = _add_node(dot, nodes, cdl[_id])    # add node to graph
+            _add_node(st_dot, nodes, cdl[_id])    # add node to graph
             start_nodes.append(cdl[_id])    # add to json output
-            dot.edge(str(node_id), str(t_node_id))    # add edge to graph
+            _add_edge(st_dot, nodes,  cdl[_id], theorem_node, edges)    # add edge to graph
 
         end_nodes = []
         for _id in group[key]:
-            node_id = _add_node(dot, nodes, cdl[_id])  # add node to graph
+            _add_node(st_dot, nodes, cdl[_id])  # add node to graph
             end_nodes.append(cdl[_id])  # add to json output
-            dot.edge(str(t_node_id), str(node_id))  # add edge to graph
+            _add_edge(st_dot, nodes, theorem_node, cdl[_id], edges)  # add edge to graph
 
         solution_tree[count] = {
             "conditions": start_nodes,
@@ -181,14 +206,38 @@ def save_solution_tree(problem, path):
         }
         count += 1
 
-    save_json(solution_tree, path + "{}_hyper.json".format(problem.id))    # save solution tree
-    dot.render(directory=path, view=False, format="png")    # save hyper graph
+    save_json(solution_tree, path + "{}_hyper.json".format(problem.id))  # save solution tree
+    st_dot.render(directory=path, view=False, format="png")  # save hyper graph
     os.remove(path + "{}.gv".format(problem.id))
+    if "{}_hyper.png".format(problem.id) in os.listdir(path):
+        os.remove(path + "{}_hyper.png".format(problem.id))
+    os.rename(path + "{}.gv.png".format(problem.id), path + "{}_hyper.png".format(problem.id))
+
+    dag_dot = Digraph(name=str(problem.id))  # generate theorem DAG
+    nodes = []  # list of theorem.
+    dag = {}
+    for s_node in edges:    # theorem
+        if "(" not in s_node:
+            dag[s_node] = []
+            _add_node(dag_dot, nodes, s_node)
+            for m_node in edges[s_node]:    # middle condition
+                if m_node in edges:    # theorem
+                    for e_node in edges[m_node]:
+                        _add_node(dag_dot, nodes, e_node)
+                        _add_edge(dag_dot, nodes, s_node, e_node)
+                        dag[s_node].append(e_node)
+
+    save_json(dag, path + "{}_dag.json".format(problem.id))  # save solution tree
+    dag_dot.render(directory=path, view=False, format="png")  # save hyper graph
+    os.remove(path + "{}.gv".format(problem.id))
+    if "{}_dag.png".format(problem.id) in os.listdir(path):
+        os.remove(path + "{}_dag.png".format(problem.id))
+    os.rename(path + "{}.gv.png".format(problem.id), path + "{}_dag.png".format(problem.id))
 
 
 def _add_node(dot, nodes, node):
     if node in nodes:  # node was already added
-        return nodes.index(node)
+        return
 
     added_node_id = len(nodes)
     nodes.append(node)
@@ -197,10 +246,19 @@ def _add_node(dot, nodes, node):
     else:
         dot.node(str(added_node_id), node)  # theorem node
 
-    return added_node_id
+
+def _add_edge(dot, nodes, start_node, end_node, edges=None):
+    dot.edge(str(nodes.index(start_node)), str(nodes.index(end_node)))
+    if edges is not None:
+        if start_node not in edges:
+            edges[start_node] = [end_node]
+        else:
+            edges[start_node].append(end_node)
 
 
 def save_step_msg(problem, path, de_redundant=True):
     """Save conditions grouped by step in dict."""
+    problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
+
     anti_parsed_cdl = anti_parse_logic_to_cdl(problem, de_redundant)
     save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.id))

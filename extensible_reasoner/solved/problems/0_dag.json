@@ -1,0 +1,43 @@
+{
+	"extended_0": [
+		"extended_8",
+		"extended_9"
+	],
+	"extended_1": [
+		"extended_11",
+		"extended_12"
+	],
+	"congruent_property_angle_equal_2": [
+		"solve_eq_3"
+	],
+	"solve_eq_3": [
+		"solve_eq_17"
+	],
+	"extended_4": [],
+	"extended_5": [],
+	"extended_6": [],
+	"extended_7": [],
+	"extended_8": [
+		"extended_4",
+		"extended_5"
+	],
+	"extended_9": [
+		"extended_10"
+	],
+	"extended_10": [],
+	"extended_11": [
+		"extended_6",
+		"extended_7"
+	],
+	"extended_12": [
+		"extended_13"
+	],
+	"extended_13": [],
+	"extended_14": [
+		"extended_15",
+		"extended_16"
+	],
+	"extended_15": [],
+	"extended_16": [],
+	"solve_eq_17": []
+}

@@ -117,22 +117,13 @@ class Equation(Condition):
             return added, _id
         return False, None
 
-    def _get_sym_of_attr(self, attr, item):
+    def get_sym_of_attr(self, item, attr):
         """
         Get symbolic representation of item's attribution.
-        :param attr: attr's name, such as Length
         :param item: tuple, such as ('A', 'B')
+        :param attr: attr's name, such as Length
         :return: sym
         """
-        if attr == "Free":
-            if (item, attr) not in self.sym_of_attr:
-                sym = symbols("f_" + "".join(item).lower())
-                self.value_of_sym[sym] = None  # init symbol's value
-                self.sym_of_attr[(item, attr)] = sym  # add sym
-                self.attr_of_sym[sym] = (item, attr)
-                return sym
-            return self.sym_of_attr[(item, attr)]
-
         if (item, attr) not in self.sym_of_attr:  # No symbolic representation, initialize one.
             if self.attr_GDL[attr]["negative"] == "True":  # Judge whether sym can be negative.
                 sym = symbols(self.attr_GDL[attr]["sym"] + "_" + "".join(item).lower())
@@ -337,10 +328,10 @@ class Equation(Condition):
 
         if tree[0] in self.attr_GDL:  # attr
             if not replaced:
-                return self._get_sym_of_attr(tree[0], tuple(tree[1]))
+                return self.get_sym_of_attr(tuple(tree[1]), tree[0])
             else:
                 replaced_item = [letters[i] for i in tree[1]]
-                return self._get_sym_of_attr(tree[0], tuple(replaced_item))
+                return self.get_sym_of_attr(tuple(replaced_item), tree[0])
 
         if tree[0] == "Add":  # operate
             return self.get_expr_from_tree(tree[1][0]) + self.get_expr_from_tree(tree[1][1])
@@ -417,11 +408,63 @@ class Equation(Condition):
                     elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
                         break
             else:  # 实数或符号
-                unit = self._get_sym_of_attr("Free", (unit,)) if unit.isalpha() else float(unit)
+                unit = self.get_sym_of_attr((unit,), "Free") if unit.isalpha() else float(unit)
                 expr_stack.append(unit)
                 i = i + 1
 
         return expr_stack.pop()
+
+    def angle_alignment(self, angles, collinear):
+        for angle in angles:
+            if (angle, "Measure") in self.sym_of_attr:
+                continue
+            sym = self.get_sym_of_attr(angle, "Measure")
+
+            a, v, b = angle
+            a_points = []    # Points collinear with a and on the same side with a
+            b_points = []
+            for coll in collinear:
+                if v in coll and a in coll:
+                    if coll.index(v) < coll.index(a):  # .....V...P..
+                        i = coll.index(v) + 1
+                        while i < len(coll):
+                            a_points.append(coll[i])
+                            i += 1
+                    else:  # ...P.....V...
+                        i = 0
+                        while i < coll.index(v):
+                            a_points.append(coll[i])
+                            i += 1
+                    break
+            if len(a_points) == 0:
+                a_points.append(a)
+            for coll in collinear:
+                if v in coll and b in coll:
+                    if coll.index(v) < coll.index(b):  # .....V...P..
+                        i = coll.index(v) + 1
+                        while i < len(coll):
+                            b_points.append(coll[i])
+                            i += 1
+                    else:  # ...P.....V...
+                        i = 0
+                        while i < coll.index(v):
+                            b_points.append(coll[i])
+                            i += 1
+                    break
+            if len(b_points) == 0:
+                b_points.append(b)
+
+            if len(a_points) == 1 and len(b_points) == 1:  # 角只有一种表示
+                continue
+
+            same_angles = []
+            for a_point in a_points:
+                for b_point in b_points:
+                    same_angles.append((a_point, v, b_point))  # 相同的角设置一样的符号
+
+            for same_angle in same_angles:
+                self.sym_of_attr[(same_angle, "Measure")] = sym
+                self.attr_of_sym[sym] = (same_angle, "Measure")
 
 
 class Problem:
@@ -446,13 +489,11 @@ class Problem:
         self.theorems_applied = []  # applied theorem list
         self.get_predicate_by_id = {}
         self.get_id_by_step = {}
+        self.gathered = False
 
-        self.conditions = {  # basic predicate
+        self.conditions = {
             "Shape": Construction("Shape"),
             "Collinear": Construction("Collinear"),
-            "Point": Relation("Point"),
-            "Line": Relation("Line"),
-            "Angle": Relation("Angle"),
             "Equation": Equation("Equation", self.predicate_GDL["Attribution"])
         }
         for predicate in self.predicate_GDL["Entity"]:
@@ -495,10 +536,52 @@ class Problem:
             self.goal["answer"] = tuple(problem_CDL["parsed_cdl"]["goal"]["answer"])
 
     def construction_init(self):
-        pass
+        """
+        1.Iterative build all shape.
+        Shape(BC*A), Shape(A*CD)  ==>  Shape(ABCD)
+        2.Make the symbols of angles the same.
+        Measure(Angle(ABC)), Measure(Angle(ABD))  ==>  m_abc,  if Collinear(BCD)
+        """
+        update = True    # build all shape
+        traversed = []
+        while update:
+            update = False
+            for shape1 in list(self.conditions["Shape"].get_id_by_item):
+                for shape2 in list(self.conditions["Shape"].get_id_by_item):
+                    if (shape1, shape2) in traversed:    # skip traversed
+                        continue
+                    traversed.append((shape1, shape2))
+
+                    if not (shape1[len(shape1) - 1] == shape2[0] and    # At least two points are the same
+                            shape1[len(shape1) - 2] == shape2[1]):
+                        continue
+
+                    same_length = 2    # Number of identical points
+                    while same_length < len(shape1) and same_length < len(shape2):
+                        if shape1[len(shape1) - same_length - 1] == shape2[same_length]:
+                            same_length += 1
+                        else:
+                            break
+
+                    new_shape = list(shape1[0:len(shape1) - same_length + 1])  # points in shape1, the first same point
+                    new_shape += list(shape2[same_length:len(shape2)])  # points in shape2
+                    new_shape.append(shape1[len(shape1) - 1])  # the second same point
+
+                    if 2 < len(new_shape) == len(set(new_shape)):  # make sure new_shape is Shape and no ring
+                        premise = (self.conditions["Shape"].get_id_by_item[shape1],
+                                   self.conditions["Shape"].get_id_by_item[shape2])
+                        update = self.add("Shape", tuple(new_shape), premise, "extended") or update
+
+        collinear = []    # let same angle has same symbol
+        for predicate, item in self.problem_CDL["parsed_cdl"]["construction_cdl"]:
+            if predicate == "Collinear":
+                collinear.append(tuple(item))
+        self.conditions["Equation"].angle_alignment(list(self.conditions["Angle"].get_id_by_item), collinear)
 
     def gather_conditions_msg(self):
         """Gather all conditions msg for problem showing, solution tree generating, etc..."""
+        if self.gathered:
+            return
         self.get_predicate_by_id = {}    # init
         self.get_id_by_step = {}
         for predicate in self.conditions:
@@ -508,6 +591,7 @@ class Problem:
                 if step not in self.get_id_by_step:
                     self.get_id_by_step[step] = []
                 self.get_id_by_step[step].append(_id)
+        self.gathered = True
 
     def add(self, predicate, item, premise, theorem):
         """
@@ -522,6 +606,7 @@ class Problem:
         if predicate not in self.conditions:
             raise RuntimeException("PredicateNotDefined",
                                    "Predicate '{}': not defined in current problem.".format(predicate))
+        self.gathered = False
 
         if predicate == "Equation":  # Equation
             added, _id = self.conditions["Equation"].add(item, premise, theorem)
@@ -557,6 +642,18 @@ class Problem:
                     self.add(extended_predicate, tuple(para), (_id,), "extended")
                 return True
         elif predicate == "Shape":  # Construction predicate: Shape
+            item, i = list(item), 0
+            while len(item) > 2 and i < len(item):    # Check whether collinear points exist
+                point1 = item[i]    # sliding window in the length of 3
+                point2 = item[(i + 1) % len(item)]
+                point3 = item[(i + 2) % len(item)]
+
+                if (point1, point2, point3) in self.conditions["Collinear"].get_id_by_item:    # Delete when collinear
+                    item.pop(item.index(point2))
+                else:    # Move backward sliding window when not collinear
+                    i += 1
+            item = tuple(item)
+
             added, _id = self.conditions["Shape"].add(item, premise, theorem)
             if added:  # if added successful
                 l = len(item)
@@ -577,22 +674,6 @@ class Problem:
                 for i in range(len(item) - 1):  # extend line
                     for j in range(i + 1, len(item)):
                         self.add("Line", (item[i], item[j]), (_id,), "extended")
-                return True
-        elif predicate == "Point":  # Basic predicate: Point
-            added, _id = self.conditions["Point"].add(item, premise, theorem)
-            return added
-        elif predicate == "Line":  # Basic predicate: Line
-            added, _id = self.conditions["Line"].add(item, premise, theorem)
-            if added:
-                self.conditions["Line"].add(item[::-1], premise, theorem)
-                for point in item:
-                    self.conditions["Point"].add((point,), premise, theorem)
-                return True
-        elif predicate == "Angle":  # Basic predicate: Angle
-            added, _id = self.conditions["Angle"].add(item, premise, theorem)
-            if added:
-                self.add("Line", (item[1], item[0]), premise, theorem)
-                self.add("Line", (item[1], item[2]), premise, theorem)
                 return True
         return False
 

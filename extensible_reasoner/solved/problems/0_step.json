@@ -4,12 +4,16 @@
 		"Equation(-4.0*f_y+m_trs+10.0)",
 		"Equation(-3.0*f_y+m_zxy-5.0)",
 		"Equation(-2.0*f_x+l_zx+14.0)",
-		"Equation(m_trs-m_zxy)",
-		"Free(y)",
-		"Measure(TRS)",
-		"Measure(ZXY)",
 		"Triangle(RST)",
 		"Triangle(XYZ)",
 		"Congruent(RST,XYZ)"
+	],
+	"1": [
+		"Equation(m_rst-m_xyz)",
+		"Equation(m_str-m_yzx)",
+		"Equation(m_trs-m_zxy)",
+		"Free(y)",
+		"Measure(TRS)",
+		"Measure(ZXY)"
 	]
 }

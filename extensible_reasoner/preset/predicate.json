@@ -234,44 +234,8 @@
 			}
 		},
 		"Attribution": {
+			
 			"1": {
-				"format": "Length",
-				"sym": "l",
-				"attr": [
-					"A",
-					"B"
-				],
-				"attr_multi": [
-					[
-						"B",
-						"A"
-					]
-				],
-				"negative": "False"
-			},
-			"2": {
-				"format": "Measure",
-				"sym": "m",
-				"attr": [
-					"A",
-					"B",
-					"C"
-				],
-				"attr_multi": [
-					[
-						"B",
-						"C",
-						"A"
-					],
-					[
-						"C",
-						"A",
-						"B"
-					]
-				],
-				"negative": "True"
-			},
-			"3": {
 				"format": "AreaOfTriangle",
 				"sym": "art",
 				"attr": [
@@ -293,7 +257,7 @@
 				],
 				"negative": "False"
 			},
-			"4": {
+			"2": {
 				"format": "PerimeterOfTriangle",
 				"sym": "pt",
 				"attr": [
@@ -315,7 +279,7 @@
 				],
 				"negative": "False"
 			},
-			"5": {
+			"3": {
 				"format": "AltitudeOfTriangle",
 				"sym": "alt",
 				"attr": [
@@ -340,8 +304,8 @@
 		}
 	},
 	"Notes": {
-		"Entity": "With 6 built-in definitions: Shape, Collinear, Point, Line, Angle.",
-		"Attribution": "With 2 built-in definition: Target(t_s) used for temporary calculation, not stored in symbol library; Free(f) used for symbolic representation for variable."
+		"Entity": "With 5 built-in definitions: Shape, Collinear, Point, Line, and Angle.",
+		"Attribution": "With 3 built-in definition: Free(f), Length(l) and Measure(m)."
 	},
 	"Version": "0.0.1"
 }

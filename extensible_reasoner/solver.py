@@ -17,6 +17,7 @@ class Solver:
         s_start_time = time.time()  # timing
         self.problem = Problem(self.predicate_GDL, parse_problem(problem_CDL))  # init problem
         self.problem.conditions["Equation"].solve()  # Solve the equations after initialization
+        self.problem.applied("init_problem")  # save applied theorem and update step
         self.problem.goal["solving_msg"].append(
             "\033[32mInit problem and first solving\033[0m:{:.6f}s".format(time.time() - s_start_time))
 

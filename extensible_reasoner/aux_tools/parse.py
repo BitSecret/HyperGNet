@@ -21,7 +21,25 @@ def parse_predicate(predicate_GDL):
     parsed_GDL = {}
 
     entity = predicate_GDL["Entity"]  # parse entity
-    parsed_GDL["Entity"] = {}
+    parsed_GDL["Construction"] = {  # preset Construction
+        "Shape": {
+            "vars": [], "multi": [], "extend": []
+        },
+        "Collinear": {
+            "vars": [], "multi": [], "extend": []
+        }
+    }
+    parsed_GDL["Entity"] = {  # preset Entity
+        "Point": {
+            "vars": [0], "multi": [], "extend": []
+        },
+        "Line": {
+            "vars": [0, 1], "multi": [["Line", [1, 0]]], "extend": [["Point", [0]], ["Point", [1]]]
+        },
+        "Angle": {
+            "vars": [0, 1, 2], "multi": [], "extend": [["Line", [0, 1]], ["Line", [1, 2]]]
+        }
+    }
     for key in entity:
         name, para = _parse_one_predicate(entity[key]["format"])
         parsed_GDL["Entity"][name] = {
@@ -54,7 +72,26 @@ def parse_predicate(predicate_GDL):
             parsed_GDL["Relation"][name]["extend"].append([extend_name, [para.index(i) for i in extend_para]])
 
     attribution = predicate_GDL["Attribution"]  # parse attribution
-    parsed_GDL["Attribution"] = {}
+    parsed_GDL["Attribution"] = {  # preset Attribution
+        "Free": {
+            "sym": "f",
+            "attr": [0],
+            "attr_multi": [],
+            "negative": "True"
+        },
+        "Length": {
+            "sym": "l",
+            "attr": [0, 1],
+            "attr_multi": [[1, 0]],
+            "negative": "False"
+        },
+        "Measure": {
+            "sym": "m",
+            "attr": [0, 1, 2],
+            "attr_multi": [],
+            "negative": "True"
+        }
+    }
     for key in attribution:
         name = attribution[key]["format"]
         parsed_GDL["Attribution"][name] = {
@@ -322,7 +359,7 @@ def anti_parse_one_by_id(problem, _id):
     """
     predicate = problem.get_predicate_by_id[_id]
     condition = problem.conditions[predicate]
-    if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"] + list(problem.predicate_GDL["Entity"]):
+    if predicate in list(problem.predicate_GDL["Construction"]) + list(problem.predicate_GDL["Entity"]):
         return predicate + "(" + "".join(condition.get_item_by_id[_id]) + ")"
     elif predicate in problem.predicate_GDL["Relation"]:
         item = []
@@ -424,12 +461,3 @@ def _get_all_attr(equal_tree, target_attr, results):
         _get_all_attr(equal_tree[1][0], target_attr, results)
     elif equal_tree[0] == target_attr:
         results.append(equal_tree)
-
-
-if __name__ == '__main__':
-    a = build_vars_from_algebraic_relation(
-        [0, 1, 2, 3],
-        ['Equal', [['Length', [0, 1]], ['Length', [2, 3]]]],
-        [('A', 'B'), 'Length']
-    )
-    print(a)

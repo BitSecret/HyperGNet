@@ -2,7 +2,7 @@ from solver import Solver
 from aux_tools.utils import load_json, save_json, show, save_step_msg, save_solution_tree
 
 
-def run(problem_id, save_parse_GDL=False, save_parse_CDL=True):
+def run(problem_id, save_parse_GDL=False, save_parse_CDL=False):
     predicate_GDL = load_json("./preset/predicate.json")
     theorem_GDL = load_json("./preset/theorem.json")
     problem_CDL = load_json("./preset/problems/{}.json".format(problem_id))
@@ -11,7 +11,7 @@ def run(problem_id, save_parse_GDL=False, save_parse_CDL=True):
     solver.load_problem(problem_CDL)
     solver.apply_theorem("congruent_property_angle_equal")
     solver.check_goal()
-    show(solver.problem)
+    show(solver.problem, simple=False)
 
     if save_parse_GDL:
         save_json(solver.predicate_GDL, "./solved/predicate_parsed.json")
