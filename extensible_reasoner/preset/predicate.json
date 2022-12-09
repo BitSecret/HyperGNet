@@ -1,268 +1,347 @@
 {
-	"Basic": {
-		"1": {
-			"format": "Shape(*)",
-			"extend": [
-				"Angle(*)"
-			]
+	"Predicates": {
+		"Entity": {
+			"1": {
+				"format": "Triangle(ABC)",
+				"multi": [
+					"Triangle(BCA)",
+					"Triangle(CAB)"
+				],
+				"extend": [
+					"Shape(ABC)"
+				]
+			},
+			"2": {
+				"format": "RightTriangle(ABC)",
+				"multi": [],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			},
+			"3": {
+				"format": "IsoscelesTriangle(ABC)",
+				"multi": [],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			},
+			"4": {
+				"format": "EquilateralTriangle(ABC)",
+				"multi": [
+					"EquilateralTriangle(BCA)",
+					"EquilateralTriangle(CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			}
 		},
-		"2": {
-			"format": "Collinear(*)",
-			"extend": [
-				"Line(*)"
-			]
+		"Relation": {
+			"1": {
+				"format": "Midpoint(M,AB)",
+				"multi": [
+					"Midpoint(M,BA)"
+				],
+				"extend": [
+					"Point(M)",
+					"Line(AB)"
+				]
+			},
+			"2": {
+				"format": "Intersect(O,AB,CD)",
+				"multi": [
+					"Intersect(O,CD,BA)",
+					"Intersect(O,BA,DC)",
+					"Intersect(O,DC,AB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				]
+			},
+			"3": {
+				"format": "DisorderParallel(AB,CD)",
+				"multi": [
+					"DisorderParallel(DC,BA)",
+					"DisorderParallel(CD,AB)",
+					"DisorderParallel(BA,DC)"
+				],
+				"extend": [
+					"Line(AB)",
+					"Line(CD)"
+				]
+			},
+			"4": {
+				"format": "Parallel(AB,CD)",
+				"multi": [
+					"Parallel(DC,BA)"
+				],
+				"extend": [
+					"DisorderParallel(DC,BA)"
+				]
+			},
+			"5": {
+				"format": "Perpendicular(O,AB,CD)",
+				"multi": [
+					"Perpendicular(O,CD,BA)",
+					"Perpendicular(O,BA,DC)",
+					"Perpendicular(O,DC,AB)"
+				],
+				"extend": [
+					"Intersect(O,AB,CD)"
+				]
+			},
+			"6": {
+				"format": "PerpendicularBisector(O,AB,CD)",
+				"multi": [],
+				"extend": [
+					"Perpendicular(O,AB,CD)",
+					"Midpoint(O,AB)"
+				]
+			},
+			"7": {
+				"format": "Bisector(BD,ABC)",
+				"multi": [],
+				"extend": [
+					"Line(BD)",
+					"Angle(ABC)"
+				]
+			},
+			"8": {
+				"format": "Median(AD,ABC)",
+				"multi": [],
+				"extend": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				]
+			},
+			"9": {
+				"format": "IsAltitude(AD,ABC)",
+				"multi": [],
+				"extend": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				]
+			},
+			"10": {
+				"format": "Neutrality(DE,ABC)",
+				"multi": [],
+				"extend": [
+					"Line(DE)",
+					"Triangle(ABC)"
+				]
+			},
+			"11": {
+				"format": "Circumcenter(O,ABC)",
+				"multi": [
+					"Circumcenter(O,BCA)",
+					"Circumcenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"12": {
+				"format": "Incenter(O,ABC)",
+				"multi": [
+					"Incenter(O,BCA)",
+					"Incenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"13": {
+				"format": "Centroid(O,ABC)",
+				"multi": [
+					"Centroid(O,BCA)",
+					"Centroid(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"14": {
+				"format": "Orthocenter(O,ABC)",
+				"multi": [
+					"Orthocenter(O,BCA)",
+					"Orthocenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"15": {
+				"format": "Congruent(ABC,DEF)",
+				"multi": [
+					"Congruent(DEF,ABC)",
+					"Congruent(BCA,EFD)",
+					"Congruent(EFD,BCA)",
+					"Congruent(CAB,FDE)",
+					"Congruent(FDE,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"16": {
+				"format": "Similar(ABC,DEF)",
+				"multi": [
+					"Similar(DEF,ABC)",
+					"Similar(BCA,EFD)",
+					"Similar(EFD,BCA)",
+					"Similar(CAB,FDE)",
+					"Similar(FDE,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"17": {
+				"format": "MirrorCongruent(ABC,DEF)",
+				"multi": [
+					"MirrorCongruent(DEF,ABC)",
+					"MirrorCongruent(BCA,FDE)",
+					"MirrorCongruent(FDE,BCA)",
+					"MirrorCongruent(CAB,EFD)",
+					"MirrorCongruent(EFD,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"18": {
+				"format": "MirrorSimilar(ABC,DEF)",
+				"multi": [
+					"MirrorSimilar(DEF,ABC)",
+					"MirrorSimilar(BCA,FDE)",
+					"MirrorSimilar(FDE,BCA)",
+					"MirrorSimilar(CAB,EFD)",
+					"MirrorSimilar(EFD,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			}
 		},
-		"3": {
-			"format": "Point(A)",
-			"extend": []
-		},
-		"4": {
-			"format": "Line(AB)",
-			"extend": [
-				"Line(BA)",
-				"Point(A)",
-				"Point(B)"
-			]
-		},
-		"5": {
-			"format": "Angle(ABC)",
-			"extend": [
-				"Line(BA)",
-				"Line(BC)"
-			]
+		"Attribution": {
+			"1": {
+				"format": "Length",
+				"sym": "l",
+				"attr": [
+					"A",
+					"B"
+				],
+				"attr_multi": [
+					[
+						"B",
+						"A"
+					]
+				],
+				"negative": "False"
+			},
+			"2": {
+				"format": "Measure",
+				"sym": "m",
+				"attr": [
+					"A",
+					"B",
+					"C"
+				],
+				"attr_multi": [
+					[
+						"B",
+						"C",
+						"A"
+					],
+					[
+						"C",
+						"A",
+						"B"
+					]
+				],
+				"negative": "True"
+			},
+			"3": {
+				"format": "AreaOfTriangle",
+				"sym": "art",
+				"attr": [
+					"A",
+					"B",
+					"C"
+				],
+				"attr_multi": [
+					[
+						"B",
+						"C",
+						"A"
+					],
+					[
+						"C",
+						"A",
+						"B"
+					]
+				],
+				"negative": "False"
+			},
+			"4": {
+				"format": "PerimeterOfTriangle",
+				"sym": "pt",
+				"attr": [
+					"A",
+					"B",
+					"C"
+				],
+				"attr_multi": [
+					[
+						"B",
+						"C",
+						"A"
+					],
+					[
+						"C",
+						"A",
+						"B"
+					]
+				],
+				"negative": "False"
+			},
+			"5": {
+				"format": "AltitudeOfTriangle",
+				"sym": "alt",
+				"attr": [
+					"A",
+					"B",
+					"C"
+				],
+				"attr_multi": [
+					[
+						"B",
+						"C",
+						"A"
+					],
+					[
+						"C",
+						"A",
+						"B"
+					]
+				],
+				"negative": "False"
+			}
 		}
 	},
-	"Entity": {
-		"1": {
-			"format": "Triangle(ABC)",
-			"extend": [
-				"Triangle(BCA)",
-				"Triangle(CAB)",
-				"Shape(ABC)"
-			]
-		},
-		"2": {
-			"format": "RightTriangle(ABC)",
-			"extend": [
-				"Triangle(ABC)"
-			]
-		},
-		"3": {
-			"format": "IsoscelesTriangle(ABC)",
-			"extend": [
-				"Triangle(ABC)"
-			]
-		},
-		"4": {
-			"format": "EquilateralTriangle(ABC)",
-			"extend": [
-				"EquilateralTriangle(BCA)",
-				"EquilateralTriangle(CAB)",
-				"Triangle(ABC)"
-			]
-		}
+	"Notes": {
+		"Entity": "With 6 built-in definitions: Shape, Collinear, Point, Line, Angle.",
+		"Attribution": "With 2 built-in definition: Target(t_s) used for temporary calculation, not stored in symbol library; Free(f) used for symbolic representation for variable."
 	},
-	"Relation": {
-		"1": {
-			"format": "Midpoint(M,AB)",
-			"extend": [
-				"Midpoint(M,BA)",
-				"Point(M)",
-				"Line(AB)"
-			]
-		},
-		"2": {
-			"format": "Intersect(O,AB,CD)",
-			"extend": [
-				"Intersect(O,CD,BA)",
-				"Intersect(O,BA,DC)",
-				"Intersect(O,DC,AB)",
-				"Point(O)",
-				"Line(AB)",
-				"Line(CD)"
-			]
-		},
-		"3": {
-			"format": "DisorderParallel(AB,CD)",
-			"extend": [
-				"DisorderParallel(DC,BA)",
-				"DisorderParallel(CD,AB)",
-				"DisorderParallel(BA,DC)",
-				"Line(AB)",
-				"Line(CD)"
-			]
-		},
-		"4": {
-			"format": "Parallel(AB,CD)",
-			"extend": [
-				"Parallel(DC,BA)",
-				"DisorderParallel(DC,BA)"
-			]
-		},
-		"5": {
-			"format": "Perpendicular(O,AB,CD)",
-			"extend": [
-				"Perpendicular(O,CD,BA)",
-				"Perpendicular(O,BA,DC)",
-				"Perpendicular(O,DC,AB)",
-				"Intersect(O,AB,CD)"
-			]
-		},
-		"6": {
-			"format": "PerpendicularBisector(O,AB,CD)",
-			"extend": [
-				"Perpendicular(O,AB,CD)"
-			]
-		},
-		"7": {
-			"format": "Bisector(BD,ABC)",
-			"extend": [
-				"Line(BD)",
-				"Angle(ABC)"
-			]
-		},
-		"8": {
-			"format": "Median(AD,ABC)",
-			"extend": [
-				"Line(AD)",
-				"Triangle(ABC)"
-			]
-		},
-		"9": {
-			"format": "IsAltitude(AD,ABC)",
-			"extend": [
-				"Line(AD)",
-				"Triangle(ABC)"
-			]
-		},
-		"10": {
-			"format": "Neutrality(DE,ABC)",
-			"extend": [
-				"Line(DE)",
-				"Triangle(ABC)"
-			]
-		},
-		"11": {
-			"format": "Circumcenter(O,ABC)",
-			"extend": [
-				"Circumcenter(O,BCA)",
-				"Circumcenter(O,CAB)",
-				"Point(O)",
-				"Triangle(ABC)"
-			]
-		},
-		"12": {
-			"format": "Incenter(O,ABC)",
-			"extend": [
-				"Circumcenter(O,BCA)",
-				"Circumcenter(O,CAB)",
-				"Point(O)",
-				"Triangle(ABC)"
-			]
-		},
-		"13": {
-			"format": "Centroid(O,ABC)",
-			"extend": [
-				"Circumcenter(O,BCA)",
-				"Circumcenter(O,CAB)",
-				"Point(O)",
-				"Triangle(ABC)"
-			]
-		},
-		"14": {
-			"format": "Orthocenter(O,ABC)",
-			"extend": [
-				"Circumcenter(O,BCA)",
-				"Circumcenter(O,CAB)",
-				"Point(O)",
-				"Triangle(ABC)"
-			]
-		},
-		"15": {
-			"format": "Congruent(ABC,DEF)",
-			"extend": [
-				"Congruent(DEF,ABC)",
-				"Congruent(BCA,EFD)",
-				"Congruent(EFD,BCA)",
-				"Congruent(CAB,FDE)",
-				"Congruent(FDE,CAB)",
-				"Triangle(ABC)",
-				"Triangle(DEF)"
-			]
-		},
-		"16": {
-			"format": "Similar(ABC,DEF)",
-			"extend": [
-				"Similar(DEF,ABC)",
-				"Similar(BCA,EFD)",
-				"Similar(EFD,BCA)",
-				"Similar(CAB,FDE)",
-				"Similar(FDE,CAB)",
-				"Triangle(ABC)",
-				"Triangle(DEF)"
-			]
-		},
-		"17": {
-			"format": "MirrorCongruent(ABC,DEF)",
-			"extend": [
-				"MirrorCongruent(DEF,ABC)",
-				"MirrorCongruent(BCA,FDE)",
-				"MirrorCongruent(FDE,BCA)",
-				"MirrorCongruent(CAB,EFD)",
-				"MirrorCongruent(EFD,CAB)",
-				"Triangle(ABC)",
-				"Triangle(DEF)"
-			]
-		},
-		"18": {
-			"format": "MirrorSimilar(ABC,DEF)",
-			"extend": [
-				"MirrorSimilar(DEF,ABC)",
-				"MirrorSimilar(BCA,FDE)",
-				"MirrorSimilar(FDE,BCA)",
-				"MirrorSimilar(CAB,EFD)",
-				"MirrorSimilar(EFD,CAB)",
-				"Triangle(ABC)",
-				"Triangle(DEF)"
-			]
-		}
-	},
-	"Attribution": {
-		"1": {
-			"format": "Length",
-			"sym": "l",
-			"multi_rep": "True",
-			"negative": "False"
-		},
-		"2": {
-			"format": "Measure",
-			"sym": "m",
-			"multi_rep": "False",
-			"negative": "True"
-		},
-		"3": {
-			"format": "Area",
-			"sym": "a",
-			"multi_rep": "True",
-			"negative": "False"
-		},
-		"4": {
-			"format": "Perimeter",
-			"sym": "p",
-			"multi_rep": "True",
-			"negative": "False"
-		},
-		"5": {
-			"format": "Altitude",
-			"sym": "a",
-			"multi_rep": "True",
-			"negative": "False"
-		},
-		"6": {
-			"format": "Free",
-			"sym": "f",
-			"multi_rep": "False",
-			"negative": "True"
-		}
-	}
+	"Version": "0.0.1"
 }

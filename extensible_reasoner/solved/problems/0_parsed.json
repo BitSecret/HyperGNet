@@ -3,8 +3,7 @@
 	"cdl": {
 		"construction_cdl": [
 			"Shape(RST)",
-			"Shape(XYZ)",
-			"Collinear(ABCDE)"
+			"Shape(XYZ)"
 		],
 		"text_cdl": [
 			"Congruent(RST,XYZ)"
@@ -33,16 +32,6 @@
 					"X",
 					"Y",
 					"Z"
-				]
-			],
-			[
-				"Collinear",
-				[
-					"A",
-					"B",
-					"C",
-					"D",
-					"E"
 				]
 			]
 		],

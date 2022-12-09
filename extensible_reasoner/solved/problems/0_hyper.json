@@ -1,0 +1,103 @@
+{
+	"0": {
+		"conditions": [
+			"Shape(RST)"
+		],
+		"theorem": "extended",
+		"conclusion": [
+			"Shape(STR)",
+			"Shape(TRS)",
+			"Point(S)",
+			"Point(R)",
+			"Point(T)",
+			"Line(SR)",
+			"Line(RS)",
+			"Line(ST)",
+			"Line(TS)",
+			"Line(TR)",
+			"Line(RT)",
+			"Angle(RST)",
+			"Angle(STR)",
+			"Angle(TRS)"
+		]
+	},
+	"1": {
+		"conditions": [
+			"Shape(XYZ)"
+		],
+		"theorem": "extended",
+		"conclusion": [
+			"Shape(YZX)",
+			"Shape(ZXY)",
+			"Point(Y)",
+			"Point(X)",
+			"Point(Z)",
+			"Line(YX)",
+			"Line(XY)",
+			"Line(YZ)",
+			"Line(ZY)",
+			"Line(ZX)",
+			"Line(XZ)",
+			"Angle(XYZ)",
+			"Angle(YZX)",
+			"Angle(ZXY)"
+		]
+	},
+	"2": {
+		"conditions": [
+			"Congruent(RST,XYZ)"
+		],
+		"theorem": "congruent_property_angle_equal",
+		"conclusion": [
+			"Equation(m_trs-m_zxy)"
+		]
+	},
+	"3": {
+		"conditions": [
+			"Equation(-4.0*f_y+m_trs+10.0)",
+			"Equation(m_trs-m_zxy)",
+			"Equation(-3.0*f_y+m_zxy-5.0)"
+		],
+		"theorem": "solve_eq",
+		"conclusion": [
+			"Free(y)",
+			"Measure(TRS)",
+			"Measure(ZXY)"
+		]
+	},
+	"4": {
+		"conditions": [
+			"Congruent(RST,XYZ)"
+		],
+		"theorem": "extended",
+		"conclusion": [
+			"Triangle(RST)",
+			"Triangle(XYZ)",
+			"Congruent(XYZ,RST)",
+			"Congruent(STR,YZX)",
+			"Congruent(YZX,STR)",
+			"Congruent(TRS,ZXY)",
+			"Congruent(ZXY,TRS)"
+		]
+	},
+	"5": {
+		"conditions": [
+			"Triangle(RST)"
+		],
+		"theorem": "extended",
+		"conclusion": [
+			"Triangle(STR)",
+			"Triangle(TRS)"
+		]
+	},
+	"6": {
+		"conditions": [
+			"Triangle(XYZ)"
+		],
+		"theorem": "extended",
+		"conclusion": [
+			"Triangle(YZX)",
+			"Triangle(ZXY)"
+		]
+	}
+}

@@ -1,4 +1,16 @@
 {
+	"": {
+		"vars": [],
+		"mutex_points": [],
+		"premise": {
+			"entity_relation": [],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": []
+		}
+	},
 	"congruent_property_angle_equal": {
 		"vars": [
 			0,
@@ -7,6 +19,30 @@
 			3,
 			4,
 			5
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			],
+			[
+				3,
+				4,
+				5
+			],
+			[
+				[
+					0,
+					1,
+					2
+				],
+				[
+					3,
+					4,
+					5
+				]
+			]
 		],
 		"premise": {
 			"entity_relation": [

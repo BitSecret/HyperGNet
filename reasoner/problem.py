@@ -152,7 +152,7 @@ class ProblemLogic:
         if self.conditions.add(ordered_pair, cType.midpoint, premise, theorem):
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.midpoint)]
-            self.conditions.add((point, line[::-1]), cType.midpoint, premise, -2)  # 中点有两中表示形式
+            self.conditions.add((point, line[::-1]), cType.midpoint, premise, -2)  # 中点有两种表示形式
 
             line1 = self.get_sym_of_attr(line[0] + point, aType.LL)  # 中点性质扩展
             line2 = self.get_sym_of_attr(point + line[1], aType.LL)
@@ -185,7 +185,7 @@ class ProblemLogic:
             if root:
                 premise = [self.conditions.get_index(ordered_pair, cType.parallel)]
 
-            for parallel in rep.parallel(ordered_pair):  # 平行的4种表示
+            for parallel in rep.parallel(ordered_pair):  # 平行的2种表示
                 self.conditions.add(parallel, cType.parallel, premise, -2)
 
             self.define_disorder_parallel(ordered_pair, premise, -2, False)    # 无序平行

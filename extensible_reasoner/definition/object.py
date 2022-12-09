@@ -1,11 +1,9 @@
-# 定义一些数据结构
-# 如 Condition、Relation、Equation
-# 再比如 Target ...
 from definition.exception import RuntimeException
-from aux_tools.parse import get_expr_from_tree, get_equation_from_equal_tree_para
 from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
 from itertools import combinations
+from sympy import sin, cos, tan, pi
+from aux_tools.parse import idt_expr, operator, stack_priority, outside_priority
 
 
 class Condition:
@@ -25,9 +23,9 @@ class Condition:
         self.get_id_by_item = {}
         self.premises = {}
         self.theorems = {}
-        self.step_msg = []    # (0, 2)  item 2 adding in step 0
+        self.step_msg = []  # (0, 2)  item 2 adding in step 0
 
-    def add(self, item, premise, theorem):  # 添加条件
+    def add(self, item, premise, theorem):
         """
         add item and guarantee no redundancy.
         :param item: relation or equation
@@ -44,7 +42,7 @@ class Condition:
             self.premises[_id] = premise
             self.theorems[item] = theorem  # theorem
             self.theorems[_id] = theorem  # theorem
-            self.step_msg.append((Problem.step, _id))   # step_msg
+            self.step_msg.append((Problem.step, _id))  # step_msg
             return True, _id
         return False, None
 
@@ -95,9 +93,9 @@ class Equation(Condition):
     def __init__(self, name, attr_GDL):
         """
         self.sym_of_attr = {}  # Symbolic representation of attribute values.
-        >> {(('A', 'B'), 'll'): ll_ab}
+        >> {(('A', 'B'), 'Length'): l_ab}
         self.value_of_sym = {}  # Value of symbol.
-        >> {ll_ab: 3.0}
+        >> {l_ab: 3.0}
         self.equations = {}    # Simplified equations. Replace sym with value of symbol's value already known.
         >> {a + b - c: a -5}    # Suppose that b, c already known.
         self.solved = True   # If not solved, then solve.
@@ -119,15 +117,21 @@ class Equation(Condition):
             return added, _id
         return False, None
 
-    def get_sym_of_attr(self, attr=None, item=None):
+    def _get_sym_of_attr(self, attr, item):
         """
         Get symbolic representation of item's attribution.
         :param attr: attr's name, such as Length
         :param item: tuple, such as ('A', 'B')
-        :return:
+        :return: sym
         """
-        if attr is None:  # middle sym, no need to storage.
-            return symbols("m_m")
+        if attr == "Free":
+            if (item, attr) not in self.sym_of_attr:
+                sym = symbols("f_" + "".join(item).lower())
+                self.value_of_sym[sym] = None  # init symbol's value
+                self.sym_of_attr[(item, attr)] = sym  # add sym
+                self.attr_of_sym[sym] = (item, attr)
+                return sym
+            return self.sym_of_attr[(item, attr)]
 
         if (item, attr) not in self.sym_of_attr:  # No symbolic representation, initialize one.
             if self.attr_GDL[attr]["negative"] == "True":  # Judge whether sym can be negative.
@@ -139,18 +143,16 @@ class Equation(Condition):
             self.sym_of_attr[(item, attr)] = sym  # add sym
             self.attr_of_sym[sym] = (item, attr)
 
-            if self.attr_GDL[attr]["multi_rep"] == "True":  # Judge whether sym has multi representation.
-                l = len(item)
-                for bias in range(l):
-                    extended_item = []
-                    for i in range(l):
-                        extended_item.append(item[(i + bias) % l])
-                    self.sym_of_attr[(tuple(extended_item), attr)] = sym
+            for para_list in self.attr_GDL[attr]["attr_multi"]:
+                extended_item = []
+                for para in para_list:
+                    extended_item.append(item[para])
+                self.sym_of_attr[(tuple(extended_item), attr)] = sym
             return sym
-        else:
-            return self.sym_of_attr[(item, attr)]
 
-    def set_value_of_sym(self, sym, value, premise, theorem):
+        return self.sym_of_attr[(item, attr)]
+
+    def _set_value_of_sym(self, sym, value, premise, theorem):
         """
         Set value of sym.
         Add equation to record the premise and theorem of solving the symbol's value at the same time.
@@ -165,51 +167,12 @@ class Equation(Condition):
             return added
         return False
 
-    def solve_target(self, target_expr):  # 求解target_expr的值
-        # 无需求解的情况
-        if target_expr in self.get_item_by_id.values() or\
-                -target_expr in self.get_item_by_id.values():  # 如果是已知方程，那么target_expr=0
-            return 0.0, [self.get_id_by_item[target_expr]]
-
-        # 简单替换就可求解的情况
-        premise = []
-        for sym in target_expr.free_symbols:  # 替换掉target_expr中符号值已知的符号
-            if self.value_of_sym[sym] is not None:
-                premise.append(self.get_id_by_item[sym - self.value_of_sym[sym]])
-                target_expr = target_expr.subs(sym, self.value_of_sym[sym])
-        if len(target_expr.free_symbols) == 0:
-            return float(target_expr), premise
-
-        # 需要求解的情况
-        equations, eq_premise = self.get_minimum_equations(target_expr)  # 最小依赖方程组
-        premise += eq_premise  # 上面替换掉的符号的premise
-        # print("高级化简之前:", end="  ")
-        # print(equations, end=",  ")
-        # print(target_expr)
-        equations = self.high_level_simplify(equations, target_expr)  # 高级化简
-        target_sym = symbols("t_s")
-        equations[-1] = target_sym - equations[-1]  # 添加目标方程
-        # print("高级化简之后:", end="  ")
-        # print(equations)
-        solved_result = solve(equations)  # 求解最小方程组
-        # print(solved_result)
-        # print()
-
-        if len(solved_result) > 0 and isinstance(solved_result, list):  # 若解不唯一，选择第一个
-            solved_result = solved_result[0]
-
-        if len(solved_result) > 0 and \
-                target_sym in solved_result.keys() and \
-                (isinstance(solved_result[target_sym], Float) or
-                 isinstance(solved_result[target_sym], Integer)):
-            return float(solved_result[target_sym]), list(set(premise))  # 有实数解，返回解
-
-        return None, None  # 无解，返回None
-
     def get_minimum_equations(self, target_expr):  # 返回求解target_expr依赖的最小方程组
         sym_set = target_expr.free_symbols  # 方程组涉及到的符号
         min_equations = []  # 最小方程组
         premise = []  # 每个方程的index，作为target_expr求解结果的premise
+
+        self._simplify_equations()  # simplify equations before return minimum equations
 
         # 循环添加依赖方程，得到最小方程组
         update = True
@@ -217,31 +180,22 @@ class Equation(Condition):
             update = False
             for sym in sym_set:
                 if self.value_of_sym[sym] is None:  # 如果sym的值未求出，需要添加包含sym的依赖方程
-                    for key in self.equations.keys():  # 添加简单依赖方程
-                        if sym in self.equations[key].free_symbols and \
-                                self.equations[key] not in min_equations:
+                    for key in self.equations:  # 添加简单依赖方程
+                        if sym in self.equations[key].free_symbols and self.equations[key] not in min_equations:
                             min_equations.append(self.equations[key])
                             premise.append(self.get_id_by_item[key])
                             sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号(未化简的原方程的所有符号)
                             update = True
-                    for key in self.equations.keys():  # 添加复杂依赖方程
-                        if sym in self.equations[key].free_symbols and \
-                                self.equations[key] not in min_equations:
-                            min_equations.append(self.equations[key])
-                            premise.append(self.get_id_by_item[key])
-                            sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号
-                            update = True
-        # 化简最小方程组
+
         for sym in sym_set:
             if self.value_of_sym[sym] is not None:
                 premise.append(self.get_id_by_item[sym - self.value_of_sym[sym]])
-                for i in range(len(min_equations)):  # 替换方程中的已知sym
-                    min_equations[i] = min_equations[i].subs(sym, self.value_of_sym[sym])
                 target_expr = target_expr.subs(sym, self.value_of_sym[sym])  # 替换target_expr中的已知sym
 
-        return min_equations, premise  # 返回化简的target_expr、最小依赖方程组和前提
+        return min_equations, target_expr, premise, sym_set  # 返回化简的target_expr、最小依赖方程组和前提
 
-    def simplify_equations(self):  # 化简 basic、complex equations
+    def _simplify_equations(self):
+        """Simplify all equations based on value replaced."""
         update = True
         while update:
             update = False
@@ -262,14 +216,15 @@ class Equation(Condition):
                     for sym in key.free_symbols:
                         if self.value_of_sym[sym] is not None:
                             premise.append(self.get_id_by_item[sym - self.value_of_sym[sym]])
-                    self.set_value_of_sym(target_sym, value, tuple(premise), "solve_eq")
+                    self._set_value_of_sym(target_sym, value, tuple(premise), "solve_eq")
                     remove_lists.append(key)
 
             for remove_eq in remove_lists:  # 删除所有符号值已知的方程
                 self.equations.pop(remove_eq)
 
     @staticmethod
-    def high_level_simplify(equations, target_expr):  # 基于替换的高级化简
+    def _high_level_simplify(equations, target_expr):
+        """ High level simplify based on symbol replacement."""
         update = True
         while update:
             update = False
@@ -290,57 +245,209 @@ class Equation(Condition):
         return equations
 
     @func_set_timeout(10)  # 限时10s
-    def solve(self):  # 求解basic、complex equations
-        if self.solved:  # equations没有更新，不用重复求解
+    def solve(self):
+        """Solve the equation contained in the question."""
+        if self.solved:
             return
 
         update = True
         while update:
             update = False
-            self.simplify_equations()  # solve前先化简方程
+            self._simplify_equations()  # simplify equations before solving
 
-            sym_set = []  # 得到所有值未知的符号
-            for equation in list(self.equations.values()):
+            sym_set = []
+            for equation in list(self.equations.values()):    # all symbols that have not been solved
                 sym_set += equation.free_symbols
-            sym_set = list(set(sym_set))  # 快速去重
+            sym_set = list(set(sym_set))  # quickly remove redundancy
 
-            for sym in sym_set:  # 方程求解
-                equations, premise = self.get_minimum_equations(sym)
-                result = solve(equations)  # 求解最小方程组
+            resolved_sym_set = set()
+            for sym in sym_set:
+                if sym in resolved_sym_set:  # skip already solved sym
+                    continue
 
-                if len(result) > 0:  # 有解
-                    if isinstance(result, list):  # 若解不唯一，选择第一个
+                equations, _, premise, mini_sym_set = self.get_minimum_equations(sym)
+                resolved_sym_set.union(mini_sym_set)
+
+                result = solve(equations)  # solve equations
+
+                if len(result) > 0:
+                    if isinstance(result, list):
                         result = result[0]
-                    for key in result.keys():  # 遍历并保存所有解
+                    for key in result.keys():    # save solved value
                         if self.value_of_sym[key] is None \
                                 and (isinstance(result[key], Float) or isinstance(result[key], Integer)):
-                            self.set_value_of_sym(key, float(result[key]), tuple(premise), "solve_eq")
+                            self._set_value_of_sym(key, float(result[key]), tuple(premise), "solve_eq")
                             update = True
 
         self.solved = True
+
+    def solve_target(self, target_expr):
+        """
+        Solve target expression of symbolic form.
+        >> equations = [a - b, b - c, c - 1]
+        >> solve_target(a)
+        1
+        """
+        if target_expr in self.get_item_by_id.values() or \
+                -target_expr in self.get_item_by_id.values():  # It is a known equation and does not need to solve it.
+            return 0.0, [self.get_id_by_item[target_expr]]
+
+        premise = []
+        for sym in target_expr.free_symbols:  # Solved only using value replacement
+            if self.value_of_sym[sym] is not None:
+                premise.append(self.get_id_by_item[sym - self.value_of_sym[sym]])
+                target_expr = target_expr.subs(sym, self.value_of_sym[sym])
+        if len(target_expr.free_symbols) == 0:
+            return float(target_expr), premise
+
+        # Need to solve. Construct minimum solution equations.
+        equations, target_expr, eq_premise, _ = self.get_minimum_equations(target_expr)
+        premise += eq_premise
+        equations = self._high_level_simplify(equations, target_expr)  # high level simplify
+        target_sym = symbols("t_s")
+        equations[-1] = target_sym - equations[-1]
+        solved_result = solve(equations)
+
+        if len(solved_result) > 0 and isinstance(solved_result, list):  # Multi answer. Choose the first.
+            solved_result = solved_result[0]
+
+        if len(solved_result) > 0 and \
+                target_sym in solved_result.keys() and \
+                (isinstance(solved_result[target_sym], Float) or
+                 isinstance(solved_result[target_sym], Integer)):
+            return float(solved_result[target_sym]), list(set(premise))  # Only return real solution.
+
+        return None, None  # unsolvable
+
+    def get_expr_from_tree(self, tree, replaced=False, letters=None):
+        """
+        Recursively trans expr_tree to symbolic algebraic expression.
+        :param tree: An expression in the form of a list tree.
+        :param replaced: Optional. Set True when tree's item is expressed by vars.
+        :param letters: Optional. Letters that will replace vars.
+        >> get_expr_from_tree(['Length', ['T', 'R']], equation)
+        l_tr
+        >> get_expr_from_tree(['Add', [['Length', ['Z', 'X']], '2*x-14']], equation)
+        2.0*f_x + l_zx - 14.0
+        >> get_expr_from_tree(['Sin', [['Measure', ['Z', 'X', 'Y']]]], equation)
+        sin(pi*m_zxy/180)
+        """
+        if not isinstance(tree, list):  # expr
+            return self._parse_expr(tree)
+
+        if tree[0] in self.attr_GDL:  # attr
+            if not replaced:
+                return self._get_sym_of_attr(tree[0], tuple(tree[1]))
+            else:
+                replaced_item = [letters[i] for i in tree[1]]
+                return self._get_sym_of_attr(tree[0], tuple(replaced_item))
+
+        if tree[0] == "Add":  # operate
+            return self.get_expr_from_tree(tree[1][0]) + self.get_expr_from_tree(tree[1][1])
+        elif tree[0] == "Sub":
+            return self.get_expr_from_tree(tree[1][0]) - self.get_expr_from_tree(tree[1][1])
+        elif tree[0] == "Mul":
+            return self.get_expr_from_tree(tree[1][0]) * self.get_expr_from_tree(tree[1][1])
+        elif tree[0] == "Div":
+            return self.get_expr_from_tree(tree[1][0]) / self.get_expr_from_tree(tree[1][1])
+        elif tree[0] == "Pow":
+            return self.get_expr_from_tree(tree[1][0]) ** self.get_expr_from_tree(tree[1][1])
+        elif tree[0] == "Sin":
+            return sin(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+        elif tree[0] == "Cos":
+            return cos(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+        elif tree[0] == "Tan":
+            return tan(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+        else:
+            raise RuntimeException("OperatorNotDefined",
+                                   "No operation {}, please check your expression.".format(tree[0]))
+
+    def get_equation_from_tree(self, tree, replaced=False, letters=None):
+        """Refer to function <get_expr_from_tree>."""
+        left_expr = self.get_expr_from_tree(tree[0], replaced, letters)
+        right_expr = self.get_expr_from_tree(tree[1], replaced, letters)
+        return left_expr - right_expr
+
+    def _parse_expr(self, expr):
+        """Parse the expression in <str> form into <symbolic> form"""
+        expr_list = idt_expr.parseString(expr + "~").asList()
+        expr_stack = []
+        operator_stack = ["~"]  # 栈底元素
+
+        i = 0
+        while i < len(expr_list):
+            unit = expr_list[i]
+            if unit in operator:  # 运算符
+                if stack_priority[operator_stack[-1]] < outside_priority[unit]:
+                    operator_stack.append(unit)
+                    i = i + 1
+                else:
+                    operator_unit = operator_stack.pop()
+                    if operator_unit == "+":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 + expr_2)
+                    elif operator_unit == "-":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = 0 if len(expr_stack) == 0 else expr_stack.pop()
+                        expr_stack.append(expr_1 - expr_2)
+                    elif operator_unit == "*":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 * expr_2)
+                    elif operator_unit == "/":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 / expr_2)
+                    elif operator_unit == "^":
+                        expr_2 = expr_stack.pop()
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(expr_1 ** expr_2)
+                    elif operator_unit == "{":  # 只有unit为"}"，才能到达这个判断
+                        i = i + 1
+                    elif operator_unit == "@":  # sin
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(sin(expr_1))
+                    elif operator_unit == "#":  # cos
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(cos(expr_1))
+                    elif operator_unit == "$":  # tan
+                        expr_1 = expr_stack.pop()
+                        expr_stack.append(tan(expr_1))
+                    elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
+                        break
+            else:  # 实数或符号
+                unit = self._get_sym_of_attr("Free", (unit,)) if unit.isalpha() else float(unit)
+                expr_stack.append(unit)
+                i = i + 1
+
+        return expr_stack.pop()
 
 
 class Problem:
     step = 0
 
-    def __init__(self, predicate_GDL, problem_msg):
+    def __init__(self, predicate_GDL, problem_CDL):
         """
         initialize a problem.
         :param predicate_GDL: parsed predicate_GDL.
-        :param problem_msg: parsed problem_CDL
+        :param problem_CDL: parsed problem_CDL
         """
-        self.msg = problem_msg  # 用于输出的，调试完了删掉就行
+        Problem.step = 0  # init step and _id
+        Condition._id = 0
+
+        self.problem_CDL = problem_CDL  # parsed problem msg. It will be further decomposed.
         self.predicate_GDL = predicate_GDL  # problem predicate definition
 
-        self.id = problem_msg["id"]  # problem id
+        self.id = problem_CDL["id"]  # problem id
 
-        self.fl = problem_msg["cdl"]  # problem cdl
+        self.fl = problem_CDL["cdl"]  # problem cdl
 
-        self.theorems_applied = []    # applied theorem list
+        self.theorems_applied = []  # applied theorem list
         self.get_predicate_by_id = {}
         self.get_id_by_step = {}
 
-        self.conditions = {  # basic
+        self.conditions = {  # basic predicate
             "Shape": Construction("Shape"),
             "Collinear": Construction("Collinear"),
             "Point": Relation("Point"),
@@ -348,53 +455,52 @@ class Problem:
             "Angle": Relation("Angle"),
             "Equation": Equation("Equation", self.predicate_GDL["Attribution"])
         }
-        for p in self.predicate_GDL["Entity"]:
-            self.conditions[p] = Relation(p)
-        for p in self.predicate_GDL["Relation"]:
-            self.conditions[p] = Relation(p)
+        for predicate in self.predicate_GDL["Entity"]:
+            self.conditions[predicate] = Relation(predicate)
+        for predicate in self.predicate_GDL["Relation"]:
+            self.conditions[predicate] = Relation(predicate)
 
-        for p, item in problem_msg["parsed_cdl"]["construction_cdl"]:  # conditions of construction
-            self.add(p, tuple(item), (-1,), "prerequisite")
+        for predicate, item in problem_CDL["parsed_cdl"]["construction_cdl"]:  # conditions of construction
+            self.add(predicate, tuple(item), (-1,), "prerequisite")
 
         self.construction_init()  # start construction
 
-        for p, item in problem_msg["parsed_cdl"]["text_and_image_cdl"]:  # conditions of text_and_image
-            if p == "Equal":
-                equation = get_equation_from_equal_tree_para(item, self.conditions["Equation"])
-                self.add("Equation", equation, (-1,), "prerequisite")
+        for predicate, item in problem_CDL["parsed_cdl"]["text_and_image_cdl"]:  # conditions of text_and_image
+            if predicate == "Equal":
+                self.add("Equation", self.conditions["Equation"].get_equation_from_tree(item), (-1,), "prerequisite")
             else:
-                self.add(p, tuple(item), (-1,), "prerequisite")
+                self.add(predicate, tuple(item), (-1,), "prerequisite")
 
-        self.goal = {
+        self.goal = {  # set goal
             "solved": False,
             "solved_answer": None,
             "premise": None,
             "theorem": None,
             "solving_msg": [],
-            "type": problem_msg["parsed_cdl"]["goal"]["type"]
+            "type": problem_CDL["parsed_cdl"]["goal"]["type"]
         }
         if self.goal["type"] == "value":
-            self.goal["item"] = get_expr_from_tree(
-                problem_msg["parsed_cdl"]["goal"]["item"][1][0],
-                self.conditions["Equation"]
+            self.goal["item"] = self.conditions["Equation"].get_expr_from_tree(
+                problem_CDL["parsed_cdl"]["goal"]["item"][1][0]
             )
-            self.goal["answer"] = get_expr_from_tree(
-                problem_msg["parsed_cdl"]["goal"]["answer"],
-                self.conditions["Equation"]
+            self.goal["answer"] = self.conditions["Equation"].get_expr_from_tree(
+                problem_CDL["parsed_cdl"]["goal"]["answer"]
             )
         elif self.goal["type"] == "equal":
-            self.goal["item"] = get_equation_from_equal_tree_para(
-                problem_msg["parsed_cdl"]["goal"]["item"][1],
-                self.conditions["Equation"]
+            self.goal["item"] = self.conditions["Equation"].get_equation_from_tree(
+                problem_CDL["parsed_cdl"]["goal"]["item"][1]
             )
             self.goal["answer"] = 0
         else:  # relation type
-            self.goal["answer"] = tuple(problem_msg["parsed_cdl"]["goal"]["answer"])
+            self.goal["answer"] = tuple(problem_CDL["parsed_cdl"]["goal"]["answer"])
 
     def construction_init(self):
         pass
 
-    def gather_conditions_msg(self):    # gather all conditions msg
+    def gather_conditions_msg(self):
+        """Gather all conditions msg for problem showing, solution tree generating, etc..."""
+        self.get_predicate_by_id = {}    # init
+        self.get_id_by_step = {}
         for predicate in self.conditions:
             for _id in self.conditions[predicate].get_item_by_id:
                 self.get_predicate_by_id[_id] = predicate
@@ -417,7 +523,40 @@ class Problem:
             raise RuntimeException("PredicateNotDefined",
                                    "Predicate '{}': not defined in current problem.".format(predicate))
 
-        if predicate == "Shape":    # Shape
+        if predicate == "Equation":  # Equation
+            added, _id = self.conditions["Equation"].add(item, premise, theorem)
+            return added
+        elif predicate in self.predicate_GDL["Entity"]:  # Entity
+            added, _id = self.conditions[predicate].add(item, premise, theorem)
+            if added:
+                for multi_predicate, para_list in self.predicate_GDL["Entity"][predicate]["multi"]:  # multi
+                    para = []
+                    for i in para_list:
+                        para.append(item[i])
+                    self.conditions[predicate].add(tuple(para), (_id,), "extended")
+
+                for extended_predicate, para_list in self.predicate_GDL["Entity"][predicate]["extend"]:  # extended
+                    para = []
+                    for i in para_list:
+                        para.append(item[i])
+                    self.add(extended_predicate, tuple(para), (_id,), "extended")
+                return True
+        elif predicate in self.predicate_GDL["Relation"]:  # Relation
+            added, _id = self.conditions[predicate].add(item, premise, theorem)
+            if added:
+                for multi_predicate, para_list in self.predicate_GDL["Relation"][predicate]["multi"]:  # multi
+                    para = []
+                    for i in para_list:
+                        para.append(item[i])
+                    self.conditions[predicate].add(tuple(para), (_id,), "extended")
+
+                for extended_predicate, para_list in self.predicate_GDL["Relation"][predicate]["extend"]:  # extended
+                    para = []
+                    for i in para_list:
+                        para.append(item[i])
+                    self.add(extended_predicate, tuple(para), (_id,), "extended")
+                return True
+        elif predicate == "Shape":  # Construction predicate: Shape
             added, _id = self.conditions["Shape"].add(item, premise, theorem)
             if added:  # if added successful
                 l = len(item)
@@ -429,51 +568,35 @@ class Problem:
                     extended_angle = [item[0 + bias], item[(1 + bias) % l], item[(2 + bias) % l]]  # extend Angle
                     self.add("Angle", tuple(extended_angle), (_id,), "extended")
                 return True
-        elif predicate == "Collinear":  # Collinear
+        elif predicate == "Collinear":  # Construction predicate: Collinear
             added, _id = self.conditions["Collinear"].add(item, premise, theorem)
             if added:
-                for l in range(3, len(item) + 1):    # extend collinear
+                for l in range(3, len(item) + 1):  # extend collinear
                     for extended_item in combinations(item, l):
                         self.conditions["Collinear"].add(extended_item, (_id,), "extended")
-                for i in range(len(item) - 1):    # extend line
+                for i in range(len(item) - 1):  # extend line
                     for j in range(i + 1, len(item)):
                         self.add("Line", (item[i], item[j]), (_id,), "extended")
                 return True
-        elif predicate == "Equation":
-            added, _id = self.conditions["Equation"].add(item, premise, theorem)
-            return added
-        elif predicate == "Point":
+        elif predicate == "Point":  # Basic predicate: Point
             added, _id = self.conditions["Point"].add(item, premise, theorem)
             return added
-        elif predicate == "Line":
+        elif predicate == "Line":  # Basic predicate: Line
             added, _id = self.conditions["Line"].add(item, premise, theorem)
             if added:
                 self.conditions["Line"].add(item[::-1], premise, theorem)
                 for point in item:
                     self.conditions["Point"].add((point,), premise, theorem)
                 return True
-        elif predicate == "Angle":
+        elif predicate == "Angle":  # Basic predicate: Angle
             added, _id = self.conditions["Angle"].add(item, premise, theorem)
             if added:
-                self.conditions["Line"].add((item[1], item[0]), premise, theorem)
-                self.conditions["Line"].add((item[1], item[2]), premise, theorem)
-                return True
-        elif predicate in self.predicate_GDL["Entity"]:    # Entity
-            added, _id = self.conditions[predicate].add(item, premise, theorem)
-            if added:
-                for extended_predicate, para_list in self.predicate_GDL["Entity"][predicate]["extend"]:  # extended
-                    para = []
-                    for i in para_list:
-                        para.append(item[i])
-                    self.add(extended_predicate, tuple(para), (_id,), "extended")
-                return True
-        else:  # Relation
-            added, _id = self.conditions[predicate].add(item, premise, theorem)
-            if added:
-                for extended_predicate, para_list in self.predicate_GDL["Relation"][predicate]["extend"]:  # extended
-                    para = []
-                    for i in para_list:
-                        para.append(item[i])
-                    self.add(extended_predicate, tuple(para), (_id,), "extended")
+                self.add("Line", (item[1], item[0]), premise, theorem)
+                self.add("Line", (item[1], item[2]), premise, theorem)
                 return True
         return False
+
+    def applied(self, theorem_name):
+        """Execute when theorem successful applied. Save theorem name and update step."""
+        self.theorems_applied.append(theorem_name)
+        Problem.step += 1

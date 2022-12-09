@@ -103,19 +103,19 @@ class Condition:  # 条件
             return True
         return False
 
-    def get_index(self, item, cType):
+    def get_index(self, item, cType):    # 设置条件的前提的时候用到
         return self.index[(item, cType)]
 
-    def get_premise(self, item, cType):
+    def get_premise(self, item, cType):    # show函数
         return self.premise[(item, cType)]
 
-    def get_theorem(self, item, cType):
+    def get_theorem(self, item, cType):    # show函数
         return self.theorem[(item, cType)]
 
-    def get_premise_by_index(self, index):
+    def get_premise_by_index(self, index):    # SolutionTree
         return self.premise[self.item_list[index]]
 
-    def get_theorem_by_index(self, index):
+    def get_theorem_by_index(self, index):    # SolutionTree
         return self.theorem[self.item_list[index]]
 
     def clean(self):

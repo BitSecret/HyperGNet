@@ -1,6 +1,8 @@
 import json
-from aux_tools.parse import anti_parse_logic_to_cdl
+from aux_tools.parse import anti_parse_one_by_id, anti_parse_logic_to_cdl
 from sympy import Float
+from graphviz import Digraph
+import os
 
 
 def load_json(filename):
@@ -31,14 +33,13 @@ def show(problem):
     """-----------Process of Problem Solving-----------"""
     print("\033[36mtheorem_applied:\033[0m")
     for i in range(len(problem.theorems_applied)):
-        print("{} {}".format(i, problem.theorems_applied[i]))
+        print("{0:^3}{1:<20}".format(i, problem.theorems_applied[i]))
+
     print("\033[36mreasoning_cdl:\033[0m")
-    problem.gather_conditions_msg()
-    anti_parsed_logic = anti_parse_logic_to_cdl(problem)
-    for step in anti_parsed_logic:
-        print("step: {}".format(step))
-        for cdl in anti_parsed_logic[step]:
-            print(cdl)
+    anti_parsed_cdl = anti_parse_logic_to_cdl(problem)
+    for step in anti_parsed_cdl:
+        for cdl in anti_parsed_cdl[step]:
+            print("{0:^3}{1:<20}".format(step, cdl))
     print()
 
     used_id = []
@@ -54,8 +55,8 @@ def show(problem):
                 break
 
     """-----------Logic Form-----------"""
-    print("\033[33mRelation:\033[0m")
-    predicates = ["Point", "Line", "Angle", "Shape", "Collinear"]
+    print("\033[33mRelations:\033[0m")
+    predicates = ["Point", "Line", "Angle", "Shape", "Collinear"]  # preset
     predicates += list(problem.predicate_GDL["Entity"].keys())
     predicates += list(problem.predicate_GDL["Relation"].keys())
     for predicate in predicates:
@@ -78,14 +79,18 @@ def show(problem):
                         condition.theorems[_id])
                     )
 
-    print("\033[33mEntity attribution\'s Symbol and Value:\033[0m")
+    print("\033[33mSymbols and Value:\033[0m")
     equation = problem.conditions["Equation"]
     for attr in equation.sym_of_attr.keys():
         sym = equation.sym_of_attr[attr]
         if isinstance(equation.value_of_sym[sym], Float):
-            print("{0:^10}{1:^10}{2:^15.3f}".format(str(attr[1]), str(sym), equation.value_of_sym[sym]))
+            print("{0:^25}{1:^15}{2:^15.3f}".format(
+                str(("".join(attr[0]), attr[1])), str(sym), equation.value_of_sym[sym])
+            )
         else:
-            print("{0:^10}{1:^10}{2:^15}".format(str(attr[1]), str(sym), str(equation.value_of_sym[sym])))
+            print("{0:^25}{1:^15}{2:^15}".format(
+                str(("".join(attr[0]), attr[1])), str(sym), str(equation.value_of_sym[sym]))
+            )
 
     print("\033[33mEquations:\033[0m")
     if len(equation.get_item_by_id) > 0:
@@ -125,3 +130,77 @@ def show(problem):
     for s in problem.goal["solving_msg"]:
         print(s)
 
+
+def simple_show(problem):
+    pass
+
+
+def save_solution_tree(problem, path):
+    """Generate solution hyper tree and save."""
+    problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
+
+    dot = Digraph(name=str(problem.id))  # Tree
+    nodes = []    # list of cdl and theorem
+    group = {}    # (premise, theorem): [_id]
+    cdl = {}      # _id: anti_parsed_cdl
+
+    for _id in problem.get_predicate_by_id:    # summary information
+        cdl[_id] = anti_parse_one_by_id(problem, _id)
+        premise = problem.conditions[problem.get_predicate_by_id[_id]].premises[_id]
+        theorem = problem.conditions[problem.get_predicate_by_id[_id]].theorems[_id]
+        if theorem == "prerequisite":    # prerequisite not show in graph
+            continue
+        if (premise, theorem) not in group:
+            group[(premise, theorem)] = [_id]
+        else:
+            group[(premise, theorem)].append(_id)
+
+    count = 0
+    solution_tree = {}
+    for key in group:  # generate solution tree
+        premise, theorem = key
+
+        t_node_id = _add_node(dot, nodes, theorem + "_{}".format(count))
+
+        start_nodes = []
+        for _id in premise:
+            node_id = _add_node(dot, nodes, cdl[_id])    # add node to graph
+            start_nodes.append(cdl[_id])    # add to json output
+            dot.edge(str(node_id), str(t_node_id))    # add edge to graph
+
+        end_nodes = []
+        for _id in group[key]:
+            node_id = _add_node(dot, nodes, cdl[_id])  # add node to graph
+            end_nodes.append(cdl[_id])  # add to json output
+            dot.edge(str(t_node_id), str(node_id))  # add edge to graph
+
+        solution_tree[count] = {
+            "conditions": start_nodes,
+            "theorem": theorem,
+            "conclusion": end_nodes
+        }
+        count += 1
+
+    save_json(solution_tree, path + "{}_hyper.json".format(problem.id))    # save solution tree
+    dot.render(directory=path, view=False, format="png")    # save hyper graph
+    os.remove(path + "{}.gv".format(problem.id))
+
+
+def _add_node(dot, nodes, node):
+    if node in nodes:  # node was already added
+        return nodes.index(node)
+
+    added_node_id = len(nodes)
+    nodes.append(node)
+    if "(" in node:
+        dot.node(str(added_node_id), node, shape='box')  # condition node
+    else:
+        dot.node(str(added_node_id), node)  # theorem node
+
+    return added_node_id
+
+
+def save_step_msg(problem, path, de_redundant=True):
+    """Save conditions grouped by step in dict."""
+    anti_parsed_cdl = anti_parse_logic_to_cdl(problem, de_redundant)
+    save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.id))

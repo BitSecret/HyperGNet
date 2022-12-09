@@ -1,15 +1,11 @@
-# 解析操作
-# 1.解析定义语言(谓词啦、定理啦)
-# 2.解析描述语言（）
-# 3.反向生成FL
+import copy
 from pyparsing import oneOf, Combine, Word, nums, alphas, OneOrMore
-from sympy import sin, cos, tan, pi
-from definition.exception import RuntimeException
-float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))  # 浮点数
-int_idt = OneOrMore(Word(nums))  # 整数
-alpha_idt = Word(alphas)  # 符号
-operator_idt = oneOf("+ - * / ^ { } @ # $ ~")  # 运算符
-idt_expr = OneOrMore(float_idt | int_idt | alpha_idt | operator_idt)
+
+float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))
+int_idt = OneOrMore(Word(nums))
+alpha_idt = Word(alphas)
+operator_idt = oneOf("+ - * / ^ { } @ # $ ~")
+idt_expr = OneOrMore(float_idt | int_idt | alpha_idt | operator_idt)  # parse expr of str form to symbolic
 operator = ["+", "-", "*", "/", "^", "{", "}", "@", "#", "$", "~"]
 stack_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
                   "{": 0, "}": None,
@@ -21,31 +17,40 @@ outside_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
 
 def parse_predicate(predicate_GDL):
     """parse predicate_GDL to parsed form."""
+    predicate_GDL = predicate_GDL["Predicates"]
     parsed_GDL = {}
 
     entity = predicate_GDL["Entity"]  # parse entity
     parsed_GDL["Entity"] = {}
     for key in entity:
-        name, para = parse_one_predicate(entity[key]["format"])
+        name, para = _parse_one_predicate(entity[key]["format"])
         parsed_GDL["Entity"][name] = {
             "vars": [i for i in range(len(para))],
+            "multi": [],
             "extend": []
         }
+        for multi in entity[key]["multi"]:
+            extend_name, extend_para = _parse_one_predicate(multi)
+            parsed_GDL["Entity"][name]["multi"].append([extend_name, [para.index(i) for i in extend_para]])
         for extend in entity[key]["extend"]:
-            extend_name, extend_para = parse_one_predicate(extend)
+            extend_name, extend_para = _parse_one_predicate(extend)
             parsed_GDL["Entity"][name]["extend"].append([extend_name, [para.index(i) for i in extend_para]])
 
     relation = predicate_GDL["Relation"]  # parse relation
     parsed_GDL["Relation"] = {}
     for key in relation:
-        name, para, para_len = parse_one_predicate_attached_len(relation[key]["format"])
+        name, para, para_len = _parse_one_predicate_attached_len(relation[key]["format"])
         parsed_GDL["Relation"][name] = {
             "vars": [i for i in range(len(para))],
             "para_split": para_len,
+            "multi": [],
             "extend": []
         }
+        for multi in relation[key]["multi"]:
+            extend_name, extend_para = _parse_one_predicate(multi)
+            parsed_GDL["Relation"][name]["multi"].append([extend_name, [para.index(i) for i in extend_para]])
         for extend in relation[key]["extend"]:
-            extend_name, extend_para = parse_one_predicate(extend)
+            extend_name, extend_para = _parse_one_predicate(extend)
             parsed_GDL["Relation"][name]["extend"].append([extend_name, [para.index(i) for i in extend_para]])
 
     attribution = predicate_GDL["Attribution"]  # parse attribution
@@ -54,52 +59,68 @@ def parse_predicate(predicate_GDL):
         name = attribution[key]["format"]
         parsed_GDL["Attribution"][name] = {
             "sym": attribution[key]["sym"],
-            "multi_rep": attribution[key]["multi_rep"],
+            "attr": [i for i in range(len(attribution[key]["attr"]))],
+            "attr_multi": [[attribution[key]["attr"].index(point) for point in one]
+                           for one in attribution[key]["attr_multi"]],
             "negative": attribution[key]["negative"]
         }
-
     return parsed_GDL
 
 
 def parse_theorem(theorem_GDL):
     """parse theorem_GDL to parsed form."""
+    theorem_GDL = theorem_GDL["Theorems"]
     parsed_GDL = {}
 
     for key in theorem_GDL:
         theorem_name = theorem_GDL[key]["name"]
         parsed_GDL[theorem_name] = {
             "vars": [],
+            "mutex_points": [],
             "premise": {"entity_relation": [],
                         "algebraic_relation": []},
             "conclusion": {"entity_relation": [],
                            "algebraic_relation": []}
         }
 
-        for s in theorem_GDL[key]["premise"]["entity_relation"]:
-            name, para = parse_one_predicate(s)
+        for s in theorem_GDL[key]["premise"]["entity_relation"]:  # replace entity_relation's letter with vars
+            name, para = _parse_one_predicate(s)
             for i in range(len(para)):
                 if para[i] not in parsed_GDL[theorem_name]["vars"]:
                     parsed_GDL[theorem_name]["vars"].append(para[i])
                 para[i] = parsed_GDL[theorem_name]["vars"].index(para[i])
             parsed_GDL[theorem_name]["premise"]["entity_relation"].append([name, para])
 
-        for s in theorem_GDL[key]["premise"]["algebraic_relation"]:
-            s_tree = parse_equal_predicate(s)
-            s_tree = replace_letter_with_vars(s_tree, parsed_GDL[theorem_name]["vars"])
-            parsed_GDL[theorem_name]["premise"]["algebraic_relation"].append(s_tree)
+        for s in theorem_GDL[key]["premise"]["algebraic_relation"]:  # replace algebraic_relation's letter with vars
+            parsed_GDL[theorem_name]["premise"]["algebraic_relation"].append(
+                _replace_letter_with_vars(_parse_equal_predicate(s), parsed_GDL[theorem_name]["vars"])
+            )
 
-        for s in theorem_GDL[key]["conclusion"]["entity_relation"]:
-            name, para = parse_one_predicate(s)
-            for i in range(len(para)):
-                para[i] = parsed_GDL[theorem_name]["vars"].index(para[i])
-            parsed_GDL[theorem_name]["conclusion"]["entity_relation"].append([name, para])
+        for mutex_point in theorem_GDL[key]["mutex_points"]:  # replace mutex_point's letter with vars
+            if not isinstance(mutex_point[0], list):
+                parsed_GDL[theorem_name]["mutex_points"].append(
+                    [parsed_GDL[theorem_name]["vars"].index(mutex_point[i])
+                     for i in range(len(mutex_point))]
+                )
+            else:
+                parsed_GDL[theorem_name]["mutex_points"].append(
+                    [[parsed_GDL[theorem_name]["vars"].index(mutex_point[i][j])
+                      for j in range((len(mutex_point[i])))]
+                     for i in range(len(mutex_point))]
+                )
 
-        for s in theorem_GDL[key]["conclusion"]["algebraic_relation"]:
-            s_tree = parse_equal_predicate(s)
-            s_tree = replace_letter_with_vars(s_tree, parsed_GDL[theorem_name]["vars"])
-            parsed_GDL[theorem_name]["conclusion"]["algebraic_relation"].append(s_tree)
+        for s in theorem_GDL[key]["conclusion"]["entity_relation"]:  # replace entity_relation's letter with vars
+            name, para = _parse_one_predicate(s)
+            parsed_GDL[theorem_name]["conclusion"]["entity_relation"].append(
+                [name, [parsed_GDL[theorem_name]["vars"].index(para[i]) for i in range(len(para))]]
+            )
 
-        parsed_GDL[theorem_name]["vars"] = [i for i in range(len(parsed_GDL[theorem_name]["vars"]))]
+        for s in theorem_GDL[key]["conclusion"]["algebraic_relation"]:  # replace algebraic_relation's letter with vars
+            parsed_GDL[theorem_name]["conclusion"]["algebraic_relation"].append(
+                _replace_letter_with_vars(_parse_equal_predicate(s), parsed_GDL[theorem_name]["vars"])
+            )
+
+        parsed_GDL[theorem_name]["vars"] = [i for i in range(len(parsed_GDL[theorem_name]["vars"]))]  # build vars
 
     return parsed_GDL
 
@@ -121,34 +142,34 @@ def parse_problem(problem_CDL):
         }
     }
     for fl in problem_CDL["construction_cdl"]:
-        predicate, para = parse_one_predicate(fl)
+        predicate, para = _parse_one_predicate(fl)
         parsed_CDL["parsed_cdl"]["construction_cdl"].append([predicate, para])
 
     for fl in problem_CDL["text_cdl"] + problem_CDL["image_cdl"]:
         if fl.startswith("Equal"):
-            parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append(parse_equal_predicate(fl))
+            parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append(_parse_equal_predicate(fl))
         else:
-            predicate, para = parse_one_predicate(fl)
+            predicate, para = _parse_one_predicate(fl)
             parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append([predicate, para])
 
     if problem_CDL["goal_cdl"].startswith("Value"):
         parsed_CDL["parsed_cdl"]["goal"]["type"] = "value"
-        parsed_CDL["parsed_cdl"]["goal"]["item"] = parse_equal_predicate(problem_CDL["goal_cdl"])
+        parsed_CDL["parsed_cdl"]["goal"]["item"] = _parse_equal_predicate(problem_CDL["goal_cdl"])
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = problem_CDL["problem_answer"]
     elif problem_CDL["goal_cdl"].startswith("Equal"):
         parsed_CDL["parsed_cdl"]["goal"]["type"] = "equal"
-        parsed_CDL["parsed_cdl"]["goal"]["item"] = parse_equal_predicate(problem_CDL["goal_cdl"])
+        parsed_CDL["parsed_cdl"]["goal"]["item"] = _parse_equal_predicate(problem_CDL["goal_cdl"])
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = 0
     else:
         parsed_CDL["parsed_cdl"]["goal"]["type"] = "relation"
-        predicate, para = parse_one_predicate(problem_CDL["goal_cdl"])
+        predicate, para = _parse_one_predicate(problem_CDL["goal_cdl"])
         parsed_CDL["parsed_cdl"]["goal"]["item"] = predicate
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = para
 
     return parsed_CDL
 
 
-def parse_one_predicate(s):
+def _parse_one_predicate(s):
     """
     parse s to get predicate and para list.
     >> parse_one('Predicate(ABC)')
@@ -164,7 +185,7 @@ def parse_one_predicate(s):
     return predicate_name, list("".join(para))
 
 
-def parse_one_predicate_attached_len(s):
+def _parse_one_predicate_attached_len(s):
     """
     parse s to get predicate, para, and structural msg.
     >> parse_one('Predicate(ABC)')
@@ -183,7 +204,7 @@ def parse_one_predicate_attached_len(s):
     return predicate_name, list("".join(para)), para_len
 
 
-def parse_equal_predicate(s):
+def _parse_equal_predicate(s):
     """
     Parse s to a Tree.
     >> parse_equal('Equal(Length(AB),Length(CD))')
@@ -215,10 +236,10 @@ def parse_equal_predicate(s):
             stack.pop()  # 弹出 "("
             stack.append([stack.pop(), item[::-1]])
         j = j + 1
-    return listing(stack.pop())
+    return _listing(stack.pop())
 
 
-def listing(s_tree):
+def _listing(s_tree):
     """
     Recursive trans s_tree's para to para list.
     >> listing(['Add', [['Length', ['AB']], ['Length', ['CD']]]])
@@ -236,10 +257,10 @@ def listing(s_tree):
     if is_para:
         return list("".join(s_tree))
     else:
-        return [listing(para) for para in s_tree]
+        return [_listing(para) for para in s_tree]
 
 
-def replace_letter_with_vars(s_tree, s_var):
+def _replace_letter_with_vars(s_tree, s_var):
     """
     Recursive trans s_tree's para to vars.
     >> replace_letter_with_vars(['Add', [['Length', ['A', 'B']], ['Length', ['C', 'D']]]], ['A', 'B', 'C', 'D'])
@@ -257,144 +278,158 @@ def replace_letter_with_vars(s_tree, s_var):
     if is_para:
         return [s_var.index(para) for para in s_tree]
     else:
-        return [replace_letter_with_vars(para, s_var) for para in s_tree]
+        return [_replace_letter_with_vars(para, s_var) for para in s_tree]
 
 
-def get_expr_from_tree(tree, equation, replaced=False, letters=None):
+def anti_parse_logic_to_cdl(problem, de_redundant=False):
     """
-    Recursively trans expr_tree to symbolic algebraic expression.
-    :param tree: An expression in the form of a list tree.
-    :param equation: Used to get symbolic representation for attr or free sym.
-    :param replaced: Optional. Set True when tree's item is expressed by vars.
-    :param letters: Optional. Letters that will replace vars.
-    >> get_expr_from_tree_data(['Length', ['T', 'R']], equation)
-    l_tr
-    >> get_expr_from_tree_data(['Add', [['Length', ['Z', 'X']], '2*x-14']], equation)
-    2.0*f_x + l_zx - 14.0
-    >> get_expr_from_tree_data(['Sin', [['Measure', ['Z', 'X', 'Y']]]], equation)
-    sin(pi*m_zxy/180)
+    Anti parse conditions of logic form to CDL.
+    Refer to function <anti_parse_one_by_id>.
     """
-    if not isinstance(tree, list):  # expr
-        return parse_expr(tree, equation)
+    problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
 
-    if tree[0] in equation.attr_GDL:    # attr
-        if not replaced:
-            return equation.get_sym_of_attr(tree[0], tuple(tree[1]))
-        else:
-            replaced_item = [letters[i] for i in tree[1]]
-            return equation.get_sym_of_attr(tree[0], tuple(replaced_item))
-
-    if tree[0] == "Add":    # operate
-        return get_expr_from_tree(tree[1][0], equation) + get_expr_from_tree(tree[1][1], equation)
-    elif tree[0] == "Sub":
-        return get_expr_from_tree(tree[1][0], equation) - get_expr_from_tree(tree[1][1], equation)
-    elif tree[0] == "Mul":
-        return get_expr_from_tree(tree[1][0], equation) * get_expr_from_tree(tree[1][1], equation)
-    elif tree[0] == "Div":
-        return get_expr_from_tree(tree[1][0], equation) / get_expr_from_tree(tree[1][1], equation)
-    elif tree[0] == "Pow":
-        return get_expr_from_tree(tree[1][0], equation) ** get_expr_from_tree(tree[1][1], equation)
-    elif tree[0] == "Sin":
-        return sin(get_expr_from_tree(tree[1][0], equation) * pi / 180)
-    elif tree[0] == "Cos":
-        return cos(get_expr_from_tree(tree[1][0], equation) * pi / 180)
-    elif tree[0] == "Tan":
-        return tan(get_expr_from_tree(tree[1][0], equation) * pi / 180)
-    else:
-        raise RuntimeException("OperatorNotDefined", "No operation {}, please check your expression.".format(tree[0]))
-
-
-def parse_expr(expr, equation):
-    """Parse the expression in <str> form into <symbolic> form"""
-    expr_list = idt_expr.parseString(expr + "~").asList()
-    expr_stack = []
-    operator_stack = ["~"]  # 栈底元素
-
-    i = 0
-    while i < len(expr_list):
-        unit = expr_list[i]
-        if unit in operator:  # 运算符
-            if stack_priority[operator_stack[-1]] < outside_priority[unit]:
-                operator_stack.append(unit)
-                i = i + 1
-            else:
-                operator_unit = operator_stack.pop()
-                if operator_unit == "+":
-                    expr_2 = expr_stack.pop()
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(expr_1 + expr_2)
-                elif operator_unit == "-":
-                    expr_2 = expr_stack.pop()
-                    expr_1 = 0 if len(expr_stack) == 0 else expr_stack.pop()
-                    expr_stack.append(expr_1 - expr_2)
-                elif operator_unit == "*":
-                    expr_2 = expr_stack.pop()
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(expr_1 * expr_2)
-                elif operator_unit == "/":
-                    expr_2 = expr_stack.pop()
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(expr_1 / expr_2)
-                elif operator_unit == "^":
-                    expr_2 = expr_stack.pop()
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(expr_1 ** expr_2)
-                elif operator_unit == "{":  # 只有unit为"}"，才能到达这个判断
-                    i = i + 1
-                elif operator_unit == "@":  # sin
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(sin(expr_1))
-                elif operator_unit == "#":  # cos
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(cos(expr_1))
-                elif operator_unit == "$":  # tan
-                    expr_1 = expr_stack.pop()
-                    expr_stack.append(tan(expr_1))
-                elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
-                    break
-        else:  # 实数或符号
-            unit = equation.get_sym_of_attr("Free", (unit,)) if unit.isalpha() else float(unit)
-            expr_stack.append(unit)
-            i = i + 1
-
-    return expr_stack.pop()
-
-
-def get_equation_from_equal_tree_para(e_tree, equation, replaced=False, letters=None):
-    """
-    Refer to func <get_expr_from_tree> for details.
-    >> get_expr_from_tree_data([['Length', ['T', 'R']], ['Add', [['Length', ['Z', 'X']], '2*x-14']]], equation)
-    l_tr - 2.0*f_x - l_zx + 14.0
-    """
-    left_expr = get_expr_from_tree(e_tree[0], equation, replaced, letters)
-    right_expr = get_expr_from_tree(e_tree[1], equation, replaced, letters)
-    return left_expr - right_expr
-
-
-def anti_parse_logic_to_cdl(problem):
-    """Anti parse conditions of logic form to CDL"""
     anti_parsed_cdl = {}
     for step in range(len(problem.get_id_by_step)):
         anti_parsed_cdl[step] = []
         for _id in problem.get_id_by_step[step]:
-            predicate = problem.get_predicate_by_id[_id]
-            condition = problem.conditions[predicate]
-            if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"] + list(problem.predicate_GDL["Entity"]):
-                anti_parsed_cdl[step].append([predicate, "".join(condition.get_item_by_id[_id])])
-            elif predicate in problem.predicate_GDL["Relation"]:
-                item = []
-                i = 0
-                for l in problem.predicate_GDL["Relation"][predicate]["para_split"]:
-                    item.append("")
-                    for _ in range(l):
-                        item[-1] += condition.get_item_by_id[_id][i]
-                        i += 1
-                anti_parsed_cdl[step].append([predicate, item])
-            else:    # equation
-                equation = condition.get_item_by_id[_id]
-                if len(equation.free_symbols) > 1:
-                    anti_parsed_cdl[step].append(["Equation", str(condition.get_item_by_id[_id])])
-                else:
-                    item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
-                    anti_parsed_cdl[step].append(["predicate", "".join(item)])
+            anti_parsed_cdl[step].append(anti_parse_one_by_id(problem, _id))
+
+    if de_redundant:
+        for step in anti_parsed_cdl:
+            new_anti_parsed = []
+            i = 0
+            while i < len(anti_parsed_cdl[step]):
+                predicate = anti_parsed_cdl[step][i].split("(")[0]
+                if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"]:  # skip
+                    i += 1
+                    continue
+                new_anti_parsed.append(anti_parsed_cdl[step][i])
+                if predicate in problem.predicate_GDL["Entity"]:
+                    i += len(problem.predicate_GDL["Entity"][predicate]["multi"])
+                elif predicate in problem.predicate_GDL["Relation"]:
+                    i += len(problem.predicate_GDL["Relation"][predicate]["multi"])
+                i += 1
+            anti_parsed_cdl[step] = new_anti_parsed
+
     return anti_parsed_cdl
+
+
+def anti_parse_one_by_id(problem, _id):
+    """
+    Anti parse conditions of logic form to CDL.
+    ['Shape' ['A', 'B', 'C']]           ==>   'Shape(ABC)'
+    ['Parallel' ['A', 'B', 'C', 'D']]   ==>   'Parallel(AB,CD)'
+    """
+    predicate = problem.get_predicate_by_id[_id]
+    condition = problem.conditions[predicate]
+    if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"] + list(problem.predicate_GDL["Entity"]):
+        return predicate + "(" + "".join(condition.get_item_by_id[_id]) + ")"
+    elif predicate in problem.predicate_GDL["Relation"]:
+        item = []
+        i = 0
+        for l in problem.predicate_GDL["Relation"][predicate]["para_split"]:
+            item.append("")
+            for _ in range(l):
+                item[-1] += condition.get_item_by_id[_id][i]
+                i += 1
+        return predicate + "(" + ",".join(item) + ")"
+    else:  # equation
+        equation = condition.get_item_by_id[_id]
+        if len(equation.free_symbols) > 1:
+            equation_str = str(condition.get_item_by_id[_id])
+            equation_str = equation_str.replace(" ", "")
+            return "Equation" + "(" + equation_str + ")"
+        else:
+            item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
+            return predicate + "(" + "".join(item) + ")"
+
+
+def replace_free_vars_with_letters(free_vars, points, mutex_points):
+    """
+    Replace free vars with points with mutex_points constrain.
+    >> replace_free_vars_with_letters(['A', 'B', 2], ['A', 'B', 'C'], [[0, 1, 2]])
+    >> [['A', 'B', 'C']]
+    >> replace_free_vars_with_letters(['A', 'B', 2, 3], ['A', 'B', 'C', 'D'], [[0, 1, 2, 3]])
+    >> [['A', 'B', 'C', 'D'], ['A', 'B', 'D', 'C']]
+    """
+    all_para_combination = [free_vars]
+    while True:
+        len_before_update = len(all_para_combination)
+        for i in range(len(all_para_combination)):  # list all possible values for free vars
+            for j in range(len(all_para_combination[i])):
+                if isinstance(all_para_combination[i][j], int):
+                    for point in points:
+                        all_para_combination.append(copy.copy(all_para_combination[i]))
+                        all_para_combination[-1][j] = point[0]
+                    all_para_combination.pop(i)  # delete being replaced para
+                    break
+        if len_before_update == len(all_para_combination):
+            break
+
+    checked_para_combination = []  # filter out combinations that meet the mutex constraint
+    for para in all_para_combination:
+        checked = True
+        for mutex_point in mutex_points:
+            if not isinstance(mutex_point[0], list):
+                check_points = [para[j] for j in mutex_point]
+                if len(set(check_points)) < len(mutex_point):
+                    checked = False
+                    break
+            else:
+                check_shapes = ["".join([para[j] for j in mutex_point[i]]) for i in range(len(mutex_point))]
+                if len(set(check_shapes)) < len(mutex_point):
+                    checked = False
+                    break
+        if checked:
+            checked_para_combination.append(para)
+
+    return checked_para_combination
+
+
+def build_vars_from_algebraic_relation(t_vars, equal_tree, attr):
+    """
+    Build vars from algebraic relation.
+    >> build_vars_from_algebraic_relation(
+           [0, 1, 2, 3],
+           ['Equal', [['Length', [0, 1]],['Length', [2, 3]]]],
+           [('A', 'B'), 'Length']
+       )
+    [[0, 1, 'A', 'B'], ['A', 'B', 2, 3]]
+    """
+    results = []
+    _get_all_attr(equal_tree, attr[1], results)
+    for i in range(len(results)):
+        results[i] = [attr[0][results[i][1].index(v)] if v in results[i][1] else v for v in t_vars]
+
+    return results
+
+
+def _get_all_attr(equal_tree, target_attr, results):
+    """
+    Return all attrs same as target attr. Called by function <build_vars_from_algebraic_relation>.
+    >> _get_all_attr(
+           ['Equal', [['Length', [0, 1]],['Length', [2, 3]]]],
+           'Length',
+           []
+       )
+    [['Length', [0, 1]], ['Length', [2, 3]]]
+    """
+    if not isinstance(equal_tree, list):
+        return
+
+    if equal_tree[0] in ["Equal", "Add", "Sub", "Mul", "Div", "Pow"]:
+        _get_all_attr(equal_tree[1][0], target_attr, results)
+        _get_all_attr(equal_tree[1][1], target_attr, results)
+    elif equal_tree[0] in ["Sin", "Cos", "Tan"]:
+        _get_all_attr(equal_tree[1][0], target_attr, results)
+    elif equal_tree[0] == target_attr:
+        results.append(equal_tree)
+
+
+if __name__ == '__main__':
+    a = build_vars_from_algebraic_relation(
+        [0, 1, 2, 3],
+        ['Equal', [['Length', [0, 1]], ['Length', [2, 3]]]],
+        [('A', 'B'), 'Length']
+    )
+    print(a)

@@ -8,8 +8,7 @@
 	"problem_img": "0_g3k-0.png",
 	"construction_cdl": [
 		"Shape(RST)",
-		"Shape(XYZ)",
-		"Collinear(ABCDE)"
+		"Shape(XYZ)"
 	],
 	"text_cdl": [
 		"Congruent(RST,XYZ)"

@@ -95,6 +95,9 @@ class Representation:
             results.append((s2, s1))
         return results
 
+for i in Representation.mirror_tri(("ABC", "DEF")):
+    print(i)
+
 
 class PreParse:
     # 解析formal language的idt: idt_fl

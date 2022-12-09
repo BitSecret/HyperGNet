@@ -141,4 +141,4 @@ def theorem_normal_mode():
 
 
 if __name__ == "__main__":
-    geo3k_embedding_mode()
+    geo3k_normal_mode()

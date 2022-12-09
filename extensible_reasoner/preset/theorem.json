@@ -1,19 +1,58 @@
 {
-	"70": {
-		"name": "congruent_property_angle_equal",
-		"premise": {
-			"entity_relation": [
-				"Congruent(ABC,DEF)"
-			],
-			"algebraic_relation": []
+	"Theorems": {
+		"1": {
+			"name": "",
+			"mutex_points": [],
+			"premise": {
+				"entity_relation": [],
+				"algebraic_relation": []
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": []
+			}
 		},
-		"conclusion": {
-			"entity_relation": [],
-			"algebraic_relation": [
-				"Equal(Measure(ABC),Measure(DEF))",
-				"Equal(Measure(BCA),Measure(EFD))",
-				"Equal(Measure(CAB),Measure(FDE))"
-			]
+		"70": {
+			"name": "congruent_property_angle_equal",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				],
+				[
+					"D",
+					"E",
+					"F"
+				],
+				[
+					[
+						"A",
+						"B",
+						"C"
+					],
+					[
+						"D",
+						"E",
+						"F"
+					]
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Congruent(ABC,DEF)"
+				],
+				"algebraic_relation": []
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Measure(ABC),Measure(DEF))",
+					"Equal(Measure(BCA),Measure(EFD))",
+					"Equal(Measure(CAB),Measure(FDE))"
+				]
+			}
 		}
-	}
+	},
+	"Version": "0.0.1"
 }
