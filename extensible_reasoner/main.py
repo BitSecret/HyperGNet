@@ -5,11 +5,12 @@ from aux_tools.utils import load_json, save_json, show, save_step_msg, save_solu
 def run(problem_id, save_parse_GDL=False, save_parse_CDL=False):
     predicate_GDL = load_json("./preset/predicate.json")
     theorem_GDL = load_json("./preset/theorem.json")
-    problem_CDL = load_json("./preset/problems/{}.json".format(problem_id))
+    problem_CDL = load_json("./preset/theorems_test/{}.json".format(problem_id))
 
     solver = Solver(predicate_GDL, theorem_GDL)
     solver.load_problem(problem_CDL)
-    solver.apply_theorem("congruent_property_angle_equal")
+    for theorem in problem_CDL["theorem_seqs"]:
+        solver.apply_theorem(theorem)
     solver.check_goal()
     show(solver.problem, simple=False)
 
@@ -23,4 +24,5 @@ def run(problem_id, save_parse_GDL=False, save_parse_CDL=False):
 
 
 if __name__ == '__main__':
-    run(problem_id=0, save_parse_GDL=False, save_parse_CDL=False)
+    pid = int(input("pid:"))
+    run(problem_id=pid, save_parse_GDL=True, save_parse_CDL=True)

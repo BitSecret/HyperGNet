@@ -134,11 +134,15 @@ class Equation(Condition):
             self.sym_of_attr[(item, attr)] = sym  # add sym
             self.attr_of_sym[sym] = (item, attr)
 
-            for para_list in self.attr_GDL[attr]["attr_multi"]:
-                extended_item = []
-                for para in para_list:
-                    extended_item.append(item[para])
-                self.sym_of_attr[(tuple(extended_item), attr)] = sym
+            if self.attr_GDL[attr]["attr_multi"] == "True":
+                l = len(item)
+                for bias in range(1, l):
+                    extended_item = []  # extend item
+                    for i in range(l):
+                        extended_item.append(item[(i + bias) % l])
+                    self.sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
+                    self.attr_of_sym[sym] = (tuple(extended_item), attr)
+
             return sym
 
         return self.sym_of_attr[(item, attr)]
@@ -334,21 +338,30 @@ class Equation(Condition):
                 return self.get_sym_of_attr(tuple(replaced_item), tree[0])
 
         if tree[0] == "Add":  # operate
-            return self.get_expr_from_tree(tree[1][0]) + self.get_expr_from_tree(tree[1][1])
+            result = 0
+            for item in tree[1]:
+                result += self.get_expr_from_tree(item, replaced, letters)
+            return result
         elif tree[0] == "Sub":
-            return self.get_expr_from_tree(tree[1][0]) - self.get_expr_from_tree(tree[1][1])
+            return self.get_expr_from_tree(tree[1][0], replaced, letters) -\
+                   self.get_expr_from_tree(tree[1][1], replaced, letters)
         elif tree[0] == "Mul":
-            return self.get_expr_from_tree(tree[1][0]) * self.get_expr_from_tree(tree[1][1])
+            result = 0
+            for item in tree[1]:
+                result *= self.get_expr_from_tree(item, replaced, letters)
+            return result
         elif tree[0] == "Div":
-            return self.get_expr_from_tree(tree[1][0]) / self.get_expr_from_tree(tree[1][1])
+            return self.get_expr_from_tree(tree[1][0], replaced, letters) / \
+                   self.get_expr_from_tree(tree[1][1], replaced, letters)
         elif tree[0] == "Pow":
-            return self.get_expr_from_tree(tree[1][0]) ** self.get_expr_from_tree(tree[1][1])
+            return self.get_expr_from_tree(tree[1][0], replaced, letters) **\
+                   self.get_expr_from_tree(tree[1][1], replaced, letters)
         elif tree[0] == "Sin":
-            return sin(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+            return sin(self.get_expr_from_tree(tree[1][0], replaced, letters) * pi / 180)
         elif tree[0] == "Cos":
-            return cos(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+            return cos(self.get_expr_from_tree(tree[1][0], replaced, letters) * pi / 180)
         elif tree[0] == "Tan":
-            return tan(self.get_expr_from_tree(tree[1][0]) * pi / 180)
+            return tan(self.get_expr_from_tree(tree[1][0], replaced, letters) * pi / 180)
         else:
             raise RuntimeException("OperatorNotDefined",
                                    "No operation {}, please check your expression.".format(tree[0]))
@@ -493,6 +506,7 @@ class Problem:
 
         self.conditions = {
             "Shape": Construction("Shape"),
+            "Polygon": Construction("Polygon"),
             "Collinear": Construction("Collinear"),
             "Equation": Equation("Equation", self.predicate_GDL["Attribution"])
         }
@@ -533,6 +547,7 @@ class Problem:
             )
             self.goal["answer"] = 0
         else:  # relation type
+            self.goal["item"] = problem_CDL["parsed_cdl"]["goal"]["item"]
             self.goal["answer"] = tuple(problem_CDL["parsed_cdl"]["goal"]["answer"])
 
     def construction_init(self):
@@ -642,20 +657,9 @@ class Problem:
                     self.add(extended_predicate, tuple(para), (_id,), "extended")
                 return True
         elif predicate == "Shape":  # Construction predicate: Shape
-            item, i = list(item), 0
-            while len(item) > 2 and i < len(item):    # Check whether collinear points exist
-                point1 = item[i]    # sliding window in the length of 3
-                point2 = item[(i + 1) % len(item)]
-                point3 = item[(i + 2) % len(item)]
-
-                if (point1, point2, point3) in self.conditions["Collinear"].get_id_by_item:    # Delete when collinear
-                    item.pop(item.index(point2))
-                else:    # Move backward sliding window when not collinear
-                    i += 1
-            item = tuple(item)
-
             added, _id = self.conditions["Shape"].add(item, premise, theorem)
             if added:  # if added successful
+                self.add("Polygon", item, (_id,), "extended")
                 l = len(item)
                 for bias in range(l):
                     extended_shape = []  # extend Shape
@@ -664,6 +668,29 @@ class Problem:
                     self.conditions["Shape"].add(tuple(extended_shape), (_id,), "extended")
                     extended_angle = [item[0 + bias], item[(1 + bias) % l], item[(2 + bias) % l]]  # extend Angle
                     self.add("Angle", tuple(extended_angle), (_id,), "extended")
+                return True
+        elif predicate == "Polygon":
+            item, i = list(item), 0
+            premise = list(premise)
+            while len(item) > 2 and i < len(item):  # Check whether collinear points exist
+                point1 = item[i]  # sliding window in the length of 3
+                point2 = item[(i + 1) % len(item)]
+                point3 = item[(i + 2) % len(item)]
+
+                if (point1, point2, point3) in self.conditions["Collinear"].get_id_by_item:  # Delete when collinear
+                    item.pop(item.index(point2))
+                    premise.append(self.conditions["Collinear"].get_id_by_item[(point1, point2, point3)])
+                else:  # Move backward sliding window when not collinear
+                    i += 1
+            item = tuple(item)
+            added, _id = self.conditions["Polygon"].add(item, tuple(premise), theorem)
+            if added:  # if added successful
+                l = len(item)
+                for bias in range(l):
+                    extended_shape = []  # extend Polygon
+                    for i in range(l):
+                        extended_shape.append(item[(i + bias) % l])
+                    self.conditions["Polygon"].add(tuple(extended_shape), (_id,), "extended")
                 return True
         elif predicate == "Collinear":  # Construction predicate: Collinear
             added, _id = self.conditions["Collinear"].add(item, premise, theorem)

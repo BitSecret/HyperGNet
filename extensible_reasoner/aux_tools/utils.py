@@ -137,10 +137,12 @@ def show(problem, simple=False):
     print("type: {}".format(str(problem.goal["type"])))
     print("goal: {}".format(str(problem.goal["item"])))
     print("correct_answer: {}".format(str(problem.goal["answer"])))
+
     if problem.goal["solved"]:
         print("solved: \033[32m{}\033[0m".format(str(problem.goal["solved"])))
     else:
         print("solved: \033[31m{}\033[0m".format(str(problem.goal["solved"])))
+
     if problem.goal["solved_answer"] is not None:
         print("solved_answer: {}".format(str(problem.goal["solved_answer"])))
         print("premise: {}".format(str(problem.goal["premise"])))
@@ -259,6 +261,5 @@ def _add_edge(dot, nodes, start_node, end_node, edges=None):
 def save_step_msg(problem, path, de_redundant=True):
     """Save conditions grouped by step in dict."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
-
     anti_parsed_cdl = anti_parse_logic_to_cdl(problem, de_redundant)
     save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.id))

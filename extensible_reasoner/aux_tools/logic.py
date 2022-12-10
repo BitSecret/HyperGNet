@@ -1,10 +1,13 @@
-def run(relations, ops):
+def run(relations, ops=None):
     """
     Reasoning.
     :param relations: list of <function> from <Relation>'s __call__()
     :param ops: list of <str>, operation between relations, 2 forms: "and" and "not"
     :return: reasoning result: (ids, items, variables) or None
     """
+    if ops is None:
+        ops = ["and" for _ in range(len(relations) - 1)]
+
     r1_ids, r1_items, r1_vars = relations[0]()
     i = 1
     while i < len(relations):

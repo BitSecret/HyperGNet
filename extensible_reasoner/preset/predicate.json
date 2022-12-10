@@ -234,78 +234,18 @@
 			}
 		},
 		"Attribution": {
-			
 			"1": {
-				"format": "AreaOfTriangle",
-				"sym": "art",
-				"attr": [
-					"A",
-					"B",
-					"C"
-				],
-				"attr_multi": [
-					[
-						"B",
-						"C",
-						"A"
-					],
-					[
-						"C",
-						"A",
-						"B"
-					]
-				],
-				"negative": "False"
-			},
-			"2": {
-				"format": "PerimeterOfTriangle",
-				"sym": "pt",
-				"attr": [
-					"A",
-					"B",
-					"C"
-				],
-				"attr_multi": [
-					[
-						"B",
-						"C",
-						"A"
-					],
-					[
-						"C",
-						"A",
-						"B"
-					]
-				],
-				"negative": "False"
-			},
-			"3": {
 				"format": "AltitudeOfTriangle",
 				"sym": "alt",
-				"attr": [
-					"A",
-					"B",
-					"C"
-				],
-				"attr_multi": [
-					[
-						"B",
-						"C",
-						"A"
-					],
-					[
-						"C",
-						"A",
-						"B"
-					]
-				],
+				"attr_multi": "False",
+				"multi_form": [""],
 				"negative": "False"
 			}
 		}
 	},
 	"Notes": {
-		"Entity": "With 5 built-in definitions: Shape, Collinear, Point, Line, and Angle.",
-		"Attribution": "With 3 built-in definition: Free(f), Length(l) and Measure(m)."
+		"Entity": "With 6 built-in definitions: Shape, Collinear, Point, Line, Angle and Polygon.",
+		"Attribution": "With 5 built-in definition: Free(f), Length(l), Measure(m), Area(a), and Perimeter(p)."
 	},
 	"Version": "0.0.1"
 }

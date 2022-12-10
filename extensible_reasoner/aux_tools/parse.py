@@ -25,6 +25,9 @@ def parse_predicate(predicate_GDL):
         "Shape": {
             "vars": [], "multi": [], "extend": []
         },
+        "Polygon": {
+            "vars": [], "multi": [], "extend": []
+        },
         "Collinear": {
             "vars": [], "multi": [], "extend": []
         }
@@ -75,30 +78,35 @@ def parse_predicate(predicate_GDL):
     parsed_GDL["Attribution"] = {  # preset Attribution
         "Free": {
             "sym": "f",
-            "attr": [0],
-            "attr_multi": [],
+            "attr_multi": "False",
             "negative": "True"
         },
         "Length": {
             "sym": "l",
-            "attr": [0, 1],
-            "attr_multi": [[1, 0]],
+            "attr_multi": "True",
             "negative": "False"
         },
         "Measure": {
             "sym": "m",
-            "attr": [0, 1, 2],
-            "attr_multi": [],
+            "attr_multi": "False",
             "negative": "True"
-        }
+        },
+        "Area": {
+            "sym": "a",
+            "attr_multi": "True",
+            "negative": "False"
+        },
+        "Perimeter": {
+            "sym": "p",
+            "attr_multi": "True",
+            "negative": "False"
+        },
     }
     for key in attribution:
         name = attribution[key]["format"]
         parsed_GDL["Attribution"][name] = {
             "sym": attribution[key]["sym"],
-            "attr": [i for i in range(len(attribution[key]["attr"]))],
-            "attr_multi": [[attribution[key]["attr"].index(point) for point in one]
-                           for one in attribution[key]["attr_multi"]],
+            "attr_multi": attribution[key]["attr_multi"],
             "negative": attribution[key]["negative"]
         }
     return parsed_GDL
@@ -202,6 +210,11 @@ def parse_problem(problem_CDL):
         predicate, para = _parse_one_predicate(problem_CDL["goal_cdl"])
         parsed_CDL["parsed_cdl"]["goal"]["item"] = predicate
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = para
+
+    # for key in parsed_CDL:
+    #     print(key)
+    #     print(parsed_CDL[key])
+    #     print()
 
     return parsed_CDL
 

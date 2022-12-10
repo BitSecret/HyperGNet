@@ -1,0 +1,25 @@
+{
+	"problem_id": 4,
+	"annotation": "xiaokaizhang_2022-12-10",
+	"source": "Theorem_Test",
+	"problem_level": 1,
+	"problem_text_cn": "",
+	"problem_text_en": "",
+	"problem_img": "",
+	"construction_cdl": [
+		"Shape(ABC)",
+		"Shape(ACD)",
+		"Collinear(BCD)"
+	],
+	"text_cdl": [
+		"Equal(Area(ABC),30)",
+		"Equal(Area(ACD),60)"
+	],
+	"image_cdl": [],
+	"goal_cdl": "Value(Area(ABCD))",
+	"problem_answer": "90",
+	"theorem_seqs": [
+		"area_addition"
+	],
+	"notes": ""
+}

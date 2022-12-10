@@ -50,7 +50,7 @@ class Solver:
         relations = [self.problem.conditions[predicate](tuple(para_vars))
                      for predicate, para_vars in premise_of_entity_relation]
 
-        ids, items, _ = run(tuple(relations), tuple([]))  # relational reasoning
+        ids, items, _ = run(tuple(relations))  # relational reasoning
 
         new_ids = []
         new_items = []
@@ -111,7 +111,7 @@ class Solver:
             equation = self.problem.conditions["Equation"]
             _, _, _, sym_set = equation.get_minimum_equations(target_item)
 
-            unsolved_sym = []    # only need to find unsolved symbol
+            unsolved_sym = []  # only need to find unsolved symbol
             for sym in sym_set:
                 if equation.value_of_sym[sym] is not None and equation.attr_of_sym[sym][1] != "Free":
                     unsolved_sym.append(sym)
@@ -140,7 +140,7 @@ class Solver:
                                     )
                                 options[options_count] = {"theorem": theorem_name, "option": one_option}
                                 options_count += 1
-        else:   # entity target
+        else:  # entity target
             for theorem_name in self.theorem_GDL:
                 all_vars = self.theorem_GDL[theorem_name]["vars"]  # all vars in current theorem
 
@@ -188,12 +188,13 @@ class Solver:
                 self.problem.goal["premise"] = tuple(premise)
                 self.problem.goal["theorem"] = "solve_eq"
         else:  # relation
-            predicate, para = self.problem.goal["item"]
-            if tuple(para) in self.problem.conditions[predicate].items:
+            if self.problem.goal["answer"] in self.problem.conditions[self.problem.goal["item"]].get_id_by_item:
                 self.problem.goal["solved"] = True
-                self.problem.goal["solved_answer"] = tuple(para)
-                self.problem.goal["premise"] = self.problem.conditions[predicate].get_premise(para)
-                self.problem.goal["theorem"] = self.problem.conditions[predicate].get_theorem(para)
+                self.problem.goal["solved_answer"] = self.problem.goal["answer"]
+                self.problem.goal["premise"] = self.problem.conditions[self.problem.goal["item"]].premises[
+                    self.problem.goal["answer"]]
+                self.problem.goal["theorem"] = self.problem.conditions[self.problem.goal["item"]].theorems[
+                    self.problem.goal["answer"]]
 
         self.problem.goal["solving_msg"].append(
             "\033[32mChecking goal\033[0m:{:.6f}s".format(time.time() - s_start_time))
