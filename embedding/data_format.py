@@ -148,6 +148,7 @@ def equation_format(equation):
     # 实数识别与替换
     for matched in re.findall(r"\d+\.*\d*", equation):
         equation = equation.replace(matched, "nums", 1)
+    print(equation)
 
     # 分词
     result = []
