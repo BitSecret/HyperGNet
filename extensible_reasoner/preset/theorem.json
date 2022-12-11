@@ -114,6 +114,321 @@
 				]
 			}
 		},
+		"6": {
+			"name": "triangle_property_equal_line_to_equal_angle",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Triangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Length(AB),Length(AC))"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Measure(ABC),Measure(BCA))"
+				]
+			}
+		},
+		"7": {
+			"name": "triangle_property_equal_angle_to_equal_line",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Triangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(ABC),Measure(BCA))"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(AB),Length(AC))"
+				]
+			}
+		},
+		"8": {
+			"name": "pythagorean",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": []
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Add(Pow(Length(AB),2),Pow(Length(BC),2)),Pow(Length(AC),2))"
+				]
+			}
+		},
+		"9": {
+			"name": "right_triangle_property_rt",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": []
+			},
+			"conclusion": {
+				"entity_relation": [
+					"Perpendicular(B,AB,CB)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(ABC),90)"
+				]
+			}
+		},
+		"10": {
+			"name": "right_triangle_property_special_rt_1",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(CAB),30)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(AB),Mul(Length(BC),1.7321))",
+					"Equal(Length(AC),Mul(Length(BC),2))"
+				]
+			}
+		},
+		"11": {
+			"name": "right_triangle_property_special_rt_2",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(CAB),45)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(AB),Length(BC))",
+					"Equal(Length(AC),Mul(Length(AB),1.4142))"
+				]
+			}
+		},
+		"12": {
+			"name": "right_triangle_property_special_rt_3",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(CAB),60)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(BC),Mul(Length(AB),1.7321))",
+					"Equal(Length(AC),Mul(Length(AB),2))"
+				]
+			}
+		},
+		"13": {
+			"name": "right_triangle_property_special_rt_4",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(BCA),30)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(BC),Mul(Length(AB),1.7321))",
+					"Equal(Length(AC),Mul(Length(AB),2))"
+				]
+			}
+		},
+		"14": {
+			"name": "right_triangle_property_special_rt_5",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(BCA),45)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(AB),Length(BC))",
+					"Equal(Length(AC),Mul(Length(AB),1.4142))"
+				]
+			}
+		},
+		"15": {
+			"name": "right_triangle_property_special_rt_6",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(BCA),60)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [],
+				"algebraic_relation": [
+					"Equal(Length(AB),Mul(Length(BC),1.7321))",
+					"Equal(Length(AC),Mul(Length(BC),2))"
+				]
+			}
+		},
+		"16": {
+			"name": "pythagorean_inverse",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Triangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Add(Pow(Length(AB),2),Pow(Length(BC),2)),Pow(Length(AC),2))"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": []
+			}
+		},
+		"17": {
+			"name": "right_triangle_judgment_angle",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Triangle(ABC)"
+				],
+				"algebraic_relation": [
+					"Equal(Measure(ABC),90)"
+				]
+			},
+			"conclusion": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": []
+			}
+		},
+		"18": {
+			"name": "right_triangle_judgment_rt",
+			"mutex_points": [
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			"premise": {
+				"entity_relation": [
+					"Triangle(ABC)",
+					"Perpendicular(B,AD,CE)"
+				],
+				"algebraic_relation": []
+			},
+			"conclusion": {
+				"entity_relation": [
+					"RightTriangle(ABC)"
+				],
+				"algebraic_relation": []
+			}
+		},
 		"70": {
 			"name": "congruent_property_angle_equal",
 			"mutex_points": [

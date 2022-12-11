@@ -346,7 +346,7 @@ class Equation(Condition):
             return self.get_expr_from_tree(tree[1][0], replaced, letters) -\
                    self.get_expr_from_tree(tree[1][1], replaced, letters)
         elif tree[0] == "Mul":
-            result = 0
+            result = 1
             for item in tree[1]:
                 result *= self.get_expr_from_tree(item, replaced, letters)
             return result

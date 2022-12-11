@@ -1,4 +1,5 @@
 import copy
+import string
 from pyparsing import oneOf, Combine, Word, nums, alphas, OneOrMore
 
 float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))
@@ -298,10 +299,16 @@ def _listing(s_tree):
     if not isinstance(s_tree, list):
         return s_tree
 
-    is_para = True  # Judge whether the bottom layer is reached.
+    is_para = True  # Judge whether the para list is reached.
     for para in s_tree:
         if isinstance(para, list):
             is_para = False
+            break
+        for p in list(para):
+            if p not in string.ascii_uppercase:
+                is_para = False
+                break
+        if not is_para:
             break
 
     if is_para:
@@ -319,10 +326,18 @@ def _replace_letter_with_vars(s_tree, s_var):
     if not isinstance(s_tree, list):
         return s_tree
 
-    is_para = True  # Judge whether the bottom layer is reached.
+    # print(s_tree)
+
+    is_para = True  # Judge whether the para list is reached.
     for para in s_tree:
         if isinstance(para, list):
             is_para = False
+            break
+        for p in list(para):
+            if p not in string.ascii_uppercase:
+                is_para = False
+                break
+        if not is_para:
             break
 
     if is_para:
@@ -468,8 +483,8 @@ def _get_all_attr(equal_tree, target_attr, results):
         return
 
     if equal_tree[0] in ["Equal", "Add", "Sub", "Mul", "Div", "Pow"]:
-        _get_all_attr(equal_tree[1][0], target_attr, results)
-        _get_all_attr(equal_tree[1][1], target_attr, results)
+        for item in equal_tree[1]:
+            _get_all_attr(item, target_attr, results)
     elif equal_tree[0] in ["Sin", "Cos", "Tan"]:
         _get_all_attr(equal_tree[1][0], target_attr, results)
     elif equal_tree[0] == target_attr:
