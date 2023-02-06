@@ -1,0 +1,434 @@
+{
+	"Predicates": {
+		"Entity": {
+			"1": {
+				"name": "Triangle(ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"ABC"
+				],
+				"multi": [
+					"Triangle(BCA)",
+					"Triangle(CAB)"
+				],
+				"extend": [
+					"Shape(ABC)"
+				]
+			},
+			"2": {
+				"name": "RightTriangle(ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			},
+			"3": {
+				"name": "IsoscelesTriangle(ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			},
+			"4": {
+				"name": "EquilateralTriangle(ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"ABC"
+				],
+				"multi": [
+					"EquilateralTriangle(BCA)",
+					"EquilateralTriangle(CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)"
+				]
+			}
+		},
+		"Relation": {
+			"1": {
+				"name": "Midpoint(M,AB)",
+				"format_constraints": "enumeration",
+				"format": [
+					"M,AB"
+				],
+				"multi": [
+					"Midpoint(M,BA)"
+				],
+				"extend": [
+					"Point(M)",
+					"Line(AB)"
+				]
+			},
+			"2": {
+				"name": "Intersect(O,AB,CD)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,AB,CD"
+				],
+				"multi": [
+					"Intersect(O,CD,BA)",
+					"Intersect(O,BA,DC)",
+					"Intersect(O,DC,AB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				]
+			},
+			"3": {
+				"name": "DisorderParallel(AB,CD)",
+				"format_constraints": "enumeration",
+				"format": [
+					"AB,CD"
+				],
+				"multi": [
+					"DisorderParallel(DC,BA)",
+					"DisorderParallel(CD,AB)",
+					"DisorderParallel(BA,DC)"
+				],
+				"extend": [
+					"Line(AB)",
+					"Line(CD)"
+				]
+			},
+			"4": {
+				"name": "Parallel(AB,CD)",
+				"format_constraints": "enumeration",
+				"format": [
+					"AB,CD"
+				],
+				"multi": [
+					"Parallel(DC,BA)"
+				],
+				"extend": [
+					"DisorderParallel(AB,CD)"
+				]
+			},
+			"5": {
+				"name": "Perpendicular(O,AB,CD)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,AB,CD",
+					"B,AB,CB",
+					"B,BC,AB",
+					"B,CB,BA",
+					"B,BA,BC",
+					"D,AB,CD",
+					"D,DC,AB",
+					"D,CD,BA",
+					"D,BA,DC"
+				],
+				"multi": [
+					"Perpendicular(O,CD,BA)",
+					"Perpendicular(O,BA,DC)",
+					"Perpendicular(O,DC,AB)"
+				],
+				"extend": [
+					"Intersect(O,AB,CD)",
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				]
+			},
+			"6": {
+				"name": "PerpendicularBisector(O,AB,CD)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,AB,CD",
+					"D,AB,CD"
+				],
+				"multi": [
+					"PerpendicularBisector(O,BA,DC)"
+				],
+				"extend": [
+					"Perpendicular(O,AB,CD)",
+					"Midpoint(O,AB)"
+				]
+			},
+			"7": {
+				"name": "Bisector(BD,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"BD,ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Line(BD)",
+					"Angle(ABC)"
+				]
+			},
+			"8": {
+				"name": "Median(AD,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"AD,ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				]
+			},
+			"9": {
+				"name": "IsAltitude(AD,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"AD,ABC",
+					"AB,ABC",
+					"AC,ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				]
+			},
+			"10": {
+				"name": "Neutrality(DE,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"DE,ABC"
+				],
+				"multi": [],
+				"extend": [
+					"Line(DE)",
+					"Triangle(ABC)"
+				]
+			},
+			"11": {
+				"name": "Circumcenter(O,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,ABC"
+				],
+				"multi": [
+					"Circumcenter(O,BCA)",
+					"Circumcenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"12": {
+				"name": "Incenter(O,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,ABC"
+				],
+				"multi": [
+					"Incenter(O,BCA)",
+					"Incenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"13": {
+				"name": "Centroid(O,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,ABC"
+				],
+				"multi": [
+					"Centroid(O,BCA)",
+					"Centroid(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"14": {
+				"name": "Orthocenter(O,ABC)",
+				"format_constraints": "enumeration",
+				"format": [
+					"O,ABC",
+					"A,ABC",
+					"B,ABC",
+					"C,ABC"
+				],
+				"multi": [
+					"Orthocenter(O,BCA)",
+					"Orthocenter(O,CAB)"
+				],
+				"extend": [
+					"Point(O)",
+					"Triangle(ABC)"
+				]
+			},
+			"15": {
+				"name": "Congruent(ABC,DEF)",
+				"format_constraints": "mutex",
+				"format": [
+					"ABC,DEF"
+				],
+				"mutex_points": [
+					"ABC",
+					"DEF",
+					[
+						"ABC",
+						"DEF"
+					],
+					[
+						"ABC",
+						"EFD"
+					],
+					[
+						"ABC",
+						"FDE"
+					]
+				],
+				"multi": [
+					"Congruent(DEF,ABC)",
+					"Congruent(BCA,EFD)",
+					"Congruent(EFD,BCA)",
+					"Congruent(CAB,FDE)",
+					"Congruent(FDE,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"16": {
+				"name": "Similar(ABC,DEF)",
+				"format_constraints": "mutex",
+				"format": [
+					"ABC,DEF"
+				],
+				"mutex_points": [
+					"ABC",
+					"DEF",
+					[
+						"ABC",
+						"DEF"
+					],
+					[
+						"ABC",
+						"EFD"
+					],
+					[
+						"ABC",
+						"FDE"
+					]
+				],
+				"multi": [
+					"Similar(DEF,ABC)",
+					"Similar(BCA,EFD)",
+					"Similar(EFD,BCA)",
+					"Similar(CAB,FDE)",
+					"Similar(FDE,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"17": {
+				"name": "MirrorCongruent(ABC,DEF)",
+				"format_constraints": "mutex",
+				"format": [
+					"ABC,DEF"
+				],
+				"mutex_points": [
+					"ABC",
+					"DEF",
+					[
+						"ABC",
+						"DEF"
+					],
+					[
+						"ABC",
+						"EFD"
+					],
+					[
+						"ABC",
+						"FDE"
+					]
+				],
+				"multi": [
+					"MirrorCongruent(DEF,ABC)",
+					"MirrorCongruent(BCA,FDE)",
+					"MirrorCongruent(FDE,BCA)",
+					"MirrorCongruent(CAB,EFD)",
+					"MirrorCongruent(EFD,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			},
+			"18": {
+				"name": "MirrorSimilar(ABC,DEF)",
+				"format_constraints": "mutex",
+				"format": [
+					"ABC,DEF"
+				],
+				"mutex_points": [
+					"ABC",
+					"DEF",
+					[
+						"ABC",
+						"DEF"
+					],
+					[
+						"ABC",
+						"EFD"
+					],
+					[
+						"ABC",
+						"FDE"
+					]
+				],
+				"multi": [
+					"MirrorSimilar(DEF,ABC)",
+					"MirrorSimilar(BCA,FDE)",
+					"MirrorSimilar(FDE,BCA)",
+					"MirrorSimilar(CAB,EFD)",
+					"MirrorSimilar(EFD,CAB)"
+				],
+				"extend": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				]
+			}
+		},
+		"Attribution": {
+			"1": {
+				"format": "AltitudeOfTriangle(Triangle(ABC))",
+				"sym": "at",
+				"para": [
+					"ABC"
+				],
+				"negative": "False"
+			},
+			"2": {
+				"format": "DistanceOfPointToLine(Point(O),Line(AB))",
+				"sym": "dpl",
+				"para": [
+					"OAB",
+					"OBA"
+				],
+				"negative": "False"
+			}
+		}
+	},
+	"Notes": {
+		"Entity": "With 6 built-in definitions: Shape, Collinear, Point, Line, Angle and Polygon.",
+		"Attribution": "With 5 built-in definition: Free(f), Length(l), Measure(m), Area(a), and Perimeter(p).",
+		"格式控制": "有mutex使用mutex方法，没有mutex的使用format穷举。",
+		"关于属性": "返回符号时，必须检查是否存在实体，如果有实体，才返回实体属性的符号表示。"
+	},
+	"Version": "0.1.0"
+}

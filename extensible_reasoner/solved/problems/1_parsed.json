@@ -1,1 +1,0 @@
-{"id": 1, "cdl": {"construction_cdl": ["Shape(ABC)"], "text_cdl": [], "image_cdl": [], "goal_cdl": "Triangle(ABC)"}, "parsed_cdl": {"construction_cdl": [["Shape", ["A", "B", "C"]]], "text_and_image_cdl": [], "goal": {"type": "relation", "item": "Triangle", "answer": ["A", "B", "C"]}}}

@@ -1,0 +1,953 @@
+{
+	"Theorems": {
+		"1": {
+			"name": "line_addition",
+			"description": {
+				"1": {
+					"premise": "Collinear(ABC)",
+					"conclusion": [
+						"Equal(Length(AC),Add(Length(AB),Length(BC)))"
+					]
+				}
+			}
+		},
+		"2": {
+			"name": "angle_addition",
+			"description": {
+				"1": {
+					"premise": "Angle(ABC)&Angle(CBD)",
+					"conclusion": [
+						"Equal(Measure(ABD),Add(Measure(ABC),Measure(CBD)))"
+					]
+				}
+			}
+		},
+		"3": {
+			"name": "area_addition",
+			"description": {
+				"1": {
+					"premise": "Shape(ABC)&Shape(ACD)",
+					"conclusion": [
+						"Equal(Area(ABCD),Add(Area(ABC),Area(ACD)))"
+					]
+				}
+			}
+		},
+		"4": {
+			"name": "definition_of_triangle",
+			"description": {
+				"1": {
+					"premise": "Polygon(ABC)",
+					"conclusion": [
+						"Triangle(ABC)"
+					]
+				}
+			}
+		},
+		"5": {
+			"name": "triangle_property_angle_sum",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Add(Measure(ABC),Measure(BCA),Measure(CAB)),180)"
+					]
+				}
+			}
+		},
+		"6": {
+			"name": "triangle_property_equal_line_to_equal_angle",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Length(AB),Length(AC))",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(BCA))"
+					]
+				}
+			}
+		},
+		"7": {
+			"name": "triangle_property_equal_angle_to_equal_line",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Measure(ABC),Measure(BCA))",
+					"conclusion": [
+						"Equal(Length(AB),Length(AC))"
+					]
+				}
+			}
+		},
+		"8": {
+			"name": "pythagorean",
+			"description": {
+				"1": {
+					"premise": "RightTriangle(ABC)",
+					"conclusion": [
+						"Equal(Add(Pow(Length(AB),2),Pow(Length(BC),2)),Pow(Length(AC),2))"
+					]
+				}
+			}
+		},
+		"9": {
+			"name": "right_triangle_property_rt",
+			"description": {
+				"1": {
+					"premise": "RightTriangle(ABC)",
+					"conclusion": [
+						"Perpendicular(B,AB,CB)",
+						"Equal(Measure(ABC),90)"
+					]
+				}
+			}
+		},
+		"10": {
+			"name": "right_triangle_property_special_rt_30_60",
+			"description": {
+				"1": {
+					"premise": "RightTriangle(ABC)&(Equal(Measure(CAB),30)|Equal(Measure(BCA),60))",
+					"conclusion": [
+						"Equal(Length(AB),Mul(Length(BC),1.7321))",
+						"Equal(Length(AC),Mul(Length(BC),2))"
+					]
+				},
+				"2": {
+					"premise": "RightTriangle(ABC)&(Equal(Measure(CAB),60)|Equal(Measure(BCA),30))",
+					"conclusion": [
+						"Equal(Length(BC),Mul(Length(AB),1.7321))",
+						"Equal(Length(AC),Mul(Length(AB),2))"
+					]
+				}
+			}
+		},
+		"11": {
+			"name": "right_triangle_property_special_rt_45_45",
+			"description": {
+				"1": {
+					"premise": "RightTriangle(ABC)&(Equal(Measure(CAB),45)|Equal(Measure(BCA),45))",
+					"conclusion": [
+						"Equal(Length(AB),Length(BC))",
+						"Equal(Length(AC),Mul(Length(AB),1.4142))"
+					]
+				}
+			}
+		},
+		"12": {
+			"name": "pythagorean_inverse",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Add(Pow(Length(AB),2),Pow(Length(BC),2)),Pow(Length(AC),2))",
+					"conclusion": [
+						"RightTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"13": {
+			"name": "right_triangle_judgment_angle",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&(Perpendicular(B,AD,CE)|Equal(Measure(ABC),90))",
+					"conclusion": [
+						"RightTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"14": {
+			"name": "isosceles_triangle_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "IsoscelesTriangle(ABC)",
+					"conclusion": [
+						"Equal(Length(AB),Measure(AC))"
+					]
+				}
+			}
+		},
+		"15": {
+			"name": "isosceles_triangle_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "IsoscelesTriangle(ABC)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(BCA))"
+					]
+				}
+			}
+		},
+		"16": {
+			"name": "isosceles_triangle_property_line_coincidence",
+			"description": {
+				"1": {
+					"premise": "IsoscelesTriangle(ABC)&Collinear(BMC)&(IsAltitude(AM,ABC)|Median(AM,ABC)|Bisector(AM,CAB))",
+					"conclusion": [
+						"IsAltitude(AM,ABC)",
+						"Median(AM,ABC)",
+						"Bisector(AM,CAB)"
+					]
+				}
+			}
+		},
+		"17": {
+			"name": "isosceles_triangle_judgment_line_equal",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Length(AB),Measure(AC))",
+					"conclusion": [
+						"IsoscelesTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"18": {
+			"name": "isosceles_triangle_judgment_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Measure(ABC),Measure(BCA))",
+					"conclusion": [
+						"IsoscelesTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"19": {
+			"name": "equilateral_triangle_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "EquilateralTriangle(ABC)",
+					"conclusion": [
+						"Equal(Length(AB),Length(BC))"
+					]
+				}
+			}
+		},
+		"20": {
+			"name": "equilateral_triangle_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "EquilateralTriangle(ABC)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(BCA))"
+					]
+				}
+			}
+		},
+		"21": {
+			"name": "equilateral_triangle_judgment_line_equal",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Length(AB),Length(BC))&Equal(Length(BC),Length(AC))",
+					"conclusion": [
+						"EquilateralTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"22": {
+			"name": "equilateral_triangle_judgment_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Equal(Measure(ABC),Measure(BCA))&Equal(Measure(BCA),Measure(CAB))",
+					"conclusion": [
+						"EquilateralTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"23": {
+			"name": "equilateral_triangle_judgment_isos_and_angle",
+			"description": {
+				"1": {
+					"premise": "IsoscelesTriangle(ABC)&(Equal(Measure(ABC),60)|Equal(Measure(BCA),60)|Equal(Measure(CAB),60))",
+					"conclusion": [
+						"EquilateralTriangle(ABC)"
+					]
+				}
+			}
+		},
+		"24": {
+			"name": "flat_angle",
+			"description": {
+				"1": {
+					"premise": "Collinear(ABC)",
+					"conclusion": [
+						"Equal(Measure(ABC), 180)"
+					]
+				}
+			}
+		},
+		"25": {
+			"name": "intersect_property_vertical_angle",
+			"description": {
+				"1": {
+					"premise": "Intersect(O,AB,CD)",
+					"conclusion": [
+						"Equal(Measure(AOC),Measure(BOD))"
+					]
+				}
+			}
+		},
+		"26": {
+			"name": "parallel_property_collinear_extend",
+			"description": {
+				"1": {
+					"premise": "Collinear(AMB)&(Parallel(AB,CD)|Parallel(AM,CD)|Parallel(MB,CD))",
+					"conclusion": [
+						"Parallel(AB,CD)",
+						"Parallel(AM,CD)",
+						"Parallel(MB,CD)"
+					]
+				}
+			}
+		},
+		"27": {
+			"name": "parallel_property_Ipsilateral_internal_angle",
+			"description": {
+				"1": {
+					"premise": "Parallel(AB,CD)&Line(AC)",
+					"conclusion": [
+						"Equal(Add(Measure(BAC),Measure(ACD)),180)"
+					]
+				},
+				"2": {
+					"premise": "Parallel(AB,CD)&Line(DB)",
+					"conclusion": [
+						"Equal(Add(Measure(CDB),Measure(DBA)),180)"
+					]
+				}
+			}
+		},
+		"28": {
+			"name": "parallel_property_alternate_interior_angle",
+			"description": {
+				"1": {
+					"premise": "Parallel(AB,CD)&Line(AD)",
+					"conclusion": [
+						"Equal(Measure(BAD),Measure(CDA))"
+					]
+				},
+				"2": {
+					"premise": "Parallel(AB,CD)&Line(BC)",
+					"conclusion": [
+						"Equal(Measure(CBA),Measure(BCD))"
+					]
+				}
+			}
+		},
+		"29": {
+			"name": "parallel_judgment_Ipsilateral_internal_angle",
+			"description": {
+				"1": {
+					"premise": "Angle(BAC)&Angle(ACD)&Equal(Add(Measure(BAC),Measure(ACD)),180)",
+					"conclusion": [
+						"Parallel(AB,CD)"
+					]
+				}
+			}
+		},
+		"30": {
+			"name": "",
+			"description": {
+				"1": {
+					"premise": "Angle(BAD)&Angle(CDA)&Equal(Measure(BAD),Measure(CDA))",
+					"conclusion": [
+						"Parallel(AB,CD)"
+					]
+				}
+			}
+		},
+		"31": {
+			"name": "perpendicular_judgment",
+			"description": {
+				"1": {
+					"premise": "Angle(ABC)&Equal(Measure(ABC),90)",
+					"conclusion": [
+						"Perpendicular(B,AB,CB)"
+					]
+				}
+			}
+		},
+		"32": {
+			"name": "perpendicular_property",
+			"description": {
+				"1": {
+					"premise": "Perpendicular(O,AB,CD)&Angle(AOC)",
+					"conclusion": [
+						"Equal(Measure(AOC),90)"
+					]
+				}
+			}
+		},
+		"33": {
+			"name": "perpendicular_property_collinear_extend",
+			"description": {
+				"1": {
+					"premise": "Perpendicular(O,AB,CD)&Collinear(ABE)",
+					"conclusion": [
+						"Perpendicular(O,AE,CD)"
+					]
+				}
+			}
+		},
+		"34": {
+			"name": "parallel_perpendicular_combination",
+			"description": {
+				"1": {
+					"premise": "Parallel(AB,CD)&Parallel(CD,EF)",
+					"conclusion": [
+						"Parallel(AB,EF)"
+					]
+				},
+				"2": {
+					"premise": "Parallel(AB,CD)&Perpendicular(O,AB,EF)&Intersect(P,CD,EF)",
+					"conclusion": [
+						"Perpendicular(P,CD,EF)"
+					]
+				},
+				"3": {
+					"premise": "Perpendicular(O,AB,EF)&Perpendicular(P,CD,EF)",
+					"conclusion": [
+						"Parallel(AB,CD)"
+					]
+				}
+			}
+		},
+		"35": {
+			"name": "midpoint_property",
+			"description": {
+				"1": {
+					"premise": "Midpoint(M,BA)",
+					"conclusion": [
+						"Equal(Length(BM),Length(MA))"
+					]
+				}
+			}
+		},
+		"36": {
+			"name": "midpoint_judgment",
+			"description": {
+				"1": {
+					"premise": "Line(AB)&Line(BC)&Equal(Length(AB),Length(BC))",
+					"conclusion": [
+						"Midpoint(B,AC)"
+					]
+				}
+			}
+		},
+		"37": {
+			"name": "perpendicular_bisector_property_distance_equal",
+			"description": {
+				"1": {
+					"premise": "PerpendicularBisector(O,AB,CD)",
+					"conclusion": [
+						"Equal(Length(CA),Length(CB))"
+					]
+				}
+			}
+		},
+		"38": {
+			"name": "perpendicular_bisector_judgment",
+			"description": {
+				"1": {
+					"premise": "PerpendicularBisector(O,AB,CD)&Midpoint(O,AB)",
+					"conclusion": [
+						"PerpendicularBisector(O,AB,CD)"
+					]
+				}
+			}
+		},
+		"39": {
+			"name": "bisector_property_line_ratio",
+			"description": {
+				"1": {
+					"premise": "Bisector(BD,ABC)&Collinear(CDA)",
+					"conclusion": [
+						"Equal(Mul(Length(CD),Length(BA)),Mul(Length(DA),Length(BC)))"
+					]
+				}
+			}
+		},
+		"40": {
+			"name": "bisector_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Bisector(BD,ABC)",
+					"conclusion": [
+						"Equal(Measure(ABD),Measure(DBC))"
+					]
+				}
+			}
+		},
+		"41": {
+			"name": "bisector_judgment_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Angle(ABD)&Angle(DBC)&Equal(Measure(ABD),Measure(DBC))",
+					"conclusion": [
+						"Bisector(BD,ABC)"
+					]
+				}
+			}
+		},
+		"42": {
+			"name": "median_property",
+			"description": {
+				"1": {
+					"premise": "Median(AD,ABC)",
+					"conclusion": [
+						"Midpoint(D,BC)"
+					]
+				}
+			}
+		},
+		"43": {
+			"name": "median_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Midpoint(D,BC)&Line(AD)",
+					"conclusion": [
+						"Median(AD,ABC)"
+					]
+				}
+			}
+		},
+		"44": {
+			"name": "altitude_property",
+			"description": {
+				"1": {
+					"premise": "IsAltitude(AD,ABC)",
+					"conclusion": [
+						"Perpendicular(D,BC,AD)"
+					]
+				}
+			}
+		},
+		"45": {
+			"name": "altitude_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Collinear(BDC)&Line(AD)&(Perpendicular(D,BC,AD)|Perpendicular(D,BD,AD)|Perpendicular(D,DC,AD))",
+					"conclusion": [
+						"IsAltitude(AD,ABC)"
+					]
+				}
+			}
+		},
+		"46": {
+			"name": "neutrality_property_similar",
+			"description": {
+				"1": {
+					"premise": "Neutrality(DE,ABC)",
+					"conclusion": [
+						"Similar(ABC,ADE)"
+					]
+				}
+			}
+		},
+		"47": {
+			"name": "neutrality_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Neutrality(DE,ABC)",
+					"conclusion": [
+						"Equal(Measure(ADE),Measure(ABC))",
+						"Equal(Measure(DEA),Measure(BCA))"
+					]
+				}
+			}
+		},
+		"48": {
+			"name": "neutrality_property_line_ratio",
+			"description": {
+				"1": {
+					"premise": "Neutrality(DE,ABC)",
+					"conclusion": [
+						"Equal(Mul(Length(AD),Length(EC)),Mul(Length(DB),Length(AE)))"
+					]
+				}
+			}
+		},
+		"49": {
+			"name": "neutrality_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Collinear(ADB)&Collinear(AEC)&Parallel(DE,BC)",
+					"conclusion": [
+						"Neutrality(DE,ABC)"
+					]
+				}
+			}
+		},
+		"50": {
+			"name": "circumcenter_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "Circumcenter(O,ABC)",
+					"conclusion": [
+						"Equal(Length(OA),Length(OB))"
+					]
+				}
+			}
+		},
+		"51": {
+			"name": "circumcenter_property_intersect",
+			"description": {
+				"1": {
+					"premise": "Circumcenter(O,ABC)&Perpendicular(D,BC,OE)",
+					"conclusion": [
+						"PerpendicularBisector(D,BC,OE)"
+					]
+				},
+				"2": {
+					"premise": "Circumcenter(O,ABC)&Midpoint(M,BC)",
+					"conclusion": [
+						"PerpendicularBisector(M,BC,OM)"
+					]
+				}
+			}
+		},
+		"52": {
+			"name": "circumcenter_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&PerpendicularBisector(D,AB,OE)&PerpendicularBisector(F,BC,OG)",
+					"conclusion": [
+						"Circumcenter(O,ABC)"
+					]
+				}
+			}
+		},
+		"53": {
+			"name": "incenter_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "Incenter(O,ABC)&Collinear(ADB)&Collinear(BEC)&Perpendicular(D,AB,OD)&Perpendicular(E,BC,OE)",
+					"conclusion": [
+						"Equal(Length(OD),Length(OE))"
+					]
+				}
+			}
+		},
+		"54": {
+			"name": "incenter_property_intersect",
+			"description": {
+				"1": {
+					"premise": "Incenter(O,ABC)",
+					"conclusion": [
+						"Bisector(AO,CAB)"
+					]
+				}
+			}
+		},
+		"55": {
+			"name": "incenter_property_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Bisector(AO,CAB)&Bisector(CO,BCA)",
+					"conclusion": [
+						"Incenter(O,ABC)"
+					]
+				}
+			}
+		},
+		"56": {
+			"name": "centroid_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "Centroid(O,ABC)&Midpoint(M,BC)&Line(AO)&Line(OM)",
+					"conclusion": [
+						"Equal(Length(OA),Mul(Length(OM),2))"
+					]
+				}
+			}
+		},
+		"57": {
+			"name": "centroid_property_intersect",
+			"description": {
+				"1": {
+					"premise": "Centroid(O,ABC)&Collinear(AOM)&Collinear(BMC)",
+					"conclusion": [
+						"Median(AM,ABC)"
+					]
+				}
+			}
+		},
+		"58": {
+			"name": "centroid_property_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Median(AM,ABC)&Median(BN,BCA)&Intersect(O,MA,BN)",
+					"conclusion": [
+						"Centroid(O,ABC)"
+					]
+				}
+			}
+		},
+		"59": {
+			"name": "orthocenter_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "Orthocenter(O,ABC)&Angle(COB)",
+					"conclusion": [
+						"Equal(Measure(Angle(COB)),Add(Measure(ABC),Measure(BCA)))"
+					]
+				}
+			}
+		},
+		"60": {
+			"name": "orthocenter_property_intersect",
+			"description": {
+				"1": {
+					"premise": "Orthocenter(O,ABC)&Collinear(AOD)&Collinear(BDC)",
+					"conclusion": [
+						"IsAltitude(AD,ABC)"
+					]
+				}
+			}
+		},
+		"61": {
+			"name": "orthocenter_property_judgment",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&IsAltitude(AM,ABC)&IsAltitude(BN,BCA)&Intersect(O,MA,BN)",
+					"conclusion": [
+						"Orthocenter(O,ABC)"
+					]
+				}
+			}
+		},
+		"62": {
+			"name": "congruent_property_line_equal",
+			"description": {
+				"1": {
+					"premise": "Congruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Length(AB),Length(DE))"
+					]
+				}
+			}
+		},
+		"63": {
+			"name": "congruent_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Congruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(DEF))"
+					]
+				}
+			}
+		},
+		"64": {
+			"name": "congruent_property_area_equal",
+			"description": {
+				"1": {
+					"premise": "Congruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Area(ABC),Area(DEF))"
+					]
+				}
+			}
+		},
+		"65": {
+			"name": "congruent_judgment_sss",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(DE))&Equal(Length(BC),Length(EF))&Equal(Length(CA),Length(FD))",
+					"conclusion": [
+						"Congruent(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"66": {
+			"name": "congruent_judgment_sas",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(DE))&Equal(Measure(ABC),Measure(DEF))&Equal(Length(CA),Length(FD))",
+					"conclusion": [
+						"Congruent(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"67": {
+			"name": "congruent_judgment_asa",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(ABC),Measure(DEF))&Equal(Length(BC),Length(EF))&Equal(Measure(BCA),Measure(EFD))",
+					"conclusion": [
+						"Congruent(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"68": {
+			"name": "congruent_judgment_aas",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(ABC),Measure(DEF))&Equal(Measure(BCA),Measure(EFD))&Equal(Length(CA),Length(FD))",
+					"conclusion": [
+						"Congruent(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"69": {
+			"name": "congruent_judgment_hl",
+			"description": {
+				"1": {
+					"premise": "RightTriangle(ABC)&RightTriangle(DEF)&Equal(Length(AC),Length(DF))&(Equal(Length(AB),Length(DE))|Equal(Length(BC),Length(EF)))",
+					"conclusion": [
+						"Congruent(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"70": {
+			"name": "similar_property_angle_equal",
+			"description": {
+				"1": {
+					"premise": "Similar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(DEF))"
+					]
+				}
+			}
+		},
+		"71": {
+			"name": "similar_property_line_ratio",
+			"description": {
+				"1": {
+					"premise": "Similar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))"
+					]
+				}
+			}
+		},
+		"72": {
+			"name": "similar_property_perimeter_ratio",
+			"description": {
+				"1": {
+					"premise": "Similar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Perimeter(DEF)),Mul(Length(DE),Perimeter(ABC)))"
+					]
+				}
+			}
+		},
+		"73": {
+			"name": "similar_property_area_square_ratio",
+			"description": {
+				"1": {
+					"premise": "Similar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Length(AB),Perimeter(DEF)),Mul(Length(DE),Length(DE),Perimeter(ABC)))"
+					]
+				}
+			}
+		},
+		"74": {
+			"name": "similar_judgment_sss",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))&Equal(Mul(Length(AB),Length(DF)),Mul(Length(AC),Length(DE)))",
+					"conclusion": [
+						"Similar(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"75": {
+			"name": "similar_judgment_sas",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))&Equal(Measure(ABC),Measure(DEF))",
+					"conclusion": [
+						"Similar(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"76": {
+			"name": "similar_judgment_aa",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(CAB),Measure(FDE))&Equal(Measure(ABC),Measure(DEF))",
+					"conclusion": [
+						"Similar(ABC,DEF)"
+					]
+				}
+			}
+		},
+		"77": {
+			"name": "triangle_perimeter_formula",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Perimeter(ABC),Add(Length(AB),Length(BC),Length(CA)))"
+					]
+				}
+			}
+		},
+		"78": {
+			"name": "triangle_area_formula_common",
+			"description": {
+				"1": {
+					"premise": "IsAltitude(AD,ABC)",
+					"conclusion": [
+						"Equal(Area(ABC),Mul(Length(AD),Length(BC),0.5))"
+					]
+				}
+			}
+		},
+		"79": {
+			"name": "triangle_area_formula_heron",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Area(ABC),Pow(Mul(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(AB)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(BC)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(CA)))),0.5))"
+					]
+				}
+			}
+		},
+		"80": {
+			"name": "triangle_area_formula_sine",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Area(ABC),Mul(Length(AB),Length(BC),Sin(Measure(ABC)),0.5))"
+					]
+				}
+			}
+		},
+		"81": {
+			"name": "sine_theorem",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Mul(Length(BC),Measure(ABC)),Mul(Length(AC),Measure(CAB)))"
+					]
+				}
+			}
+		},
+		"82": {
+			"name": "cosine_theorem",
+			"description": {
+				"1": {
+					"premise": "Triangle(ABC)",
+					"conclusion": [
+						"Equal(Add(Pow(Length(AC),2),Mul(2,Length(BC),Length(AB),Cos(Measure(ABC)))),Add(Pow(Length(BC),2),Pow(Length(AB),2)))"
+					]
+				}
+			}
+		}
+	},
+	"Notes": "",
+	"Version": "0.1.0"
+}

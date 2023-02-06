@@ -155,7 +155,7 @@ def show(problem, simple=False):
 
 
 def save_solution_tree(problem, path):
-    """Generate solution hyper tree and save."""
+    """Generate and save solution hyper tree and theorem DAG."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
 
     st_dot = Digraph(name=str(problem.id))  # Tree
