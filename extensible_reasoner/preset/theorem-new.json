@@ -724,6 +724,12 @@
 					"conclusion": [
 						"Equal(Length(AB),Length(DE))"
 					]
+				},
+				"2": {
+					"premise": "MirrorCongruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Length(AB),Length(DF))"
+					]
 				}
 			}
 		},
@@ -735,6 +741,12 @@
 					"conclusion": [
 						"Equal(Measure(ABC),Measure(DEF))"
 					]
+				},
+				"2": {
+					"premise": "MirrorCongruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(EFD))"
+					]
 				}
 			}
 		},
@@ -743,6 +755,12 @@
 			"description": {
 				"1": {
 					"premise": "Congruent(ABC,DEF)",
+					"conclusion": [
+						"Equal(Area(ABC),Area(DEF))"
+					]
+				},
+				"1": {
+					"premise": "MirrorCongruent(ABC,DEF)",
 					"conclusion": [
 						"Equal(Area(ABC),Area(DEF))"
 					]
@@ -757,6 +775,12 @@
 					"conclusion": [
 						"Congruent(ABC,DEF)"
 					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(FD))&Equal(Length(BC),Length(EF))&Equal(Length(CA),Length(DE))",
+					"conclusion": [
+						"MirrorCongruent(ABC,DEF)"
+					]
 				}
 			}
 		},
@@ -764,9 +788,15 @@
 			"name": "congruent_judgment_sas",
 			"description": {
 				"1": {
-					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(DE))&Equal(Measure(ABC),Measure(DEF))&Equal(Length(CA),Length(FD))",
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(DE))&Equal(Measure(ABC),Measure(DEF))&Equal(Length(BC),Length(EF))",
 					"conclusion": [
 						"Congruent(ABC,DEF)"
+					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Length(AB),Length(FD))&Equal(Measure(ABC),Measure(EFD))&Equal(Length(BC),Length(EF))",
+					"conclusion": [
+						"MirrorCongruent(ABC,DEF)"
 					]
 				}
 			}
@@ -779,6 +809,12 @@
 					"conclusion": [
 						"Congruent(ABC,DEF)"
 					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(ABC),Measure(EFD))&Equal(Length(BC),Length(EF))&Equal(Measure(BCA),Measure(DEF))",
+					"conclusion": [
+						"MirrorCongruent(ABC,DEF)"
+					]
 				}
 			}
 		},
@@ -789,6 +825,12 @@
 					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(ABC),Measure(DEF))&Equal(Measure(BCA),Measure(EFD))&Equal(Length(CA),Length(FD))",
 					"conclusion": [
 						"Congruent(ABC,DEF)"
+					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(ABC),Measure(EFD))&Equal(Measure(BCA),Measure(DEF))&Equal(Length(CA),Length(DE))",
+					"conclusion": [
+						"MirrorCongruent(ABC,DEF)"
 					]
 				}
 			}
@@ -801,6 +843,12 @@
 					"conclusion": [
 						"Congruent(ABC,DEF)"
 					]
+				},
+				"2": {
+					"premise": "RightTriangle(BCA)&RightTriangle(DEF)&Equal(Length(AB),Length(DF))&(Equal(Length(AC),Length(DE))|Equal(Length(BC),Length(EF)))",
+					"conclusion": [
+						"MirrorCongruent(ABC,DEF)"
+					]
 				}
 			}
 		},
@@ -811,6 +859,12 @@
 					"premise": "Similar(ABC,DEF)",
 					"conclusion": [
 						"Equal(Measure(ABC),Measure(DEF))"
+					]
+				},
+				"2": {
+					"premise": "MirrorSimilar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Measure(ABC),Measure(EFD))"
 					]
 				}
 			}
@@ -823,6 +877,12 @@
 					"conclusion": [
 						"Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))"
 					]
+				},
+				"2": {
+					"premise": "MirrorSimilar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Length(EF)),Mul(Length(FD),Length(BC)))"
+					]
 				}
 			}
 		},
@@ -833,6 +893,12 @@
 					"premise": "Similar(ABC,DEF)",
 					"conclusion": [
 						"Equal(Mul(Length(AB),Perimeter(DEF)),Mul(Length(DE),Perimeter(ABC)))"
+					]
+				},
+				"2": {
+					"premise": "MirrorSimilar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Perimeter(DEF)),Mul(Length(FD),Perimeter(ABC)))"
 					]
 				}
 			}
@@ -845,6 +911,12 @@
 					"conclusion": [
 						"Equal(Mul(Length(AB),Length(AB),Perimeter(DEF)),Mul(Length(DE),Length(DE),Perimeter(ABC)))"
 					]
+				},
+				"2": {
+					"premise": "MirrorSimilar(ABC,DEF)",
+					"conclusion": [
+						"Equal(Mul(Length(AB),Length(AB),Perimeter(DEF)),Mul(Length(FD),Length(FD),Perimeter(ABC)))"
+					]
 				}
 			}
 		},
@@ -852,9 +924,15 @@
 			"name": "similar_judgment_sss",
 			"description": {
 				"1": {
-					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))&Equal(Mul(Length(AB),Length(DF)),Mul(Length(AC),Length(DE)))",
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(DE),Length(BC)))&Equal(Mul(Length(AB),Length(DF)),Mul(Length(DE),Length(CA)))",
 					"conclusion": [
 						"Similar(ABC,DEF)"
+					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(FD),Length(BC)))&Equal(Mul(Length(AB),Length(DE)),Mul(Length(FD),Length(CA)))",
+					"conclusion": [
+						"MirrorSimilar(ABC,DEF)"
 					]
 				}
 			}
@@ -867,6 +945,12 @@
 					"conclusion": [
 						"Similar(ABC,DEF)"
 					]
+				},
+				"2": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Mul(Length(AB),Length(EF)),Mul(Length(FD),Length(BC)))&Equal(Measure(ABC),Measure(EFD))",
+					"conclusion": [
+						"MirrorSimilar(ABC,DEF)"
+					]
 				}
 			}
 		},
@@ -877,6 +961,12 @@
 					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(CAB),Measure(FDE))&Equal(Measure(ABC),Measure(DEF))",
 					"conclusion": [
 						"Similar(ABC,DEF)"
+					]
+				},
+				"1": {
+					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(CAB),Measure(FDE))&Equal(Measure(ABC),Measure(EFD))",
+					"conclusion": [
+						"MirrorSimilar(ABC,DEF)"
 					]
 				}
 			}
