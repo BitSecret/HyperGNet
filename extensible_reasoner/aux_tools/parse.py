@@ -1,6 +1,8 @@
 import copy
 import string
 from pyparsing import oneOf, Combine, Word, nums, alphas, OneOrMore
+from sympy import sin, cos, tan, pi
+from definition.exception import RuntimeException
 
 float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))
 int_idt = OneOrMore(Word(nums))
@@ -14,6 +16,10 @@ stack_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
 outside_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
                     "{": 5, "}": 0,
                     "@": 4, "#": 4, "$": 4, "~": 0}
+
+
+class Parser:
+    pass
 
 
 def parse_predicate(predicate_GDL):
@@ -410,6 +416,123 @@ def _replace_letter_with_vars(s_tree, s_var):
         return [s_var.index(para) for para in s_tree]
     else:
         return [_replace_letter_with_vars(para, s_var) for para in s_tree]
+
+
+def get_expr_from_tree(problem, tree, replaced=False, letters=None):
+    """
+    Recursively trans expr_tree to symbolic algebraic expression.
+    :param problem: class <Problem>.
+    :param tree: An expression in the form of a list tree.
+    :param replaced: Optional. Set True when tree's item is expressed by vars.
+    :param letters: Optional. Letters that will replace vars.
+    >> get_expr_from_tree(problem, ['Length', ['T', 'R']])
+    l_tr
+    >> get_expr_from_tree(problem, ['Add', [['Length', ['Z', 'X']], '2*x-14']])
+    2.0*f_x + l_zx - 14.0
+    >> get_expr_from_tree(problem, ['Sin', [['Measure', ['0', '1', '2']]]], True, ['X', 'Y', 'Z'])
+    sin(pi*m_zxy/180)
+    """
+    if not isinstance(tree, list):  # expr
+        return parse_expr(problem, tree)
+
+    if tree[0] in problem.predicate_GDL["Attribution"]:  # attr
+        if not replaced:
+            return problem.get_sym_of_attr(tuple(tree[1]), tree[0])
+        else:
+            replaced_item = [letters[i] for i in tree[1]]
+            return problem.get_sym_of_attr(tuple(replaced_item), tree[0])
+
+    if tree[0] == "Add":  # operate
+        result = 0
+        for item in tree[1]:
+            result += get_expr_from_tree(problem, item, replaced, letters)
+        return result
+    elif tree[0] == "Sub":
+        return get_expr_from_tree(problem, tree[1][0], replaced, letters) - \
+               get_expr_from_tree(problem, tree[1][1], replaced, letters)
+    elif tree[0] == "Mul":
+        result = 1
+        for item in tree[1]:
+            result *= get_expr_from_tree(problem, item, replaced, letters)
+        return result
+    elif tree[0] == "Div":
+        return get_expr_from_tree(problem, tree[1][0], replaced, letters) / \
+               get_expr_from_tree(problem, tree[1][1], replaced, letters)
+    elif tree[0] == "Pow":
+        return get_expr_from_tree(problem, tree[1][0], replaced, letters) ** \
+               get_expr_from_tree(problem, tree[1][1], replaced, letters)
+    elif tree[0] == "Sin":
+        return sin(get_expr_from_tree(problem, tree[1][0], replaced, letters) * pi / 180)
+    elif tree[0] == "Cos":
+        return cos(get_expr_from_tree(problem, tree[1][0], replaced, letters) * pi / 180)
+    elif tree[0] == "Tan":
+        return tan(get_expr_from_tree(problem, tree[1][0], replaced, letters) * pi / 180)
+    else:
+        raise RuntimeException("OperatorNotDefined",
+                               "No operation {}, please check your expression.".format(tree[0]))
+
+
+def get_equation_from_tree(problem, tree, replaced=False, letters=None):
+    """Called by function <get_expr_from_tree>."""
+    left_expr = get_expr_from_tree(problem, tree[0], replaced, letters)
+    right_expr = get_expr_from_tree(problem, tree[1], replaced, letters)
+    return left_expr - right_expr
+
+
+def parse_expr(problem, expr):
+    """Parse the expression in <str> form into <symbolic> form"""
+    expr_list = idt_expr.parseString(expr + "~").asList()
+    expr_stack = []
+    operator_stack = ["~"]  # 栈底元素
+
+    i = 0
+    while i < len(expr_list):
+        unit = expr_list[i]
+        if unit in operator:  # 运算符
+            if stack_priority[operator_stack[-1]] < outside_priority[unit]:
+                operator_stack.append(unit)
+                i = i + 1
+            else:
+                operator_unit = operator_stack.pop()
+                if operator_unit == "+":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 + expr_2)
+                elif operator_unit == "-":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = 0 if len(expr_stack) == 0 else expr_stack.pop()
+                    expr_stack.append(expr_1 - expr_2)
+                elif operator_unit == "*":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 * expr_2)
+                elif operator_unit == "/":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 / expr_2)
+                elif operator_unit == "^":
+                    expr_2 = expr_stack.pop()
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(expr_1 ** expr_2)
+                elif operator_unit == "{":  # 只有unit为"}"，才能到达这个判断
+                    i = i + 1
+                elif operator_unit == "@":  # sin
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(sin(expr_1))
+                elif operator_unit == "#":  # cos
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(cos(expr_1))
+                elif operator_unit == "$":  # tan
+                    expr_1 = expr_stack.pop()
+                    expr_stack.append(tan(expr_1))
+                elif operator_unit == "~":  # 只有unit为"~"，才能到达这个判断，表示表达式处理完成
+                    break
+        else:  # 实数或符号
+            unit = problem.get_sym_of_attr((unit,), "Free") if unit.isalpha() else float(unit)
+            expr_stack.append(unit)
+            i = i + 1
+
+    return expr_stack.pop()
 
 
 def anti_parse_logic_to_cdl(problem, de_redundant=False):

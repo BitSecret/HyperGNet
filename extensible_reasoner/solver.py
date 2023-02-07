@@ -4,6 +4,8 @@ from aux_tools.parse import parse_predicate, parse_theorem, parse_problem
 from aux_tools.parse import replace_free_vars_with_letters, build_vars_from_algebraic_relation
 from aux_tools.logic import run
 import time
+from sympy import symbols, solve, Float, Integer
+from func_timeout import func_set_timeout
 
 
 class Solver:
@@ -16,7 +18,7 @@ class Solver:
     def load_problem(self, problem_CDL):
         s_start_time = time.time()  # timing
         self.problem = Problem(self.predicate_GDL, parse_problem(problem_CDL))  # init problem
-        self.problem.conditions["Equation"].solve()  # Solve the equations after initialization
+        self.solve()  # Solve the equations after initialization
         self.problem.applied("init_problem")  # save applied theorem and update step
         self.problem.goal["solving_msg"].append(
             "\033[32mInit problem and first solving\033[0m:{:.6f}s".format(time.time() - s_start_time))
@@ -201,4 +203,161 @@ class Solver:
 
     """-----------Underlying implementation of <relational reasoning>-----------"""
 
-    """-----------Underlying implementation of <equation solving>-----------"""
+    """-------------Underlying implementation of <equation solving>-------------"""
+    @func_set_timeout(10)  # 限时10s
+    def solve(self):
+        """Solve the equation contained in the question."""
+        eq = self.problem.conditions["Equation"]    # class <Equation>
+
+        if eq.solved:
+            return
+
+        update = True
+        while update:
+            update = False
+            self._simplify_equations()  # simplify equations before solving
+
+            sym_set = []
+            for equation in list(eq.equations.values()):    # all symbols that have not been solved
+                sym_set += equation.free_symbols
+            sym_set = list(set(sym_set))  # quickly remove redundancy
+
+            resolved_sym_set = set()
+            for sym in sym_set:
+                if sym in resolved_sym_set:  # skip already solved sym
+                    continue
+
+                equations, _, premise, mini_sym_set = self.get_minimum_equations(sym)
+                resolved_sym_set.union(mini_sym_set)
+
+                result = solve(equations)  # solve equations
+
+                if len(result) > 0:
+                    if isinstance(result, list):
+                        result = result[0]
+                    for key in result.keys():    # save solved value
+                        if eq.value_of_sym[key] is None \
+                                and (isinstance(result[key], Float) or isinstance(result[key], Integer)):
+                            self.problem.set_value_of_sym(key, float(result[key]), tuple(premise), "solve_eq")
+                            update = True
+
+        eq.solved = True
+
+    def solve_target(self, target_expr):
+        """
+        Solve target expression of symbolic form.
+        >> equations = [a - b, b - c, c - 1]
+        >> solve_target(a)
+        1
+        """
+        eq = self.problem.conditions["Equation"]    # class <Equation>
+
+        if target_expr in eq.get_item_by_id.values() or \
+                -target_expr in eq.get_item_by_id.values():  # It is a known equation and does not need to solve it.
+            return 0.0, [eq.get_id_by_item[target_expr]]
+
+        premise = []
+        for sym in target_expr.free_symbols:  # Solved only using value replacement
+            if eq.value_of_sym[sym] is not None:
+                premise.append(eq.get_id_by_item[sym - eq.value_of_sym[sym]])
+                target_expr = target_expr.subs(sym, eq.value_of_sym[sym])
+        if len(target_expr.free_symbols) == 0:
+            return float(target_expr), premise
+
+        # Need to solve. Construct minimum solution equations.
+        equations, target_expr, eq_premise, _ = self.get_minimum_equations(target_expr)
+        premise += eq_premise
+        equations = self._high_level_simplify(equations, target_expr)  # high level simplify
+        target_sym = symbols("t_s")
+        equations[-1] = target_sym - equations[-1]
+        solved_result = solve(equations)
+
+        if len(solved_result) > 0 and isinstance(solved_result, list):  # Multi answer. Choose the first.
+            solved_result = solved_result[0]
+
+        if len(solved_result) > 0 and \
+                target_sym in solved_result.keys() and \
+                (isinstance(solved_result[target_sym], Float) or
+                 isinstance(solved_result[target_sym], Integer)):
+            return float(solved_result[target_sym]), list(set(premise))  # Only return real solution.
+
+        return None, None  # unsolvable
+
+    def get_minimum_equations(self, target_expr):  # 返回求解target_expr依赖的最小方程组
+        eq = self.problem.conditions["Equation"]    # class <Equation>
+        sym_set = target_expr.free_symbols  # 方程组涉及到的符号
+        min_equations = []  # 最小方程组
+        premise = []  # 每个方程的index，作为target_expr求解结果的premise
+
+        self._simplify_equations()  # simplify equations before return minimum equations
+
+        # 循环添加依赖方程，得到最小方程组
+        update = True
+        while update:
+            update = False
+            for sym in sym_set:
+                if eq.value_of_sym[sym] is None:  # 如果sym的值未求出，需要添加包含sym的依赖方程
+                    for key in eq.equations:  # 添加简单依赖方程
+                        if sym in eq.equations[key].free_symbols and eq.equations[key] not in min_equations:
+                            min_equations.append(eq.equations[key])
+                            premise.append(eq.get_id_by_item[key])
+                            sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号(未化简的原方程的所有符号)
+                            update = True
+
+        for sym in sym_set:
+            if eq.value_of_sym[sym] is not None:
+                premise.append(eq.get_id_by_item[sym - eq.value_of_sym[sym]])
+                target_expr = target_expr.subs(sym, eq.value_of_sym[sym])  # 替换target_expr中的已知sym
+
+        return min_equations, target_expr, premise, sym_set  # 返回化简的target_expr、最小依赖方程组和前提
+
+    def _simplify_equations(self):
+        """Simplify all equations based on value replaced."""
+        eq = self.problem.conditions["Equation"]  # class <Equation>
+        update = True
+        while update:
+            update = False
+            remove_lists = []  # 要删除的 basic equation 列表
+            for key in eq.equations.keys():
+                for sym in eq.equations[key].free_symbols:  # 遍历方程中的符号，检查其值是否都是已知的
+                    if eq.value_of_sym[sym] is not None:  # sym值已知，替换掉
+                        eq.equations[key] = eq.equations[key].subs(sym, eq.value_of_sym[sym])
+                        update = True
+
+                if len(eq.equations[key].free_symbols) == 0:  # 没有未知符号：删除方程
+                    remove_lists.append(key)
+
+                if len(eq.equations[key].free_symbols) == 1:  # 只剩一个符号：求得符号值，然后删除方程
+                    target_sym = list(eq.equations[key].free_symbols)[0]
+                    value = solve(eq.equations[key])[0]
+                    premise = [eq.get_id_by_item[key]]
+                    for sym in key.free_symbols:
+                        if eq.value_of_sym[sym] is not None:
+                            premise.append(eq.get_id_by_item[sym - eq.value_of_sym[sym]])
+                    self.problem.set_value_of_sym(target_sym, value, tuple(premise), "solve_eq")
+                    remove_lists.append(key)
+
+            for remove_eq in remove_lists:  # 删除所有符号值已知的方程
+                eq.equations.pop(remove_eq)
+
+    @staticmethod
+    def _high_level_simplify(equations, target_expr):
+        """ High level simplify based on symbol replacement."""
+        update = True
+        while update:
+            update = False
+            for equation in equations:  # 替换符号
+                if len(equation.free_symbols) == 2:
+                    result = solve(equation)
+                    if len(result) > 0:  # 有解
+                        if isinstance(result, list):  # 若解不唯一，选择第一个
+                            result = result[0]
+                        sym = list(result.keys())[0]
+                        target_expr = target_expr.subs(sym, result[sym])  # 符号替换
+                        for i in range(len(equations)):
+                            equations[i] = equations[i].subs(sym, result[sym])  # 符号替换
+                        update = True
+
+        equations.append(target_expr)
+
+        return equations

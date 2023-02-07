@@ -20,14 +20,14 @@ def show(problem, simple=False):
     if simple:
         if problem.goal["solved"]:
             print("pid: {}, correct_answer: {}, solved: \033[32m{}\033[0m, solved_answer: {}".format(
-                problem.id,
+                problem.problem_CDL["id"],
                 str(problem.goal["answer"]),
                 str(problem.goal["solved"]),
                 str(problem.goal["solved_answer"])
             ))
         else:
             print("pid: {}, correct_answer: {}, solved: \033[31m{}\033[0m, solved_answer: {}".format(
-                problem.id,
+                problem.problem_CDL["id"],
                 str(problem.goal["answer"]),
                 str(problem.goal["solved"]),
                 str(problem.goal["solved_answer"])
@@ -37,18 +37,18 @@ def show(problem, simple=False):
 
     """-----------Conditional Declaration Statement-----------"""
     print("\033[36mproblem_index:\033[0m", end=" ")
-    print(problem.id)
+    print(problem.problem_CDL["id"])
     print("\033[36mconstruction_cdl:\033[0m")
-    for construction_fl in problem.fl["construction_cdl"]:
+    for construction_fl in problem.problem_CDL["cdl"]["construction_cdl"]:
         print(construction_fl)
     print("\033[36mtext_cdl:\033[0m")
-    for text_fl in problem.fl["text_cdl"]:
+    for text_fl in problem.problem_CDL["cdl"]["text_cdl"]:
         print(text_fl)
     print("\033[36mimage_cdl:\033[0m")
-    for image_fl in problem.fl["image_cdl"]:
+    for image_fl in problem.problem_CDL["cdl"]["image_cdl"]:
         print(image_fl)
     print("\033[36mgoal_cdl:\033[0m")
-    print(problem.fl["goal_cdl"])
+    print(problem.problem_CDL["cdl"]["goal_cdl"])
     print()
 
     """-----------Process of Problem Solving-----------"""
@@ -158,7 +158,7 @@ def save_solution_tree(problem, path):
     """Generate and save solution hyper tree and theorem DAG."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
 
-    st_dot = Digraph(name=str(problem.id))  # Tree
+    st_dot = Digraph(name=str(problem.problem_CDL["id"]))  # Tree
     nodes = []    # list of cdl or theorem.
     edges = {}      # node(cdl or theorem): node(cdl or theorem), used for DAG generating.
     group = {}    # (premise, theorem): [_id], used for building hyper graph.
@@ -208,14 +208,15 @@ def save_solution_tree(problem, path):
         }
         count += 1
 
-    save_json(solution_tree, path + "{}_hyper.json".format(problem.id))  # save solution tree
+    save_json(solution_tree, path + "{}_hyper.json".format(problem.problem_CDL["id"]))  # save solution tree
     st_dot.render(directory=path, view=False, format="png")  # save hyper graph
-    os.remove(path + "{}.gv".format(problem.id))
-    if "{}_hyper.png".format(problem.id) in os.listdir(path):
-        os.remove(path + "{}_hyper.png".format(problem.id))
-    os.rename(path + "{}.gv.png".format(problem.id), path + "{}_hyper.png".format(problem.id))
+    os.remove(path + "{}.gv".format(problem.problem_CDL["id"]))
+    if "{}_hyper.png".format(problem.problem_CDL["id"]) in os.listdir(path):
+        os.remove(path + "{}_hyper.png".format(problem.problem_CDL["id"]))
+    os.rename(path + "{}.gv.png".format(problem.problem_CDL["id"]),
+              path + "{}_hyper.png".format(problem.problem_CDL["id"]))
 
-    dag_dot = Digraph(name=str(problem.id))  # generate theorem DAG
+    dag_dot = Digraph(name=str(problem.problem_CDL["id"]))  # generate theorem DAG
     nodes = []  # list of theorem.
     dag = {}
     for s_node in edges:    # theorem
@@ -229,12 +230,13 @@ def save_solution_tree(problem, path):
                         _add_edge(dag_dot, nodes, s_node, e_node)
                         dag[s_node].append(e_node)
 
-    save_json(dag, path + "{}_dag.json".format(problem.id))  # save solution tree
+    save_json(dag, path + "{}_dag.json".format(problem.problem_CDL["id"]))  # save solution tree
     dag_dot.render(directory=path, view=False, format="png")  # save hyper graph
-    os.remove(path + "{}.gv".format(problem.id))
-    if "{}_dag.png".format(problem.id) in os.listdir(path):
-        os.remove(path + "{}_dag.png".format(problem.id))
-    os.rename(path + "{}.gv.png".format(problem.id), path + "{}_dag.png".format(problem.id))
+    os.remove(path + "{}.gv".format(problem.problem_CDL["id"]))
+    if "{}_dag.png".format(problem.problem_CDL["id"]) in os.listdir(path):
+        os.remove(path + "{}_dag.png".format(problem.problem_CDL["id"]))
+    os.rename(path + "{}.gv.png".format(problem.problem_CDL["id"]),
+              path + "{}_dag.png".format(problem.problem_CDL["id"]))
 
 
 def _add_node(dot, nodes, node):
@@ -262,4 +264,4 @@ def save_step_msg(problem, path, de_redundant=True):
     """Save conditions grouped by step in dict."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
     anti_parsed_cdl = anti_parse_logic_to_cdl(problem, de_redundant)
-    save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.id))
+    save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.problem_CDL["id"]))
