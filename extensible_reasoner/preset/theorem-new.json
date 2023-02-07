@@ -999,7 +999,7 @@
 				"1": {
 					"premise": "Triangle(ABC)",
 					"conclusion": [
-						"Equal(Area(ABC),Pow(Mul(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(AB)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(BC)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(CA)))),0.5))"
+						"Equal(Area(ABC),Pow(Mul(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(AB)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(BC)),Sub(Mul(Add(Length(AB),Length(BC),Length(AC)),0.5),Length(CA))),0.5))"
 					]
 				}
 			}

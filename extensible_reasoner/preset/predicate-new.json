@@ -3,7 +3,6 @@
 		"Entity": {
 			"1": {
 				"name": "Triangle(ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"ABC"
 				],
@@ -17,7 +16,6 @@
 			},
 			"2": {
 				"name": "RightTriangle(ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"ABC"
 				],
@@ -28,7 +26,6 @@
 			},
 			"3": {
 				"name": "IsoscelesTriangle(ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"ABC"
 				],
@@ -39,7 +36,6 @@
 			},
 			"4": {
 				"name": "EquilateralTriangle(ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"ABC"
 				],
@@ -55,7 +51,6 @@
 		"Relation": {
 			"1": {
 				"name": "Midpoint(M,AB)",
-				"format_constraints": "enumeration",
 				"format": [
 					"M,AB"
 				],
@@ -69,7 +64,6 @@
 			},
 			"2": {
 				"name": "Intersect(O,AB,CD)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,AB,CD"
 				],
@@ -86,7 +80,6 @@
 			},
 			"3": {
 				"name": "DisorderParallel(AB,CD)",
-				"format_constraints": "enumeration",
 				"format": [
 					"AB,CD"
 				],
@@ -102,7 +95,6 @@
 			},
 			"4": {
 				"name": "Parallel(AB,CD)",
-				"format_constraints": "enumeration",
 				"format": [
 					"AB,CD"
 				],
@@ -115,7 +107,6 @@
 			},
 			"5": {
 				"name": "Perpendicular(O,AB,CD)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,AB,CD",
 					"B,AB,CB",
@@ -141,7 +132,6 @@
 			},
 			"6": {
 				"name": "PerpendicularBisector(O,AB,CD)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,AB,CD",
 					"D,AB,CD"
@@ -156,7 +146,6 @@
 			},
 			"7": {
 				"name": "Bisector(BD,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"BD,ABC"
 				],
@@ -168,7 +157,6 @@
 			},
 			"8": {
 				"name": "Median(AD,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"AD,ABC"
 				],
@@ -180,7 +168,6 @@
 			},
 			"9": {
 				"name": "IsAltitude(AD,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"AD,ABC",
 					"AB,ABC",
@@ -194,7 +181,6 @@
 			},
 			"10": {
 				"name": "Neutrality(DE,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"DE,ABC"
 				],
@@ -206,7 +192,6 @@
 			},
 			"11": {
 				"name": "Circumcenter(O,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,ABC"
 				],
@@ -221,7 +206,6 @@
 			},
 			"12": {
 				"name": "Incenter(O,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,ABC"
 				],
@@ -236,7 +220,6 @@
 			},
 			"13": {
 				"name": "Centroid(O,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,ABC"
 				],
@@ -251,7 +234,6 @@
 			},
 			"14": {
 				"name": "Orthocenter(O,ABC)",
-				"format_constraints": "enumeration",
 				"format": [
 					"O,ABC",
 					"A,ABC",
@@ -269,11 +251,7 @@
 			},
 			"15": {
 				"name": "Congruent(ABC,DEF)",
-				"format_constraints": "mutex",
-				"format": [
-					"ABC,DEF"
-				],
-				"mutex_points": [
+				"mutex": [
 					"ABC",
 					"DEF",
 					[
@@ -303,11 +281,7 @@
 			},
 			"16": {
 				"name": "Similar(ABC,DEF)",
-				"format_constraints": "mutex",
-				"format": [
-					"ABC,DEF"
-				],
-				"mutex_points": [
+				"mutex": [
 					"ABC",
 					"DEF",
 					[
@@ -337,11 +311,7 @@
 			},
 			"17": {
 				"name": "MirrorCongruent(ABC,DEF)",
-				"format_constraints": "mutex",
-				"format": [
-					"ABC,DEF"
-				],
-				"mutex_points": [
+				"mutex": [
 					"ABC",
 					"DEF",
 					[
@@ -371,11 +341,7 @@
 			},
 			"18": {
 				"name": "MirrorSimilar(ABC,DEF)",
-				"format_constraints": "mutex",
-				"format": [
-					"ABC,DEF"
-				],
-				"mutex_points": [
+				"mutex": [
 					"ABC",
 					"DEF",
 					[
@@ -406,17 +372,24 @@
 		},
 		"Attribution": {
 			"1": {
-				"format": "AltitudeOfTriangle(Triangle(ABC))",
+				"name": "AltitudeOfTriangle",
 				"sym": "at",
 				"para": [
+					"Triangle(ABC)"
+				],
+				"multi": [
 					"ABC"
 				],
 				"negative": "False"
 			},
 			"2": {
-				"format": "DistanceOfPointToLine(Point(O),Line(AB))",
+				"name": "DistanceOfPointToLine",
 				"sym": "dpl",
 				"para": [
+					"Point(O)",
+					"Line(AB)"
+				],
+				"multi": [
 					"OAB",
 					"OBA"
 				],

@@ -17,162 +17,205 @@ outside_priority = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3,
 
 
 def parse_predicate(predicate_GDL):
-    """parse predicate_GDL to parsed form."""
+    """parse predicate_GDL to executable form."""
     predicate_GDL = predicate_GDL["Predicates"]
-    parsed_GDL = {}
+    parsed_GDL = {
+        "Construction": ["Shape", "Polygon", "Collinear"],  # preset Construction,
+        "Entity": {  # preset Entity
+            "Point": {
+                "vars": [0], "format": [[0]], "multi": [], "extend": []
+            },
+            "Line": {
+                "vars": [0, 1], "format": [[0, 1]], "multi": [[1, 0]], "extend": [["Point", [0]], ["Point", [1]]]
+            },
+            "Angle": {
+                "vars": [0, 1, 2], "format": [[0, 1, 2]], "multi": [], "extend": [["Line", [0, 1]], ["Line", [1, 2]]]
+            }
+        },
+        "Relation": {},
+        "Attribution": {  # preset Attribution
+            "Free": {
+                "sym": "f",
+                "para": [],
+                "multi": [],
+                "negative": "True"
+            },
+            "Length": {
+                "sym": "l",
+                "para": [["Line", [0, 1]]],
+                "multi": [[0, 1], [1, 0]],  # [1, 0]  或 “normal”
+                "negative": "False"
+            },
+            "Measure": {
+                "sym": "m",
+                "para": [["Angle", [0, 1, 2]]],
+                "multi": [[0, 1, 2]],
+                "negative": "True"
+            },
+            "Area": {
+                "sym": "a",
+                "para": "Shape",
+                "multi": "normal",
+                "negative": "False"
+            },
+            "Perimeter": {
+                "sym": "p",
+                "para": "Shape",
+                "multi": "normal",
+                "negative": "False"
+            }
+        }
+    }
 
     entity = predicate_GDL["Entity"]  # parse entity
-    parsed_GDL["Construction"] = {  # preset Construction
-        "Shape": {
-            "vars": [], "multi": [], "extend": []
-        },
-        "Polygon": {
-            "vars": [], "multi": [], "extend": []
-        },
-        "Collinear": {
-            "vars": [], "multi": [], "extend": []
-        }
-    }
-    parsed_GDL["Entity"] = {  # preset Entity
-        "Point": {
-            "vars": [0], "multi": [], "extend": []
-        },
-        "Line": {
-            "vars": [0, 1], "multi": [["Line", [1, 0]]], "extend": [["Point", [0]], ["Point", [1]]]
-        },
-        "Angle": {
-            "vars": [0, 1, 2], "multi": [], "extend": [["Line", [0, 1]], ["Line", [1, 2]]]
-        }
-    }
     for key in entity:
-        name, para = _parse_one_predicate(entity[key]["format"])
-        parsed_GDL["Entity"][name] = {
-            "vars": [i for i in range(len(para))],
-            "multi": [],
-            "extend": []
+        name, para, _ = _parse_one_predicate(entity[key]["name"])
+        parsed_GDL["Entity"][name] = {  # parameter of predicate
+            "vars": [i for i in range(len(para))]
         }
+        if "format" in entity[key]:  # format control
+            parsed_format = []
+            for i in range(len(entity[key]["format"])):
+                parsed_format.append([])
+                checked = []
+                for item in entity[key]["format"][i]:
+                    if item not in checked:
+                        checked.append(item)
+                    parsed_format[i].append(checked.index(item))
+            parsed_GDL["Entity"][name]["format"] = parsed_format
+        else:
+            parsed_mutex = []
+
+            for i in range(len(entity[key]["mutex"])):
+                parsed_mutex.append([])
+                if isinstance(entity[key]["mutex"][i], str):
+                    for item in entity[key]["mutex"][i]:
+                        parsed_mutex[i].append(para.index(item))
+                else:
+                    parsed_mutex[i].append([])
+                    parsed_mutex[i].append([])
+                    for item in entity[key]["mutex"][i][0]:
+                        parsed_mutex[i][0].append(para.index(item))
+                    for item in entity[key]["mutex"][i][1]:
+                        parsed_mutex[i][1].append(para.index(item))
+            parsed_GDL["Entity"][name]["mutex"] = parsed_mutex
+        parsed_GDL["Entity"][name]["multi"] = []  # multi
         for multi in entity[key]["multi"]:
-            extend_name, extend_para = _parse_one_predicate(multi)
-            parsed_GDL["Entity"][name]["multi"].append([extend_name, [para.index(i) for i in extend_para]])
+            _, extend_para, _ = _parse_one_predicate(multi)
+            parsed_GDL["Entity"][name]["multi"].append([para.index(i) for i in extend_para])
+        parsed_GDL["Entity"][name]["extend"] = []  # extend
         for extend in entity[key]["extend"]:
-            extend_name, extend_para = _parse_one_predicate(extend)
+            extend_name, extend_para, _ = _parse_one_predicate(extend)
             parsed_GDL["Entity"][name]["extend"].append([extend_name, [para.index(i) for i in extend_para]])
 
     relation = predicate_GDL["Relation"]  # parse relation
-    parsed_GDL["Relation"] = {}
     for key in relation:
-        name, para, para_len = _parse_one_predicate_attached_len(relation[key]["format"])
-        parsed_GDL["Relation"][name] = {
+        name, para, para_len = _parse_one_predicate(relation[key]["name"])
+        parsed_GDL["Relation"][name] = {  # parameter of predicate
             "vars": [i for i in range(len(para))],
-            "para_split": para_len,
-            "multi": [],
-            "extend": []
+            "para_structure": para_len
         }
+        if "format" in relation[key]:  # format control
+            parsed_format = []
+            for i in range(len(relation[key]["format"])):
+                parsed_format.append([])
+                checked = []
+                for item in relation[key]["format"][i]:
+                    if item not in checked:
+                        checked.append(item)
+                    parsed_format[i].append(checked.index(item))
+            parsed_GDL["Relation"][name]["format"] = parsed_format
+        else:
+            parsed_mutex = []
+            for i in range(len(relation[key]["mutex"])):
+                parsed_mutex.append([])
+                if isinstance(relation[key]["mutex"][i], str):
+                    for item in relation[key]["mutex"][i]:
+                        parsed_mutex[i].append(para.index(item))
+                else:
+                    parsed_mutex[i].append([])
+                    parsed_mutex[i].append([])
+                    for item in relation[key]["mutex"][i][0]:
+                        parsed_mutex[i][0].append(para.index(item))
+                    for item in relation[key]["mutex"][i][1]:
+                        parsed_mutex[i][1].append(para.index(item))
+            parsed_GDL["Relation"][name]["mutex"] = parsed_mutex
+        parsed_GDL["Relation"][name]["multi"] = []  # multi
         for multi in relation[key]["multi"]:
-            extend_name, extend_para = _parse_one_predicate(multi)
-            parsed_GDL["Relation"][name]["multi"].append([extend_name, [para.index(i) for i in extend_para]])
+            _, extend_para, _ = _parse_one_predicate(multi)
+            parsed_GDL["Relation"][name]["multi"].append([para.index(i) for i in extend_para])
+        parsed_GDL["Relation"][name]["extend"] = []  # extend
         for extend in relation[key]["extend"]:
-            extend_name, extend_para = _parse_one_predicate(extend)
+            extend_name, extend_para, _ = _parse_one_predicate(extend)
             parsed_GDL["Relation"][name]["extend"].append([extend_name, [para.index(i) for i in extend_para]])
 
     attribution = predicate_GDL["Attribution"]  # parse attribution
-    parsed_GDL["Attribution"] = {  # preset Attribution
-        "Free": {
-            "sym": "f",
-            "attr_multi": "False",
-            "negative": "True"
-        },
-        "Length": {
-            "sym": "l",
-            "attr_multi": "True",
-            "negative": "False"
-        },
-        "Measure": {
-            "sym": "m",
-            "attr_multi": "False",
-            "negative": "True"
-        },
-        "Area": {
-            "sym": "a",
-            "attr_multi": "True",
-            "negative": "False"
-        },
-        "Perimeter": {
-            "sym": "p",
-            "attr_multi": "True",
-            "negative": "False"
-        },
-    }
     for key in attribution:
-        name = attribution[key]["format"]
-        parsed_GDL["Attribution"][name] = {
-            "sym": attribution[key]["sym"],
-            "attr_multi": attribution[key]["attr_multi"],
-            "negative": attribution[key]["negative"]
+        name = attribution[key]["name"]
+        parsed_GDL["Attribution"][name] = {  # sym
+            "sym": attribution[key]["sym"]
         }
+        parsed_GDL["Attribution"][name]["para"] = []  # para
+        for predicate in attribution[key]["para"]:
+            para_name, para, _ = _parse_one_predicate(predicate)
+            parsed_GDL["Attribution"][name]["para"].append(
+                [para_name, [attribution[key]["multi"][0].index(item) for item in para]]
+            )
+        parsed_GDL["Attribution"][name]["multi"] = [  # multi
+            [attribution[key]["multi"][0].index(item) for item in attribution[key]["multi"][i]]
+            for i in range(len(attribution[key]["multi"]))
+        ]
+        parsed_GDL["Attribution"][name]["negative"] = attribution[key]["negative"]  # negative
+
     return parsed_GDL
 
 
 def parse_theorem(theorem_GDL):
-    """parse theorem_GDL to parsed form."""
+    """parse theorem_GDL to executable form."""
     theorem_GDL = theorem_GDL["Theorems"]
     parsed_GDL = {}
 
     for key in theorem_GDL:
         theorem_name = theorem_GDL[key]["name"]
-        parsed_GDL[theorem_name] = {
-            "vars": [],
-            "mutex_points": [],
-            "premise": {"entity_relation": [],
-                        "algebraic_relation": []},
-            "conclusion": {"entity_relation": [],
-                           "algebraic_relation": []}
-        }
+        parsed_GDL[theorem_name] = {}
+        for branch in theorem_GDL[key]["description"]:
+            parsed_GDL[theorem_name][branch] = {}
 
-        for s in theorem_GDL[key]["premise"]["entity_relation"]:  # replace entity_relation's letter with vars
-            name, para = _parse_one_predicate(s)
-            for i in range(len(para)):
-                if para[i] not in parsed_GDL[theorem_name]["vars"]:
-                    parsed_GDL[theorem_name]["vars"].append(para[i])
-                para[i] = parsed_GDL[theorem_name]["vars"].index(para[i])
-            parsed_GDL[theorem_name]["premise"]["entity_relation"].append([name, para])
+            letters = []    # vars
 
-        for s in theorem_GDL[key]["premise"]["algebraic_relation"]:  # replace algebraic_relation's letter with vars
-            parsed_GDL[theorem_name]["premise"]["algebraic_relation"].append(
-                _replace_letter_with_vars(_parse_equal_predicate(s), parsed_GDL[theorem_name]["vars"])
-            )
+            parsed_premise = _parse_premise([theorem_GDL[key]["description"][branch]["premise"]])  # premise
+            for i in range(len(parsed_premise)):
+                for j in range(len(parsed_premise[i])):
+                    if "Equal" in parsed_premise[i][j]:
+                        parsed_premise[i][j] = _parse_equal_predicate(parsed_premise[i][j])
+                        parsed_premise[i][j] = _replace_letter_with_vars(parsed_premise[i][j], letters)
+                    else:
+                        predicate, para, _ = _parse_one_predicate(parsed_premise[i][j])
+                        for k in range(len(para)):
+                            if para[k] not in letters:
+                                letters.append(para[k])
+                            para[k] = letters.index(para[k])
 
-        for mutex_point in theorem_GDL[key]["mutex_points"]:  # replace mutex_point's letter with vars
-            if not isinstance(mutex_point[0], list):
-                parsed_GDL[theorem_name]["mutex_points"].append(
-                    [parsed_GDL[theorem_name]["vars"].index(mutex_point[i])
-                     for i in range(len(mutex_point))]
-                )
-            else:
-                parsed_GDL[theorem_name]["mutex_points"].append(
-                    [[parsed_GDL[theorem_name]["vars"].index(mutex_point[i][j])
-                      for j in range((len(mutex_point[i])))]
-                     for i in range(len(mutex_point))]
-                )
+                        parsed_premise[i][j] = [predicate, para]
 
-        for s in theorem_GDL[key]["conclusion"]["entity_relation"]:  # replace entity_relation's letter with vars
-            name, para = _parse_one_predicate(s)
-            parsed_GDL[theorem_name]["conclusion"]["entity_relation"].append(
-                [name, [parsed_GDL[theorem_name]["vars"].index(para[i]) for i in range(len(para))]]
-            )
+            parsed_conclusion = []   # conclusion
+            for item in theorem_GDL[key]["description"][branch]["conclusion"]:
+                if "Equal" in item:
+                    parsed_conclusion.append(_replace_letter_with_vars(_parse_equal_predicate(item), letters))
+                else:
+                    predicate, para, _ = _parse_one_predicate(item)
+                    for k in range(len(para)):
+                        para[k] = letters.index(para[k])
+                    parsed_conclusion.append([predicate, para])
 
-        for s in theorem_GDL[key]["conclusion"]["algebraic_relation"]:  # replace algebraic_relation's letter with vars
-            parsed_GDL[theorem_name]["conclusion"]["algebraic_relation"].append(
-                _replace_letter_with_vars(_parse_equal_predicate(s), parsed_GDL[theorem_name]["vars"])
-            )
-
-        parsed_GDL[theorem_name]["vars"] = [i for i in range(len(parsed_GDL[theorem_name]["vars"]))]  # build vars
-
+            parsed_GDL[theorem_name][branch]["vars"] = [i for i in range(len(letters))]
+            parsed_GDL[theorem_name][branch]["premise"] = parsed_premise
+            parsed_GDL[theorem_name][branch]["conclusion"] = parsed_conclusion
     return parsed_GDL
 
 
 def parse_problem(problem_CDL):
-    """parse problem_CDL to parsed form."""
+    """parse problem_CDL to executable form."""
     parsed_CDL = {
         "id": problem_CDL["problem_id"],
         "cdl": {
@@ -188,14 +231,14 @@ def parse_problem(problem_CDL):
         }
     }
     for fl in problem_CDL["construction_cdl"]:
-        predicate, para = _parse_one_predicate(fl)
+        predicate, para, _ = _parse_one_predicate(fl)
         parsed_CDL["parsed_cdl"]["construction_cdl"].append([predicate, para])
 
     for fl in problem_CDL["text_cdl"] + problem_CDL["image_cdl"]:
         if fl.startswith("Equal"):
             parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append(_parse_equal_predicate(fl))
         else:
-            predicate, para = _parse_one_predicate(fl)
+            predicate, para, _ = _parse_one_predicate(fl)
             parsed_CDL["parsed_cdl"]["text_and_image_cdl"].append([predicate, para])
 
     if problem_CDL["goal_cdl"].startswith("Value"):
@@ -208,35 +251,14 @@ def parse_problem(problem_CDL):
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = 0
     else:
         parsed_CDL["parsed_cdl"]["goal"]["type"] = "relation"
-        predicate, para = _parse_one_predicate(problem_CDL["goal_cdl"])
+        predicate, para, _ = _parse_one_predicate(problem_CDL["goal_cdl"])
         parsed_CDL["parsed_cdl"]["goal"]["item"] = predicate
         parsed_CDL["parsed_cdl"]["goal"]["answer"] = para
-
-    # for key in parsed_CDL:
-    #     print(key)
-    #     print(parsed_CDL[key])
-    #     print()
 
     return parsed_CDL
 
 
 def _parse_one_predicate(s):
-    """
-    parse s to get predicate and para list.
-    >> parse_one('Predicate(ABC)')
-    ('Predicate', ['A', 'B', 'C'])
-    >> parse_one('Predicate(ABC, DE)')
-    ('Predicate', ['A', 'B', 'C', 'D', 'E'])
-    """
-    predicate_name, para = s.split("(")
-    para = para.split(")")[0]
-    if "," not in para:
-        return predicate_name, list(para)
-    para = para.split(",")
-    return predicate_name, list("".join(para))
-
-
-def _parse_one_predicate_attached_len(s):
     """
     parse s to get predicate, para, and structural msg.
     >> parse_one('Predicate(ABC)')
@@ -253,6 +275,52 @@ def _parse_one_predicate_attached_len(s):
     for item in para:
         para_len.append(len(item))
     return predicate_name, list("".join(para)), para_len
+
+
+def _parse_premise(premise_GDL):
+    """
+    Convert geometric logic statements into disjunctive normal forms.
+    A&(B|C) ==> A&B|A&C ==> [[A, B], [A, C]]
+    >> _parse_premise('IsoscelesTriangle(ABC)&Collinear(BMC)&(IsAltitude(AM,ABC)|Median(AM,ABC)|Bisector(AM,CAB))')
+    [['IsoscelesTriangle(ABC)', Collinear(BMC)', IsAltitude(AM,ABC)'],
+    ['IsoscelesTriangle(ABC)', Collinear(BMC)', Median(AM,ABC)'],
+    ['IsoscelesTriangle(ABC)', Collinear(BMC)', Bisector(AM,CAB)']]
+    """
+    update = True
+    while update:
+        expanded = []
+        update = False
+        for item in premise_GDL:
+            if "|" not in item:
+                expanded.append(item)
+            else:
+                update = True
+                head = item[0:item.index("&(") + 1]
+                body = []
+                tail = ""
+
+                count = 1
+                i = item.index("&(") + 2
+                j = i
+                while count > 0:
+                    if item[j] == "(":
+                        count += 1
+                    elif item[j] == ")":
+                        count -= 1
+                    elif item[j] == "|" and count == 1:
+                        body.append(item[i:j])
+                        i = j + 1
+                    j += 1
+                body.append(item[i:j - 1])
+                if j < len(item):
+                    tail = item[j:len(item)]
+
+                for b in body:
+                    expanded.append(head + b + tail)
+        premise_GDL = expanded
+    for i in range(len(premise_GDL)):
+        premise_GDL[i] = premise_GDL[i].split("&")
+    return premise_GDL
 
 
 def _parse_equal_predicate(s):
@@ -326,8 +394,6 @@ def _replace_letter_with_vars(s_tree, s_var):
     if not isinstance(s_tree, list):
         return s_tree
 
-    # print(s_tree)
-
     is_para = True  # Judge whether the para list is reached.
     for para in s_tree:
         if isinstance(para, list):
@@ -382,8 +448,8 @@ def anti_parse_logic_to_cdl(problem, de_redundant=False):
 def anti_parse_one_by_id(problem, _id):
     """
     Anti parse conditions of logic form to CDL.
-    ['Shape' ['A', 'B', 'C']]           ==>   'Shape(ABC)'
-    ['Parallel' ['A', 'B', 'C', 'D']]   ==>   'Parallel(AB,CD)'
+    ['Shape', ['A', 'B', 'C']]           ==>   'Shape(ABC)'
+    ['Parallel', ['A', 'B', 'C', 'D']]   ==>   'Parallel(AB,CD)'
     """
     predicate = problem.get_predicate_by_id[_id]
     condition = problem.conditions[predicate]

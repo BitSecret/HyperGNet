@@ -1,1 +1,1494 @@
-{"line_addition": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Collinear", [0, 1, 2]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 2]], ["Add", [["Length", [0, 1]], ["Length", [1, 2]]]]]]]}}, "angle_addition": {"vars": [0, 1, 2, 3], "mutex_points": [[0, 1, 2, 3]], "premise": {"entity_relation": [["Angle", [0, 1, 2]], ["Angle", [2, 1, 3]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Measure", [0, 1, 3]], ["Add", [["Measure", [0, 1, 2]], ["Measure", [2, 1, 3]]]]]]]}}, "area_addition": {"vars": [0, 1, 2, 3], "mutex_points": [[0, 1, 2, 3]], "premise": {"entity_relation": [["Shape", [0, 1, 2]], ["Shape", [0, 2, 3]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Area", [0, 1, 2, 3]], ["Add", [["Area", [0, 1, 2]], ["Area", [0, 2, 3]]]]]]]}}, "definition_of_triangle": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Polygon", [0, 1, 2]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": []}}, "triangle_property_angle_sum": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Add", [["Measure", [0, 1, 2]], ["Measure", [1, 2, 0]], ["Measure", [2, 0, 1]]]], "180"]]]}}, "triangle_property_equal_line_to_equal_angle": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Length", [0, 2]]]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Measure", [0, 1, 2]], ["Measure", [1, 2, 0]]]]]}}, "triangle_property_equal_angle_to_equal_line": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [0, 1, 2]], ["Measure", [1, 2, 0]]]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Length", [0, 2]]]]]}}, "pythagorean": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Add", [["Pow", [["Length", [0, 1]], "2"]], ["Pow", [["Length", [1, 2]], "2"]]]], ["Pow", [["Length", [0, 2]], "2"]]]]]}}, "right_triangle_property_rt": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [["Perpendicular", [1, 0, 1, 2, 1]]], "algebraic_relation": [["Equal", [["Measure", [0, 1, 2]], "90"]]]}}, "right_triangle_property_special_rt_1": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [2, 0, 1]], "30"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Mul", [["Length", [1, 2]], "1.7321"]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [1, 2]], "2"]]]]]}}, "right_triangle_property_special_rt_2": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [2, 0, 1]], "45"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Length", [1, 2]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [0, 1]], "1.4142"]]]]]}}, "right_triangle_property_special_rt_3": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [2, 0, 1]], "60"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [1, 2]], ["Mul", [["Length", [0, 1]], "1.7321"]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [0, 1]], "2"]]]]]}}, "right_triangle_property_special_rt_4": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [1, 2, 0]], "30"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [1, 2]], ["Mul", [["Length", [0, 1]], "1.7321"]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [0, 1]], "2"]]]]]}}, "right_triangle_property_special_rt_5": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [1, 2, 0]], "45"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Length", [1, 2]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [0, 1]], "1.4142"]]]]]}}, "right_triangle_property_special_rt_6": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [1, 2, 0]], "60"]]]}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Length", [0, 1]], ["Mul", [["Length", [1, 2]], "1.7321"]]]], ["Equal", [["Length", [0, 2]], ["Mul", [["Length", [1, 2]], "2"]]]]]}}, "pythagorean_inverse": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Add", [["Pow", [["Length", [0, 1]], "2"]], ["Pow", [["Length", [1, 2]], "2"]]]], ["Pow", [["Length", [0, 2]], "2"]]]]]}, "conclusion": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": []}}, "right_triangle_judgment_angle": {"vars": [0, 1, 2], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]]], "algebraic_relation": [["Equal", [["Measure", [0, 1, 2]], "90"]]]}, "conclusion": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": []}}, "right_triangle_judgment_rt": {"vars": [0, 1, 2, 3, 4], "mutex_points": [[0, 1, 2]], "premise": {"entity_relation": [["Triangle", [0, 1, 2]], ["Perpendicular", [1, 0, 3, 2, 4]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [["RightTriangle", [0, 1, 2]]], "algebraic_relation": []}}, "congruent_property_angle_equal": {"vars": [0, 1, 2, 3, 4, 5], "mutex_points": [[0, 1, 2], [3, 4, 5], [[0, 1, 2], [3, 4, 5]]], "premise": {"entity_relation": [["Congruent", [0, 1, 2, 3, 4, 5]]], "algebraic_relation": []}, "conclusion": {"entity_relation": [], "algebraic_relation": [["Equal", [["Measure", [0, 1, 2]], ["Measure", [3, 4, 5]]]], ["Equal", [["Measure", [1, 2, 0]], ["Measure", [4, 5, 3]]]], ["Equal", [["Measure", [2, 0, 1]], ["Measure", [5, 3, 4]]]]]}}}
+{
+	"line_addition": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Collinear",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Add",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								[
+									"Length",
+									[
+										1,
+										2
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"angle_addition": {
+		"vars": [
+			0,
+			1,
+			2,
+			3
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2,
+				3
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Angle",
+					[
+						0,
+						1,
+						2
+					]
+				],
+				[
+					"Angle",
+					[
+						2,
+						1,
+						3
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								3
+							]
+						],
+						[
+							"Add",
+							[
+								[
+									"Measure",
+									[
+										0,
+										1,
+										2
+									]
+								],
+								[
+									"Measure",
+									[
+										2,
+										1,
+										3
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"area_addition": {
+		"vars": [
+			0,
+			1,
+			2,
+			3
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2,
+				3
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Shape",
+					[
+						0,
+						1,
+						2
+					]
+				],
+				[
+					"Shape",
+					[
+						0,
+						2,
+						3
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Area",
+							[
+								0,
+								1,
+								2,
+								3
+							]
+						],
+						[
+							"Add",
+							[
+								[
+									"Area",
+									[
+										0,
+										1,
+										2
+									]
+								],
+								[
+									"Area",
+									[
+										0,
+										2,
+										3
+									]
+								]
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"definition_of_triangle": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Polygon",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		}
+	},
+	"triangle_property_angle_sum": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Add",
+							[
+								[
+									"Measure",
+									[
+										0,
+										1,
+										2
+									]
+								],
+								[
+									"Measure",
+									[
+										1,
+										2,
+										0
+									]
+								],
+								[
+									"Measure",
+									[
+										2,
+										0,
+										1
+									]
+								]
+							]
+						],
+						"180"
+					]
+				]
+			]
+		}
+	},
+	"triangle_property_equal_line_to_equal_angle": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						]
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								2
+							]
+						],
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"triangle_property_equal_angle_to_equal_line": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								2
+							]
+						],
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						]
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"pythagorean": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Add",
+							[
+								[
+									"Pow",
+									[
+										[
+											"Length",
+											[
+												0,
+												1
+											]
+										],
+										"2"
+									]
+								],
+								[
+									"Pow",
+									[
+										[
+											"Length",
+											[
+												1,
+												2
+											]
+										],
+										"2"
+									]
+								]
+							]
+						],
+						[
+							"Pow",
+							[
+								[
+									"Length",
+									[
+										0,
+										2
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_rt": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [
+				[
+					"Perpendicular",
+					[
+						1,
+						0,
+						1,
+						2,
+						1
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								2
+							]
+						],
+						"90"
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_1": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								2,
+								0,
+								1
+							]
+						],
+						"30"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										1,
+										2
+									]
+								],
+								"1.7321"
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										1,
+										2
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_2": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								2,
+								0,
+								1
+							]
+						],
+						"45"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Length",
+							[
+								1,
+								2
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"1.4142"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_3": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								2,
+								0,
+								1
+							]
+						],
+						"60"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								1,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"1.7321"
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_4": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						],
+						"30"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								1,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"1.7321"
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_5": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						],
+						"45"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Length",
+							[
+								1,
+								2
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										0,
+										1
+									]
+								],
+								"1.4142"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"right_triangle_property_special_rt_6": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						],
+						"60"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								1
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										1,
+										2
+									]
+								],
+								"1.7321"
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Length",
+							[
+								0,
+								2
+							]
+						],
+						[
+							"Mul",
+							[
+								[
+									"Length",
+									[
+										1,
+										2
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		}
+	},
+	"pythagorean_inverse": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Add",
+							[
+								[
+									"Pow",
+									[
+										[
+											"Length",
+											[
+												0,
+												1
+											]
+										],
+										"2"
+									]
+								],
+								[
+									"Pow",
+									[
+										[
+											"Length",
+											[
+												1,
+												2
+											]
+										],
+										"2"
+									]
+								]
+							]
+						],
+						[
+							"Pow",
+							[
+								[
+									"Length",
+									[
+										0,
+										2
+									]
+								],
+								"2"
+							]
+						]
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		}
+	},
+	"right_triangle_judgment_angle": {
+		"vars": [
+			0,
+			1,
+			2
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								2
+							]
+						],
+						"90"
+					]
+				]
+			]
+		},
+		"conclusion": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		}
+	},
+	"right_triangle_judgment_rt": {
+		"vars": [
+			0,
+			1,
+			2,
+			3,
+			4
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Triangle",
+					[
+						0,
+						1,
+						2
+					]
+				],
+				[
+					"Perpendicular",
+					[
+						1,
+						0,
+						3,
+						2,
+						4
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [
+				[
+					"RightTriangle",
+					[
+						0,
+						1,
+						2
+					]
+				]
+			],
+			"algebraic_relation": []
+		}
+	},
+	"congruent_property_angle_equal": {
+		"vars": [
+			0,
+			1,
+			2,
+			3,
+			4,
+			5
+		],
+		"mutex_points": [
+			[
+				0,
+				1,
+				2
+			],
+			[
+				3,
+				4,
+				5
+			],
+			[
+				[
+					0,
+					1,
+					2
+				],
+				[
+					3,
+					4,
+					5
+				]
+			]
+		],
+		"premise": {
+			"entity_relation": [
+				[
+					"Congruent",
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				]
+			],
+			"algebraic_relation": []
+		},
+		"conclusion": {
+			"entity_relation": [],
+			"algebraic_relation": [
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								0,
+								1,
+								2
+							]
+						],
+						[
+							"Measure",
+							[
+								3,
+								4,
+								5
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								1,
+								2,
+								0
+							]
+						],
+						[
+							"Measure",
+							[
+								4,
+								5,
+								3
+							]
+						]
+					]
+				],
+				[
+					"Equal",
+					[
+						[
+							"Measure",
+							[
+								2,
+								0,
+								1
+							]
+						],
+						[
+							"Measure",
+							[
+								5,
+								3,
+								4
+							]
+						]
+					]
+				]
+			]
+		}
+	}
+}

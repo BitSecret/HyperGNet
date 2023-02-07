@@ -1,5 +1,5 @@
 from definition.exception import RuntimeException
-from definition.object import Problem
+from problem import Problem
 from aux_tools.parse import parse_predicate, parse_theorem, parse_problem
 from aux_tools.parse import replace_free_vars_with_letters, build_vars_from_algebraic_relation
 from aux_tools.logic import run
@@ -198,3 +198,7 @@ class Solver:
 
         self.problem.goal["solving_msg"].append(
             "\033[32mChecking goal\033[0m:{:.6f}s".format(time.time() - s_start_time))
+
+    """-----------Underlying implementation of <relational reasoning>-----------"""
+
+    """-----------Underlying implementation of <equation solving>-----------"""
