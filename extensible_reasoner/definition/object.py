@@ -50,18 +50,14 @@ class Construction(Condition):
 
     def __call__(self, variables):
         """generate a function to get items, premise and variables when reasoning"""
-
-        def get_data():
-            items = []
-            ids = []
-            expected_len = len(variables)
-            for item in self.get_item_by_id.values():
-                if len(item) == expected_len:
-                    items.append(item)
-                    ids.append((self.get_id_by_item[item],))
-            return ids, items, variables
-
-        return get_data
+        items = []
+        ids = []
+        expected_len = len(variables)
+        for item in self.get_item_by_id.values():
+            if len(item) == expected_len:
+                items.append(item)
+                ids.append((self.get_id_by_item[item],))
+        return ids, items, variables
 
 
 class Relation(Condition):
@@ -72,13 +68,10 @@ class Relation(Condition):
     def __call__(self, variables):
         """generate a function to get items, premise and variables when reasoning"""
 
-        def get_data():
-            ids = []
-            for item in self.get_item_by_id.values():
-                ids.append((self.get_id_by_item[item],))
-            return ids, list(self.get_item_by_id.values()), variables
-
-        return get_data
+        ids = []
+        for item in self.get_item_by_id.values():
+            ids.append((self.get_id_by_item[item],))
+        return ids, list(self.get_item_by_id.values()), variables
 
 
 class Equation(Condition):

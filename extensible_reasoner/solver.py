@@ -1,6 +1,7 @@
 from definition.exception import RuntimeException
 from problem import Problem
-from aux_tools.parse import parse_predicate, parse_theorem, parse_problem
+from aux_tools.parse import FLParser
+from aux_tools.parse import EqParser
 from aux_tools.parse import replace_free_vars_with_letters, build_vars_from_algebraic_relation
 from aux_tools.logic import run
 import time
@@ -11,13 +12,13 @@ from func_timeout import func_set_timeout
 class Solver:
 
     def __init__(self, predicate_GDL, theorem_GDL):
-        self.predicate_GDL = parse_predicate(predicate_GDL)
-        self.theorem_GDL = parse_theorem(theorem_GDL)
+        self.predicate_GDL = FLParser.parse_predicate(predicate_GDL)
+        self.theorem_GDL = FLParser.parse_theorem(theorem_GDL)
         self.problem = None
 
     def load_problem(self, problem_CDL):
         s_start_time = time.time()  # timing
-        self.problem = Problem(self.predicate_GDL, parse_problem(problem_CDL))  # init problem
+        self.problem = Problem(self.predicate_GDL, FLParser.parse_problem(problem_CDL))  # init problem
         self.solve()  # Solve the equations after initialization
         self.problem.applied("init_problem")  # save applied theorem and update step
         self.problem.goal["solving_msg"].append(
@@ -42,55 +43,35 @@ class Solver:
             raise RuntimeException("TheoremNotDefined", "Theorem {} not defined.".format(theorem_name))
 
         s_start_time = time.time()
-
         update = False
-        premise_of_entity_relation = self.theorem_GDL[theorem_name]["premise"]["entity_relation"]
-        premise_of_algebraic_relation = self.theorem_GDL[theorem_name]["premise"]["algebraic_relation"]
-        conclusion_of_entity_relation = self.theorem_GDL[theorem_name]["conclusion"]["entity_relation"]
-        conclusion_of_algebraic_relation = self.theorem_GDL[theorem_name]["conclusion"]["algebraic_relation"]
 
-        relations = [self.problem.conditions[predicate](tuple(para_vars))
-                     for predicate, para_vars in premise_of_entity_relation]
+        for branch in self.theorem_GDL[theorem_name]:
+            b_vars = self.theorem_GDL[theorem_name][branch]["vars"]
+            b_premise = self.theorem_GDL[theorem_name][branch]["premise"]
+            b_conclusion = self.theorem_GDL[theorem_name][branch]["conclusion"]
 
-        ids, items, _ = run(tuple(relations))  # relational reasoning
+            for normal_form in b_premise:
+                results = self.problem.conditions[normal_form[0][0]](normal_form[0][1])  # (ids, items, vars)
+                for i in range(1, len(normal_form)):
+                    if len(results[0]) == 0:
+                        break
+                    if normal_form[i][0] == "Equal":
+                        results = self.algebra_and(results, normal_form[i])
+                    else:
+                        results = self.logic_and(results, normal_form[i])
 
-        new_ids = []
-        new_items = []
-        for i in range(len(items)):
-            passed = True
-            id_extended = list(ids[i])
-            for equal in premise_of_algebraic_relation:  # select item using algebraic relation
-                value, premise = self.problem.conditions["Equation"].solve_target(
-                    self.problem.conditions["Equation"].get_equation_from_tree(equal[1], True, items[i])
-                )
-                if value is None or abs(value) > 0.0001:
-                    passed = False
-                    break
-                id_extended += premise
-
-            if passed:
-                new_ids.append(tuple(id_extended))
-                new_items.append(items[i])
-        ids = new_ids
-        items = new_items
-
-        for i in range(len(items)):
-            for predicate, para_vars in conclusion_of_entity_relation:  # add entity relation
-                para = []
-                for var in para_vars:
-                    para.append(items[i][var])
-                update = self.problem.add(predicate, tuple(para), ids[i], theorem_name) or update
-
-            for equal in conclusion_of_algebraic_relation:  # add algebraic relation
-                update = self.problem.add(
-                    "Equation",
-                    self.problem.conditions["Equation"].get_equation_from_tree(equal[1], True, items[i]),
-                    ids[i],
-                    theorem_name
-                ) or update
+                r_ids, r_items, r_vars = results    # add satisfied results to conclusion
+                for i in range(len(r_items)):
+                    for predicate, para in b_conclusion:
+                        if predicate != "Equal":    # logic relation
+                            item = [r_items[i][r_vars.index(j)] for j in para]
+                            update = self.problem.add(predicate, tuple(item), r_ids[i], theorem_name) or update
+                        else:    # algebra relation
+                            equation = EqParser.get_equation_from_tree(self.problem, para, True, r_items[i])
+                            update = self.problem.add("Equation", equation, r_ids[i], theorem_name) or update
 
         if update:  # add theorem to problem theorem_applied list when update
-            self.problem.conditions["Equation"].solve()
+            self.solve()
             self.problem.applied(theorem_name)  # save applied theorem and update step
             self.problem.goal["solving_msg"].append(
                 "\033[32mApply theorem <{}>\033[0m:{:.6f}s".format(theorem_name, time.time() - s_start_time))
@@ -172,8 +153,7 @@ class Solver:
         s_start_time = time.time()  # timing
 
         if self.problem.goal["type"] == "value":
-            equation = self.problem.conditions["Equation"]
-            result, premise = equation.solve_target(self.problem.goal["item"])
+            result, premise = self.solve_target(self.problem.goal["item"])
             if result is not None:
                 if abs(result - self.problem.goal["answer"]) < 0.001:
                     self.problem.goal["solved"] = True
@@ -182,7 +162,7 @@ class Solver:
                 self.problem.goal["theorem"] = "solve_eq"
         elif self.problem.goal["type"] == "equal":
             equation = self.problem.conditions["Equation"]
-            result, premise = equation.solve_target(self.problem.goal["item"])
+            result, premise = self.solve_target(self.problem.goal["item"])
             if result is not None:
                 if abs(result) < 0.001:
                     self.problem.goal["solved"] = True
@@ -203,11 +183,101 @@ class Solver:
 
     """-----------Underlying implementation of <relational reasoning>-----------"""
 
+    def logic_and(self, results, logic):
+        negate = False    # Distinguishing operation ‘&’ and '&~'
+        if logic[0].startswith("~"):
+            negate = True
+            logic[0] = logic[0].replace("~", "")
+
+        r1_ids, r1_items, r1_vars = results
+        r2_ids, r2_items, r2_vars = self.problem.conditions[logic[0]](logic[1])
+        r_ids, r_items = [], []
+
+        r_vars = tuple(set(r1_vars) | set(r2_vars))  # union
+        inter = list(set(r1_vars) & set(r2_vars))  # intersection
+        for i in range(len(inter)):
+            inter[i] = (r1_vars.index(inter[i]), r2_vars.index(inter[i]))  # change to index
+        difference = list(set(r2_vars) - set(r1_vars))  # difference
+        for i in range(len(difference)):
+            difference[i] = r2_vars.index(difference[i])  # change to index
+
+        if not negate:    # &
+            for i in range(len(r1_items)):
+                r1_data = r1_items[i]
+                for j in range(len(r2_items)):
+                    r2_data = r2_items[j]
+                    correspondence = True
+                    for r1_i, r2_i in inter:
+                        if r1_data[r1_i] != r2_data[r2_i]:  # the corresponding points are inconsistent.
+                            correspondence = False
+                            break
+                    if correspondence:
+                        item = list(r1_data)
+                        for dif in difference:
+                            item.append(r2_data[dif])
+                        r_items.append(tuple(item))
+                        r_ids.append(tuple(set(list(r1_ids[i]) + list(r2_ids[j]))))
+        else:    # &~
+            r_vars = r1_vars
+            for i in range(len(r1_items)):
+                r1_data = r1_items[i]
+                valid = True
+                for j in range(len(r2_items)):
+                    r2_data = r2_items[j]
+                    correspondence = True
+                    for r1_i, r2_i in inter:
+                        if r1_data[r1_i] != r2_data[r2_i]:  # the corresponding points are inconsistent.
+                            correspondence = False
+                            break
+                    if correspondence:
+                        valid = False
+                        break
+                if valid:
+                    r_items.append(r1_items[i])
+                    r_ids.append(r1_ids[i])
+
+        return r_ids, r_items, r_vars
+
+    def algebra_and(self, results, equal):
+        negate = False    # Distinguishing operation ‘&’ and '&~'
+        if equal[0].startswith("~"):
+            negate = True
+            equal[0] = equal[0].replace("~", "")
+
+        r1_ids, r1_items, r1_vars = results
+        r_ids, r_items = [], []
+
+        if not negate:
+            for i in range(len(r1_items)):
+                equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
+                if equation is None:
+                    continue
+                result, premise = self.solve_target(equation)
+
+                if result is not None and abs(result) < 0.001:
+                    r_items.append(r1_items[i])
+                    r_ids.append(tuple(set(list(r1_ids[i]) + premise)))
+        else:
+            for i in range(len(r1_items)):
+                equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
+                if equation is None:
+                    r_items.append(r1_items[i])
+                    r_ids.append(r1_ids[i])
+                    continue
+                result, premise = self.solve_target(equation)
+
+                if result is None or abs(result) > 0.001:
+                    r_items.append(r1_items[i])
+                    r_ids.append(tuple(set(list(r1_ids[i]) + premise)))
+
+        return r_ids, r_items, r1_vars
+
     """-------------Underlying implementation of <equation solving>-------------"""
+
     @func_set_timeout(10)  # 限时10s
     def solve(self):
         """Solve the equation contained in the question."""
-        eq = self.problem.conditions["Equation"]    # class <Equation>
+        eq = self.problem.conditions["Equation"]  # class <Equation>
 
         if eq.solved:
             return
@@ -218,7 +288,7 @@ class Solver:
             self._simplify_equations()  # simplify equations before solving
 
             sym_set = []
-            for equation in list(eq.equations.values()):    # all symbols that have not been solved
+            for equation in list(eq.equations.values()):  # all symbols that have not been solved
                 sym_set += equation.free_symbols
             sym_set = list(set(sym_set))  # quickly remove redundancy
 
@@ -235,7 +305,7 @@ class Solver:
                 if len(result) > 0:
                     if isinstance(result, list):
                         result = result[0]
-                    for key in result.keys():    # save solved value
+                    for key in result.keys():  # save solved value
                         if eq.value_of_sym[key] is None \
                                 and (isinstance(result[key], Float) or isinstance(result[key], Integer)):
                             self.problem.set_value_of_sym(key, float(result[key]), tuple(premise), "solve_eq")
@@ -250,7 +320,7 @@ class Solver:
         >> solve_target(a)
         1
         """
-        eq = self.problem.conditions["Equation"]    # class <Equation>
+        eq = self.problem.conditions["Equation"]  # class <Equation>
 
         if target_expr in eq.get_item_by_id.values() or \
                 -target_expr in eq.get_item_by_id.values():  # It is a known equation and does not need to solve it.
@@ -284,7 +354,7 @@ class Solver:
         return None, None  # unsolvable
 
     def get_minimum_equations(self, target_expr):  # 返回求解target_expr依赖的最小方程组
-        eq = self.problem.conditions["Equation"]    # class <Equation>
+        eq = self.problem.conditions["Equation"]  # class <Equation>
         sym_set = target_expr.free_symbols  # 方程组涉及到的符号
         min_equations = []  # 最小方程组
         premise = []  # 每个方程的index，作为target_expr求解结果的premise

@@ -2,7 +2,7 @@ from definition.object import Condition, Construction, Relation, Equation
 from definition.exception import RuntimeException
 from itertools import combinations
 from sympy import symbols
-from aux_tools.parse import get_expr_from_tree, get_equation_from_tree
+from aux_tools.parse import EqParser
 
 
 class Problem:
@@ -39,7 +39,7 @@ class Problem:
 
         for predicate, item in problem_CDL["parsed_cdl"]["text_and_image_cdl"]:  # conditions of text_and_image
             if predicate == "Equal":
-                self.add("Equation", get_equation_from_tree(self, item), (-1,), "prerequisite")
+                self.add("Equation", EqParser.get_equation_from_tree(self, item), (-1,), "prerequisite")
             else:
                 self.add(predicate, tuple(item), (-1,), "prerequisite")
 
@@ -52,10 +52,10 @@ class Problem:
             "type": problem_CDL["parsed_cdl"]["goal"]["type"]
         }
         if self.goal["type"] == "value":
-            self.goal["item"] = get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["item"][1][0])
-            self.goal["answer"] = get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["answer"])
+            self.goal["item"] = EqParser.get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["item"][1][0])
+            self.goal["answer"] = EqParser.get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["answer"])
         elif self.goal["type"] == "equal":
-            self.goal["item"] = get_equation_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["item"][1])
+            self.goal["item"] = EqParser.get_equation_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["item"][1])
             self.goal["answer"] = 0
         else:  # relation type
             self.goal["item"] = problem_CDL["parsed_cdl"]["goal"]["item"]

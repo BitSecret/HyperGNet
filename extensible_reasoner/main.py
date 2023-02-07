@@ -9,9 +9,9 @@ def run(problem_id, save_parsed_GDL=False, save_parsed_CDL=False):
 
     solver = Solver(predicate_GDL, theorem_GDL)
     solver.load_problem(problem_CDL)
-    # for theorem in problem_CDL["theorem_seqs"]:
-    #     solver.apply_theorem(theorem)
-    # solver.check_goal()
+    for theorem in problem_CDL["theorem_seqs"]:
+        solver.apply_theorem(theorem)
+    solver.check_goal()
     show(solver.problem, simple=False)
 
     if save_parsed_GDL:
