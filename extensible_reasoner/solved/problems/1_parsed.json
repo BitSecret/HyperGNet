@@ -1,1 +1,55 @@
-{"id": 1, "cdl": {"construction_cdl": ["Shape(ABC)"], "text_cdl": [], "image_cdl": [], "goal_cdl": "Triangle(ABC)"}, "parsed_cdl": {"construction_cdl": [["Shape", ["A", "B", "C"]]], "text_and_image_cdl": [], "goal": {"type": "relation", "item": "Triangle", "answer": ["A", "B", "C"]}}}
+{
+	"id": 1,
+	"cdl": {
+		"construction_cdl": [
+			"Shape(ABC)",
+			"Collinear(BDC)"
+		],
+		"text_cdl": [
+			"IsAltitude(AD,ABC)"
+		],
+		"image_cdl": [],
+		"goal_cdl": "Triangle(ABC)"
+	},
+	"parsed_cdl": {
+		"construction_cdl": [
+			[
+				"Shape",
+				[
+					"A",
+					"B",
+					"C"
+				]
+			],
+			[
+				"Collinear",
+				[
+					"B",
+					"D",
+					"C"
+				]
+			]
+		],
+		"text_and_image_cdl": [
+			[
+				"IsAltitude",
+				[
+					"A",
+					"D",
+					"A",
+					"B",
+					"C"
+				]
+			]
+		],
+		"goal": {
+			"type": "relation",
+			"item": "Triangle",
+			"answer": [
+				"A",
+				"B",
+				"C"
+			]
+		}
+	}
+}

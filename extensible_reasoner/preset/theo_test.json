@@ -8,9 +8,12 @@
 		"problem_text_en": "",
 		"problem_img": "",
 		"construction_cdl": [
-			"Shape(ABC)"
+			"Shape(ABC)",
+			"Collinear(BDC)"
 		],
-		"text_cdl": [],
+		"text_cdl": [
+			"IsAltitude(AD,ABC)"
+		],
 		"image_cdl": [],
 		"goal_cdl": "Triangle(ABC)",
 		"problem_answer": "Triangle(ABC)",

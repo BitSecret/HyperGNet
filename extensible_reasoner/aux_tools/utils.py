@@ -1,5 +1,5 @@
 import json
-from aux_tools.parse import anti_parse_one_by_id, anti_parse_logic_to_cdl
+from aux_tools.parse import AntiParser
 from sympy import Float
 from graphviz import Digraph
 import os
@@ -57,7 +57,7 @@ def show(problem, simple=False):
         print("{0:^3}{1:<20}".format(i, problem.theorems_applied[i]))
 
     print("\033[36mreasoning_cdl:\033[0m")
-    anti_parsed_cdl = anti_parse_logic_to_cdl(problem)
+    anti_parsed_cdl = AntiParser.anti_parse_logic_to_cdl(problem)
     for step in anti_parsed_cdl:
         for cdl in anti_parsed_cdl[step]:
             print("{0:^3}{1:<20}".format(step, cdl))
@@ -165,7 +165,7 @@ def save_solution_tree(problem, path):
     cdl = {}      # _id: anti_parsed_cdl, user for getting cdl by id.
 
     for _id in problem.get_predicate_by_id:    # summary information
-        cdl[_id] = anti_parse_one_by_id(problem, _id)
+        cdl[_id] = AntiParser.anti_parse_one_by_id(problem, _id)
         premise = problem.conditions[problem.get_predicate_by_id[_id]].premises[_id]
         theorem = problem.conditions[problem.get_predicate_by_id[_id]].theorems[_id]
         if theorem == "prerequisite":    # prerequisite not show in graph
@@ -263,5 +263,5 @@ def _add_edge(dot, nodes, start_node, end_node, edges=None):
 def save_step_msg(problem, path, de_redundant=True):
     """Save conditions grouped by step in dict."""
     problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
-    anti_parsed_cdl = anti_parse_logic_to_cdl(problem, de_redundant)
+    anti_parsed_cdl = AntiParser.anti_parse_logic_to_cdl(problem, de_redundant)
     save_json(anti_parsed_cdl, path + "{}_step.json".format(problem.problem_CDL["id"]))

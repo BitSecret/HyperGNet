@@ -1,9 +1,8 @@
 from definition.exception import RuntimeException
-from problem import Problem
+from definition.problem import Problem
 from aux_tools.parse import FLParser
 from aux_tools.parse import EqParser
-from aux_tools.parse import replace_free_vars_with_letters, build_vars_from_algebraic_relation
-from aux_tools.logic import run
+import copy
 import time
 from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
@@ -17,6 +16,7 @@ class Solver:
         self.problem = None
 
     def load_problem(self, problem_CDL):
+        """Load problem through problem_CDL."""
         s_start_time = time.time()  # timing
         self.problem = Problem(self.predicate_GDL, FLParser.parse_problem(problem_CDL))  # init problem
         self.solve()  # Solve the equations after initialization
@@ -25,19 +25,23 @@ class Solver:
             "\033[32mInit problem and first solving\033[0m:{:.6f}s".format(time.time() - s_start_time))
 
     def greedy_search(self, orientation="forward"):
-        """实现ATP功能"""
+        """Breadth-first search."""
         if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run load_problem before run greedy_search.")
+            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <greedy_search>.")
 
-        pass
+        if orientation == "forward":    # forward search
+            pass
+        else:    # backward search
+            pass
 
     def apply_theorem(self, theorem_name):
         """
         Forward reasoning.
-        Apply theorem and return whether condition update or not.
+        :param theorem_name: theorem's name. Such as 'pythagorean'.
+        :return update: whether condition update or not.
         """
         if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run load_problem before run apply_theorem.")
+            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <apply_theorem>.")
 
         if theorem_name not in self.theorem_GDL:
             raise RuntimeException("TheoremNotDefined", "Theorem {} not defined.".format(theorem_name))
@@ -46,7 +50,6 @@ class Solver:
         update = False
 
         for branch in self.theorem_GDL[theorem_name]:
-            b_vars = self.theorem_GDL[theorem_name][branch]["vars"]
             b_premise = self.theorem_GDL[theorem_name][branch]["premise"]
             b_conclusion = self.theorem_GDL[theorem_name][branch]["conclusion"]
 
@@ -60,13 +63,13 @@ class Solver:
                     else:
                         results = self.logic_and(results, normal_form[i])
 
-                r_ids, r_items, r_vars = results    # add satisfied results to conclusion
+                r_ids, r_items, r_vars = results  # add satisfied results to conclusion
                 for i in range(len(r_items)):
                     for predicate, para in b_conclusion:
-                        if predicate != "Equal":    # logic relation
+                        if predicate != "Equal":  # logic relation
                             item = [r_items[i][r_vars.index(j)] for j in para]
                             update = self.problem.add(predicate, tuple(item), r_ids[i], theorem_name) or update
-                        else:    # algebra relation
+                        else:  # algebra relation
                             equation = EqParser.get_equation_from_tree(self.problem, para, True, r_items[i])
                             update = self.problem.add("Equation", equation, r_ids[i], theorem_name) or update
 
@@ -78,113 +81,19 @@ class Solver:
 
         return update
 
-    def find_prerequisite(self, target_predicate, target_item):
-        """
-        Backward reasoning. Find prerequisite of given condition.
-        :param target_predicate: condition's predicate. Such as 'Triangle', 'Equation'.
-        :param target_item: condition para. Such as (‘A’, 'B', 'C'), a - b + c.
-        """
-        if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run load_problem before run find_prerequisite.")
-
-        options = {}
-        options_count = 0
-
-        if target_predicate == "Equation":  # algebraic target
-            equation = self.problem.conditions["Equation"]
-            _, _, _, sym_set = equation.get_minimum_equations(target_item)
-
-            unsolved_sym = []  # only need to find unsolved symbol
-            for sym in sym_set:
-                if equation.value_of_sym[sym] is not None and equation.attr_of_sym[sym][1] != "Free":
-                    unsolved_sym.append(sym)
-
-            for sym in unsolved_sym:  # 查找algebraic中包含这些sym的
-                attr = self.problem.conditions["Equation"].attr_of_sym[sym]
-                for theorem_name in self.theorem_GDL:
-                    all_vars = self.theorem_GDL[theorem_name]["vars"]  # all vars in current theorem
-                    for equal_tree in self.theorem_GDL[theorem_name]["conclusion"]["algebraic_relation"]:
-                        for possible_free_vars in build_vars_from_algebraic_relation(all_vars, equal_tree, attr):
-                            all_para_combination = replace_free_vars_with_letters(
-                                possible_free_vars,
-                                [point[0] for point in self.problem.conditions["Point"].get_item_by_id.values()],
-                                self.theorem_GDL[theorem_name]["mutex_points"]
-                            )
-
-                            for paras in all_para_combination:
-                                one_option = []
-                                for p, p_vars in self.theorem_GDL[theorem_name]["premise"]["entity_relation"]:
-                                    one_option.append([p, [paras[i] for i in p_vars]])
-                                for p, p_vars in self.theorem_GDL[theorem_name]["premise"]["algebraic_relation"]:
-                                    one_option.append(
-                                        ["Equation",
-                                         self.problem.conditions["Equation"].get_equation_from_tree(p_vars, True,
-                                                                                                    paras)]
-                                    )
-                                options[options_count] = {"theorem": theorem_name, "option": one_option}
-                                options_count += 1
-        else:  # entity target
-            for theorem_name in self.theorem_GDL:
-                all_vars = self.theorem_GDL[theorem_name]["vars"]  # all vars in current theorem
-
-                for predicate, t_vars in self.theorem_GDL[theorem_name]["conclusion"]["entity_relation"]:
-                    if predicate == target_predicate:
-                        all_para_combination = replace_free_vars_with_letters(  # all possible para combination
-                            [target_item[t_vars.index(all_vars[i])] if all_vars[i] in t_vars else all_vars[i]
-                             for i in range(len(all_vars))],
-                            [point[0] for point in self.problem.conditions["Point"].get_item_by_id.values()],
-                            self.theorem_GDL[theorem_name]["mutex_points"]
-                        )
-
-                        for paras in all_para_combination:
-                            one_option = []
-                            for p, p_vars in self.theorem_GDL[theorem_name]["premise"]["entity_relation"]:
-                                one_option.append([p, [paras[i] for i in p_vars]])
-                            for p, p_vars in self.theorem_GDL[theorem_name]["premise"]["algebraic_relation"]:
-                                one_option.append(
-                                    ["Equation",
-                                     self.problem.conditions["Equation"].get_equation_from_tree(p_vars, True, paras)]
-                                )
-                            options[options_count] = {"theorem": theorem_name, "option": one_option}
-                            options_count += 1
-        return options
-
-    def check_goal(self):
-        s_start_time = time.time()  # timing
-
-        if self.problem.goal["type"] == "value":
-            result, premise = self.solve_target(self.problem.goal["item"])
-            if result is not None:
-                if abs(result - self.problem.goal["answer"]) < 0.001:
-                    self.problem.goal["solved"] = True
-                self.problem.goal["solved_answer"] = result
-                self.problem.goal["premise"] = tuple(premise)
-                self.problem.goal["theorem"] = "solve_eq"
-        elif self.problem.goal["type"] == "equal":
-            equation = self.problem.conditions["Equation"]
-            result, premise = self.solve_target(self.problem.goal["item"])
-            if result is not None:
-                if abs(result) < 0.001:
-                    self.problem.goal["solved"] = True
-                self.problem.goal["solved_answer"] = result
-                self.problem.goal["premise"] = tuple(premise)
-                self.problem.goal["theorem"] = "solve_eq"
-        else:  # relation
-            if self.problem.goal["answer"] in self.problem.conditions[self.problem.goal["item"]].get_id_by_item:
-                self.problem.goal["solved"] = True
-                self.problem.goal["solved_answer"] = self.problem.goal["answer"]
-                self.problem.goal["premise"] = self.problem.conditions[self.problem.goal["item"]].premises[
-                    self.problem.goal["answer"]]
-                self.problem.goal["theorem"] = self.problem.conditions[self.problem.goal["item"]].theorems[
-                    self.problem.goal["answer"]]
-
-        self.problem.goal["solving_msg"].append(
-            "\033[32mChecking goal\033[0m:{:.6f}s".format(time.time() - s_start_time))
-
-    """-----------Underlying implementation of <relational reasoning>-----------"""
-
     def logic_and(self, results, logic):
-        negate = False    # Distinguishing operation ‘&’ and '&~'
+        """
+        Underlying implementation of <relational reasoning>: logic part.
+        Note that logic[0] may start with '~'.
+        :param results: triplet, (r1_ids, r1_items, r1_vars).
+        :param logic: predicate and vars.
+        :return: triplet, reasoning result.
+        >> self.problem.conditions['Line']([1, 2])
+        ([(3,), (4,)], [('B', 'C'), ('D', 'E')], [1, 2])
+        >> logic_and(([(1,), (2,)], [('A', 'B'), ('C', 'D')], [0, 1]), ['Line', [1, 2]])
+        ([(1, 3), (2, 4)], [('A', 'B', 'C'), ('C', 'D', 'E')], [0, 1, 2])
+        """
+        negate = False  # Distinguishing operation ‘&’ and '&~'
         if logic[0].startswith("~"):
             negate = True
             logic[0] = logic[0].replace("~", "")
@@ -201,7 +110,7 @@ class Solver:
         for i in range(len(difference)):
             difference[i] = r2_vars.index(difference[i])  # change to index
 
-        if not negate:    # &
+        if not negate:  # &
             for i in range(len(r1_items)):
                 r1_data = r1_items[i]
                 for j in range(len(r2_items)):
@@ -217,7 +126,7 @@ class Solver:
                             item.append(r2_data[dif])
                         r_items.append(tuple(item))
                         r_ids.append(tuple(set(list(r1_ids[i]) + list(r2_ids[j]))))
-        else:    # &~
+        else:  # &~
             r_vars = r1_vars
             for i in range(len(r1_items)):
                 r1_data = r1_items[i]
@@ -239,7 +148,18 @@ class Solver:
         return r_ids, r_items, r_vars
 
     def algebra_and(self, results, equal):
-        negate = False    # Distinguishing operation ‘&’ and '&~'
+        """
+        Underlying implementation of <relational reasoning>: algebra part.
+        Note that equal[0] may start with '~'.
+        :param results: triplet, (r1_ids, r1_items, r1_vars).
+        :param equal: equal tree.
+        :return: triplet, reasoning result.
+        >> self.problem.conditions['Equation'].value_of_sym
+        {ll_ab: 1, ll_cd: 2}
+        >> logic_and(([(1,), (2,)], [('A', 'B'), ('C', 'D')], [0, 1]), ['Equal', [['Line', [0, 1]], 1]])
+        ([(1, N)], [('A', 'B')], [0, 1])
+        """
+        negate = False  # Distinguishing operation ‘&’ and '&~'
         if equal[0].startswith("~"):
             negate = True
             equal[0] = equal[0].replace("~", "")
@@ -247,7 +167,7 @@ class Solver:
         r1_ids, r1_items, r1_vars = results
         r_ids, r_items = [], []
 
-        if not negate:
+        if not negate:  # &
             for i in range(len(r1_items)):
                 equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
                 if equation is None:
@@ -257,7 +177,7 @@ class Solver:
                 if result is not None and abs(result) < 0.001:
                     r_items.append(r1_items[i])
                     r_ids.append(tuple(set(list(r1_ids[i]) + premise)))
-        else:
+        else:  # &~
             for i in range(len(r1_items)):
                 equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
                 if equation is None:
@@ -272,11 +192,9 @@ class Solver:
 
         return r_ids, r_items, r1_vars
 
-    """-------------Underlying implementation of <equation solving>-------------"""
-
-    @func_set_timeout(10)  # 限时10s
+    @func_set_timeout(10)
     def solve(self):
-        """Solve the equation contained in the question."""
+        """Solve the equation contained in the <Problem.condition["Equation"].equations>."""
         eq = self.problem.conditions["Equation"]  # class <Equation>
 
         if eq.solved:
@@ -316,8 +234,11 @@ class Solver:
     def solve_target(self, target_expr):
         """
         Solve target expression of symbolic form.
-        >> equations = [a - b, b - c, c - 1]
+        >> problem.conditions['Equation'].equations
+        [a - b, b - c, c - 1]
         >> solve_target(a)
+        1
+        >> solve_target(b)
         1
         """
         eq = self.problem.conditions["Equation"]  # class <Equation>
@@ -353,33 +274,33 @@ class Solver:
 
         return None, None  # unsolvable
 
-    def get_minimum_equations(self, target_expr):  # 返回求解target_expr依赖的最小方程组
+    def get_minimum_equations(self, target_expr):
+        """Return the minimum equation set required to solve target_expr."""
         eq = self.problem.conditions["Equation"]  # class <Equation>
-        sym_set = target_expr.free_symbols  # 方程组涉及到的符号
-        min_equations = []  # 最小方程组
-        premise = []  # 每个方程的index，作为target_expr求解结果的premise
+        sym_set = target_expr.free_symbols
+        min_equations = []
+        premise = []  # equation's id
 
         self._simplify_equations()  # simplify equations before return minimum equations
 
-        # 循环添加依赖方程，得到最小方程组
         update = True
         while update:
             update = False
             for sym in sym_set:
-                if eq.value_of_sym[sym] is None:  # 如果sym的值未求出，需要添加包含sym的依赖方程
-                    for key in eq.equations:  # 添加简单依赖方程
+                if eq.value_of_sym[sym] is None:
+                    for key in eq.equations:  # add Dependency Equation
                         if sym in eq.equations[key].free_symbols and eq.equations[key] not in min_equations:
                             min_equations.append(eq.equations[key])
                             premise.append(eq.get_id_by_item[key])
-                            sym_set = sym_set.union(key.free_symbols)  # 添加新方程会引入新符号(未化简的原方程的所有符号)
+                            sym_set = sym_set.union(key.free_symbols)  # add new sym
                             update = True
 
         for sym in sym_set:
             if eq.value_of_sym[sym] is not None:
                 premise.append(eq.get_id_by_item[sym - eq.value_of_sym[sym]])
-                target_expr = target_expr.subs(sym, eq.value_of_sym[sym])  # 替换target_expr中的已知sym
+                target_expr = target_expr.subs(sym, eq.value_of_sym[sym])  # replace sym with value when value solved
 
-        return min_equations, target_expr, premise, sym_set  # 返回化简的target_expr、最小依赖方程组和前提
+        return min_equations, target_expr, premise, sym_set
 
     def _simplify_equations(self):
         """Simplify all equations based on value replaced."""
@@ -387,17 +308,17 @@ class Solver:
         update = True
         while update:
             update = False
-            remove_lists = []  # 要删除的 basic equation 列表
+            remove_lists = []  # equation to be deleted
             for key in eq.equations.keys():
-                for sym in eq.equations[key].free_symbols:  # 遍历方程中的符号，检查其值是否都是已知的
-                    if eq.value_of_sym[sym] is not None:  # sym值已知，替换掉
+                for sym in eq.equations[key].free_symbols:
+                    if eq.value_of_sym[sym] is not None:  # replace sym with value when the value solved
                         eq.equations[key] = eq.equations[key].subs(sym, eq.value_of_sym[sym])
                         update = True
 
-                if len(eq.equations[key].free_symbols) == 0:  # 没有未知符号：删除方程
+                if len(eq.equations[key].free_symbols) == 0:  # remove equation when all the sym of equation solved
                     remove_lists.append(key)
 
-                if len(eq.equations[key].free_symbols) == 1:  # 只剩一个符号：求得符号值，然后删除方程
+                if len(eq.equations[key].free_symbols) == 1:  # only one sym unsolved, then solved
                     target_sym = list(eq.equations[key].free_symbols)[0]
                     value = solve(eq.equations[key])[0]
                     premise = [eq.get_id_by_item[key]]
@@ -407,7 +328,7 @@ class Solver:
                     self.problem.set_value_of_sym(target_sym, value, tuple(premise), "solve_eq")
                     remove_lists.append(key)
 
-            for remove_eq in remove_lists:  # 删除所有符号值已知的方程
+            for remove_eq in remove_lists:  # remove useless equation
                 eq.equations.pop(remove_eq)
 
     @staticmethod
@@ -416,18 +337,205 @@ class Solver:
         update = True
         while update:
             update = False
-            for equation in equations:  # 替换符号
+            for equation in equations:
                 if len(equation.free_symbols) == 2:
                     result = solve(equation)
-                    if len(result) > 0:  # 有解
-                        if isinstance(result, list):  # 若解不唯一，选择第一个
+                    if len(result) > 0:
+                        if isinstance(result, list):
                             result = result[0]
                         sym = list(result.keys())[0]
-                        target_expr = target_expr.subs(sym, result[sym])  # 符号替换
+                        target_expr = target_expr.subs(sym, result[sym])
                         for i in range(len(equations)):
-                            equations[i] = equations[i].subs(sym, result[sym])  # 符号替换
+                            equations[i] = equations[i].subs(sym, result[sym])
                         update = True
 
         equations.append(target_expr)
 
         return equations
+
+    def find_prerequisite(self, target_predicate, target_item):
+        """
+        Backward reasoning.
+        Find prerequisite of given condition.
+        :param target_predicate: condition's predicate. Such as 'Triangle', 'Equation'.
+        :param target_item: condition para. Such as (‘A’, 'B', 'C'), a - b + c.
+        """
+        if self.problem is None:
+            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <find_prerequisite>.")
+
+        results = []
+
+        if target_predicate == "Equation":  # algebraic target
+            equation = self.problem.conditions["Equation"]
+            _, _, _, sym_set = self.get_minimum_equations(target_item)
+
+            unsolved_sym = []  # only need to find unsolved symbol
+            for sym in sym_set:
+                if equation.value_of_sym[sym] is None and equation.attr_of_sym[sym][1] != "Free":
+                    unsolved_sym.append(sym)
+
+            for sym in unsolved_sym:  # find algebraic conclusion containing unsolved_sym
+                attr_para, attr_name = equation.attr_of_sym[sym]  # such as ('A', 'B'), 'Length'
+                # 一个sym可能对应多个attr_para，这里还要再考虑一下
+                for theorem_name in self.theorem_GDL:
+                    for branch in self.theorem_GDL[theorem_name]:
+                        one_theorem = self.theorem_GDL[theorem_name][branch]
+                        for conclusion in one_theorem["conclusion"]:
+                            if conclusion[0] == "Equal":
+                                attr_vars = self.find_vars_from_equal_tree(conclusion[1][0], attr_name) + \
+                                            self.find_vars_from_equal_tree(conclusion[1][1], attr_name)
+                                replaced = []
+                                for attr_var in list(set(attr_vars)):  # fast redundancy removal and ergodic
+                                    replaced.append([attr_para[attr_var.index(v)] if v in attr_var else v
+                                                     for v in one_theorem["vars"]])
+                                pres = self.prerequisite_generation(replaced, one_theorem["premise"])
+                                for pre in pres:
+                                    results.append((theorem_name, pre))  # add to results
+        else:  # entity target
+            for theorem_name in self.theorem_GDL:
+                for branch in self.theorem_GDL[theorem_name]:
+                    one_theorem = self.theorem_GDL[theorem_name][branch]
+                    for conclusion in one_theorem["conclusion"]:
+                        if conclusion[0] == target_predicate:
+                            replaced = [[target_item[conclusion[1].index(v)] if v in conclusion[1] else v
+                                         for v in one_theorem["vars"]]]
+                            pres = self.prerequisite_generation(replaced, one_theorem["premise"])
+                            for pre in pres:
+                                results.append((theorem_name, pre))  # add to results
+
+        unique = []   # redundancy removal
+        for result in results:
+            if result not in unique:
+                unique.append(result)
+        return unique
+
+    def find_vars_from_equal_tree(self, tree, attr_name):
+        """
+        Called by <find_prerequisite>.
+        Recursively find attr in equal tree.
+        :param tree: equal tree, such as ['Length', [0, 1]].
+        :param attr_name: attribution name, such as 'Length'.
+        :return results: searching result, such as [[0, 1]].
+        >> find_vars_from_equal_tree(['Add', [['Length', [0, 1]], '2*x-14', ['Length', [2, 3]]], 'Length')
+        [[0, 1], [2, 3]]
+        >> get_expr_from_tree(['Sin', [['Measure', ['0', '1', '2']]]], 'Measure')
+        [[0, 1, 2]]
+        """
+        if not isinstance(tree, list):  # expr
+            return []
+
+        if tree[0] in self.predicate_GDL["Attribution"]:  # attr
+            if tree[0] == attr_name:
+                return [tuple(tree[1])]
+            else:
+                return []
+
+        if tree[0] in ["Add", "Mul", "Sub", "Div", "Pow", "Sin", "Cos", "Tan"]:  # operate
+            result = []
+            for item in tree[1]:
+                result += self.find_vars_from_equal_tree(item, attr_name)
+            return result
+        else:
+            raise RuntimeException("OperatorNotDefined",
+                                   "No operation {}, please check your expression.".format(tree[0]))
+
+    def prerequisite_generation(self, replaced, premise):
+        """
+        Called by <find_prerequisite>.
+        :param replaced: points set, contain points and vars, such as ('A', 1, 'C').
+        :param premise: one normal form of current theorem's premise.
+        :return results: prerequisite, such as [('incenter_property_intersect', (('Incenter', ('D', 'A', 'B', 'C')),))].
+        """
+        replaced = self.theorem_vars_completion(replaced)
+        results = []
+        for premise_normal in premise:
+            selected = self.theorem_vars_selection(replaced, premise_normal)
+            for para in selected:
+                result = []
+                for p in premise_normal:
+                    if p[0] == "Equal":  # algebra premise
+                        result.append(("Equation", EqParser.get_equation_from_tree(self.problem, p[1], True, para)))
+                    else:  # logic premise
+                        item = [para[i] for i in p[1]]
+                        result.append((p[0], tuple(item)))
+                results.append(tuple(result))
+        return results
+
+    def theorem_vars_completion(self, replaced):
+        """
+        Called by <prerequisite_generation>.
+        Replace free vars with points. Suppose there are four points ['A', 'B', 'C', 'D'].
+        >> replace_free_vars_with_letters([['A', 'B', 2]])
+        >> [['A', 'B', 'C'], ['A', 'B', 'D']]
+        >> replace_free_vars_with_letters([['A', 'B', 2, 3]])
+        >> [['A', 'B', 'C', 'D'], ['A', 'B', 'D', 'C']]
+        """
+        update = True
+        while update:
+            update = False
+            for i in range(len(replaced)):
+                for j in range(len(replaced[i])):
+                    if isinstance(replaced[i][j], int):  # replace var with letter
+                        for point, in self.problem.conditions["Point"].get_id_by_item:
+                            replaced.append(copy.copy(replaced[i]))
+                            replaced[-1][j] = point
+                            update = True
+                        replaced.pop(i)  # delete being replaced para
+                        break
+        return replaced
+
+    def theorem_vars_selection(self, replaced, premise_normal):
+        """
+        Called by <prerequisite_generation>.
+        Select vars by theorem's premise..
+        >> theorem_vars_selection([['B', 'A', 'A'], ['B', 'A', 'B'], ['B', 'A', 'C']], [['Triangle', [0, 1, 2]]])
+        >> [['B', 'A', 'C']]
+        """
+        selected = []
+        for para in replaced:
+            valid = True
+            for p in premise_normal:
+                if p[0] == "Equal":  # algebra premise
+                    if EqParser.get_equation_from_tree(self.problem, p[1], True, para) is None:
+                        valid = False
+                        break
+                else:  # logic premise
+                    item = [para[i] for i in p[1]]
+                    if not self.problem.item_is_valid(p[0], tuple(item)):
+                        valid = False
+                        break
+            if valid:
+                selected.append(para)
+        return selected
+
+    def check_goal(self):
+        """Check whether the solution is completed."""
+        s_start_time = time.time()  # timing
+
+        if self.problem.goal["type"] == "value":
+            result, premise = self.solve_target(self.problem.goal["item"])
+            if result is not None:
+                if abs(result - self.problem.goal["answer"]) < 0.001:
+                    self.problem.goal["solved"] = True
+                self.problem.goal["solved_answer"] = result
+                self.problem.goal["premise"] = tuple(premise)
+                self.problem.goal["theorem"] = "solve_eq"
+        elif self.problem.goal["type"] == "equal":
+            result, premise = self.solve_target(self.problem.goal["item"])
+            if result is not None:
+                if abs(result) < 0.001:
+                    self.problem.goal["solved"] = True
+                self.problem.goal["solved_answer"] = result
+                self.problem.goal["premise"] = tuple(premise)
+                self.problem.goal["theorem"] = "solve_eq"
+        else:  # relation
+            if self.problem.goal["answer"] in self.problem.conditions[self.problem.goal["item"]].get_id_by_item:
+                self.problem.goal["solved"] = True
+                self.problem.goal["solved_answer"] = self.problem.goal["answer"]
+                self.problem.goal["premise"] = self.problem.conditions[self.problem.goal["item"]].premises[
+                    self.problem.goal["answer"]]
+                self.problem.goal["theorem"] = self.problem.conditions[self.problem.goal["item"]].theorems[
+                    self.problem.goal["answer"]]
+
+        self.problem.goal["solving_msg"].append(
+            "\033[32mChecking goal\033[0m:{:.6f}s".format(time.time() - s_start_time))

@@ -3,12 +3,9 @@
 		"Entity": {
 			"1": {
 				"name": "Triangle(ABC)",
-				"format": [
-					"ABC"
-				],
 				"multi": [
-					"Triangle(BCA)",
-					"Triangle(CAB)"
+					"BCA",
+					"BCA"
 				],
 				"extend": [
 					"Shape(ABC)"
@@ -16,9 +13,6 @@
 			},
 			"2": {
 				"name": "RightTriangle(ABC)",
-				"format": [
-					"ABC"
-				],
 				"multi": [],
 				"extend": [
 					"Triangle(ABC)"
@@ -26,9 +20,6 @@
 			},
 			"3": {
 				"name": "IsoscelesTriangle(ABC)",
-				"format": [
-					"ABC"
-				],
 				"multi": [],
 				"extend": [
 					"Triangle(ABC)"
@@ -36,12 +27,9 @@
 			},
 			"4": {
 				"name": "EquilateralTriangle(ABC)",
-				"format": [
-					"ABC"
-				],
 				"multi": [
-					"EquilateralTriangle(BCA)",
-					"EquilateralTriangle(CAB)"
+					"BCA",
+					"CAB"
 				],
 				"extend": [
 					"Triangle(ABC)"
@@ -51,11 +39,15 @@
 		"Relation": {
 			"1": {
 				"name": "Midpoint(M,AB)",
+				"para": [
+					"Point(M)",
+					"Line(AB)"
+				],
 				"format": [
 					"M,AB"
 				],
 				"multi": [
-					"Midpoint(M,BA)"
+					"M,BA"
 				],
 				"extend": [
 					"Point(M)",
@@ -64,13 +56,18 @@
 			},
 			"2": {
 				"name": "Intersect(O,AB,CD)",
+				"para": [
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				],
 				"format": [
 					"O,AB,CD"
 				],
 				"multi": [
-					"Intersect(O,CD,BA)",
-					"Intersect(O,BA,DC)",
-					"Intersect(O,DC,AB)"
+					"O,CD,BA",
+					"O,BA,DC",
+					"O,DC,AB"
 				],
 				"extend": [
 					"Point(O)",
@@ -80,13 +77,17 @@
 			},
 			"3": {
 				"name": "DisorderParallel(AB,CD)",
+				"para": [
+					"Line(AB)",
+					"Line(CD)"
+				],
 				"format": [
 					"AB,CD"
 				],
 				"multi": [
-					"DisorderParallel(DC,BA)",
-					"DisorderParallel(CD,AB)",
-					"DisorderParallel(BA,DC)"
+					"DC,BA",
+					"CD,AB",
+					"BA,DC"
 				],
 				"extend": [
 					"Line(AB)",
@@ -95,11 +96,15 @@
 			},
 			"4": {
 				"name": "Parallel(AB,CD)",
+				"para": [
+					"Line(AB)",
+					"Line(CD)"
+				],
 				"format": [
 					"AB,CD"
 				],
 				"multi": [
-					"Parallel(DC,BA)"
+					"DC,BA"
 				],
 				"extend": [
 					"DisorderParallel(AB,CD)"
@@ -107,6 +112,11 @@
 			},
 			"5": {
 				"name": "Perpendicular(O,AB,CD)",
+				"para": [
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				],
 				"format": [
 					"O,AB,CD",
 					"B,AB,CB",
@@ -119,9 +129,9 @@
 					"D,BA,DC"
 				],
 				"multi": [
-					"Perpendicular(O,CD,BA)",
-					"Perpendicular(O,BA,DC)",
-					"Perpendicular(O,DC,AB)"
+					"O,CD,BA",
+					"O,BA,DC",
+					"O,DC,AB"
 				],
 				"extend": [
 					"Intersect(O,AB,CD)",
@@ -132,12 +142,17 @@
 			},
 			"6": {
 				"name": "PerpendicularBisector(O,AB,CD)",
+				"para": [
+					"Point(O)",
+					"Line(AB)",
+					"Line(CD)"
+				],
 				"format": [
 					"O,AB,CD",
 					"D,AB,CD"
 				],
 				"multi": [
-					"PerpendicularBisector(O,BA,DC)"
+					"O,BA,DC"
 				],
 				"extend": [
 					"Perpendicular(O,AB,CD)",
@@ -146,6 +161,10 @@
 			},
 			"7": {
 				"name": "Bisector(BD,ABC)",
+				"para": [
+					"Line(BD)",
+					"Angle(ABC)"
+				],
 				"format": [
 					"BD,ABC"
 				],
@@ -157,6 +176,10 @@
 			},
 			"8": {
 				"name": "Median(AD,ABC)",
+				"para": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"AD,ABC"
 				],
@@ -168,6 +191,10 @@
 			},
 			"9": {
 				"name": "IsAltitude(AD,ABC)",
+				"para": [
+					"Line(AD)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"AD,ABC",
 					"AB,ABC",
@@ -181,6 +208,10 @@
 			},
 			"10": {
 				"name": "Neutrality(DE,ABC)",
+				"para": [
+					"Line(DE)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"DE,ABC"
 				],
@@ -192,12 +223,16 @@
 			},
 			"11": {
 				"name": "Circumcenter(O,ABC)",
+				"para": [
+					"Point(O)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"O,ABC"
 				],
 				"multi": [
-					"Circumcenter(O,BCA)",
-					"Circumcenter(O,CAB)"
+					"O,BCA",
+					"O,CAB"
 				],
 				"extend": [
 					"Point(O)",
@@ -206,12 +241,16 @@
 			},
 			"12": {
 				"name": "Incenter(O,ABC)",
+				"para": [
+					"Point(O)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"O,ABC"
 				],
 				"multi": [
-					"Incenter(O,BCA)",
-					"Incenter(O,CAB)"
+					"O,BCA",
+					"O,CAB"
 				],
 				"extend": [
 					"Point(O)",
@@ -220,12 +259,16 @@
 			},
 			"13": {
 				"name": "Centroid(O,ABC)",
+				"para": [
+					"Point(O)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"O,ABC"
 				],
 				"multi": [
-					"Centroid(O,BCA)",
-					"Centroid(O,CAB)"
+					"O,BCA",
+					"O,CAB"
 				],
 				"extend": [
 					"Point(O)",
@@ -234,6 +277,10 @@
 			},
 			"14": {
 				"name": "Orthocenter(O,ABC)",
+				"para": [
+					"Point(O)",
+					"Triangle(ABC)"
+				],
 				"format": [
 					"O,ABC",
 					"A,ABC",
@@ -241,8 +288,8 @@
 					"C,ABC"
 				],
 				"multi": [
-					"Orthocenter(O,BCA)",
-					"Orthocenter(O,CAB)"
+					"O,BCA",
+					"O,CAB"
 				],
 				"extend": [
 					"Point(O)",
@@ -251,6 +298,10 @@
 			},
 			"15": {
 				"name": "Congruent(ABC,DEF)",
+				"para": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				],
 				"mutex": [
 					"ABC",
 					"DEF",
@@ -265,14 +316,26 @@
 					[
 						"ABC",
 						"FDE"
+					],
+					[
+						"ABC",
+						"FED"
+					],
+					[
+						"ABC",
+						"DFE"
+					],
+					[
+						"ABC",
+						"EDF"
 					]
 				],
 				"multi": [
-					"Congruent(DEF,ABC)",
-					"Congruent(BCA,EFD)",
-					"Congruent(EFD,BCA)",
-					"Congruent(CAB,FDE)",
-					"Congruent(FDE,CAB)"
+					"DEF,ABC",
+					"BCA,EFD",
+					"EFD,BCA",
+					"CAB,FDE",
+					"FDE,CAB"
 				],
 				"extend": [
 					"Triangle(ABC)",
@@ -281,6 +344,10 @@
 			},
 			"16": {
 				"name": "Similar(ABC,DEF)",
+				"para": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				],
 				"mutex": [
 					"ABC",
 					"DEF",
@@ -295,14 +362,26 @@
 					[
 						"ABC",
 						"FDE"
+					],
+					[
+						"ABC",
+						"FED"
+					],
+					[
+						"ABC",
+						"DFE"
+					],
+					[
+						"ABC",
+						"EDF"
 					]
 				],
 				"multi": [
-					"Similar(DEF,ABC)",
-					"Similar(BCA,EFD)",
-					"Similar(EFD,BCA)",
-					"Similar(CAB,FDE)",
-					"Similar(FDE,CAB)"
+					"DEF,ABC",
+					"BCA,EFD",
+					"EFD,BCA",
+					"CAB,FDE",
+					"FDE,CAB"
 				],
 				"extend": [
 					"Triangle(ABC)",
@@ -311,6 +390,10 @@
 			},
 			"17": {
 				"name": "MirrorCongruent(ABC,DEF)",
+				"para": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				],
 				"mutex": [
 					"ABC",
 					"DEF",
@@ -325,14 +408,26 @@
 					[
 						"ABC",
 						"FDE"
+					],
+					[
+						"ABC",
+						"FED"
+					],
+					[
+						"ABC",
+						"DFE"
+					],
+					[
+						"ABC",
+						"EDF"
 					]
 				],
 				"multi": [
-					"MirrorCongruent(DEF,ABC)",
-					"MirrorCongruent(BCA,FDE)",
-					"MirrorCongruent(FDE,BCA)",
-					"MirrorCongruent(CAB,EFD)",
-					"MirrorCongruent(EFD,CAB)"
+					"DEF,ABC",
+					"BCA,FDE",
+					"FDE,BCA",
+					"CAB,EFD",
+					"EFD,CAB"
 				],
 				"extend": [
 					"Triangle(ABC)",
@@ -341,6 +436,10 @@
 			},
 			"18": {
 				"name": "MirrorSimilar(ABC,DEF)",
+				"para": [
+					"Triangle(ABC)",
+					"Triangle(DEF)"
+				],
 				"mutex": [
 					"ABC",
 					"DEF",
@@ -355,14 +454,26 @@
 					[
 						"ABC",
 						"FDE"
+					],
+					[
+						"ABC",
+						"FED"
+					],
+					[
+						"ABC",
+						"DFE"
+					],
+					[
+						"ABC",
+						"EDF"
 					]
 				],
 				"multi": [
-					"MirrorSimilar(DEF,ABC)",
-					"MirrorSimilar(BCA,FDE)",
-					"MirrorSimilar(FDE,BCA)",
-					"MirrorSimilar(CAB,EFD)",
-					"MirrorSimilar(EFD,CAB)"
+					"DEF,ABC",
+					"BCA,FDE",
+					"FDE,BCA",
+					"CAB,EFD",
+					"EFD,CAB"
 				],
 				"extend": [
 					"Triangle(ABC)",
@@ -372,25 +483,22 @@
 		},
 		"Attribution": {
 			"1": {
-				"name": "AltitudeOfTriangle",
-				"sym": "at",
+				"name": "AltitudeOfTriangle(ABC)",
 				"para": [
 					"Triangle(ABC)"
 				],
-				"multi": [
-					"ABC"
-				],
+				"sym": "at",
+				"multi": [],
 				"negative": "False"
 			},
 			"2": {
-				"name": "DistanceOfPointToLine",
-				"sym": "dpl",
+				"name": "DistanceOfPointToLine(O,AB)",
 				"para": [
 					"Point(O)",
 					"Line(AB)"
 				],
+				"sym": "dpl",
 				"multi": [
-					"OAB",
 					"OBA"
 				],
 				"negative": "False"

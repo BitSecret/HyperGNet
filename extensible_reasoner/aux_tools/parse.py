@@ -24,46 +24,50 @@ class FLParser:
         """parse predicate_GDL to executable form."""
         predicate_GDL = predicate_GDL["Predicates"]
         parsed_GDL = {
-            "Construction": ["Shape", "Polygon", "Collinear"],  # preset Construction,
+            "Construction": ["Shape", "Collinear", "Polygon"],  # preset Construction,
             "Entity": {  # preset Entity
                 "Point": {
-                    "vars": [0], "format": [[0]], "multi": [], "extend": []
+                    "vars": [0], "multi": [], "extend": []
                 },
                 "Line": {
-                    "vars": [0, 1], "format": [[0, 1]], "multi": [[1, 0]], "extend": [["Point", [0]], ["Point", [1]]]
+                    "vars": [0, 1], "multi": [[1, 0]], "extend": [["Point", [0]], ["Point", [1]]]
                 },
                 "Angle": {
-                    "vars": [0, 1, 2], "format": [[0, 1, 2]], "multi": [],
-                    "extend": [["Line", [0, 1]], ["Line", [1, 2]]]
+                    "vars": [0, 1, 2], "multi": [], "extend": [["Line", [0, 1]], ["Line", [1, 2]]]
                 }
             },
             "Relation": {},
             "Attribution": {  # preset Attribution
                 "Free": {
-                    "sym": "f",
+                    "vars": [],
                     "para": [],
-                    "multi": [],
+                    "sym": "f",
+                    "multi": [],  # var list or 'normal'
                     "negative": "True"
                 },
                 "Length": {
-                    "sym": "l",
+                    "vars": [0, 1],
                     "para": [["Line", [0, 1]]],
-                    "multi": [[0, 1], [1, 0]],  # [1, 0]  或 “normal”
+                    "sym": "l",
+                    "multi": [[1, 0]],
                     "negative": "False"
                 },
                 "Measure": {
-                    "sym": "m",
+                    "vars": [0, 1, 2],
                     "para": [["Angle", [0, 1, 2]]],
-                    "multi": [[0, 1, 2]],
+                    "sym": "m",
+                    "multi": [],
                     "negative": "True"
                 },
                 "Area": {
+                    "vars": [],
                     "sym": "a",
                     "para": "Shape",
                     "multi": "normal",
                     "negative": "False"
                 },
                 "Perimeter": {
+                    "vars": [],
                     "sym": "p",
                     "para": "Shape",
                     "multi": "normal",
@@ -78,36 +82,8 @@ class FLParser:
             parsed_GDL["Entity"][name] = {  # parameter of predicate
                 "vars": [i for i in range(len(para))]
             }
-            if "format" in entity[key]:  # format control
-                parsed_format = []
-                for i in range(len(entity[key]["format"])):
-                    parsed_format.append([])
-                    checked = []
-                    for item in entity[key]["format"][i]:
-                        if item not in checked:
-                            checked.append(item)
-                        parsed_format[i].append(checked.index(item))
-                parsed_GDL["Entity"][name]["format"] = parsed_format
-            else:
-                parsed_mutex = []
-
-                for i in range(len(entity[key]["mutex"])):
-                    parsed_mutex.append([])
-                    if isinstance(entity[key]["mutex"][i], str):
-                        for item in entity[key]["mutex"][i]:
-                            parsed_mutex[i].append(para.index(item))
-                    else:
-                        parsed_mutex[i].append([])
-                        parsed_mutex[i].append([])
-                        for item in entity[key]["mutex"][i][0]:
-                            parsed_mutex[i][0].append(para.index(item))
-                        for item in entity[key]["mutex"][i][1]:
-                            parsed_mutex[i][1].append(para.index(item))
-                parsed_GDL["Entity"][name]["mutex"] = parsed_mutex
-            parsed_GDL["Entity"][name]["multi"] = []  # multi
-            for multi in entity[key]["multi"]:
-                _, extend_para, _ = FLParser._parse_one_predicate(multi)
-                parsed_GDL["Entity"][name]["multi"].append([para.index(i) for i in extend_para])
+            parsed_GDL["Entity"][name]["multi"] = [[para.index(i) for i in multi]  # multi
+                                                   for multi in entity[key]["multi"]]
             parsed_GDL["Entity"][name]["extend"] = []  # extend
             for extend in entity[key]["extend"]:
                 extend_name, extend_para, _ = FLParser._parse_one_predicate(extend)
@@ -120,12 +96,16 @@ class FLParser:
                 "vars": [i for i in range(len(para))],
                 "para_structure": para_len
             }
+            parsed_GDL["Relation"][name]["para"] = []  # extend
+            for predicate in relation[key]["para"]:
+                predicate_name, predicate_para, _ = FLParser._parse_one_predicate(predicate)
+                parsed_GDL["Relation"][name]["para"].append([predicate_name, [para.index(i) for i in predicate_para]])
             if "format" in relation[key]:  # format control
                 parsed_format = []
                 for i in range(len(relation[key]["format"])):
                     parsed_format.append([])
                     checked = []
-                    for item in relation[key]["format"][i]:
+                    for item in relation[key]["format"][i].replace(",", ""):
                         if item not in checked:
                             checked.append(item)
                         parsed_format[i].append(checked.index(item))
@@ -145,10 +125,8 @@ class FLParser:
                         for item in relation[key]["mutex"][i][1]:
                             parsed_mutex[i][1].append(para.index(item))
                 parsed_GDL["Relation"][name]["mutex"] = parsed_mutex
-            parsed_GDL["Relation"][name]["multi"] = []  # multi
-            for multi in relation[key]["multi"]:
-                _, extend_para, _ = FLParser._parse_one_predicate(multi)
-                parsed_GDL["Relation"][name]["multi"].append([para.index(i) for i in extend_para])
+            parsed_GDL["Relation"][name]["multi"] = [[para.index(i) for i in multi.replace(",", "")]  # multi
+                                                     for multi in relation[key]["multi"]]
             parsed_GDL["Relation"][name]["extend"] = []  # extend
             for extend in relation[key]["extend"]:
                 extend_name, extend_para, _ = FLParser._parse_one_predicate(extend)
@@ -156,19 +134,19 @@ class FLParser:
 
         attribution = predicate_GDL["Attribution"]  # parse attribution
         for key in attribution:
-            name = attribution[key]["name"]
-            parsed_GDL["Attribution"][name] = {  # sym
-                "sym": attribution[key]["sym"]
+            name, para, _ = FLParser._parse_one_predicate(attribution[key]["name"])
+            parsed_GDL["Attribution"][name] = {  # vars
+                "vars": [i for i in range(len(para))],
+                "para": []
             }
-            parsed_GDL["Attribution"][name]["para"] = []  # para
-            for predicate in attribution[key]["para"]:
-                para_name, para, _ = FLParser._parse_one_predicate(predicate)
+            for predicate in attribution[key]["para"]:   # para
+                predicate_name, predicate_para, _ = FLParser._parse_one_predicate(predicate)
                 parsed_GDL["Attribution"][name]["para"].append(
-                    [para_name, [attribution[key]["multi"][0].index(item) for item in para]]
+                    [predicate_name, [para.index(item) for item in predicate_para]]
                 )
+            parsed_GDL["Attribution"][name]["sym"] = attribution[key]["sym"]  # sym
             parsed_GDL["Attribution"][name]["multi"] = [  # multi
-                [attribution[key]["multi"][0].index(item) for item in attribution[key]["multi"][i]]
-                for i in range(len(attribution[key]["multi"]))
+                [para.index(item) for item in multi] for multi in attribution[key]["multi"]
             ]
             parsed_GDL["Attribution"][name]["negative"] = attribution[key]["negative"]  # negative
 
@@ -559,146 +537,67 @@ class EqParser:
         return expr_stack.pop()
 
 
-def anti_parse_logic_to_cdl(problem, de_redundant=False):
-    """
-    Anti parse conditions of logic form to CDL.
-    Refer to function <anti_parse_one_by_id>.
-    """
-    problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
+class AntiParser:
 
-    anti_parsed_cdl = {}
-    for step in range(len(problem.get_id_by_step)):
-        anti_parsed_cdl[step] = []
-        for _id in problem.get_id_by_step[step]:
-            anti_parsed_cdl[step].append(anti_parse_one_by_id(problem, _id))
+    @staticmethod
+    def anti_parse_logic_to_cdl(problem, de_redundant=False):
+        """
+        Anti parse conditions of logic form to CDL.
+        Refer to function <anti_parse_one_by_id>.
+        """
+        problem.gather_conditions_msg()  # gather conditions msg before generate CDL.
 
-    if de_redundant:
-        for step in anti_parsed_cdl:
-            new_anti_parsed = []
-            i = 0
-            while i < len(anti_parsed_cdl[step]):
-                predicate = anti_parsed_cdl[step][i].split("(")[0]
-                if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"]:  # skip
+        anti_parsed_cdl = {}
+        for step in range(len(problem.get_id_by_step)):
+            anti_parsed_cdl[step] = []
+            for _id in problem.get_id_by_step[step]:
+                anti_parsed_cdl[step].append(AntiParser.anti_parse_one_by_id(problem, _id))
+
+        if de_redundant:
+            for step in anti_parsed_cdl:
+                new_anti_parsed = []
+                i = 0
+                while i < len(anti_parsed_cdl[step]):
+                    predicate = anti_parsed_cdl[step][i].split("(")[0]
+                    if predicate in ["Shape", "Collinear", "Point", "Line", "Angle"]:  # skip
+                        i += 1
+                        continue
+                    new_anti_parsed.append(anti_parsed_cdl[step][i])
+                    if predicate in problem.predicate_GDL["Entity"]:
+                        i += len(problem.predicate_GDL["Entity"][predicate]["multi"])
+                    elif predicate in problem.predicate_GDL["Relation"]:
+                        i += len(problem.predicate_GDL["Relation"][predicate]["multi"])
                     i += 1
-                    continue
-                new_anti_parsed.append(anti_parsed_cdl[step][i])
-                if predicate in problem.predicate_GDL["Entity"]:
-                    i += len(problem.predicate_GDL["Entity"][predicate]["multi"])
-                elif predicate in problem.predicate_GDL["Relation"]:
-                    i += len(problem.predicate_GDL["Relation"][predicate]["multi"])
-                i += 1
-            anti_parsed_cdl[step] = new_anti_parsed
+                anti_parsed_cdl[step] = new_anti_parsed
 
-    return anti_parsed_cdl
+        return anti_parsed_cdl
 
-
-def anti_parse_one_by_id(problem, _id):
-    """
-    Anti parse conditions of logic form to CDL.
-    ['Shape', ['A', 'B', 'C']]           ==>   'Shape(ABC)'
-    ['Parallel', ['A', 'B', 'C', 'D']]   ==>   'Parallel(AB,CD)'
-    """
-    predicate = problem.get_predicate_by_id[_id]
-    condition = problem.conditions[predicate]
-    if predicate in list(problem.predicate_GDL["Construction"]) + list(problem.predicate_GDL["Entity"]):
-        return predicate + "(" + "".join(condition.get_item_by_id[_id]) + ")"
-    elif predicate in problem.predicate_GDL["Relation"]:
-        item = []
-        i = 0
-        for l in problem.predicate_GDL["Relation"][predicate]["para_split"]:
-            item.append("")
-            for _ in range(l):
-                item[-1] += condition.get_item_by_id[_id][i]
-                i += 1
-        return predicate + "(" + ",".join(item) + ")"
-    else:  # equation
-        equation = condition.get_item_by_id[_id]
-        if len(equation.free_symbols) > 1:
-            equation_str = str(condition.get_item_by_id[_id])
-            equation_str = equation_str.replace(" ", "")
-            return "Equation" + "(" + equation_str + ")"
-        else:
-            item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
-            return predicate + "(" + "".join(item) + ")"
-
-
-def replace_free_vars_with_letters(free_vars, points, mutex_points):
-    """
-    Replace free vars with points with mutex_points constrain.
-    >> replace_free_vars_with_letters(['A', 'B', 2], ['A', 'B', 'C'], [[0, 1, 2]])
-    >> [['A', 'B', 'C']]
-    >> replace_free_vars_with_letters(['A', 'B', 2, 3], ['A', 'B', 'C', 'D'], [[0, 1, 2, 3]])
-    >> [['A', 'B', 'C', 'D'], ['A', 'B', 'D', 'C']]
-    """
-    all_para_combination = [free_vars]
-    while True:
-        len_before_update = len(all_para_combination)
-        for i in range(len(all_para_combination)):  # list all possible values for free vars
-            for j in range(len(all_para_combination[i])):
-                if isinstance(all_para_combination[i][j], int):
-                    for point in points:
-                        all_para_combination.append(copy.copy(all_para_combination[i]))
-                        all_para_combination[-1][j] = point[0]
-                    all_para_combination.pop(i)  # delete being replaced para
-                    break
-        if len_before_update == len(all_para_combination):
-            break
-
-    checked_para_combination = []  # filter out combinations that meet the mutex constraint
-    for para in all_para_combination:
-        checked = True
-        for mutex_point in mutex_points:
-            if not isinstance(mutex_point[0], list):
-                check_points = [para[j] for j in mutex_point]
-                if len(set(check_points)) < len(mutex_point):
-                    checked = False
-                    break
+    @staticmethod
+    def anti_parse_one_by_id(problem, _id):
+        """
+        Anti parse conditions of logic form to CDL.
+        ['Shape', ['A', 'B', 'C']]           ==>   'Shape(ABC)'
+        ['Parallel', ['A', 'B', 'C', 'D']]   ==>   'Parallel(AB,CD)'
+        """
+        predicate = problem.get_predicate_by_id[_id]
+        condition = problem.conditions[predicate]
+        if predicate in list(problem.predicate_GDL["Construction"]) + list(problem.predicate_GDL["Entity"]):
+            return predicate + "(" + "".join(condition.get_item_by_id[_id]) + ")"
+        elif predicate in problem.predicate_GDL["Relation"]:
+            item = []
+            i = 0
+            for l in problem.predicate_GDL["Relation"][predicate]["para_structure"]:
+                item.append("")
+                for _ in range(l):
+                    item[-1] += condition.get_item_by_id[_id][i]
+                    i += 1
+            return predicate + "(" + ",".join(item) + ")"
+        else:  # equation
+            equation = condition.get_item_by_id[_id]
+            if len(equation.free_symbols) > 1:
+                equation_str = str(condition.get_item_by_id[_id])
+                equation_str = equation_str.replace(" ", "")
+                return "Equation" + "(" + equation_str + ")"
             else:
-                check_shapes = ["".join([para[j] for j in mutex_point[i]]) for i in range(len(mutex_point))]
-                if len(set(check_shapes)) < len(mutex_point):
-                    checked = False
-                    break
-        if checked:
-            checked_para_combination.append(para)
-
-    return checked_para_combination
-
-
-def build_vars_from_algebraic_relation(t_vars, equal_tree, attr):
-    """
-    Build vars from algebraic relation.
-    >> build_vars_from_algebraic_relation(
-           [0, 1, 2, 3],
-           ['Equal', [['Length', [0, 1]],['Length', [2, 3]]]],
-           [('A', 'B'), 'Length']
-       )
-    [[0, 1, 'A', 'B'], ['A', 'B', 2, 3]]
-    """
-    results = []
-    _get_all_attr(equal_tree, attr[1], results)
-    for i in range(len(results)):
-        results[i] = [attr[0][results[i][1].index(v)] if v in results[i][1] else v for v in t_vars]
-
-    return results
-
-
-def _get_all_attr(equal_tree, target_attr, results):
-    """
-    Return all attrs same as target attr. Called by function <build_vars_from_algebraic_relation>.
-    >> _get_all_attr(
-           ['Equal', [['Length', [0, 1]],['Length', [2, 3]]]],
-           'Length',
-           []
-       )
-    [['Length', [0, 1]], ['Length', [2, 3]]]
-    """
-    if not isinstance(equal_tree, list):
-        return
-
-    if equal_tree[0] in ["Equal", "Add", "Sub", "Mul", "Div", "Pow"]:
-        for item in equal_tree[1]:
-            _get_all_attr(item, target_attr, results)
-    elif equal_tree[0] in ["Sin", "Cos", "Tan"]:
-        _get_all_attr(equal_tree[1][0], target_attr, results)
-    elif equal_tree[0] == target_attr:
-        results.append(equal_tree)
+                item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
+                return predicate + "(" + "".join(item) + ")"

@@ -254,25 +254,36 @@ class Problem:
 
     def item_is_valid(self, predicate, item):
         """
-        Validity check for the format of entity relation item.
-
+        Validity check for the format of logic conditions.
+        Format Validity check: FV check.
+        Entity Existence check: EE check.
         """
         if predicate not in self.conditions:
             raise RuntimeException("PredicateNotDefined",
                                    "Predicate '{}': not defined in current predicate GDL.".format(predicate))
-
-        if predicate in self.predicate_GDL["Construction"] or predicate == "Equation":
+        if predicate == "Equation":
             return True
+
+        if predicate in self.predicate_GDL["Construction"]:   # FV check
+            return len(item) == len(set(item))
 
         if predicate in self.predicate_GDL["Entity"]:
             item_GDL = self.predicate_GDL["Entity"][predicate]
-        else:
-            item_GDL = self.predicate_GDL["Relation"][predicate]
+            if len(item) != len(item_GDL["vars"]):  # FV check
+                raise RuntimeException("ParameterLengthError",
+                                       "Predicate '{}' excepted length: {}. Got: {}".format(
+                                           predicate, len(item_GDL["vars"]), item))
+            return len(item) == len(set(item))
 
-        if len(item) != len(item_GDL["vars"]):
+        item_GDL = self.predicate_GDL["Relation"][predicate]
+        if len(item) != len(item_GDL["vars"]):  # FV check
             raise RuntimeException("ParameterLengthError",
                                    "Predicate '{}' excepted length: {}. Got: {}".format(
                                        predicate, len(item_GDL["vars"]), item))
+
+        for name, para in self.predicate_GDL["Relation"][predicate]:    # EE check
+            if tuple([item[i] for i in para]) not in self.conditions[name].get_id_by_item:
+                return False
 
         if "format" in item_GDL:
             letters = []
@@ -306,7 +317,7 @@ class Problem:
         :param attr: attr's name, such as Length
         :return: sym
         """
-        if not self._attr_is_valid(item, attr):
+        if not self.attr_is_valid(item, attr):
             return None
 
         if (item, attr) not in self.conditions["Equation"].sym_of_attr:  # No symbolic representation, initialize one.
@@ -325,35 +336,36 @@ class Problem:
                 for bias in range(1, l):
                     extended_item = [item[(i + bias) % l] for i in range(l)]  # extend item
                     self.conditions["Equation"].sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
-                    self.conditions["Equation"].attr_of_sym[sym] = (tuple(extended_item), attr)
             else:
                 for multi in self.predicate_GDL["Attribution"][attr]["multi"]:
                     extended_item = [item[i] for i in multi]  # extend item
                     self.conditions["Equation"].sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
-                    self.conditions["Equation"].attr_of_sym[sym] = (tuple(extended_item), attr)
 
             return sym
 
         return self.conditions["Equation"].sym_of_attr[(item, attr)]
 
-    def _attr_is_valid(self, item, attr):
-        """Validity check for format of algebraic relation item."""
+    def attr_is_valid(self, item, attr):
+        """
+        Validity check for format of algebra conditions.
+        Format Validity check: FV check.
+        Entity Existence check: EE check.
+        """
         if attr == "Free":
             return True
 
-        if isinstance(self.predicate_GDL["Attribution"][attr]["multi"], str):
-            if item in self.conditions[self.predicate_GDL["Attribution"][attr]["para"]].get_id_by_item:
+        if isinstance(self.predicate_GDL["Attribution"][attr]["multi"], str):   # EE check
+            if item in self.conditions[self.predicate_GDL["Attribution"][attr]["para"]].get_id_by_item:   # EE check
                 return True
             return False
         else:
-            excepted_length = len(self.predicate_GDL["Attribution"][attr]["multi"][0])
-            if len(item) != excepted_length:
+            excepted_length = len(self.predicate_GDL["Attribution"][attr]["vars"])
+            if len(item) != excepted_length:   # FV check
                 raise RuntimeException("ParameterLengthError",
                                        "Attribute '{}' excepted length: {}. Got: {}".format(
                                            attr, excepted_length, item))
             for predicate, para in self.predicate_GDL["Attribution"][attr]["para"]:
-                data = [item[p] for p in para]
-                if tuple(data) not in self.conditions[predicate].get_id_by_item:
+                if tuple([item[p] for p in para]) not in self.conditions[predicate].get_id_by_item:    # EE check
                     return False
             return True
 
