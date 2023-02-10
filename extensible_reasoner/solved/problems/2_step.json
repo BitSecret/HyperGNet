@@ -1,1 +1,1 @@
-{"0": ["Length(AB)", "Length(BC)"], "1": ["Equation(-l_ab+l_ac-l_bc)", "Length(AC)"]}
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(ACD)", "Polygon(CDA)", "Polygon(DAC)", "Polygon(BCDA)", "Polygon(CDAB)", "Polygon(DABC)", "Polygon(ABCD)", "Measure(CAB)", "Measure(DAC)"], "1": ["Equation(-m_acd-m_bca+m_bcd)", "Equation(-m_cab+m_dab-m_dac)", "Measure(DAB)"]}

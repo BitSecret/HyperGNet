@@ -99,6 +99,7 @@ def show(problem, simple=False):
                         str(condition.premises[_id]),
                         condition.theorems[_id])
                     )
+    print()
 
     print("\033[33mSymbols and Value:\033[0m")
     equation = problem.conditions["Equation"]

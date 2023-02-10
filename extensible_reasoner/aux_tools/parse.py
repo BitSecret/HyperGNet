@@ -599,5 +599,5 @@ class AntiParser:
                 equation_str = equation_str.replace(" ", "")
                 return "Equation" + "(" + equation_str + ")"
             else:
-                item, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
-                return predicate + "(" + "".join(item) + ")"
+                items, predicate = condition.attr_of_sym[list(equation.free_symbols)[0]]
+                return predicate + "(" + "".join(items[0]) + ")"

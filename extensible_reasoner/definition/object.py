@@ -81,7 +81,7 @@ class Equation(Condition):
         self.sym_of_attr = {}  # Symbolic representation of attribute values.
         >> {(('A', 'B'), 'Length'): l_ab}
         self.attr_of_sym = {}  # Attribute values of symbol.
-        >> {l_ab: (('A', 'B'), 'Length')}
+        >> {l_ab: [[('A', 'B'), ('B', 'A')], 'Length']}
         self.value_of_sym = {}  # Value of symbol.
         >> {l_ab: 3.0}
         self.equations = {}    # Simplified equations. Replace sym with value of symbol's value already known.

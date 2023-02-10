@@ -33,7 +33,11 @@ class Problem:
         self.conditions["Equation"] = Equation("Equation", self.predicate_GDL["Attribution"])
 
         for predicate, item in problem_CDL["parsed_cdl"]["construction_cdl"]:  # conditions of construction
-            self.add(predicate, tuple(item), (-1,), "prerequisite")
+            if predicate == "Collinear":
+                self.add(predicate, tuple(item), (-1,), "prerequisite")
+        for predicate, item in problem_CDL["parsed_cdl"]["construction_cdl"]:
+            if predicate == "Shape":
+                self.add(predicate, tuple(item), (-1,), "prerequisite")
 
         self.construction_init()  # start construction
 
@@ -43,14 +47,7 @@ class Problem:
             else:
                 self.add(predicate, tuple(item), (-1,), "prerequisite")
 
-        self.goal = {  # set goal
-            "solved": False,
-            "solved_answer": None,
-            "premise": None,
-            "theorem": None,
-            "solving_msg": [],
-            "type": problem_CDL["parsed_cdl"]["goal"]["type"]
-        }
+        self.goal = {"type": problem_CDL["parsed_cdl"]["goal"]["type"]}  # set goal
         if self.goal["type"] == "value":
             self.goal["item"] = EqParser.get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["item"][1][0])
             self.goal["answer"] = EqParser.get_expr_from_tree(self, problem_CDL["parsed_cdl"]["goal"]["answer"])
@@ -60,6 +57,11 @@ class Problem:
         else:  # relation type
             self.goal["item"] = problem_CDL["parsed_cdl"]["goal"]["item"]
             self.goal["answer"] = tuple(problem_CDL["parsed_cdl"]["goal"]["answer"])
+        self.goal["solved"] = False
+        self.goal["solved_answer"] = None
+        self.goal["premise"] = None
+        self.goal["theorem"] = None
+        self.goal["solving_msg"] = []
 
     def construction_init(self):
         """
@@ -152,7 +154,7 @@ class Problem:
 
             for same_angle in same_angles:
                 self.conditions["Equation"].sym_of_attr[(same_angle, "Measure")] = sym
-                self.conditions["Equation"].attr_of_sym[sym] = (same_angle, "Measure")
+            self.conditions["Equation"].attr_of_sym[sym] = [same_angles, "Measure"]
 
     def add(self, predicate, item, premise, theorem):
         """
@@ -205,38 +207,64 @@ class Problem:
         elif predicate == "Shape":  # Construction predicate: Shape
             added, _id = self.conditions["Shape"].add(item, premise, theorem)
             if added:  # if added successful
-                self.add("Polygon", item, (_id,), "extended")
-                l = len(item)
-                for bias in range(l):
-                    extended_shape = []  # extend Shape
-                    for i in range(l):
-                        extended_shape.append(item[(i + bias) % l])
-                    self.conditions["Shape"].add(tuple(extended_shape), (_id,), "extended")
-                    extended_angle = [item[0 + bias], item[(1 + bias) % l], item[(2 + bias) % l]]  # extend Angle
-                    self.add("Angle", tuple(extended_angle), (_id,), "extended")
+                non_vertex_points = []
+                for i in range(0, len(item)):
+                    point1 = item[i]  # sliding window in the length of 3
+                    point2 = item[(i + 1) % len(item)]
+                    j = 0
+                    while True:
+                        point3 = item[(i + 2 + j) % len(item)]
+                        if (point1, point2, point3) not in self.conditions["Collinear"].get_id_by_item:
+                            break
+                        j += 1
+                    if j > 0:
+                        non_vertex_points.append("".join([item[(i + 1 + k) % len(item)] for k in range(j)]))
+                new_non_vertex_points = []
+                for i in non_vertex_points:
+                    can_add = True
+                    for j in non_vertex_points:
+                        if i != j and i in j:
+                            can_add = False
+                            break
+                    if can_add:
+                        new_non_vertex_points.append(i)
+                non_vertex_points = new_non_vertex_points
+
+                polygon_premise = [_id]
+                for non_vertex_point in non_vertex_points:
+                    for collinear in self.conditions["Collinear"].get_id_by_item:
+                        if non_vertex_point in collinear:
+                            polygon_premise.append(self.conditions["Collinear"].get_id_by_item[collinear])
+
+                extended_shape = []    # shape after remove collinear points
+                non_vertex_points = list((set("".join(non_vertex_points))))
+                for i in range(len(non_vertex_points) + 1):
+                    for removed_points in combinations(non_vertex_points, i):
+                        new_item = list(item)
+                        for removed_point in removed_points:
+                            new_item.pop(new_item.index(removed_point))
+                        extended_shape.append(tuple(new_item))
+                for item in extended_shape:
+                    l = len(item)
+                    for bias in range(l):
+                        self.conditions["Shape"].add(
+                            tuple([item[(i + bias) % l] for i in range(l)]), (_id,), "extended"
+                        )
+                        extended_angle = [item[0 + bias], item[(1 + bias) % l], item[(2 + bias) % l]]  # extend Angle
+                        self.add("Angle", tuple(extended_angle), (_id,), "extended")
+
+                self.add("Polygon", extended_shape[-1], tuple(polygon_premise), "extended")  # shape no collinear points
+                if len(extended_shape) > 1:
+                    eq = self.get_sym_of_attr(extended_shape[0], "Area") -\
+                         self.get_sym_of_attr(extended_shape[-1], "Area")
+                    self.conditions["Equation"].add(eq, tuple(polygon_premise), "extended")
                 return True
         elif predicate == "Polygon":
-            item, i = list(item), 0
-            premise = list(premise)
-            while len(item) > 2 and i < len(item):  # Check whether collinear points exist
-                point1 = item[i]  # sliding window in the length of 3
-                point2 = item[(i + 1) % len(item)]
-                point3 = item[(i + 2) % len(item)]
-
-                if (point1, point2, point3) in self.conditions["Collinear"].get_id_by_item:  # Delete when collinear
-                    item.pop(item.index(point2))
-                    premise.append(self.conditions["Collinear"].get_id_by_item[(point1, point2, point3)])
-                else:  # Move backward sliding window when not collinear
-                    i += 1
-            item = tuple(item)
             added, _id = self.conditions["Polygon"].add(item, tuple(premise), theorem)
             if added:  # if added successful
                 l = len(item)
                 for bias in range(l):
-                    extended_shape = []  # extend Polygon
-                    for i in range(l):
-                        extended_shape.append(item[(i + bias) % l])
-                    self.conditions["Polygon"].add(tuple(extended_shape), (_id,), "extended")
+                    self.conditions["Polygon"].add(tuple([item[(i + bias) % l] for i in range(l)]), (_id,), "extended")
                 return True
         elif predicate == "Collinear":  # Construction predicate: Collinear
             added, _id = self.conditions["Collinear"].add(item, premise, theorem)
@@ -281,7 +309,7 @@ class Problem:
                                    "Predicate '{}' excepted length: {}. Got: {}".format(
                                        predicate, len(item_GDL["vars"]), item))
 
-        for name, para in self.predicate_GDL["Relation"][predicate]:    # EE check
+        for name, para in self.predicate_GDL["Relation"][predicate]["para"]:    # EE check
             if tuple([item[i] for i in para]) not in self.conditions[name].get_id_by_item:
                 return False
 
@@ -329,18 +357,20 @@ class Problem:
 
             self.conditions["Equation"].value_of_sym[sym] = None  # init symbol's value
             self.conditions["Equation"].sym_of_attr[(item, attr)] = sym  # add sym
-            self.conditions["Equation"].attr_of_sym[sym] = (item, attr)
 
+            extend_items = [item]
             if isinstance(self.predicate_GDL["Attribution"][attr]["multi"], str):
                 l = len(item)
                 for bias in range(1, l):
                     extended_item = [item[(i + bias) % l] for i in range(l)]  # extend item
+                    extend_items.append(tuple(extended_item))
                     self.conditions["Equation"].sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
             else:
                 for multi in self.predicate_GDL["Attribution"][attr]["multi"]:
                     extended_item = [item[i] for i in multi]  # extend item
+                    extend_items.append(tuple(extended_item))
                     self.conditions["Equation"].sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
-
+            self.conditions["Equation"].attr_of_sym[sym] = [extend_items, attr]   # add attr
             return sym
 
         return self.conditions["Equation"].sym_of_attr[(item, attr)]

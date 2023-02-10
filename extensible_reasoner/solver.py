@@ -243,9 +243,10 @@ class Solver:
         """
         eq = self.problem.conditions["Equation"]  # class <Equation>
 
-        if target_expr in eq.get_item_by_id.values() or \
-                -target_expr in eq.get_item_by_id.values():  # It is a known equation and does not need to solve it.
+        if target_expr in eq.get_id_by_item:
             return 0.0, [eq.get_id_by_item[target_expr]]
+        if -target_expr in eq.get_id_by_item:
+            return 0.0, [eq.get_id_by_item[-target_expr]]
 
         premise = []
         for sym in target_expr.free_symbols:  # Solved only using value replacement
@@ -375,8 +376,7 @@ class Solver:
                     unsolved_sym.append(sym)
 
             for sym in unsolved_sym:  # find algebraic conclusion containing unsolved_sym
-                attr_para, attr_name = equation.attr_of_sym[sym]  # such as ('A', 'B'), 'Length'
-                # 一个sym可能对应多个attr_para，这里还要再考虑一下
+                attr_paras, attr_name = equation.attr_of_sym[sym]  # such as ('A', 'B'), 'Length'
                 for theorem_name in self.theorem_GDL:
                     for branch in self.theorem_GDL[theorem_name]:
                         one_theorem = self.theorem_GDL[theorem_name][branch]
@@ -386,8 +386,10 @@ class Solver:
                                             self.find_vars_from_equal_tree(conclusion[1][1], attr_name)
                                 replaced = []
                                 for attr_var in list(set(attr_vars)):  # fast redundancy removal and ergodic
-                                    replaced.append([attr_para[attr_var.index(v)] if v in attr_var else v
-                                                     for v in one_theorem["vars"]])
+                                    for attr_para in attr_paras:    # multi rep
+                                        if len(attr_var) == len(attr_para):   # filter Area, Perimeter
+                                            replaced.append([attr_para[attr_var.index(v)] if v in attr_var else v
+                                                             for v in one_theorem["vars"]])
                                 pres = self.prerequisite_generation(replaced, one_theorem["premise"])
                                 for pre in pres:
                                     results.append((theorem_name, pre))  # add to results

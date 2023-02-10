@@ -1,30 +1,7 @@
 {
 	"1": {
 		"problem_id": 1,
-		"annotation": "xiaokaizhang_2022-12-10",
-		"source": "Theorem_Test",
-		"problem_level": 1,
-		"problem_text_cn": "",
-		"problem_text_en": "",
-		"problem_img": "",
-		"construction_cdl": [
-			"Shape(ABC)",
-			"Collinear(BDC)"
-		],
-		"text_cdl": [
-			"IsAltitude(AD,ABC)"
-		],
-		"image_cdl": [],
-		"goal_cdl": "Triangle(ABC)",
-		"problem_answer": "Triangle(ABC)",
-		"theorem_seqs": [
-			"definition_of_triangle"
-		],
-		"notes": ""
-	},
-	"2": {
-		"problem_id": 2,
-		"annotation": "xiaokaizhang_2022-12-10",
+		"annotation": "xiaokaizhang_2023-02-10",
 		"source": "Theorem_Test",
 		"problem_level": 1,
 		"problem_text_cn": "",
@@ -45,9 +22,9 @@
 		],
 		"notes": ""
 	},
-	"3": {
-		"problem_id": 3,
-		"annotation": "xiaokaizhang_2022-12-10",
+	"2": {
+		"problem_id": 2,
+		"annotation": "xiaokaizhang_2023-02-10",
 		"source": "Theorem_Test",
 		"problem_level": 1,
 		"problem_text_cn": "",
@@ -69,9 +46,9 @@
 		],
 		"notes": ""
 	},
-	"4": {
-		"problem_id": 4,
-		"annotation": "xiaokaizhang_2022-12-10",
+	"3": {
+		"problem_id": 3,
+		"annotation": "xiaokaizhang_2023-02-10",
 		"source": "Theorem_Test",
 		"problem_level": 1,
 		"problem_text_cn": "",
@@ -94,7 +71,55 @@
 		],
 		"notes": ""
 	},
-	"5": {
+	"4": {
+		"problem_id": 4,
+		"annotation": "xiaokaizhang_2023-02-10",
+		"source": "Theorem_Test",
+		"problem_level": 1,
+		"problem_text_cn": "",
+		"problem_text_en": "",
+		"problem_img": "",
+		"construction_cdl": [
+			"Shape(ABC)",
+			"Shape(ACD)",
+			"Collinear(BCD)"
+		],
+		"text_cdl": [
+			"Equal(Area(ABC),30)",
+			"Equal(Area(ACD),60)"
+		],
+		"image_cdl": [],
+		"goal_cdl": "Value(Area(ABD))",
+		"problem_answer": "90",
+		"theorem_seqs": [
+			"area_addition"
+		],
+		"notes": ""
+	},
+	"": {
+		"problem_id": 5,
+		"annotation": "xiaokaizhang_2022-12-10",
+		"source": "Theorem_Test",
+		"problem_level": 1,
+		"problem_text_cn": "",
+		"problem_text_en": "",
+		"problem_img": "",
+		"construction_cdl": [
+			"Shape(ABC)",
+			"Collinear(BDC)"
+		],
+		"text_cdl": [
+			"IsAltitude(AD,ABC)"
+		],
+		"image_cdl": [],
+		"goal_cdl": "Triangle(ABC)",
+		"problem_answer": "Triangle(ABC)",
+		"theorem_seqs": [
+			"definition_of_triangle"
+		],
+		"notes": ""
+	},
+	"": {
 		"problem_id": 5,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -118,7 +143,7 @@
 		],
 		"notes": ""
 	},
-	"6": {
+	"": {
 		"problem_id": 6,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -142,7 +167,7 @@
 		],
 		"notes": ""
 	},
-	"7": {
+	"": {
 		"problem_id": 7,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -166,7 +191,7 @@
 		],
 		"notes": ""
 	},
-	"8": {
+	"": {
 		"problem_id": 8,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -190,7 +215,7 @@
 		],
 		"notes": ""
 	},
-	"9": {
+	"": {
 		"problem_id": 9,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -212,7 +237,7 @@
 		],
 		"notes": ""
 	},
-	"10": {
+	"": {
 		"problem_id": 10,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -236,7 +261,7 @@
 		],
 		"notes": ""
 	},
-	"11": {
+	"": {
 		"problem_id": 11,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -260,7 +285,7 @@
 		],
 		"notes": ""
 	},
-	"12": {
+	"": {
 		"problem_id": 12,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -284,7 +309,7 @@
 		],
 		"notes": ""
 	},
-	"13": {
+	"": {
 		"problem_id": 13,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -308,7 +333,7 @@
 		],
 		"notes": ""
 	},
-	"14": {
+	"": {
 		"problem_id": 14,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -332,7 +357,7 @@
 		],
 		"notes": ""
 	},
-	"15": {
+	"": {
 		"problem_id": 15,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -356,7 +381,7 @@
 		],
 		"notes": ""
 	},
-	"16": {
+	"": {
 		"problem_id": 16,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -381,7 +406,7 @@
 		],
 		"notes": ""
 	},
-	"17": {
+	"": {
 		"problem_id": 17,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",
@@ -404,7 +429,7 @@
 		],
 		"notes": ""
 	},
-	"18": {
+	"": {
 		"problem_id": 18,
 		"annotation": "xiaokaizhang_2022-12-10",
 		"source": "Theorem_Test",

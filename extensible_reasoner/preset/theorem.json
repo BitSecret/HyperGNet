@@ -689,7 +689,7 @@
 				"1": {
 					"premise": "Orthocenter(O,ABC)&Angle(COB)",
 					"conclusion": [
-						"Equal(Measure(Angle(COB)),Add(Measure(ABC),Measure(BCA)))"
+						"Equal(Measure(COB),Add(Measure(ABC),Measure(BCA)))"
 					]
 				}
 			}
