@@ -1,8 +1,6 @@
-import copy
 import string
 from pyparsing import oneOf, Combine, Word, nums, alphas, OneOrMore
 from sympy import sin, cos, tan, pi
-from definition.exception import RuntimeException
 
 float_idt = Combine(OneOrMore(Word(nums)) + "." + OneOrMore(Word(nums)))
 int_idt = OneOrMore(Word(nums))
@@ -139,7 +137,7 @@ class FLParser:
                 "vars": [i for i in range(len(para))],
                 "para": []
             }
-            for predicate in attribution[key]["para"]:   # para
+            for predicate in attribution[key]["para"]:  # para
                 predicate_name, predicate_para, _ = FLParser._parse_one_predicate(predicate)
                 parsed_GDL["Attribution"][name]["para"].append(
                     [predicate_name, [para.index(item) for item in predicate_para]]
@@ -466,8 +464,11 @@ class EqParser:
             else:
                 return tan(expr * pi / 180)
         else:
-            raise RuntimeException("OperatorNotDefined",
-                                   "No operation {}, please check your expression.".format(tree[0]))
+            raise Exception(
+                "<OperatorNotDefined> No operation {}, please check your expression.".format(
+                    tree[0]
+                )
+            )
 
     @staticmethod
     def get_equation_from_tree(problem, tree, replaced=False, letters=None):

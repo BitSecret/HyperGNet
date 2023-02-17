@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(DEF)", "Polygon(EFD)", "Polygon(FDE)", "Triangle(ABC)", "Triangle(DEF)", "MirrorSimilar(ABC,DEF)", "Measure(ABC)"], "1": ["Equation(m_abc-m_efd)", "Equation(-m_bca+m_def)", "Equation(-m_cab+m_fde)", "Measure(EFD)"]}

@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(ACD)", "Polygon(CDA)", "Polygon(DAC)", "Polygon(BDA)", "Polygon(DAB)", "Polygon(ABD)", "Triangle(ABD)", "IsoscelesTriangle(ABD)", "Bisector(AC,DAB)", "Equation(a_bcda-a_bda)"], "1": ["Median(AC,ABD)", "IsAltitude(AC,ABD)"]}

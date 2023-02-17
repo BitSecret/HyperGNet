@@ -1,5 +1,5 @@
+import warnings
 from definition.object import Condition, Construction, Relation, Equation
-from definition.exception import RuntimeException
 from itertools import combinations
 from sympy import symbols
 from aux_tools.parse import EqParser
@@ -15,7 +15,9 @@ class Problem:
         Condition.id = 0  # init step and id
         Condition.step = 0
 
-        self.problem_CDL = problem_CDL  # parsed problem msg. It will be further decomposed.
+        self.loaded = False  # indicate whether problem is completely loaded
+
+        self.problem_CDL = problem_CDL  # parsed problem msg, it will be further decomposed
         self.predicate_GDL = predicate_GDL  # problem predicate definition
 
         self.theorems_applied = []  # applied theorem list
@@ -62,6 +64,8 @@ class Problem:
         self.goal["premise"] = None
         self.goal["theorem"] = None
         self.goal["solving_msg"] = []
+
+        self.loaded = True
 
     def construction_init(self):
         """
@@ -166,8 +170,8 @@ class Problem:
         :param theorem: <str>, theorem of item.
         :return: True or False
         """
-        if not self.item_is_valid(predicate, item):  # return when invalid
-            return False
+        if not self.item_is_valid(predicate, item):   # validity check
+            return False  # return when invalid
 
         self.gathered = False
 
@@ -235,8 +239,9 @@ class Problem:
                     for collinear in self.conditions["Collinear"].get_id_by_item:
                         if non_vertex_point in collinear:
                             polygon_premise.append(self.conditions["Collinear"].get_id_by_item[collinear])
+                            break
 
-                extended_shape = []    # shape after remove collinear points
+                extended_shape = []  # shape after remove collinear points
                 non_vertex_points = list((set("".join(non_vertex_points))))
                 for i in range(len(non_vertex_points) + 1):
                     for removed_points in combinations(non_vertex_points, i):
@@ -255,7 +260,7 @@ class Problem:
 
                 self.add("Polygon", extended_shape[-1], tuple(polygon_premise), "extended")  # shape no collinear points
                 if len(extended_shape) > 1:
-                    eq = self.get_sym_of_attr(extended_shape[0], "Area") -\
+                    eq = self.get_sym_of_attr(extended_shape[0], "Area") - \
                          self.get_sym_of_attr(extended_shape[-1], "Area")
                     self.conditions["Equation"].add(eq, tuple(polygon_premise), "extended")
                 return True
@@ -265,6 +270,8 @@ class Problem:
                 l = len(item)
                 for bias in range(l):
                     self.conditions["Polygon"].add(tuple([item[(i + bias) % l] for i in range(l)]), (_id,), "extended")
+                if l == 3:    # default execute theorems
+                    self.add("Triangle", item, (_id,), "definition_of_triangle")
                 return True
         elif predicate == "Collinear":  # Construction predicate: Collinear
             added, _id = self.conditions["Collinear"].add(item, premise, theorem)
@@ -272,6 +279,10 @@ class Problem:
                 for l in range(3, len(item) + 1):  # extend collinear
                     for extended_item in combinations(item, l):
                         self.conditions["Collinear"].add(extended_item, (_id,), "extended")
+                        self.conditions["Collinear"].add(extended_item[::-1], (_id,), "extended")
+                        if len(extended_item) == 3:
+                            self.conditions["Angle"].add(extended_item, (_id,), "extended")
+                            self.conditions["Angle"].add(extended_item[::-1], (_id,), "extended")
                 for i in range(len(item) - 1):  # extend line
                     for j in range(i + 1, len(item)):
                         self.add("Line", (item[i], item[j]), (_id,), "extended")
@@ -283,45 +294,66 @@ class Problem:
     def item_is_valid(self, predicate, item):
         """
         Validity check for the format of logic conditions.
-        Format Validity check: FV check.
-        Entity Existence check: EE check.
+        Length Validity check: LV check, throw <Exception>.
+        Format Validity check: FV check, throw <Warning>.
+        Entity Existence check: EE check, throw <Warning>.
         """
         if predicate not in self.conditions:
-            raise RuntimeException("PredicateNotDefined",
-                                   "Predicate '{}': not defined in current predicate GDL.".format(predicate))
-        if predicate == "Equation":
-            return True
+            raise Exception(
+                "<PredicateNotDefined> Predicate '{}': not defined in current predicate GDL.".format(
+                    predicate
+                )
+            )
 
-        if predicate in self.predicate_GDL["Construction"]:   # FV check
-            return len(item) == len(set(item))
+        if predicate == "Equation":
+            return True, None
+
+        if predicate in self.predicate_GDL["Construction"]:  # FV check
+            if len(item) == len(set(item)):
+                return True, None
+            if not self.loaded:
+                warnings.warn("FV check not passed: [{}, {}]".format(predicate, item))
+            return False
 
         if predicate in self.predicate_GDL["Entity"]:
             item_GDL = self.predicate_GDL["Entity"][predicate]
             if len(item) != len(item_GDL["vars"]):  # FV check
-                raise RuntimeException("ParameterLengthError",
-                                       "Predicate '{}' excepted length: {}. Got: {}".format(
-                                           predicate, len(item_GDL["vars"]), item))
-            return len(item) == len(set(item))
+                raise Exception(
+                    "<ParameterLengthError> Predicate '{}' excepted length: {}. Got: {}".format(
+                        predicate, len(item_GDL["vars"]), item
+                    )
+                )
+            if len(item) == len(set(item)):
+                return True, None
+            if not self.loaded:
+                warnings.warn("FV check not passed: [{}, {}]".format(predicate, item))
+            return False
 
         item_GDL = self.predicate_GDL["Relation"][predicate]
         if len(item) != len(item_GDL["vars"]):  # FV check
-            raise RuntimeException("ParameterLengthError",
-                                   "Predicate '{}' excepted length: {}. Got: {}".format(
-                                       predicate, len(item_GDL["vars"]), item))
+            raise Exception(
+                "<ParameterLengthError> Predicate '{}' excepted length: {}. Got: {}".format(
+                    predicate, len(item_GDL["vars"]), item
+                )
+            )
 
-        for name, para in self.predicate_GDL["Relation"][predicate]["para"]:    # EE check
+        for name, para in self.predicate_GDL["Relation"][predicate]["para"]:  # EE check
             if tuple([item[i] for i in para]) not in self.conditions[name].get_id_by_item:
+                if not self.loaded:
+                    warnings.warn("EE check not passed: [{}, {}]".format(predicate, item))
                 return False
 
         if "format" in item_GDL:
             letters = []
-            item = list(item)
-            for i in range(len(item)):
-                if item[i] not in letters:
-                    letters.append(item[i])
-                item[i] = letters.index(item[i])
-            if item in item_GDL["format"]:
+            item_vars = list(item)
+            for i in range(len(item_vars)):
+                if item_vars[i] not in letters:
+                    letters.append(item_vars[i])
+                item_vars[i] = letters.index(item_vars[i])
+            if item_vars in item_GDL["format"]:
                 return True
+            if not self.loaded:
+                warnings.warn("FV check not passed: [{}, {}]".format(predicate, item))
             return False
         else:
             for mutex in item_GDL["mutex"]:
@@ -329,10 +361,14 @@ class Problem:
                     first = "".join([item[i] for i in mutex[0]])
                     second = "".join([item[i] for i in mutex[1]])
                     if first == second:
+                        if not self.loaded:
+                            warnings.warn("FV check not passed: [{}, {}]".format(predicate, item))
                         return False
                 else:
                     points = [item[i] for i in mutex]
                     if len(points) != len(set(points)):
+                        if not self.loaded:
+                            warnings.warn("FV check not passed: [{}, {}]".format(predicate, item))
                         return False
             return True
 
@@ -345,7 +381,7 @@ class Problem:
         :param attr: attr's name, such as Length
         :return: sym
         """
-        if not self.attr_is_valid(item, attr):
+        if not self.attr_is_valid(item, attr):   # validity check
             return None
 
         if (item, attr) not in self.conditions["Equation"].sym_of_attr:  # No symbolic representation, initialize one.
@@ -370,7 +406,7 @@ class Problem:
                     extended_item = [item[i] for i in multi]  # extend item
                     extend_items.append(tuple(extended_item))
                     self.conditions["Equation"].sym_of_attr[(tuple(extended_item), attr)] = sym  # multi representation
-            self.conditions["Equation"].attr_of_sym[sym] = [extend_items, attr]   # add attr
+            self.conditions["Equation"].attr_of_sym[sym] = [extend_items, attr]  # add attr
             return sym
 
         return self.conditions["Equation"].sym_of_attr[(item, attr)]
@@ -378,24 +414,31 @@ class Problem:
     def attr_is_valid(self, item, attr):
         """
         Validity check for format of algebra conditions.
-        Format Validity check: FV check.
-        Entity Existence check: EE check.
+        Length Validity check: LV check, throw <Exception>.
+        Format Validity check: FV check, throw <Warning>.
+        Entity Existence check: EE check, throw <Warning>.
         """
         if attr == "Free":
             return True
 
-        if isinstance(self.predicate_GDL["Attribution"][attr]["multi"], str):   # EE check
-            if item in self.conditions[self.predicate_GDL["Attribution"][attr]["para"]].get_id_by_item:   # EE check
+        if isinstance(self.predicate_GDL["Attribution"][attr]["multi"], str):  # EE check
+            if item in self.conditions[self.predicate_GDL["Attribution"][attr]["para"]].get_id_by_item:  # EE check
                 return True
+            if not self.loaded:
+                warnings.warn("EE check not passed: [{}, {}]".format(item, attr))
             return False
         else:
             excepted_length = len(self.predicate_GDL["Attribution"][attr]["vars"])
-            if len(item) != excepted_length:   # FV check
-                raise RuntimeException("ParameterLengthError",
-                                       "Attribute '{}' excepted length: {}. Got: {}".format(
-                                           attr, excepted_length, item))
+            if len(item) != excepted_length:  # FV check
+                raise Exception(
+                    "<ParameterLengthError> Attribute '{}' excepted length: {}. Got: {}".format(
+                        attr, excepted_length, item
+                    )
+                )
             for predicate, para in self.predicate_GDL["Attribution"][attr]["para"]:
-                if tuple([item[p] for p in para]) not in self.conditions[predicate].get_id_by_item:    # EE check
+                if tuple([item[p] for p in para]) not in self.conditions[predicate].get_id_by_item:  # EE check
+                    if not self.loaded:
+                        warnings.warn("EE check not passed: [{}, {}]".format(item, attr))
                     return False
             return True
 

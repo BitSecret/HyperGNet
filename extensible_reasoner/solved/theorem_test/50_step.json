@@ -1,0 +1,1 @@
+{"0": ["DisorderParallel(AB,CD)", "DisorderParallel(CD,EF)", "Parallel(AB,CD)", "Parallel(CD,EF)"], "1": ["DisorderParallel(AB,EF)", "Parallel(AB,EF)"]}

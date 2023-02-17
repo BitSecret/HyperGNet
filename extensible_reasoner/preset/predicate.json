@@ -5,7 +5,7 @@
 				"name": "Triangle(ABC)",
 				"multi": [
 					"BCA",
-					"BCA"
+					"CAB"
 				],
 				"extend": [
 					"Shape(ABC)"
@@ -70,9 +70,10 @@
 					"O,DC,AB"
 				],
 				"extend": [
-					"Point(O)",
-					"Line(AB)",
-					"Line(CD)"
+					"Angle(AOC)",
+					"Angle(COB)",
+					"Angle(BOD)",
+					"Angle(DOA)"
 				]
 			},
 			"3": {
@@ -135,9 +136,10 @@
 				],
 				"extend": [
 					"Intersect(O,AB,CD)",
-					"Point(O)",
-					"Line(AB)",
-					"Line(CD)"
+					"Angle(AOC)",
+					"Angle(COB)",
+					"Angle(BOD)",
+					"Angle(DOA)"
 				]
 			},
 			"6": {

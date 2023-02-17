@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(DEF)", "Polygon(EFD)", "Polygon(FDE)", "Triangle(ABC)", "Triangle(DEF)", "MirrorCongruent(ABC,DEF)", "Area(ABC)"], "1": ["Equation(a_abc-a_def)", "Area(DEF)"]}

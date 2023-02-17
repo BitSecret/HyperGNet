@@ -1,11 +1,9 @@
-from definition.exception import RuntimeException
 from definition.problem import Problem
 from aux_tools.parse import FLParser
 from aux_tools.parse import EqParser
-import copy
-import time
 from sympy import symbols, solve, Float, Integer
 from func_timeout import func_set_timeout
+import time
 
 
 class Solver:
@@ -27,7 +25,9 @@ class Solver:
     def greedy_search(self, orientation="forward"):
         """Breadth-first search."""
         if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <greedy_search>.")
+            raise Exception(
+                "<ProblemNotLoaded> Please run <load_problem> before run <greedy_search>."
+            )
 
         if orientation == "forward":    # forward search
             pass
@@ -41,10 +41,16 @@ class Solver:
         :return update: whether condition update or not.
         """
         if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <apply_theorem>.")
+            raise Exception(
+                "<ProblemNotLoaded> Please run <load_problem> before run <apply_theorem>."
+            )
 
         if theorem_name not in self.theorem_GDL:
-            raise RuntimeException("TheoremNotDefined", "Theorem {} not defined.".format(theorem_name))
+            raise Exception(
+                "<TheoremNotDefined> Theorem {} not defined.".format(
+                    theorem_name
+                )
+            )
 
         s_start_time = time.time()
         update = False
@@ -55,6 +61,7 @@ class Solver:
 
             for normal_form in b_premise:
                 results = self.problem.conditions[normal_form[0][0]](normal_form[0][1])  # (ids, items, vars)
+                results = Solver.duplicate_removal(results)
                 for i in range(1, len(normal_form)):
                     if len(results[0]) == 0:
                         break
@@ -71,8 +78,12 @@ class Solver:
                             update = self.problem.add(predicate, tuple(item), r_ids[i], theorem_name) or update
                         else:  # algebra relation
                             equation = EqParser.get_equation_from_tree(self.problem, para, True, r_items[i])
-                            update = self.problem.add("Equation", equation, r_ids[i], theorem_name) or update
-
+                            # print(para)
+                            # print(r_items[i])
+                            # print(equation)
+                            # exit(0)
+                            if equation is not None:
+                                update = self.problem.add("Equation", equation, r_ids[i], theorem_name) or update
         if update:  # add theorem to problem theorem_applied list when update
             self.solve()
             self.problem.applied(theorem_name)  # save applied theorem and update step
@@ -80,6 +91,30 @@ class Solver:
                 "\033[32mApply theorem <{}>\033[0m:{:.6f}s".format(theorem_name, time.time() - s_start_time))
 
         return update
+
+    @staticmethod
+    def duplicate_removal(results):
+        """
+        Remove redundant variables.
+        :param results: (r_ids, r_items, r_vars)
+        >> duplicate_removal([(0)], [('A', 'C', 'A', 'D')], [0, 1, 0, 3])
+        >> ([(0)], [('A', 'C', 'D')], [0, 1, 3])
+        :return: (r_ids, r_items, r_vars)
+        """
+        r1_ids, r1_items, r1_vars = results
+        for i in range(len(r1_items)):  # delete co-vars
+            r1_items[i] = list(r1_items[i])
+        r1_vars = list(r1_vars)
+        deleted_vars_index = []  # deleted vars index
+        for i in range(len(r1_vars)):
+            if r1_vars[i] in r1_vars[0:i]:
+                deleted_vars_index.append(i)
+        for index in deleted_vars_index[::-1]:  # delete
+            r1_vars.pop(index)
+            for i in range(len(r1_items)):
+                r1_items[i].pop(index)
+
+        return r1_ids, r1_items, r1_vars
 
     def logic_and(self, results, logic):
         """
@@ -100,9 +135,10 @@ class Solver:
 
         r1_ids, r1_items, r1_vars = results
         r2_ids, r2_items, r2_vars = self.problem.conditions[logic[0]](logic[1])
-        r_ids, r_items = [], []
-
+        r_ids = []
+        r_items = []
         r_vars = tuple(set(r1_vars) | set(r2_vars))  # union
+
         inter = list(set(r1_vars) & set(r2_vars))  # intersection
         for i in range(len(inter)):
             inter[i] = (r1_vars.index(inter[i]), r2_vars.index(inter[i]))  # change to index
@@ -147,12 +183,12 @@ class Solver:
 
         return r_ids, r_items, r_vars
 
-    def algebra_and(self, results, equal):
+    def algebra_and(self, results, equal_tree):
         """
         Underlying implementation of <relational reasoning>: algebra part.
         Note that equal[0] may start with '~'.
         :param results: triplet, (r1_ids, r1_items, r1_vars).
-        :param equal: equal tree.
+        :param equal_tree: equal tree.
         :return: triplet, reasoning result.
         >> self.problem.conditions['Equation'].value_of_sym
         {ll_ab: 1, ll_cd: 2}
@@ -160,16 +196,16 @@ class Solver:
         ([(1, N)], [('A', 'B')], [0, 1])
         """
         negate = False  # Distinguishing operation ‘&’ and '&~'
-        if equal[0].startswith("~"):
+        if equal_tree[0].startswith("~"):
             negate = True
-            equal[0] = equal[0].replace("~", "")
+            equal_tree[0] = equal_tree[0].replace("~", "")
 
         r1_ids, r1_items, r1_vars = results
         r_ids, r_items = [], []
 
         if not negate:  # &
             for i in range(len(r1_items)):
-                equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
+                equation = EqParser.get_equation_from_tree(self.problem, equal_tree[1], True, r1_items[i])
                 if equation is None:
                     continue
                 result, premise = self.solve_target(equation)
@@ -179,7 +215,7 @@ class Solver:
                     r_ids.append(tuple(set(list(r1_ids[i]) + premise)))
         else:  # &~
             for i in range(len(r1_items)):
-                equation = EqParser.get_equation_from_tree(self.problem, equal[1], True, r1_items[i])
+                equation = EqParser.get_equation_from_tree(self.problem, equal_tree[1], True, r1_items[i])
                 if equation is None:
                     r_items.append(r1_items[i])
                     r_ids.append(r1_ids[i])
@@ -362,7 +398,9 @@ class Solver:
         :param target_item: condition para. Such as (‘A’, 'B', 'C'), a - b + c.
         """
         if self.problem is None:
-            raise RuntimeException("ProblemNotLoaded", "Please run <load_problem> before run <find_prerequisite>.")
+            raise Exception(
+                "<ProblemNotLoaded> Please run <load_problem> before run <find_prerequisite>."
+            )
 
         results = []
 
@@ -438,8 +476,11 @@ class Solver:
                 result += self.find_vars_from_equal_tree(item, attr_name)
             return result
         else:
-            raise RuntimeException("OperatorNotDefined",
-                                   "No operation {}, please check your expression.".format(tree[0]))
+            raise Exception(
+                "<OperatorNotDefined> No operation {}, please check your expression.".format(
+                    tree[0]
+                )
+            )
 
     def prerequisite_generation(self, replaced, premise):
         """
@@ -479,7 +520,7 @@ class Solver:
                 for j in range(len(replaced[i])):
                     if isinstance(replaced[i][j], int):  # replace var with letter
                         for point, in self.problem.conditions["Point"].get_id_by_item:
-                            replaced.append(copy.copy(replaced[i]))
+                            replaced.append([item for item in replaced[i]])
                             replaced[-1][j] = point
                             update = True
                         replaced.pop(i)  # delete being replaced para

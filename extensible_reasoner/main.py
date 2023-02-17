@@ -12,7 +12,7 @@ def run(save_parsed_GDL=False, save_parsed_CDL=False):
 
     while True:
         pid = int(input("pid:"))
-        problem_CDL = load_json("./preset/theo_test.json")[str(pid)]
+        problem_CDL = load_json("./preset/theorem_test.json")[str(pid)]
         solver.load_problem(problem_CDL)
 
         if solver.problem.goal["type"] in ["equal", "value"]:
@@ -29,10 +29,10 @@ def run(save_parsed_GDL=False, save_parsed_CDL=False):
         show(solver.problem, simple=False)
 
         if save_parsed_CDL:
-            save_json(solver.problem.problem_CDL, "./solved/problems/{}_parsed.json".format(pid))
-            save_step_msg(solver.problem, "./solved/problems/")
-            save_solution_tree(solver.problem, "./solved/problems/")
+            save_json(solver.problem.problem_CDL, "./solved/theorem_test/{}_parsed.json".format(pid))
+            save_step_msg(solver.problem, "./solved/theorem_test/")
+            save_solution_tree(solver.problem, "./solved/theorem_test/")
 
 
 if __name__ == '__main__':
-    run(save_parsed_GDL=False, save_parsed_CDL=True)
+    run(save_parsed_GDL=True, save_parsed_CDL=True)

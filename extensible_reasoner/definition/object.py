@@ -26,6 +26,7 @@ class Condition:
         :param theorem: <int>
         :return: ddd successfully or not, item id
         """
+        premise = tuple(set(premise))    # Fast repeat removal
         if item not in self.get_item_by_id.values():
             _id = Condition.id
             self.get_item_by_id[_id] = item  # item
@@ -98,8 +99,9 @@ class Equation(Condition):
 
     def add(self, item, premise, theorem):
         """reload add() of parent class <Condition> to adapt equation's operation."""
-        if item not in self.get_item_by_id.values() and -item not in self.get_item_by_id.values():
+        if item not in self.get_id_by_item and -item not in self.get_id_by_item:
             added, _id = super().add(item, premise, theorem)
+            print(item)
             if theorem != "solve_eq":
                 self.equations[item] = item
             self.solved = False

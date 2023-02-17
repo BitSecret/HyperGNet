@@ -1,0 +1,1 @@
+{"id": 12, "cdl": {"construction_cdl": ["Shape(ABC)"], "text_cdl": ["RightTriangle(ABC)"], "image_cdl": [], "goal_cdl": "Perpendicular(B,AB,CB)"}, "parsed_cdl": {"construction_cdl": [["Shape", ["A", "B", "C"]]], "text_and_image_cdl": [["RightTriangle", ["A", "B", "C"]]], "goal": {"type": "relation", "item": "Perpendicular", "answer": ["B", "A", "B", "C", "B"]}}}

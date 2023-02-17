@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Triangle(ABC)", "Midpoint(D,BC)", "Midpoint(G,CA)", "Perpendicular(D,BC,OD)", "Perpendicular(G,CA,OG)", "PerpendicularBisector(D,BC,OD)", "PerpendicularBisector(G,CA,OG)"], "1": ["Circumcenter(O,BCA)"]}

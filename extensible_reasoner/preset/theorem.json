@@ -159,7 +159,7 @@
 				"1": {
 					"premise": "IsoscelesTriangle(ABC)",
 					"conclusion": [
-						"Equal(Length(AB),Measure(AC))"
+						"Equal(Length(AB),Length(AC))"
 					]
 				}
 			}
@@ -192,7 +192,7 @@
 			"name": "isosceles_triangle_judgment_line_equal",
 			"description": {
 				"1": {
-					"premise": "Triangle(ABC)&Equal(Length(AB),Measure(AC))",
+					"premise": "Triangle(ABC)&Equal(Length(AB),Length(AC))",
 					"conclusion": [
 						"IsoscelesTriangle(ABC)"
 					]
@@ -271,7 +271,8 @@
 				"1": {
 					"premise": "Collinear(ABC)",
 					"conclusion": [
-						"Equal(Measure(ABC), 180)"
+						"Equal(Measure(ABC),180)",
+						"Equal(Measure(CBA),180)"
 					]
 				}
 			}
@@ -346,7 +347,7 @@
 			}
 		},
 		"30": {
-			"name": "",
+			"name": "parallel_judgment_alternate_interior_angle",
 			"description": {
 				"1": {
 					"premise": "Angle(BAD)&Angle(CDA)&Equal(Measure(BAD),Measure(CDA))",
@@ -407,7 +408,7 @@
 				"3": {
 					"premise": "Perpendicular(O,AB,EF)&Perpendicular(P,CD,EF)",
 					"conclusion": [
-						"Parallel(AB,CD)"
+						"DisorderParallel(AB,CD)"
 					]
 				}
 			}
@@ -449,7 +450,7 @@
 			"name": "perpendicular_bisector_judgment",
 			"description": {
 				"1": {
-					"premise": "PerpendicularBisector(O,AB,CD)&Midpoint(O,AB)",
+					"premise": "Perpendicular(O,AB,CD)&Midpoint(O,AB)",
 					"conclusion": [
 						"PerpendicularBisector(O,AB,CD)"
 					]
@@ -654,7 +655,7 @@
 			"name": "centroid_property_line_equal",
 			"description": {
 				"1": {
-					"premise": "Centroid(O,ABC)&Midpoint(M,BC)&Line(AO)&Line(OM)",
+					"premise": "Centroid(O,ABC)&Collinear(AOM)&Collinear(BMC)",
 					"conclusion": [
 						"Equal(Length(OA),Mul(Length(OM),2))"
 					]
@@ -759,7 +760,7 @@
 						"Equal(Area(ABC),Area(DEF))"
 					]
 				},
-				"1": {
+				"2": {
 					"premise": "MirrorCongruent(ABC,DEF)",
 					"conclusion": [
 						"Equal(Area(ABC),Area(DEF))"
@@ -909,13 +910,13 @@
 				"1": {
 					"premise": "Similar(ABC,DEF)",
 					"conclusion": [
-						"Equal(Mul(Length(AB),Length(AB),Perimeter(DEF)),Mul(Length(DE),Length(DE),Perimeter(ABC)))"
+						"Equal(Mul(Length(AB),Length(AB),Area(DEF)),Mul(Length(DE),Length(DE),Area(ABC)))"
 					]
 				},
 				"2": {
 					"premise": "MirrorSimilar(ABC,DEF)",
 					"conclusion": [
-						"Equal(Mul(Length(AB),Length(AB),Perimeter(DEF)),Mul(Length(FD),Length(FD),Perimeter(ABC)))"
+						"Equal(Mul(Length(AB),Length(AB),Area(DEF)),Mul(Length(FD),Length(FD),Area(ABC)))"
 					]
 				}
 			}
@@ -963,7 +964,7 @@
 						"Similar(ABC,DEF)"
 					]
 				},
-				"1": {
+				"2": {
 					"premise": "Triangle(ABC)&Triangle(DEF)&Equal(Measure(CAB),Measure(FDE))&Equal(Measure(ABC),Measure(EFD))",
 					"conclusion": [
 						"MirrorSimilar(ABC,DEF)"

@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Triangle(ABC)", "Length(AB)", "Length(BC)", "Length(CA)"], "1": ["Equation(a_abc-((-0.5*l_ab+0.5*l_bc+0.5*l_ca)*(0.5*l_ab-0.5*l_bc+0.5*l_ca)*(0.5*l_ab+0.5*l_bc-0.5*l_ca))**0.5*0.707106781186548*(l_ab+l_bc+l_ca)**0.5)", "Area(ABC)"]}

@@ -121,10 +121,10 @@ def show(problem, simple=False):
                 print_str = "{0:^6}{1:^70}{2:^25}{3:>6}"
             else:
                 print_str = "\033[35m{0:^6}{1:^70}{2:^25}{3:>6}\033[0m"
-            if len(equation.premises[_id]) > 5:
+            if len(equation.premises[_id]) > 4:
                 print(print_str.format(_id,
                                        str(equation.get_item_by_id[_id]),
-                                       str(equation.premises[_id][0:5]) + "...",
+                                       str(equation.premises[_id][0:4]) + "...",
                                        equation.theorems[_id]))
             else:
                 print(print_str.format(_id,

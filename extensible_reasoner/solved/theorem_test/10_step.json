@@ -1,0 +1,1 @@
+{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Triangle(ABC)", "RightTriangle(ABC)", "Length(AB)", "Length(BC)"], "1": ["Equation(l_ab**2.0-l_ac**2.0+l_bc**2.0)", "Length(AC)"]}
