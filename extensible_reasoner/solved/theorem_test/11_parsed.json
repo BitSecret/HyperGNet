@@ -1,1 +1,0 @@
-{"id": 11, "cdl": {"construction_cdl": ["Shape(ABC)"], "text_cdl": ["RightTriangle(ABC)"], "image_cdl": [], "goal_cdl": "Value(Measure(ABC))"}, "parsed_cdl": {"construction_cdl": [["Shape", ["A", "B", "C"]]], "text_and_image_cdl": [["RightTriangle", ["A", "B", "C"]]], "goal": {"type": "value", "item": ["Value", [["Measure", ["A", "B", "C"]]]], "answer": "90"}}}

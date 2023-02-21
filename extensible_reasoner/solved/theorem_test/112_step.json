@@ -1,1 +1,0 @@
-{"0": ["Polygon(ABD)", "Polygon(BDA)", "Polygon(DAB)", "Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Triangle(ABD)", "Triangle(ABC)", "IsAltitude(AD,ABC)", "Length(AD)", "Length(BC)"], "1": ["Equation(a_abc-0.5*l_ad*l_bc)", "Area(ABC)"]}

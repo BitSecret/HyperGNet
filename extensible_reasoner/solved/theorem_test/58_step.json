@@ -1,1 +1,0 @@
-{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(ACD)", "Polygon(CDA)", "Polygon(DAC)", "Polygon(BCDA)", "Polygon(CDAB)", "Polygon(DABC)", "Polygon(ABCD)", "Bisector(AC,DAB)", "Measure(DAC)"], "1": ["Equation(-m_cab+m_dac)", "Measure(CAB)"]}

@@ -1,1 +1,0 @@
-{"id": 5, "cdl": {"construction_cdl": ["Shape(ABC)", "Shape(ACD)", "Collinear(BCD)"], "text_cdl": [], "image_cdl": [], "goal_cdl": "Triangle(ABC)"}, "parsed_cdl": {"construction_cdl": [["Shape", ["A", "B", "C"]], ["Shape", ["A", "C", "D"]], ["Collinear", ["B", "C", "D"]]], "text_and_image_cdl": [], "goal": {"type": "relation", "item": "Triangle", "answer": ["A", "B", "C"]}}}

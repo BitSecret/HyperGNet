@@ -1,1 +1,0 @@
-{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(ACD)", "Polygon(CDA)", "Polygon(DAC)", "Polygon(BDA)", "Polygon(DAB)", "Polygon(ABD)", "Equation(a_bcda-a_bda)", "Area(ABC)", "Area(ACD)"], "1": ["Equation(-a_abc-a_acd+a_bcda)", "Area(BCDA)", "Area(BDA)"]}

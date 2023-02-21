@@ -1,1 +1,0 @@
-{"0": ["Polygon(BCD)", "Polygon(CDB)", "Polygon(DBC)", "Polygon(BDA)", "Polygon(DAB)", "Polygon(ABD)", "Polygon(CAB)", "Polygon(ABC)", "Polygon(BCA)", "Bisector(BD,ABC)", "Equation(-a_cab+a_cdab)", "Length(CD)", "Length(DA)", "Length(AB)"], "1": ["Equation(l_ab*l_cd-l_cb*l_da)", "Length(CB)"]}

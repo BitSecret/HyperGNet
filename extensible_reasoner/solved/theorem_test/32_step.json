@@ -1,1 +1,0 @@
-{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Triangle(ABC)", "EquilateralTriangle(ABC)", "Measure(ABC)"], "1": ["Equation(m_abc-m_bca)", "Equation(m_bca-m_cab)", "Equation(-m_abc+m_cab)", "Measure(BCA)", "Measure(CAB)"]}

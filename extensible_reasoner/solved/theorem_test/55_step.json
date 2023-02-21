@@ -1,1 +1,0 @@
-{"0": ["Polygon(CAO)", "Polygon(AOC)", "Polygon(OCA)", "Polygon(COB)", "Polygon(OBC)", "Polygon(BCO)", "Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Midpoint(O,AB)", "Perpendicular(O,AB,CO)", "PerpendicularBisector(O,AB,CO)", "Equation(-a_abc+a_aobc)", "Length(CA)"], "1": ["Equation(l_ca-l_cb)", "Equation(-l_oa+l_ob)", "Length(CB)"]}

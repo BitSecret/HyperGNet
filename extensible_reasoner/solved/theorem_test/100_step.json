@@ -1,1 +1,0 @@
-{"0": ["Polygon(ABC)", "Polygon(BCA)", "Polygon(CAB)", "Polygon(DEF)", "Polygon(EFD)", "Polygon(FDE)", "Triangle(ABC)", "Triangle(DEF)", "Similar(ABC,DEF)", "Length(AB)", "Length(BC)", "Length(DE)"], "1": ["Equation(l_ab*l_ef-l_bc*l_de)", "Equation(l_bc*l_fd-l_ca*l_ef)", "Equation(-l_ab*l_fd+l_ca*l_de)", "Length(EF)"]}
