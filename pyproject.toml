@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "PGPS"
+version = "1.0.0"
+authors = [
+    { name = "Xiaokai Zhang", email = "xiaokaizhang1999@163.com" },
+]
+description = "Human-like IMO-level Plane Geometry Problem Solving."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "formalgeo=0.0.3"
+]
+[project.urls]
+"Homepage" = "https://github.com/BitSecret/PGPS"
+"Bug Tracker" = "https://github.com/BitSecret/PGPS/issues"
