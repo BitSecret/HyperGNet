@@ -1,4 +1,4 @@
-**PGPS**
+# PGPS
 
 [![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen)](https://github.com/BitSecret/PGPS)
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
@@ -45,7 +45,7 @@ We provide a short code to test if the environment setup is successful:
 Download datasets and initialize the project:
 
     $ cd src/pgps
-    $ python init_project.py
+    $ python utils.py
 
 ## Run
 

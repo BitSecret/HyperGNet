@@ -1,25 +1,21 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from module import Embedding, PositionalEncoding, MultiHeadAttention, LayerNorm, FeedForward
+import random
+from utils import Configuration as config
 
 
-class Encoder(nn.Module):
-    def __init__(self, vocab, d_model, max_len, h, N, p_drop):
+class SentenceEncoder(nn.Module):
+    def __init__(self, d_model, h, N, p_drop):
         """
         Sentence encoder, encode sentence with n words to 1 dimension-fixed vector.
-        :param vocab: The number of words in the vocabulary list.
         :param d_model: Embedding dim.
-        :param max_len: Max length of input sentence.
         :param h: Head number in MultiHeadAttention.
         :param N: Number of MultiHeadAttention.
         :param p_drop: Dropout rate.
         """
-        super(Encoder, self).__init__()
-
-        self.embedding = nn.Sequential(
-            Embedding(vocab, d_model, padding=True),
-            PositionalEncoding(d_model, max_len)
-        )
+        super(SentenceEncoder, self).__init__()
 
         self.attentions = [MultiHeadAttention(h, d_model) for _ in range(N)]
         self.dp_attn = [nn.Dropout(p_drop) for _ in range(N)]
@@ -29,31 +25,26 @@ class Encoder(nn.Module):
         self.dp_ffd = [nn.Dropout(p_drop) for _ in range(N)]
         self.ln_ffd = [LayerNorm(d_model) for _ in range(N)]
 
-    def forward(self, sentence):
-        sentence = self.embedding(sentence)  # embedding
-
+    def forward(self, x):
         for i in range(self.N):
-            sentence = self.attentions[i](sentence)  # multi-head attention
-            sentence = self.ln_attn[i](self.dp_attn[i](sentence))  # dropout and layer norm
-            sentence = self.feedforwards[i](sentence)  # feedforward
-            sentence = self.ln_ffd[i](sentence + self.dp_ffd[i](sentence))  # dropout、res-net and layer norm
-
-        sentence = torch.mean(sentence, dim=0)  # pooling
-
-        return sentence
+            # multi-head attention, dropout and layer norm
+            x = self.ln_attn[i](self.dp_attn[i](self.attentions[i](x, x, x)))
+            # feedforward, dropout, res-net and layer norm
+            x = self.ln_ffd[i](x + self.dp_ffd[i](self.feedforwards[i](x)))
+        x = torch.mean(x, dim=0)  # pooling
+        return x
 
 
-class Decoder(nn.Module):
-    def __init__(self, vocab, d_model, h, N, p_drop):
+class SentenceDecoder(nn.Module):
+    def __init__(self, d_model, h, N, p_drop):
         """
         Sentence decoder, decode sentence embedding to raw sentence.
-        :param vocab: The number of words in the vocabulary list.
         :param d_model: Embedding dim.
         :param h: Head number in MultiHeadAttention.
         :param N: Number of MultiHeadAttention.
         :param p_drop: Dropout rate.
         """
-        super(Decoder, self).__init__()
+        super(SentenceDecoder, self).__init__()
         self.attentions = [MultiHeadAttention(h, d_model) for _ in range(N)]
         self.dp_attn = [nn.Dropout(p_drop) for _ in range(N)]
         self.ln_attn = [LayerNorm(d_model) for _ in range(N)]
@@ -62,19 +53,15 @@ class Decoder(nn.Module):
         self.dp_ffd = [nn.Dropout(p_drop) for _ in range(N)]
         self.ln_ffd = [LayerNorm(d_model) for _ in range(N)]
 
-        self.linear = nn.Linear(d_model, vocab)
-
-    def forward(self, sentence_emb, sentence, mask):
+    def forward(self, x_encoding, x, mask):
         for i in range(self.N):
-            sentence = self.attentions[i](sentence, mask)  # masked multi-head attention
-            sentence = self.ln_attn[i](sentence + self.dp_attn[i](sentence))  # dropout and layer norm
-            sentence = sentence_emb + sentence  # 这里应该是sentence的每一行加到sentence_emb
-            sentence = self.feedforwards[i](sentence)  # feedforward
-            sentence = self.ln_ffd[i](sentence + self.dp_ffd[i](sentence))  # dropout、res-net and layer norm
-
-        sentence = self.linear(sentence)  # 这里加不加softmax和激活函数呢
-
-        return sentence
+            # masked multi-head attention, dropout, resnet and layer norm
+            x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x, x, x, mask)))
+            # add x embedding
+            x = x_encoding + x  # x_encoding will auto expand to dim of x
+            # feedforward, dropout、res-net and layer norm
+            x = self.ln_ffd[i](x + self.dp_ffd[i](self.feedforwards[i](x)))
+        return x
 
 
 class Sentence2Vector(nn.Module):
@@ -90,12 +77,30 @@ class Sentence2Vector(nn.Module):
         :param p_drop: Dropout rate.
         """
         super(Sentence2Vector, self).__init__()
-        self.encoder = Encoder(vocab, d_model, max_len, h, N, p_drop)
-        self.decoder = Decoder(vocab, d_model, h, N, p_drop)
 
-    def forward(self, sentence, mask):
-        return self.decoder(self.encoder(sentence), sentence, mask)
+        self.embedding = nn.Sequential(
+            Embedding(vocab, d_model, padding=True),
+            PositionalEncoding(d_model, max_len)
+        )
+        self.encoder = SentenceEncoder(d_model, h, N, p_drop)
+        self.decoder = SentenceDecoder(d_model, h, N, p_drop)
+        self.linear = nn.Linear(d_model, vocab)
+
+    def forward(self, x, use_encoding=False, mask=None):
+        x_embedding = self.embedding(x)
+        x_encoding = self.encoder(x_embedding)
+        if use_encoding:
+            return x_encoding
+
+        x_decoding = self.decoder(x_encoding, x, mask)
+        output = F.softmax(self.linear(x_decoding), dim=-1)
+        return output
 
 
 def make_model():
     pass
+
+
+if __name__ == '__main__':
+    random.seed(config.random_seed)
+    torch.manual_seed(config.random_seed)

@@ -11,8 +11,6 @@ import random
 from func_timeout import func_timeout, FunctionTimedOut
 import warnings
 
-random.seed(config.randon_seed)
-
 
 def tokenize_cdl(cdl):
     """
@@ -290,4 +288,5 @@ def get_train_data():
 
 
 if __name__ == '__main__':
+    random.seed(config.random_seed)
     get_train_data()
