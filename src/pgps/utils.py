@@ -156,11 +156,45 @@ path_words = special_words + theorem_words
 
 
 class Configuration:
+    """---------path---------"""
     path_data = "./231221"
+
+    """---------datasets---------"""
     path_datasets = "./datasets"
     dataset_name = "formalgeo7k_v1"
 
+    """---------random_seed---------"""
     random_seed = 619
+
+    """---------model hyperparameter---------"""
+    # pretrain - words
+    batch_size_words = 1
+
+    vocab_words = len(nodes_words)
+    max_len_words = 1
+    h_words = 1
+    N_words = 1
+    p_drop_words = 0.1
+
+    # pretrain - path
+    batch_size_path = 1
+
+    vocab_path = len(nodes_words)
+    max_len_path = 1
+    h_path = 1
+    N_path = 1
+    p_drop_path = 0.1
+
+    # train
+    batch_size = 1
+
+    vocab_theorems = len(theorem_words)
+    max_len_predictor = 1
+    d_model = 512
+    h_predictor = 1
+    N_predictor = 1
+    p_drop_predictor = 0.1
+    decoder_use_multi_layer = True
 
 
 def show_word_list():

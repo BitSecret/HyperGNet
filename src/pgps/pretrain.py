@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from module import Embedding, PositionalEncoding, MultiHeadAttention, LayerNorm, FeedForward
+from module import Embedding, PositionalEncoding, SelfAttention, LayerNorm, FeedForward
 import random
 from utils import Configuration as config
 
@@ -17,21 +17,25 @@ class SentenceEncoder(nn.Module):
         """
         super(SentenceEncoder, self).__init__()
 
-        self.attentions = [MultiHeadAttention(h, d_model) for _ in range(N)]
-        self.dp_attn = [nn.Dropout(p_drop) for _ in range(N)]
-        self.ln_attn = [LayerNorm(d_model) for _ in range(N)]
+        self.attentions = nn.ModuleList([SelfAttention(h, d_model) for _ in range(N)])
+        self.dp_attn = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
+        self.ln_attn = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
-        self.feedforwards = [FeedForward(d_model, d_model * 4) for _ in range(N)]
-        self.dp_ffd = [nn.Dropout(p_drop) for _ in range(N)]
-        self.ln_ffd = [LayerNorm(d_model) for _ in range(N)]
+        self.feedforwards = nn.ModuleList([FeedForward(d_model, d_model * 4) for _ in range(N)])
+        self.dp_ffd = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
+        self.ln_ffd = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
     def forward(self, x):
+        """
+        :param x: torch.Size([batch_size, max_len, d_model])
+        :return result: torch.Size([batch_size, 1, d_model])
+        """
         for i in range(self.N):
             # multi-head attention, dropout and layer norm
             x = self.ln_attn[i](self.dp_attn[i](self.attentions[i](x, x, x)))
             # feedforward, dropout, res-net and layer norm
             x = self.ln_ffd[i](x + self.dp_ffd[i](self.feedforwards[i](x)))
-        x = torch.mean(x, dim=0)  # pooling
+        x = torch.mean(x, dim=1)  # pooling
         return x
 
 
@@ -45,15 +49,21 @@ class SentenceDecoder(nn.Module):
         :param p_drop: Dropout rate.
         """
         super(SentenceDecoder, self).__init__()
-        self.attentions = [MultiHeadAttention(h, d_model) for _ in range(N)]
-        self.dp_attn = [nn.Dropout(p_drop) for _ in range(N)]
-        self.ln_attn = [LayerNorm(d_model) for _ in range(N)]
+        self.attentions = nn.ModuleList([SelfAttention(h, d_model) for _ in range(N)])
+        self.dp_attn = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
+        self.ln_attn = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
-        self.feedforwards = [FeedForward(d_model, d_model * 4) for _ in range(N)]
-        self.dp_ffd = [nn.Dropout(p_drop) for _ in range(N)]
-        self.ln_ffd = [LayerNorm(d_model) for _ in range(N)]
+        self.feedforwards = nn.ModuleList([FeedForward(d_model, d_model * 4) for _ in range(N)])
+        self.dp_ffd = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
+        self.ln_ffd = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
     def forward(self, x_encoding, x, mask):
+        """
+        :param x_encoding: torch.Size([batch_size, 1, d_model])
+        :param x: torch.Size([batch_size, max_len, d_model])
+        :param mask: torch.Size([max_len, max_len])
+        :return result: torch.Size([batch_size, max_len, d_model])
+        """
         for i in range(self.N):
             # masked multi-head attention, dropout, resnet and layer norm
             x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x, x, x, mask)))
@@ -79,7 +89,7 @@ class Sentence2Vector(nn.Module):
         super(Sentence2Vector, self).__init__()
 
         self.embedding = nn.Sequential(
-            Embedding(vocab, d_model, padding=True),
+            Embedding(vocab, d_model),
             PositionalEncoding(d_model, max_len)
         )
         self.encoder = SentenceEncoder(d_model, h, N, p_drop)
@@ -87,6 +97,13 @@ class Sentence2Vector(nn.Module):
         self.linear = nn.Linear(d_model, vocab)
 
     def forward(self, x, use_encoding=False, mask=None):
+        """
+        :param x: torch.Size([batch_size, max_len])
+        :param use_encoding: set True when use model, set False when train and test model.
+        :param mask: torch.Size([max_len, max_len]), only useful when use_encoding=False.
+        :return x_encoding: torch.Size([batch_size, 1, d_model])
+        :return output: torch.Size([batch_size, max_len, d_model])
+        """
         x_embedding = self.embedding(x)
         x_encoding = self.encoder(x_embedding)
         if use_encoding:
@@ -97,10 +114,31 @@ class Sentence2Vector(nn.Module):
         return output
 
 
-def make_model():
-    pass
+def make_words_model():
+    model = Sentence2Vector(
+        vocab=config.vocab_words,
+        d_model=config.d_model // 2,
+        max_len=config.max_len_words,
+        h=config.h_words,
+        N=config.N_words,
+        p_drop=config.p_drop_words
+    )
+    return model
+
+
+def make_path_model():
+    model = Sentence2Vector(
+        vocab=config.vocab_path,
+        d_model=config.d_model,
+        max_len=config.max_len_path,
+        h=config.h_path,
+        N=config.N_path,
+        p_drop=config.p_drop_words
+    )
+    return model
 
 
 if __name__ == '__main__':
     random.seed(config.random_seed)
     torch.manual_seed(config.random_seed)
+    torch.cuda.manual_seed_all(config.random_seed)
