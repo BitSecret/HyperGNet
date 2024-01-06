@@ -194,7 +194,6 @@ class Configuration:
     h_predictor = 1
     N_predictor = 1
     p_drop_predictor = 0.1
-    decoder_use_multi_layer = True
 
 
 def show_word_list():

@@ -1,8 +1,6 @@
 .idea
 __pycache__
 PGPS.egg-info
-tests
-src/pgps/user_logs
 src/pgps/datasets
 src/pgps/231221
 src/pgps/embedding

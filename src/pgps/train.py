@@ -1,10 +1,10 @@
+from pgps.utils import Configuration as config
+from pgps.module import Embedding, SelfAttention, TaskSpecificAttention, LayerNorm, FeedForward
+from pgps.pretrain import Sentence2Vector
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from module import Embedding, SelfAttention, TaskSpecificAttention, LayerNorm, FeedForward
-from pretrain import Sentence2Vector
 import random
-from utils import Configuration as config
 
 
 class Encoder(nn.Module):
@@ -29,9 +29,9 @@ class Encoder(nn.Module):
         :param x: torch.Size([batch_size, max_len_predictor, d_model])
         :return result: torch.Size([batch_size, max_len_predictor, d_model])
         """
-        for i in range(self.N):
+        for i in range(len(self.attentions)):
             # multi-head attention, dropout, res-net and layer norm
-            x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x, x, x)))
+            x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x)))
             # feedforward, dropout, res-net and layer norm
             x = self.ln_ffd[i](x + self.dp_ffd[i](self.feedforwards[i](x)))
         return x
@@ -59,10 +59,10 @@ class Decoder(nn.Module):
     def forward(self, x, task):
         """
         :param x: torch.Size([batch_size, max_len_predictor, d_model])
-        :param task: torch.Size([batch_size, 1, d_model])
-        :return result: torch.Size([batch_size, 1, d_model])
+        :param task: torch.Size([batch_size, d_model])
+        :return result: torch.Size([batch_size, d_model])
         """
-        for i in range(self.N):
+        for i in range(len(self.attentions)):
             # task-specific attention, dropout, resnet and layer norm
             task = self.ln_attn[i](task + self.dp_attn[i](self.attentions[i](x, task)))
             # feedforward, dropout、res-net and layer norm
@@ -73,7 +73,7 @@ class Decoder(nn.Module):
 class Predictor(nn.Module):
 
     def __init__(self, nodes_vocab, max_len_words, path_vocab, max_len_path, theorem_vocab,
-                 max_len, d_model, h, N, p_drop, multi_layer):
+                 max_len, d_model, h, N, p_drop):
         """
         Sentence encoder, encode sentence with n words to 1 dimension-fixed vector.
         :param nodes_vocab: The number of words in the nodes.
@@ -86,7 +86,6 @@ class Predictor(nn.Module):
         :param h: Head number in MultiHeadAttention.
         :param N: Number of MultiHeadAttention.
         :param p_drop: Dropout rate.
-        :param multi_layer: Weather use multi layer decoder.
         """
         super(Predictor, self).__init__()
         self.max_len_words = max_len_words
@@ -100,40 +99,35 @@ class Predictor(nn.Module):
         self.path_emb = Sentence2Vector(path_vocab, d_model, max_len_path, h, N, p_drop)
 
         self.encoder = Encoder(d_model, h, N, p_drop)
-        if multi_layer:
-            self.decoder = Decoder(d_model, h, N, p_drop)
-        else:
-            self.decoder = TaskSpecificAttention(h, d_model)
+        self.decoder = Decoder(d_model, h, N, p_drop)  # self.decoder = TaskSpecificAttention(h, d_model)
 
         self.linear = nn.Linear(d_model, theorem_vocab)
 
     def forward(self, predicate, words, path, goal_predicate, goal_words):
         """
-        :param predicate: torch.Size([batch_size, max_len_predictor])
-        :param words: torch.Size([batch_size, max_len_predictor, max_len_words])
-        :param path: torch.Size([batch_size, max_len_predictor, max_len_path])
+        :param predicate: torch.Size([batch_size, max_len])
+        :param words: torch.Size([batch_size, max_len, max_len_words])
+        :param path: torch.Size([batch_size, max_len, max_len_path])
         :param goal_predicate: torch.Size([batch_size])
         :param goal_words: torch.Size([batch_size, max_len_words])
         :return result: torch.Size([batch_size, theorem_vocab])
         """
-        # [batch_size, max_len_predictor, d_model/2]
-        predicate_embedding = self.predicate_emb(predicate)
-        # [batch_size * max_len_predictor, 1, d_model/2] -> [batch_size, max_len_predictor, d_model/2]
-        words_embedding = self.words_emb(words.view(-1, self.max_len_words)).view(-1, self.max_len, self.d_model // 2)
-        node_embedding = torch.cat((predicate_embedding, words_embedding), dim=2)  # cat
-        edge_embedding = self.path_emb(path.view(-1, self.max_len_path)).view(-1, self.max_len, self.d_model)
-        # [batch_size, max_len_predictor, d_model]
-        hypertree_encoding = self.encoder(node_embedding + edge_embedding)
 
-        # [batch_size, 1, d_model/2]
-        goal_predicate_embedding = self.predicate_emb(goal_predicate).view(-1, 1, self.d_model // 2)
-        # [batch_size, 1, d_model/2]
-        goal_words_embedding = self.words_emb(goal_words.view(-1, self.max_len_words)).view(-1, 1, self.d_model // 2)
-        # [batch_size, 1, d_model]
-        goal_embedding = torch.cat((goal_predicate_embedding, goal_words_embedding), dim=2)  # cat
+        predicate_embedding = self.predicate_emb(predicate)  # [batch_size, max_len, d_model/2]
+        words_embedding = (self.words_emb(words.view(-1, self.max_len_words), True)  # [batch_size, max_len, d_model/2]
+                           .view(-1, self.max_len, self.d_model // 2))
+        node_embedding = torch.cat((predicate_embedding, words_embedding), dim=2)  # [batch_size, max_len, d_model]
+        edge_embedding = (self.path_emb(path.view(-1, self.max_len_path), True)  # [batch_size, max_len, d_model]
+                          .view(-1, self.max_len, self.d_model))
+        hypertree_encoding = self.encoder(node_embedding + edge_embedding)  # [batch_size, max_len, d_model]
 
-        # theorem selection predication
-        decoding = self.decoder(hypertree_encoding, goal_embedding).view(-1, self.d_model)  # [batch_size, d_model]
+        goal_predicate_embedding = (self.predicate_emb(goal_predicate)  # [batch_size, d_model/2]
+                                    .view(-1, self.d_model // 2))
+        goal_words_embedding = (self.words_emb(goal_words.view(-1, self.max_len_words), True)  # [batch_size, d_model/2]
+                                .view(-1, self.d_model // 2))
+        goal_embedding = torch.cat((goal_predicate_embedding, goal_words_embedding), dim=1)  # [batch_size, d_model]
+
+        decoding = self.decoder(hypertree_encoding, goal_embedding)  # [batch_size, d_model]
 
         return F.softmax(self.linear(decoding), dim=-1)
 
@@ -149,8 +143,7 @@ def make_model():
         d_model=config.d_model,
         h=config.h_predictor,
         N=config.N_predictor,
-        p_drop=config.p_drop_predictor,
-        multi_layer=config.decoder_use_multi_layer
+        p_drop=config.p_drop_predictor
     )
     return model
 

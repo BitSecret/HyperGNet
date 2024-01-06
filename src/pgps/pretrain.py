@@ -1,41 +1,40 @@
+from pgps.utils import Configuration as config
+from pgps.module import Embedding, PositionalEncoding, SelfAttention, LayerNorm, FeedForward
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from module import Embedding, PositionalEncoding, SelfAttention, LayerNorm, FeedForward
 import random
-from utils import Configuration as config
 
 
 class SentenceEncoder(nn.Module):
-    def __init__(self, d_model, h, N, p_drop):
+    def __init__(self, d_model, h, N):
         """
         Sentence encoder, encode sentence with n words to 1 dimension-fixed vector.
         :param d_model: Embedding dim.
         :param h: Head number in MultiHeadAttention.
         :param N: Number of MultiHeadAttention.
-        :param p_drop: Dropout rate.
         """
         super(SentenceEncoder, self).__init__()
 
         self.attentions = nn.ModuleList([SelfAttention(h, d_model) for _ in range(N)])
-        self.dp_attn = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
         self.ln_attn = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
         self.feedforwards = nn.ModuleList([FeedForward(d_model, d_model * 4) for _ in range(N)])
-        self.dp_ffd = nn.ModuleList([nn.Dropout(p_drop) for _ in range(N)])
         self.ln_ffd = nn.ModuleList([LayerNorm(d_model) for _ in range(N)])
 
     def forward(self, x):
         """
         :param x: torch.Size([batch_size, max_len, d_model])
-        :return result: torch.Size([batch_size, 1, d_model])
+        :return result: torch.Size([batch_size, d_model])
         """
-        for i in range(self.N):
-            # multi-head attention, dropout and layer norm
-            x = self.ln_attn[i](self.dp_attn[i](self.attentions[i](x, x, x)))
-            # feedforward, dropout, res-net and layer norm
-            x = self.ln_ffd[i](x + self.dp_ffd[i](self.feedforwards[i](x)))
+        for i in range(len(self.ln_attn)):
+            # multi-head attention and layer norm
+            x = self.ln_attn[i](self.attentions[i](x))
+            # feedforward and layer norm
+            x = self.ln_ffd[i](self.feedforwards[i](x))
+
         x = torch.mean(x, dim=1)  # pooling
+
         return x
 
 
@@ -59,14 +58,15 @@ class SentenceDecoder(nn.Module):
 
     def forward(self, x_encoding, x, mask):
         """
-        :param x_encoding: torch.Size([batch_size, 1, d_model])
+        :param x_encoding: torch.Size([batch_size, d_model])
         :param x: torch.Size([batch_size, max_len, d_model])
         :param mask: torch.Size([max_len, max_len])
         :return result: torch.Size([batch_size, max_len, d_model])
         """
-        for i in range(self.N):
+        x_encoding = x_encoding.unsqueeze(1)  # [batch_size, 1, d_model]
+        for i in range(len(self.attentions)):
             # masked multi-head attention, dropout, resnet and layer norm
-            x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x, x, x, mask)))
+            x = self.ln_attn[i](x + self.dp_attn[i](self.attentions[i](x, mask)))
             # add x embedding
             x = x_encoding + x  # x_encoding will auto expand to dim of x
             # feedforward, dropout、res-net and layer norm
@@ -90,9 +90,9 @@ class Sentence2Vector(nn.Module):
 
         self.embedding = nn.Sequential(
             Embedding(vocab, d_model),
-            PositionalEncoding(d_model, max_len)
+            PositionalEncoding(max_len, d_model)
         )
-        self.encoder = SentenceEncoder(d_model, h, N, p_drop)
+        self.encoder = SentenceEncoder(d_model, h, N)
         self.decoder = SentenceDecoder(d_model, h, N, p_drop)
         self.linear = nn.Linear(d_model, vocab)
 
@@ -105,12 +105,14 @@ class Sentence2Vector(nn.Module):
         :return output: torch.Size([batch_size, max_len, d_model])
         """
         x_embedding = self.embedding(x)
+
         x_encoding = self.encoder(x_embedding)
         if use_encoding:
             return x_encoding
 
-        x_decoding = self.decoder(x_encoding, x, mask)
+        x_decoding = self.decoder(x_encoding, x_embedding, mask)
         output = F.softmax(self.linear(x_decoding), dim=-1)
+
         return output
 
 
