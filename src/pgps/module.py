@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 import torch.nn.functional as F
 
 
@@ -147,3 +148,10 @@ class FeedForward(nn.Module):
         :return result: torch.Size([batch_size, max_len, d_model])
         """
         return self.output(F.relu(self.input(x)))
+
+
+def init_weights(m):
+    if isinstance(m, nn.Linear):
+        init.xavier_uniform_(m.weight)
+        if m.bias is not None:
+            init.zeros_(m.bias)

@@ -1,5 +1,5 @@
 from pgps.utils import Configuration as config
-from pgps.module import Embedding, PositionalEncoding, SelfAttention, LayerNorm, FeedForward
+from pgps.module import Embedding, PositionalEncoding, SelfAttention, LayerNorm, FeedForward, init_weights
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -76,14 +76,15 @@ class SentenceDecoder(nn.Module):
 
 class Sentence2Vector(nn.Module):
 
-    def __init__(self, vocab, d_model, max_len, h, N, p_drop):
+    def __init__(self, vocab, d_model, max_len, h, N_encoder, N_decoder, p_drop):
         """
         Sentence to Vector, encode sentence with n words to 1 dimension-fixed vector.
         :param vocab: The number of words in the vocabulary list.
         :param d_model: Embedding dim.
         :param max_len: Max length of input sentence.
         :param h: Head number in MultiHeadAttention.
-        :param N: Number of MultiHeadAttention.
+        :param N_encoder: Number of MultiHeadAttention in Encoder.
+        :param N_decoder: Number of MultiHeadAttention in Decoder.
         :param p_drop: Dropout rate.
         """
         super(Sentence2Vector, self).__init__()
@@ -92,8 +93,8 @@ class Sentence2Vector(nn.Module):
             Embedding(vocab, d_model),
             PositionalEncoding(max_len, d_model)
         )
-        self.encoder = SentenceEncoder(d_model, h, N)
-        self.decoder = SentenceDecoder(d_model, h, N, p_drop)
+        self.encoder = SentenceEncoder(d_model, h, N_encoder)
+        self.decoder = SentenceDecoder(d_model, h, N_decoder, p_drop)
         self.linear = nn.Linear(d_model, vocab)
 
     def forward(self, x, use_encoding=False, mask=None):
@@ -118,13 +119,15 @@ class Sentence2Vector(nn.Module):
 
 def make_words_model():
     model = Sentence2Vector(
-        vocab=config.vocab_words,
+        vocab=config.vocab_nodes,
         d_model=config.d_model // 2,
         max_len=config.max_len_words,
         h=config.h_words,
-        N=config.N_words,
+        N_encoder=config.N_encoder_words,
+        N_decoder=config.N_decoder_words,
         p_drop=config.p_drop_words
     )
+    model.apply(init_weights)
     return model
 
 
@@ -134,13 +137,26 @@ def make_path_model():
         d_model=config.d_model,
         max_len=config.max_len_path,
         h=config.h_path,
-        N=config.N_path,
+        N_encoder=config.N_encoder_path,
+        N_decoder=config.N_decoder_path,
         p_drop=config.p_drop_words
     )
+    model.apply(init_weights)
     return model
+
+
+def train_words_model():
+    model = make_words_model()
+
+
+def train_path_model():
+    model = make_path_model()
 
 
 if __name__ == '__main__':
     random.seed(config.random_seed)
     torch.manual_seed(config.random_seed)
     torch.cuda.manual_seed_all(config.random_seed)
+
+    train_words_model()
+    # train_path_model()

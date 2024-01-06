@@ -169,31 +169,39 @@ class Configuration:
     """---------model hyperparameter---------"""
     # pretrain - words
     batch_size_words = 1
+    epoch_words = 1
+    lr_words = 1
 
-    vocab_words = len(nodes_words)
+    vocab_nodes = len(nodes_words)
     max_len_words = 1
     h_words = 1
-    N_words = 1
+    N_encoder_words = 1
+    N_decoder_words = 1
     p_drop_words = 0.1
 
     # pretrain - path
     batch_size_path = 1
+    epoch_path = 1
+    lr_path = 1
 
     vocab_path = len(nodes_words)
     max_len_path = 1
     h_path = 1
-    N_path = 1
+    N_encoder_path = 1
+    N_decoder_path = 1
     p_drop_path = 0.1
 
     # train
-    batch_size = 1
+    batch_size_predictor = 1
+    epoch_predictor = 1
+    lr_predictor = 1
 
     vocab_theorems = len(theorem_words)
     max_len_predictor = 1
-    d_model = 512
     h_predictor = 1
     N_predictor = 1
     p_drop_predictor = 0.1
+    d_model = 512
 
 
 def show_word_list():
