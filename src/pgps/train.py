@@ -1,5 +1,5 @@
 from pgps.utils import Configuration as config
-from pgps.module import Embedding, SelfAttention, TaskSpecificAttention, LayerNorm, FeedForward, init_weights
+from pgps.module import SelfAttention, TaskSpecificAttention, LayerNorm, FeedForward, init_weights
 from pgps.pretrain import Sentence2Vector
 import torch
 import torch.nn as nn

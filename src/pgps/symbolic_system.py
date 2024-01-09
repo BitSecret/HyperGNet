@@ -2,9 +2,9 @@ from formalgeo.tools import get_meta_hypertree, load_json, safe_save_json
 from formalgeo.solver import Interactor
 from formalgeo.parse import parse_one_theorem
 from formalgeo.data import DatasetLoader
-from utils import save_pickle
-from utils import Configuration as config
-from utils import symbol_words, nodes_words, nodes_words, theorem_words
+from pgps.utils import save_pickle
+from pgps.utils import Configuration as config
+from pgps.utils import symbol_words, nodes_words, edges_words, theorem_words
 import os
 import re
 import random
