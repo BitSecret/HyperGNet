@@ -170,7 +170,7 @@ def test_pretrain():
     tensor_decoding = sentence_decoder(tensor_encoding, tensor_emb, mask)
     print("tensor_decoding:{}".format(str(tensor_decoding.shape)))
 
-    sentence_2_vector = Sentence2Vector(vocab, d_model, max_len, h, N, p_drop)
+    sentence_2_vector = Sentence2Vector(vocab, d_model, max_len, h, N, N, p_drop)
     encoding = sentence_2_vector(tensor, True)
     print("encoding:{}".format(str(encoding.shape)))
     output = sentence_2_vector(tensor, False, mask)
@@ -187,81 +187,75 @@ def test_pretrain():
 
 
 def test_train():
+    # batch_size = 2
+    # max_len = 4
+    # d_model = 6
+    # vocab = 8
+    # h = 2
+    # p_drop = 0.2
+    # N = 5
+    # 
+    # tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
+    # print("tensor:{}".format(str(tensor.shape)))
+    # task = torch.randint(low=1, high=vocab, size=(batch_size,))
+    # print("task:{}".format(str(task.shape)))
+    # embedding = Embedding(vocab, d_model)
+    # tensor_emb = embedding(tensor)
+    # print("tensor_emb:{}".format(str(tensor_emb.shape)))
+    # task_emb = embedding(task)
+    # print("task_emb:{}".format(str(task_emb.shape)))
+    # 
+    # encoder = Encoder(d_model, h, N, p_drop)
+    # encoding = encoder(tensor_emb)
+    # print("encoding:{}".format(str(encoding.shape)))
+    # 
+    # decoder = Decoder(d_model, h, N, p_drop)
+    # decoding = decoder(tensor_emb, task_emb)
+    # print("decoding:{}".format(str(decoding.shape)))
+    # print()
+
     batch_size = 2
-    max_len = 4
-    d_model = 6
-    vocab = 8
-    h = 2
-    p_drop = 0.2
-    N = 5
-
-    tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
-    print("tensor:{}".format(str(tensor.shape)))
-    task = torch.randint(low=1, high=vocab, size=(batch_size,))
-    print("task:{}".format(str(task.shape)))
-    embedding = Embedding(vocab, d_model)
-    tensor_emb = embedding(tensor)
-    print("tensor_emb:{}".format(str(tensor_emb.shape)))
-    task_emb = embedding(task)
-    print("task_emb:{}".format(str(task_emb.shape)))
-
-    encoder = Encoder(d_model, h, N, p_drop)
-    encoding = encoder(tensor_emb)
-    print("encoding:{}".format(str(encoding.shape)))
-
-    decoder = Decoder(d_model, h, N, p_drop)
-    decoding = decoder(tensor_emb, task_emb)
-    print("decoding:{}".format(str(decoding.shape)))
-    print()
-
-    batch_size = 2
-    max_len_words = 2
-    max_len_path = 4
+    max_len_nodes = 2
+    max_len_edges = 4
     max_len = 6
     vocab_nodes = 13
-    vocab_path = 15
-    vocab_theorem = 17
+    vocab_edges = 15
+    vocab_theorems = 17
     d_model = 16
     h = 2
     p_drop = 0.1
     N = 2
 
-    predicate = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len))
-    words = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len, max_len_words))
-    path = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len, max_len_path))
-    goal_predicate = torch.randint(low=1, high=vocab_nodes, size=(batch_size,))
-    goal_words = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len_words))
-    print("predicate:{}".format(str(predicate.shape)))
-    print("words:{}".format(str(words.shape)))
-    print("path:{}".format(str(path.shape)))
-    print("goal_predicate:{}".format(str(goal_predicate.shape)))
-    print("goal_words:{}".format(str(goal_words.shape)))
+    nodes = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len, max_len_nodes))
+    edges = torch.randint(low=1, high=vocab_edges, size=(batch_size, max_len, max_len_edges))
+    goal = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len_nodes))
+    print("nodes:{}".format(str(nodes.shape)))
+    print("edges:{}".format(str(edges.shape)))
+    print("goal:{}".format(str(goal.shape)))
 
     predictor = Predictor(
-        nodes_vocab=vocab_nodes,
-        max_len_words=max_len_words,
-        path_vocab=vocab_path,
-        max_len_path=max_len_path,
-        theorem_vocab=vocab_theorem,
+        vocab_nodes=vocab_nodes,
+        max_len_nodes=max_len_nodes,
+        h_nodes=h,
+        N_encoder_nodes=N,
+        N_decoder_nodes=N,
+        p_drop_nodes=p_drop,
+        vocab_edges=vocab_edges,
+        max_len_edges=max_len_edges,
+        h_edges=h,
+        N_encoder_edges=N,
+        N_decoder_edges=N,
+        p_drop_edges=p_drop,
+        vocab=vocab_theorems,
         max_len=max_len,
-        d_model=d_model,
         h=h,
         N=N,
-        p_drop=p_drop
+        p_drop=p_drop,
+        d_model=d_model
     )
 
-    result = predictor(predicate, words, path, goal_predicate, goal_words)
+    result = predictor(nodes, edges, goal)
     print("result:{}".format(str(result.shape)))
-
-    # print("predicate_embedding:{}".format(str(predicate_embedding.shape)))
-    # print("words_embedding:{}".format(str(words_embedding.shape)))
-    # print("node_embedding:{}".format(str(node_embedding.shape)))
-    # print("edge_embedding:{}".format(str(edge_embedding.shape)))
-    # print("hypertree_encoding:{}".format(str(hypertree_encoding.shape)))
-    # print("goal_predicate_embedding:{}".format(str(goal_predicate_embedding.shape)))
-    # print("goal_words_embedding:{}".format(str(goal_words_embedding.shape)))
-    # print("goal_embedding:{}".format(str(goal_embedding.shape)))
-    # print("decoding:{}".format(str(decoding.shape)))
 
 
 if __name__ == '__main__':

@@ -117,40 +117,40 @@ class Sentence2Vector(nn.Module):
         return output
 
 
-def make_words_model():
+def make_nodes_model():
     model = Sentence2Vector(
         vocab=config.vocab_nodes,
         d_model=config.d_model // 2,
-        max_len=config.max_len_words,
-        h=config.h_words,
-        N_encoder=config.N_encoder_words,
-        N_decoder=config.N_decoder_words,
-        p_drop=config.p_drop_words
+        max_len=config.max_len_nodes,
+        h=config.h_nodes,
+        N_encoder=config.N_encoder_nodes,
+        N_decoder=config.N_decoder_nodes,
+        p_drop=config.p_drop_nodes
     )
     model.apply(init_weights)
     return model
 
 
-def make_path_model():
+def make_edges_model():
     model = Sentence2Vector(
-        vocab=config.vocab_path,
+        vocab=config.vocab_edges,
         d_model=config.d_model,
-        max_len=config.max_len_path,
-        h=config.h_path,
-        N_encoder=config.N_encoder_path,
-        N_decoder=config.N_decoder_path,
-        p_drop=config.p_drop_words
+        max_len=config.max_len_edges,
+        h=config.h_edges,
+        N_encoder=config.N_encoder_edges,
+        N_decoder=config.N_decoder_edges,
+        p_drop=config.p_drop_nodes
     )
     model.apply(init_weights)
     return model
 
 
-def train_words_model():
-    model = make_words_model()
+def train_nodes_model():
+    model = make_nodes_model()
 
 
-def train_path_model():
-    model = make_path_model()
+def train_edges_model():
+    model = make_edges_model()
 
 
 if __name__ == '__main__':
@@ -158,5 +158,5 @@ if __name__ == '__main__':
     torch.manual_seed(config.random_seed)
     torch.cuda.manual_seed_all(config.random_seed)
 
-    train_words_model()
-    # train_path_model()
+    train_nodes_model()
+    # train_edges_model()

@@ -1,11 +1,9 @@
 import os
 import zipfile
 import pickle
+import psutil
 from formalgeo.data import download_dataset
 
-special_words = [
-    "<padding>", "<start>", "<end>", "<and>", "self", "none", "extended", "solve_eq"
-]
 predicate_words = [
     'Equation', 'Shape', 'Collinear', 'Cocircular', 'Point', 'Line', 'Arc', 'Angle', 'Polygon', 'Circle',
     'RightTriangle', 'IsoscelesTriangle', 'IsoscelesRightTriangle', 'EquilateralTriangle', 'Kite',
@@ -151,8 +149,9 @@ letter_words = [
     "l", "M", "m", "N", "n", "O", "o", "P", "p", "Q", "q", "R", "r", "S", "s", "T", "t", "U", "u", "V", "v", "W", "w",
     "X", "x", "Y", "y", "Z", "z"
 ]
-nodes_words = special_words + predicate_words + symbol_words + letter_words
-path_words = special_words + theorem_words
+
+nodes_words = ["<padding>", "<start>", "<end>"] + predicate_words + symbol_words + letter_words
+edges_words = ["<padding>", "<start>", "<end>", "<and>"] + theorem_words + ["self", "extended", "solve_eq"]
 
 
 class Configuration:
@@ -166,48 +165,51 @@ class Configuration:
     """---------random_seed---------"""
     random_seed = 619
 
+    """---------training data generation---------"""
+    process_count = int(psutil.cpu_count() * 0.8)
+
     """---------model hyperparameter---------"""
-    # pretrain - words
-    batch_size_words = 1
-    epoch_words = 1
-    lr_words = 1
+    # pretrain - nodes
+    batch_size_nodes = 1
+    epoch_nodes = 1
+    lr_nodes = 1
 
     vocab_nodes = len(nodes_words)
-    max_len_words = 1
-    h_words = 1
-    N_encoder_words = 1
-    N_decoder_words = 1
-    p_drop_words = 0.1
+    max_len_nodes = 1
+    h_nodes = 1
+    N_encoder_nodes = 1
+    N_decoder_nodes = 1
+    p_drop_nodes = 0.1
 
-    # pretrain - path
-    batch_size_path = 1
-    epoch_path = 1
-    lr_path = 1
+    # pretrain - edges
+    batch_size_edges = 1
+    epoch_edges = 1
+    lr_edges = 1
 
-    vocab_path = len(nodes_words)
-    max_len_path = 1
-    h_path = 1
-    N_encoder_path = 1
-    N_decoder_path = 1
-    p_drop_path = 0.1
+    vocab_edges = len(edges_words)
+    max_len_edges = 1
+    h_edges = 1
+    N_encoder_edges = 1
+    N_decoder_edges = 1
+    p_drop_edges = 0.1
 
     # train
-    batch_size_predictor = 1
-    epoch_predictor = 1
-    lr_predictor = 1
+    batch_size = 1
+    epoch = 1
+    lr = 1
 
     vocab_theorems = len(theorem_words)
-    max_len_predictor = 1
-    h_predictor = 1
-    N_predictor = 1
-    p_drop_predictor = 0.1
+    max_len = 1
+    h = 1
+    N = 1
+    p_drop = 0.1
     d_model = 512
 
 
 def show_word_list():
     print("Input - nodes and goal (special_words + predicate_words + symbol_words + letter_words): {} words.".format(
         len(nodes_words)))
-    print("Input - path (special_words + theorem_words): {} words.".format(len(path_words)))
+    print("Input - edges (special_words + theorem_words + special_theorems): {} words.".format(len(edges_words)))
     print("Output - theorem (theorem_words): {} words.".format(len(theorem_words)))
 
 

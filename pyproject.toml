@@ -16,7 +16,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "formalgeo==0.0.3"
+    "formalgeo==0.0.3",
+    "psutil==5.9.7"
 ]
 [project.urls]
 "Homepage" = "https://github.com/BitSecret/PGPS"

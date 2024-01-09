@@ -72,8 +72,8 @@ class Decoder(nn.Module):
 
 class Predictor(nn.Module):
 
-    def __init__(self, vocab_nodes, max_len_words, h_words, N_encoder_words, N_decoder_words, p_drop_words,
-                 vocab_path, max_len_path, h_path, N_encoder_path, N_decoder_path, p_drop_path,
+    def __init__(self, vocab_nodes, max_len_nodes, h_nodes, N_encoder_nodes, N_decoder_nodes, p_drop_nodes,
+                 vocab_edges, max_len_edges, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges,
                  vocab, max_len, h, N, p_drop, d_model):
         """
         Theorem predictor.
@@ -85,71 +85,65 @@ class Predictor(nn.Module):
         :param d_model: Hidden dim.
         """
         super(Predictor, self).__init__()
-        self.max_len_words = max_len_words
-        self.max_len_path = max_len_path
+        self.max_len_nodes = max_len_nodes
+        self.max_len_edges = max_len_edges
         self.max_len = max_len
         self.d_model = d_model
 
-        assert d_model % 2 == 0
-        self.predicate_emb = Embedding(vocab_nodes, d_model // 2)
-        self.words_emb = Sentence2Vector(
-            vocab_nodes, d_model // 2, max_len_words, h_words, N_encoder_words, N_decoder_words, p_drop_words)
-        self.path_emb = Sentence2Vector(
-            vocab_path, d_model, max_len_path, h_path, N_encoder_path, N_decoder_path, p_drop_path)
+        self.nodes_emb = Sentence2Vector(
+            vocab_nodes, d_model, max_len_nodes, h_nodes, N_encoder_nodes, N_decoder_nodes, p_drop_nodes)
+        self.edges_emb = Sentence2Vector(
+            vocab_edges, d_model, max_len_edges, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges)
 
         self.encoder = Encoder(d_model, h, N, p_drop)
         self.decoder = Decoder(d_model, h, N, p_drop)  # self.decoder = TaskSpecificAttention(h, d_model)
 
         self.linear = nn.Linear(d_model, vocab)
 
-    def forward(self, predicate, words, path, goal_predicate, goal_words):
+    def forward(self, nodes, edges, goal):
         """
-        :param predicate: torch.Size([batch_size, max_len])
-        :param words: torch.Size([batch_size, max_len, max_len_words])
-        :param path: torch.Size([batch_size, max_len, max_len_path])
-        :param goal_predicate: torch.Size([batch_size])
-        :param goal_words: torch.Size([batch_size, max_len_words])
+        :param nodes: torch.Size([batch_size, max_len, max_len_nodes])
+        :param edges: torch.Size([batch_size, max_len, max_len_edges])
+        :param goal: torch.Size([batch_size, max_len_nodes])
         :return result: torch.Size([batch_size, theorem_vocab])
         """
+        # [batch_size, max_len, d_model]
+        hypertree_encoding = self.encoder(
+            self.nodes_emb(nodes.view(-1, self.max_len_nodes), True).view(-1, self.max_len, self.d_model) +
+            self.edges_emb(edges.view(-1, self.max_len_edges), True).view(-1, self.max_len, self.d_model)
+        )
 
-        predicate_embedding = self.predicate_emb(predicate)  # [batch_size, max_len, d_model/2]
-        words_embedding = (self.words_emb(words.view(-1, self.max_len_words), True)  # [batch_size, max_len, d_model/2]
-                           .view(-1, self.max_len, self.d_model // 2))
-        node_embedding = torch.cat((predicate_embedding, words_embedding), dim=2)  # [batch_size, max_len, d_model]
-        edge_embedding = (self.path_emb(path.view(-1, self.max_len_path), True)  # [batch_size, max_len, d_model]
-                          .view(-1, self.max_len, self.d_model))
-        hypertree_encoding = self.encoder(node_embedding + edge_embedding)  # [batch_size, max_len, d_model]
+        # [batch_size, d_model]
+        goal_embedding = self.nodes_emb(goal.view(-1, self.max_len_nodes), True).view(-1, self.d_model)
 
-        goal_predicate_embedding = (self.predicate_emb(goal_predicate)  # [batch_size, d_model/2]
-                                    .view(-1, self.d_model // 2))
-        goal_words_embedding = (self.words_emb(goal_words.view(-1, self.max_len_words), True)  # [batch_size, d_model/2]
-                                .view(-1, self.d_model // 2))
-        goal_embedding = torch.cat((goal_predicate_embedding, goal_words_embedding), dim=1)  # [batch_size, d_model]
+        # [batch_size, d_model]
+        decoding = self.decoder(hypertree_encoding, goal_embedding)
 
-        decoding = self.decoder(hypertree_encoding, goal_embedding)  # [batch_size, d_model]
+        # [batch_size, theorem_vocab]
+        output = F.softmax(self.linear(decoding), dim=-1)
 
-        return F.softmax(self.linear(decoding), dim=-1)
+        return output
 
 
 def make_model():
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
-        max_len_words=config.max_len_words,
-        h_words=config.h_words,
-        N_encoder_words=config.N_encoder_words,
-        N_decoder_words=config.N_decoder_words,
-        p_drop_words=config.p_drop_words,
-        vocab_path=config.vocab_path,
-        max_len_path=config.max_len_path,
-        h_path=config.h_path,
-        N_encoder_path=config.N_encoder_path,
-        N_decoder_path=config.N_decoder_path,
-        p_drop_path=config.p_drop_path,
+        max_len_nodes=config.max_len_nodes,
+        h_nodes=config.h_nodes,
+        N_encoder_nodes=config.N_encoder_nodes,
+        N_decoder_nodes=config.N_decoder_nodes,
+        p_drop_nodes=config.p_drop_nodes,
+        vocab_edges=config.vocab_edges,
+        max_len_edges=config.max_len_edges,
+        h_edges=config.h_edges,
+        N_encoder_edges=config.N_encoder_edges,
+        N_decoder_edges=config.N_decoder_edges,
+        p_drop_edges=config.p_drop_edges,
         vocab=config.vocab_theorems,
-        max_len=config.max_len_predictor,
-        h=config.h_predictor,
-        N=config.N_predictor,
-        p_drop=config.p_drop_predictor,
+        max_len=config.max_len,
+        h=config.h,
+        N=config.N,
+        p_drop=config.p_drop,
         d_model=config.d_model
     )
     model.apply(init_weights)
