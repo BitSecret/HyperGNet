@@ -14,69 +14,6 @@ from multiprocessing import Process, Queue
 import psutil
 import matplotlib.pyplot as plt
 
-# def make_onehot(training_data):
-#     predictor_train = []  # list of (predicate, words, path, goal_predicate, goal_words, theorems)
-#     path_pretrain = []
-#
-#     for nodes, path, goal, theorems in train_data:
-#         predicate = [nodes_words.index(node[0]) for node in nodes]
-#         words = [[nodes_words.index(w) for w in node[1:]] for node in nodes]
-#         path = [[path_words.index(p) for p in path_item] for path_item in path]
-#
-#         goal_predicate = nodes_words.index(goal[0])
-#         goal_words = [nodes_words.index(w) for w in goal[1:]]
-#
-#         theorems = [theorem_words.index(t) for t in theorems]
-#
-#         predictor_train.append((predicate, words, path, goal_predicate, goal_words, theorems))
-#
-#         for p in path:
-#             if p not in path_pretrain:
-#                 path_pretrain.append(p)
-#     nodes_pretrain = predictor_train[-1][1]
-#
-#     return nodes_pretrain, path_pretrain, predictor_train
-#
-#
-# def show_onehot(training_data):
-#     """Show train data."""
-#     if onehot:
-#         nodes_pretrain, path_pretrain, predictor_train = train_data
-#         print("nodes_pretrain:")
-#         for data in nodes_pretrain:
-#             print(data)
-#         print("path_pretrain:")
-#         for data in path_pretrain:
-#             print(data)
-#         print()
-#         for predicate, words, path, goal_predicate, goal_words, theorems in predictor_train:
-#             print("predictor_train - predicate:")
-#             print(predicate)
-#             print("predictor_train - words:")
-#             for data in words:
-#                 print(data)
-#             print("predictor_train - path:")
-#             for data in path:
-#                 print(data)
-#             print("predictor_train - goal:")
-#             print("{}, {}".format(goal_predicate, goal_words))
-#             print("predictor_train - theorems:")
-#             print(theorems)
-#             print()
-#     else:
-#         for nodes, path, goal, selected_theorems in train_data:
-#             print("nodes:")
-#             for data in nodes:
-#                 print(data)
-#             print("path:")
-#             for data in path:
-#                 print(data)
-#             print("goal:")
-#             print(goal)
-#             print("theorems:")
-#             print(selected_theorems)
-#             print()
-
 """--------------data generation--------------"""
 
 
@@ -169,7 +106,7 @@ def serialize_edge(edge):
             continue
         for token in edge[j]:
             serialized.append(token)
-            token_index.append(j)
+            token_index.append(j + 1)
 
     return [serialized, token_index]
 
@@ -255,9 +192,14 @@ def generate_one(solver, problem_CDL, use_theorem_para=False):
     while len(theorem_stack) > 0:
         nodes, edges = get_hypertree(solver.problem)
         nodes = [tokenize_cdl(node) for node in nodes]
-        edges = [serialize_edge(edge) for edge in edges]
+        serialized_edges = []
+        edges_structural = []
+        for edge in edges:
+            serialized_edge, token_index = serialize_edge(edge)
+            serialized_edges.append(serialized_edge)
+            edges_structural.append(token_index)
         theorems = [tokenize_theorem(theorem) for theorem in theorem_stack]
-        training_data.append([nodes, edges, goal, theorems])  # add one step
+        training_data.append([nodes, serialized_edges, edges_structural, goal, theorems])  # add one step
 
         theorem = random.choice(theorem_stack)  # apply theorem and update state
         theorem_stack.remove(theorem)
@@ -318,7 +260,7 @@ def show_training_data(pid_or_training_data):
             print("{} not generated.".format(pid))
             return
         data_filename = os.path.normpath(
-            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
+            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[str(pid)][0], pid)))
         if not os.path.exists(data_filename):
             print("{} {} not generated.".format(log[pid][0], pid))
             return
@@ -331,12 +273,15 @@ def show_training_data(pid_or_training_data):
         for node in training_data[i][0]:
             print(node)
         print("edges (step {}):".format(i + 1))
-        for edge, token_index in training_data[i][1]:
-            print("{}\t{}".format(edge, token_index))
+        for edge in training_data[i][1]:
+            print(edge)
+        print("edges_structural (step {}):".format(i + 1))
+        for edges_structural in training_data[i][2]:
+            print(edges_structural)
         print("goal (step {}):".format(i + 1))
-        print(training_data[i][2])
-        print("theorems (step {}):".format(i + 1))
         print(training_data[i][3])
+        print("theorems (step {}):".format(i + 1))
+        print(training_data[i][4])
         print()
 
 
@@ -477,8 +422,89 @@ def draw_pic(data, title, fig_size):
     plt.show()
 
 
+def make_onehot():
+    log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
+    log = load_json(log_filename)
+    train_data = []
+    val_data = []
+    test_data = []
+    onehot_log = {
+        "train": {"problem_count": 0, "item_count": 0},
+        "val": {"problem_count": 0, "item_count": 0},
+        "test": {"problem_count": 0, "item_count": 0}
+    }
+    for pid in log:
+        data_filename = os.path.normpath(
+            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
+        if not os.path.exists(data_filename):
+            continue
+
+        print("{} start.".format(pid))
+        raw_data = load_pickle(data_filename)
+        training_data = []
+        for nodes, edges, edges_structural, goal, theorems in raw_data:
+            one_hot_nodes = []
+            for node in nodes:
+                if len(node) > config.max_len_nodes - 2:
+                    node = node[:config.max_len_nodes - 2]
+                node = [nodes_words.index(n) for n in node]
+                # node.insert(0, 1)  # <start>
+                # node.append(2)  # <end>
+                # node = node + [0] * (config.max_len_nodes - len(node))
+                one_hot_nodes.append(node)
+
+            one_hot_edges = []
+            for edge in edges:
+                if len(edge) > config.max_len_edges - 2:
+                    edge = edge[:config.max_len_edges - 2]
+                edge = [edges_words.index(n) for n in edge]
+                # edge.insert(0, 1)  # <start>
+                # edge.append(2)  # <end>
+                # edge = edge + [0] * (config.max_len_edges - len(edge))  # <padding>
+                one_hot_edges.append(edge)
+
+            one_hot_goal = [nodes_words.index(g) for g in goal]
+
+            one_hot_theorems = [theorem_words.index(theorem) for theorem in theorems]
+            # for theorem in theorems:
+            #     one_hot_theorems[theorem_words.index(theorem)] = 1
+            # print(one_hot_theorems)
+
+            training_data.append([one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, one_hot_theorems])
+
+        if log[pid][0] == "train":
+            train_data += training_data
+
+        elif log[pid][0] == "val":
+            val_data += training_data
+        elif log[pid][0] == "test":
+            test_data += training_data
+
+        onehot_log[log[pid][0]]["problem_count"] += 1
+
+        print("{} ok.".format(pid))
+
+    onehot_log["train"]["item_count"] = len(train_data)
+    onehot_log["val"]["item_count"] = len(val_data)
+    onehot_log["test"]["item_count"] = len(test_data)
+
+    save_pickle(
+        train_data, os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot/train.pk"))
+    )
+    save_pickle(
+        val_data, os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot/val.pk"))
+    )
+    save_pickle(
+        test_data, os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot/test.pk"))
+    )
+
+    safe_save_json(onehot_log, os.path.normpath(os.path.join(config.path_data, "log/onehot_log.json")))
+    print(onehot_log)
+
+
 if __name__ == '__main__':
     random.seed(config.random_seed)
     # main()
     # check_log()
-    check_len()
+    # check_len()
+    # make_onehot()
