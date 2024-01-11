@@ -2,7 +2,7 @@ from formalgeo.tools import get_meta_hypertree, load_json, safe_save_json
 from formalgeo.solver import Interactor
 from formalgeo.parse import parse_one_theorem
 from formalgeo.data import DatasetLoader
-from pgps.utils import save_pickle
+from pgps.utils import load_pickle, save_pickle
 from pgps.utils import Configuration as config
 from pgps.utils import symbol_words, nodes_words, edges_words, theorem_words
 import os
@@ -11,7 +11,8 @@ import random
 from func_timeout import func_timeout, FunctionTimedOut
 import warnings
 from multiprocessing import Process, Queue
-
+import psutil
+import matplotlib.pyplot as plt
 
 # def make_onehot(training_data):
 #     predictor_train = []  # list of (predicate, words, path, goal_predicate, goal_words, theorems)
@@ -75,6 +76,8 @@ from multiprocessing import Process, Queue
 #             print("theorems:")
 #             print(selected_theorems)
 #             print()
+
+"""--------------data generation--------------"""
 
 
 def get_hypertree(problem):
@@ -155,18 +158,20 @@ def tokenize_cdl(cdl):
 def serialize_edge(edge):
     """
     Serialize one edge and add delimiter.
-    >> serialize_edge(['self', ['a', 'b'], 'none', ['c']])
-    >> ['self', '<and>', 'a', 'b', '<and>', 'none', '<and>', 'c']
+    >> serialize_edge([['self'], ['a', 'b'], ['none'], ['c']])
+    >> (['self', 'a', 'b', 'c'], [0, 1, 1, 3])
     """
-    serialized = [p for p in edge[0]]
+    serialized = []
+    token_index = []
 
-    for j in range(1, len(edge)):
-        serialized.append("<and>")
-        serialized += edge[j]
+    for j in range(len(edge)):
+        if edge[j] == ["none"]:
+            continue
+        for token in edge[j]:
+            serialized.append(token)
+            token_index.append(j)
 
-    serialized = [item for item in serialized if item != "none"]
-
-    return serialized
+    return [serialized, token_index]
 
 
 def tokenize_theorem(theorem):
@@ -179,26 +184,13 @@ def tokenize_theorem(theorem):
     return "{}_{}".format(t_name, t_branch)
 
 
-def show_training_data(training_data):
-    for i in range(len(training_data)):
-        print("nodes (step {}):".format(i + 1))
-        for node in training_data[i][0]:
-            print(node)
-        print("edges (step {}):".format(i + 1))
-        for node in training_data[i][1]:
-            print(node)
-        print("goal (step {}):".format(i + 1))
-        print(training_data[i][2])
-        print("theorems (step {}):".format(i + 1))
-        print(training_data[i][3])
-        print()
-
-
-def generate(dl, problem_ids, reply_queue):
+def generate(dl, task_queue, reply_queue):
+    warnings.filterwarnings("ignore")
     problem_split = dl.get_problem_split()["split"]  # official partition
     solver = Interactor(dl.predicate_GDL, dl.theorem_GDL)
 
-    for problem_id in problem_ids:
+    while not task_queue.empty():
+        problem_id = task_queue.get()
         msg = []
         if problem_id in problem_split["train"]:
             msg.append("train")
@@ -219,8 +211,8 @@ def generate(dl, problem_ids, reply_queue):
             training_data, solved = func_timeout(timeout=50, func=generate_one, args=(solver, problem_CDL))
         except FunctionTimedOut:
             msg.append("timeout")
-            training_data, solved = func_timeout(timeout=50, func=generate_one, args=(solver, problem_CDL))
-        except Exception as e:
+            training_data, solved = func_timeout(timeout=50, func=generate_one, args=(solver, problem_CDL, True))
+        except BaseException as e:
             msg.append("error")
             msg.append(repr(e))
             reply_queue.put((os.getpid(), problem_id, msg))
@@ -228,12 +220,24 @@ def generate(dl, problem_ids, reply_queue):
 
         save_pickle(
             training_data,
-            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(msg[0], problem_id))
+            os.path.normpath(os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(msg[0], problem_id)))
         )
 
         if solved:
             msg[1] = "solved"
         reply_queue.put((os.getpid(), problem_id, msg))
+
+
+def start_process(dl, task_queue, reply_queue, process_ids):
+    """Remove non-existent pid and start new process"""
+    for i in range(len(process_ids))[::-1]:
+        if process_ids[i] not in psutil.pids():
+            process_ids.pop(i)
+
+    while not task_queue.empty() and config.process_count - len(process_ids) > 0:
+        process = Process(target=generate, args=(dl, task_queue, reply_queue))
+        process.start()
+        process_ids.append(process.pid)
 
 
 def generate_one(solver, problem_CDL, use_theorem_para=False):
@@ -270,7 +274,6 @@ def generate_one(solver, problem_CDL, use_theorem_para=False):
 
 
 def main(problem_id=None):
-    warnings.filterwarnings("ignore")
     dl = DatasetLoader(config.dataset_name, config.path_datasets)
 
     if problem_id is not None:
@@ -284,33 +287,198 @@ def main(problem_id=None):
         return
 
     log = {}  # log {pid: ['train', 'solved', 'timeout', 'error']}
-    log_filename = os.path.join(config.path_data, "log/gen_training_data_log.json")
+    log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
     if os.path.exists(log_filename):
         log = load_json(log_filename)
 
-    problem_ids = []
+    task_queue = Queue()
     for problem_id in range(1, dl.info["problem_number"] + 1):
         if str(problem_id) not in log:
-            problem_ids.append(problem_id)
+            task_queue.put(problem_id)
 
     reply_queue = Queue()
-    started_process = 0
-    problems_per_process = int(len(problem_ids) / config.process_count)
-    while config.process_count - started_process > 0:
-        start_index = started_process * problems_per_process
-        end_index = len(problem_ids) if config.process_count - started_process == 1 \
-            else (started_process + 1) * problems_per_process
-        process = Process(target=generate, args=(dl, problem_ids[start_index:end_index], reply_queue))
-        process.start()
-        started_process += 1
-
+    process_ids = []
     while True:
+        start_process(dl, task_queue, reply_queue, process_ids)
         process_id, problem_id, msg = reply_queue.get()
         log[problem_id] = msg
         safe_save_json(log, log_filename)
         print("{}: {}".format(problem_id, msg))
 
 
+"""--------------data preprocess--------------"""
+
+
+def show_training_data(pid_or_training_data):
+    if isinstance(pid_or_training_data, int):
+        pid = pid_or_training_data
+        log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
+        log = load_json(log_filename)
+        if str(pid) not in log:
+            print("{} not generated.".format(pid))
+            return
+        data_filename = os.path.normpath(
+            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
+        if not os.path.exists(data_filename):
+            print("{} {} not generated.".format(log[pid][0], pid))
+            return
+        training_data = load_pickle(data_filename)
+    else:
+        training_data = pid_or_training_data
+
+    for i in range(len(training_data)):
+        print("nodes (step {}):".format(i + 1))
+        for node in training_data[i][0]:
+            print(node)
+        print("edges (step {}):".format(i + 1))
+        for edge, token_index in training_data[i][1]:
+            print("{}\t{}".format(edge, token_index))
+        print("goal (step {}):".format(i + 1))
+        print(training_data[i][2])
+        print("theorems (step {}):".format(i + 1))
+        print(training_data[i][3])
+        print()
+
+
+def check_log():
+    log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
+    log = load_json(log_filename)
+    log = {int(k): log[k] for k in log}
+    log = {k: log[k] for k in sorted(log)}
+    safe_save_json(log, log_filename)  # save sorted log
+
+    timeout = []
+    unsolved = []
+    error = []
+    unhandled = []
+    for pid in range(1, 6982):
+        if pid not in log:
+            unhandled.append(pid)
+        elif "timeout" in log[pid]:
+            timeout.append(pid)
+        elif "error" in log[pid]:
+            error.append(pid)
+        elif "unsolved" in log[pid]:
+            unsolved.append(pid)
+
+    print("timeout ({}):".format(len(timeout)))
+    for pid in timeout:
+        print("{}: {}".format(pid, log[pid]))
+    print()
+    print("unsolved ({}):".format(len(unsolved)))
+    for pid in unsolved:
+        print("{}: {}".format(pid, log[pid]))
+    print()
+    print("error ({}):".format(len(error)))
+    for pid in error:
+        print("{}: {}".format(pid, log[pid]))
+    print()
+    print("unhandled ({}):".format(len(unhandled)))
+    print(unhandled)
+
+
+def check_len():
+    nodes_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/nodes_len.pk"))
+    edges_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/edges_len.pk"))
+    se_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/se_len.pk"))
+
+    if not os.path.exists(nodes_len_file):
+        log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
+        log = load_json(log_filename)
+        nodes_len = {}
+        edges_len = {}
+        se_len = {}
+
+        for pid in log:
+            filename = os.path.normpath(
+                os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
+            if not os.path.exists(filename):
+                continue
+            training_data = load_pickle(filename)
+            for nodes, edges, goal, theorems in training_data:
+                for node in nodes:
+                    if len(node) not in nodes_len:
+                        nodes_len[len(node)] = 1
+                    else:
+                        nodes_len[len(node)] += 1
+                for edge, index_count in edges:
+                    if len(edge) not in edges_len:
+                        edges_len[len(edge)] = 1
+                    else:
+                        edges_len[len(edge)] += 1
+                    for i in index_count:
+                        if i not in se_len:
+                            se_len[i] = 1
+                        else:
+                            se_len[i] += 1
+                if len(goal) not in nodes_len:
+                    nodes_len[len(goal)] = 1
+                else:
+                    nodes_len[len(goal)] += 1
+            print("{} ok.".format(pid))
+
+        nodes_len = [(k, nodes_len[k]) for k in sorted(nodes_len)]
+        edges_len = [(k, edges_len[k]) for k in sorted(edges_len)]
+        se_len = [(k, se_len[k]) for k in sorted(se_len)]
+        save_pickle(edges_len, nodes_len_file)
+        save_pickle(nodes_len, edges_len_file)
+        save_pickle(se_len, se_len_file)
+    else:
+        nodes_len = load_pickle(nodes_len_file)
+        edges_len = load_pickle(edges_len_file)
+        se_len = load_pickle(se_len_file)
+
+    draw_pic(nodes_len, "nodes", (32, 8))
+    draw_pic(edges_len, "edges", (64, 8))
+    draw_pic(se_len, "se", (128, 8))
+
+
+def draw_pic(data, title, fig_size):
+    x = [item[0] for item in data]
+    y = [item[1] for item in data]
+    y_integral = [y[0]]
+    for i in range(1, len(y)):
+        y_integral.append(y_integral[i - 1] + y[i])
+    y_integral = [item / y_integral[-1] for item in y_integral]
+    print("{}:".format(title))
+    for i in range(len(x) - 1):
+        if y_integral[i] <= 0.9:
+            if y_integral[i + 1] >= 0.9:
+                print("0.9: {}".format(x[i + 1]))
+        elif y_integral[i] <= 0.95:
+            if y_integral[i + 1] >= 0.95:
+                print("0.95: {}".format(x[i + 1]))
+        elif y_integral[i] <= 0.99:
+            if y_integral[i + 1] >= 0.99:
+                print("0.99: {}".format(x[i + 1]))
+    print("1.0: {}".format(x[-1]))
+    print()
+
+    plt.figure(figsize=fig_size)
+    plt.plot(x, y, marker='o')
+    plt.title('{} (Density)'.format(title))
+    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_len/{}_density.png".format(title))))
+    plt.show()
+
+    plt.figure(figsize=fig_size)
+    for i in range(len(x) - 1):  # draw line
+        plt.plot(x[i:i + 2], y_integral[i:i + 2], 'b-')
+    for i in range(len(x)):  # draw point
+        if y_integral[i] < 0.9:
+            plt.plot(x[i], y_integral[i], 'o', color="green")
+        elif y_integral[i] < 0.95:
+            plt.plot(x[i], y_integral[i], 'o', color="yellow")
+        elif y_integral[i] < 0.99:
+            plt.plot(x[i], y_integral[i], 'o', color="pink")
+        else:
+            plt.plot(x[i], y_integral[i], 'o', color="red")
+    plt.title('{} (Integral)'.format(title))
+    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_len/{}_integral.png".format(title))))
+    plt.show()
+
+
 if __name__ == '__main__':
     random.seed(config.random_seed)
-    main()
+    # main()
+    # check_log()
+    check_len()

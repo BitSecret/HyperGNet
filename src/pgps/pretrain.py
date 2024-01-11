@@ -3,6 +3,7 @@ from pgps.module import Embedding, PositionalEncoding, SelfAttention, LayerNorm,
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
 import random
 
 
@@ -146,7 +147,52 @@ def make_edges_model():
 
 
 def train_nodes_model():
-    model = make_nodes_model()
+    # model = make_nodes_model()
+    my_data = [
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+        [torch.randint(low=1, high=100, size=(3, 3)),
+         torch.randint(low=1, high=100, size=(4, 4)),
+         torch.randint(low=1, high=100, size=(5, 5))],
+    ]
+
+    class MyDataset(Dataset):
+        def __init__(self, data):
+            self.data = data
+
+        def __len__(self):
+            return len(self.data)
+
+        def __getitem__(self, idx):
+            a = self.data[idx][0]  # 直接获取第一个元素
+            b = self.data[idx][1]  # 直接获取第二个元素
+            target = self.data[idx][-1]  # 获取最后一个元素
+            return a, b, target
+
+    data_loader = DataLoader(
+        dataset=MyDataset(my_data),
+        batch_size=2,
+        shuffle=True
+    )
+
+    for a, b, target in data_loader:
+        print(a.shape)
+        print(b.shape)
+        print(target.shape)
+        print()
 
 
 def train_edges_model():

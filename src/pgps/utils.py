@@ -151,7 +151,7 @@ letter_words = [
 ]
 
 nodes_words = ["<padding>", "<start>", "<end>"] + predicate_words + symbol_words + letter_words
-edges_words = ["<padding>", "<start>", "<end>", "<and>"] + theorem_words + ["self", "extended", "solve_eq"]
+edges_words = ["<padding>", "<start>", "<end>"] + theorem_words + ["self", "extended", "solve_eq"]
 
 
 class Configuration:
@@ -175,7 +175,7 @@ class Configuration:
     lr_nodes = 1
 
     vocab_nodes = len(nodes_words)
-    max_len_nodes = 1
+    max_len_nodes = 128
     h_nodes = 1
     N_encoder_nodes = 1
     N_decoder_nodes = 1
@@ -187,7 +187,7 @@ class Configuration:
     lr_edges = 1
 
     vocab_edges = len(edges_words)
-    max_len_edges = 1
+    max_len_edges = 32
     h_edges = 1
     N_encoder_edges = 1
     N_decoder_edges = 1
@@ -227,15 +227,22 @@ def save_pickle(data, path):
 def project_init():
     if not os.path.exists("./datasets"):  # download_datasets
         os.makedirs("./datasets")
-    download_dataset("formalgeo7k_v1", "./datasets")
-    download_dataset("formalgeo-imo_v1", "./datasets")
+        download_dataset("formalgeo7k_v1", "./datasets")
+        download_dataset("formalgeo-imo_v1", "./datasets")
 
-    with zipfile.ZipFile("231221.zip", 'r') as zip_ref:  # unzip_results
-        zip_ref.extractall("./")
+    if os.path.exists("./231221.zip"):  # unzip_results
+        with zipfile.ZipFile("231221.zip", 'r') as zip_ref:
+            zip_ref.extractall("./")
 
     filepaths = [  # create_archi
-        "./user/A",
-        "./user/B"
+        os.path.normpath(os.path.join(Configuration.path_data, "log")),
+        os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/one-hot")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/one-hot")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/raw")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/one-hot"))
     ]
     for filepath in filepaths:
         if not os.path.exists(filepath):

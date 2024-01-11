@@ -30,17 +30,8 @@ Install Python dependencies:
 
 We provide a short code to test if the environment setup is successful:
 
-    import formalgeo
-    import torch
-
-    print("torch.__version__: {}".format(torch.__version__))
-    print("torch.cuda.is_available(): {}".format(torch.cuda.is_available()))
-    
-    device_count = torch.cuda.device_count()
-    print("torch.cuda.device_count(): {}".format(device_count))
-    print("torch.cuda.current_device(): {}".format(torch.cuda.current_device()))
-    for i in range(device_count):
-        print("Device {}: {}".format(i, torch.cuda.get_device_name(i)))
+    $ cd tests
+    $ python test.py
 
 Download datasets and initialize the project:
 

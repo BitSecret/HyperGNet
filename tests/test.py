@@ -3,6 +3,19 @@ from pgps.pretrain import SentenceEncoder, SentenceDecoder, Sentence2Vector
 from pgps.train import Encoder, Decoder, Predictor
 from pgps.utils import Configuration as config
 import random
+import formalgeo
+import torch
+
+
+def test_env():
+    print("torch.__version__: {}".format(torch.__version__))
+    print("torch.cuda.is_available(): {}".format(torch.cuda.is_available()))
+
+    device_count = torch.cuda.device_count()
+    print("torch.cuda.device_count(): {}".format(device_count))
+    print("torch.cuda.current_device(): {}".format(torch.cuda.current_device()))
+    for i in range(device_count):
+        print("Device {}: {}".format(i, torch.cuda.get_device_name(i)))
 
 
 def test_module():
@@ -259,11 +272,12 @@ def test_train():
 
 
 if __name__ == '__main__':
-    random.seed(config.random_seed)
-    torch.manual_seed(config.random_seed)
-    torch.cuda.manual_seed_all(config.random_seed)
+    test_env()
 
+    # random.seed(config.random_seed)
+    # torch.manual_seed(config.random_seed)
+    # torch.cuda.manual_seed_all(config.random_seed)
     # test_module()
     # test_sentence_encoder()
     # test_pretrain()
-    test_train()
+    # test_train()
