@@ -41,6 +41,35 @@ class PositionalEncoding(nn.Module):
         return x + self.pe.masked_fill(x == 0, 0)
 
 
+class StructuralEncoding(nn.Module):
+    def __init__(self, max_len, d_model):
+        """Standard positional encoding from original transformer."""
+        super(StructuralEncoding, self).__init__()
+        assert d_model % 2 == 0
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * -(torch.log(torch.tensor([10000.0])) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        # 'pe' will be retained when model saving and loading, but it will not be updated during the training.
+        self.register_buffer('pe', pe)  # torch.Size([max_len, d_model])
+
+    def forward(self, x, x_structural):
+        """
+        :param x: torch.Size([batch_size, max_len, d_model])
+        :param x_structural: torch.Size([batch_size, max_len])
+        :return result: torch.Size([batch_size, max_len, d_model])
+        """
+        raw_size = x.size()
+        x = x.view(-1, x.size(-1))
+        x_structural = x_structural.view(-1)
+        for i in range(len(x_structural)):
+            idx = x_structural[i]
+            if idx != 0:
+                x[i] += self.pe[idx]
+        return x.view(raw_size)
+
+
 class SelfAttention(nn.Module):
     def __init__(self, h, d_model):
         super(SelfAttention, self).__init__()

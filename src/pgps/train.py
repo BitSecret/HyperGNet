@@ -1,10 +1,13 @@
 from pgps.utils import Configuration as config
+from pgps.utils import load_pickle, save_pickle
 from pgps.module import SelfAttention, TaskSpecificAttention, LayerNorm, FeedForward, init_weights
 from pgps.pretrain import Sentence2Vector
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
 import random
+import os
 
 
 class Encoder(nn.Module):
@@ -100,10 +103,11 @@ class Predictor(nn.Module):
 
         self.linear = nn.Linear(d_model, vocab)
 
-    def forward(self, nodes, edges, goal):
+    def forward(self, nodes, edges, edges_structural, goal):
         """
         :param nodes: torch.Size([batch_size, max_len, max_len_nodes])
         :param edges: torch.Size([batch_size, max_len, max_len_edges])
+        :param edges_structural: torch.Size([batch_size, max_len, max_len_edges])
         :param goal: torch.Size([batch_size, max_len_nodes])
         :return result: torch.Size([batch_size, theorem_vocab])
         """
@@ -150,11 +154,81 @@ def make_model():
     return model
 
 
+class PGPSDataset(Dataset):
+    def __init__(self, raw_data):
+        self.data = []
+        for one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, theorems_index in raw_data:
+            for node in one_hot_nodes:
+                node.insert(0, 1)  # <start>
+                node.append(2)  # <end>
+                node.extend([0] * (config.max_len_nodes - len(node)))  # padding
+
+            for edge in one_hot_edges:
+                edge.insert(0, 1)  # <start>
+                edge.append(2)  # <end>
+                edge.extend([0] * (config.max_len_edges - len(edge)))  # padding
+
+            for item in edges_structural:
+                item.insert(0, 0)
+                item.extend([0] * (config.max_len_edges - len(item)))  # padding
+
+            one_hot_goal.insert(0, 1)  # <start>
+            one_hot_goal.append(2)  # <end>
+            one_hot_goal.extend([0] * (config.max_len_nodes - len(one_hot_goal)))  # padding
+
+            theorems = [0] * config.vocab_theorems
+            for t_index in theorems_index:
+                theorems[t_index] = 1
+
+            if len(one_hot_nodes) < config.max_len:
+                insert_count = config.max_len - len(one_hot_nodes)
+                one_hot_nodes.extend([[0] * config.max_len_nodes] * insert_count)
+                one_hot_edges.extend([[0] * config.max_len_edges] * insert_count)
+                edges_structural.extend([[0] * config.max_len_edges] * insert_count)
+
+            self.data.append((torch.tensor(one_hot_nodes),
+                              torch.tensor(one_hot_edges),
+                              torch.tensor(edges_structural),
+                              torch.tensor(one_hot_goal),
+                              torch.tensor(theorems)))
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx][0], self.data[idx][1], self.data[idx][2], self.data[idx][3], self.data[idx][4]
+
+
 def train():
-    model = make_model()
+    dataset_path = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
+    print("Loading training data (the first time loading may be slow)...")
+    if "dataset_pgps.pk" in os.listdir(dataset_path):
+        dataset = load_pickle(os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
+    else:
+        dataset = PGPSDataset(load_pickle(os.path.normpath(os.path.join(dataset_path, "one-hot.pk"))))
+        save_pickle(dataset, os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
+
+    data_loader = DataLoader(
+        dataset=dataset,
+        batch_size=config.batch_size,
+        shuffle=False
+    )
+    print("Data loading completed.")
+
+    for nodes, edges, edges_structural, goal, theorems in data_loader:
+        print(nodes.shape)
+        print(edges.shape)
+        print(edges_structural.shape)
+        print(goal.shape)
+        print(theorems.shape)
+        exit(0)
+
+    # model = make_model()
 
 
 if __name__ == '__main__':
     random.seed(config.random_seed)
     torch.manual_seed(config.random_seed)
     torch.cuda.manual_seed_all(config.random_seed)
+
+    train()

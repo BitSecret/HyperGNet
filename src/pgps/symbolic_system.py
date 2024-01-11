@@ -2,7 +2,7 @@ from formalgeo.tools import get_meta_hypertree, load_json, safe_save_json
 from formalgeo.solver import Interactor
 from formalgeo.parse import parse_one_theorem
 from formalgeo.data import DatasetLoader
-from pgps.utils import load_pickle, save_pickle
+from pgps.utils import load_pickle, save_pickle, random_index
 from pgps.utils import Configuration as config
 from pgps.utils import symbol_words, nodes_words, edges_words, theorem_words
 import os
@@ -251,7 +251,7 @@ def main(problem_id=None):
 """--------------data preprocess--------------"""
 
 
-def show_training_data(pid_or_training_data):
+def show_training_data(pid_or_training_data, onehot=False):
     if isinstance(pid_or_training_data, int):
         pid = pid_or_training_data
         log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
@@ -271,16 +271,24 @@ def show_training_data(pid_or_training_data):
     for i in range(len(training_data)):
         print("nodes (step {}):".format(i + 1))
         for node in training_data[i][0]:
+            if onehot:
+                node = [nodes_words.index(n) for n in node]
             print(node)
         print("edges (step {}):".format(i + 1))
         for edge in training_data[i][1]:
+            if onehot:
+                edge = [edges_words.index(e) for e in edge]
             print(edge)
         print("edges_structural (step {}):".format(i + 1))
         for edges_structural in training_data[i][2]:
             print(edges_structural)
         print("goal (step {}):".format(i + 1))
+        if onehot:
+            training_data[i][3] = [nodes_words.index(n) for n in training_data[i][3]]
         print(training_data[i][3])
         print("theorems (step {}):".format(i + 1))
+        if onehot:
+            training_data[i][4] = [theorem_words.index(t) for t in training_data[i][4]]
         print(training_data[i][4])
         print()
 
@@ -324,14 +332,16 @@ def check_log():
 
 def check_len():
     nodes_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/nodes_len.pk"))
-    edges_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/edges_len.pk"))
+    nodes_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/nodes_words_len.pk"))
+    edges_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/edges_words_len.pk"))
     se_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/se_len.pk"))
 
     if not os.path.exists(nodes_len_file):
         log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
         log = load_json(log_filename)
         nodes_len = {}
-        edges_len = {}
+        nodes_words_len = {}
+        edges_words_len = {}
         se_len = {}
 
         for pid in log:
@@ -340,51 +350,67 @@ def check_len():
             if not os.path.exists(filename):
                 continue
             training_data = load_pickle(filename)
-            for nodes, edges, goal, theorems in training_data:
+            for nodes, edges, index_count, goal, theorems in training_data:
+                if len(nodes) not in nodes_len:
+                    nodes_len[len(nodes)] = 1
+                else:
+                    nodes_len[len(nodes)] += 1
                 for node in nodes:
-                    if len(node) not in nodes_len:
-                        nodes_len[len(node)] = 1
+                    if len(node) not in nodes_words_len:
+                        nodes_words_len[len(node)] = 1
                     else:
-                        nodes_len[len(node)] += 1
-                for edge, index_count in edges:
-                    if len(edge) not in edges_len:
-                        edges_len[len(edge)] = 1
+                        nodes_words_len[len(node)] += 1
+                for edge in edges:
+                    if len(edge) not in edges_words_len:
+                        edges_words_len[len(edge)] = 1
                     else:
-                        edges_len[len(edge)] += 1
-                    for i in index_count:
+                        edges_words_len[len(edge)] += 1
+                for item in index_count:
+                    for i in item:
                         if i not in se_len:
                             se_len[i] = 1
                         else:
                             se_len[i] += 1
-                if len(goal) not in nodes_len:
-                    nodes_len[len(goal)] = 1
+                if len(goal) not in nodes_words_len:
+                    nodes_words_len[len(goal)] = 1
                 else:
-                    nodes_len[len(goal)] += 1
+                    nodes_words_len[len(goal)] += 1
             print("{} ok.".format(pid))
 
         nodes_len = [(k, nodes_len[k]) for k in sorted(nodes_len)]
-        edges_len = [(k, edges_len[k]) for k in sorted(edges_len)]
+        nodes_words_len = [(k, nodes_words_len[k]) for k in sorted(nodes_words_len)]
+        edges_words_len = [(k, edges_words_len[k]) for k in sorted(edges_words_len)]
         se_len = [(k, se_len[k]) for k in sorted(se_len)]
-        save_pickle(edges_len, nodes_len_file)
-        save_pickle(nodes_len, edges_len_file)
+        save_pickle(nodes_len, nodes_len_file)
+        save_pickle(edges_words_len, nodes_words_len_file)
+        save_pickle(nodes_words_len, edges_words_len_file)
         save_pickle(se_len, se_len_file)
     else:
         nodes_len = load_pickle(nodes_len_file)
-        edges_len = load_pickle(edges_len_file)
+        nodes_words_len = load_pickle(nodes_words_len_file)
+        edges_words_len = load_pickle(edges_words_len_file)
         se_len = load_pickle(se_len_file)
 
-    draw_pic(nodes_len, "nodes", (32, 8))
-    draw_pic(edges_len, "edges", (64, 8))
+    draw_pic(nodes_len, "nodes", (128, 8))
+    draw_pic(nodes_words_len, "nodes_words", (32, 8))
+    draw_pic(edges_words_len, "edges_words", (64, 8))
     draw_pic(se_len, "se", (128, 8))
 
 
 def draw_pic(data, title, fig_size):
+    log = {}
     x = [item[0] for item in data]
     y = [item[1] for item in data]
+    y_sum = sum(y)
+    for i in range(len(x)):
+        log[i] = "count:{}, percent: {:.6f}%".format(y[i], y[i] / y_sum * 100)
     y_integral = [y[0]]
     for i in range(1, len(y)):
         y_integral.append(y_integral[i - 1] + y[i])
     y_integral = [item / y_integral[-1] for item in y_integral]
+    for i in range(len(x)):
+        log[i] += ", accumulate: {:.6f}%".format(y_integral[i] * 100)
+    safe_save_json(log, os.path.normpath(os.path.join(config.path_data, "log/words_len/{}.json".format(title))))
     print("{}:".format(title))
     for i in range(len(x) - 1):
         if y_integral[i] <= 0.9:
@@ -428,11 +454,6 @@ def make_onehot():
     train_data = []
     val_data = []
     test_data = []
-    onehot_log = {
-        "train": {"problem_count": 0, "item_count": 0},
-        "val": {"problem_count": 0, "item_count": 0},
-        "test": {"problem_count": 0, "item_count": 0}
-    }
     for pid in log:
         data_filename = os.path.normpath(
             os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
@@ -443,34 +464,36 @@ def make_onehot():
         raw_data = load_pickle(data_filename)
         training_data = []
         for nodes, edges, edges_structural, goal, theorems in raw_data:
+            if len(nodes) > config.max_len:  # random truncation
+                for idx in random_index(len(nodes), len(nodes) - config.max_len)[::-1]:
+                    nodes.pop(idx)
+                    edges.pop(idx)
+                    edges_structural.pop(idx)
             one_hot_nodes = []
             for node in nodes:
-                if len(node) > config.max_len_nodes - 2:
+                if len(node) > config.max_len_nodes - 2:  # truncation
                     node = node[:config.max_len_nodes - 2]
                 node = [nodes_words.index(n) for n in node]
-                # node.insert(0, 1)  # <start>
-                # node.append(2)  # <end>
-                # node = node + [0] * (config.max_len_nodes - len(node))
                 one_hot_nodes.append(node)
 
             one_hot_edges = []
             for edge in edges:
-                if len(edge) > config.max_len_edges - 2:
+                if len(edge) > config.max_len_edges - 2:  # truncation
                     edge = edge[:config.max_len_edges - 2]
                 edge = [edges_words.index(n) for n in edge]
-                # edge.insert(0, 1)  # <start>
-                # edge.append(2)  # <end>
-                # edge = edge + [0] * (config.max_len_edges - len(edge))  # <padding>
                 one_hot_edges.append(edge)
 
+            for i in range(len(edges_structural)):
+                if len(edges_structural[i]) > config.max_len_edges - 2:  # truncation
+                    edges_structural[i] = edges_structural[i][:config.max_len_edges - 2]
+
+            if len(goal) > config.max_len_nodes - 2:  # truncation
+                goal = goal[:config.max_len_nodes - 2]
             one_hot_goal = [nodes_words.index(g) for g in goal]
 
-            one_hot_theorems = [theorem_words.index(theorem) for theorem in theorems]
-            # for theorem in theorems:
-            #     one_hot_theorems[theorem_words.index(theorem)] = 1
-            # print(one_hot_theorems)
+            theorems_index = [theorem_words.index(theorem) for theorem in theorems]
 
-            training_data.append([one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, one_hot_theorems])
+            training_data.append([one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, theorems_index])
 
         if log[pid][0] == "train":
             train_data += training_data
@@ -480,22 +503,41 @@ def make_onehot():
         elif log[pid][0] == "test":
             test_data += training_data
 
-        onehot_log[log[pid][0]]["problem_count"] += 1
-
         print("{} ok.".format(pid))
 
-    onehot_log["train"]["item_count"] = len(train_data)
-    onehot_log["val"]["item_count"] = len(val_data)
-    onehot_log["test"]["item_count"] = len(test_data)
+    onehot_log = {
+        "train": {
+            "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/train/raw")))),
+            "item_count": len(train_data)
+        },
+        "val": {
+            "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/val/raw")))),
+            "item_count": len(val_data)
+        },
+        "test": {
+            "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/test/raw")))),
+            "item_count": len(test_data)
+        }
+    }
+    problem_count = (onehot_log["train"]["problem_count"] + onehot_log["val"]["problem_count"] +
+                     onehot_log["test"]["problem_count"])
+    item_count = (onehot_log["train"]["item_count"] + onehot_log["val"]["item_count"] +
+                  onehot_log["test"]["item_count"])
+    onehot_log["train"]["problem_count_percent"] = onehot_log["train"]["problem_count"] / problem_count
+    onehot_log["val"]["problem_count_percent"] = onehot_log["val"]["problem_count"] / problem_count
+    onehot_log["test"]["problem_count_percent"] = onehot_log["test"]["problem_count"] / problem_count
+    onehot_log["train"]["item_count_percent"] = onehot_log["train"]["item_count"] / item_count
+    onehot_log["val"]["item_count_percent"] = onehot_log["val"]["item_count"] / item_count
+    onehot_log["test"]["item_count_percent"] = onehot_log["test"]["item_count"] / item_count
 
     save_pickle(
-        train_data, os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot/train.pk"))
+        train_data, os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot.pk"))
     )
     save_pickle(
-        val_data, os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot/val.pk"))
+        val_data, os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot.pk"))
     )
     save_pickle(
-        test_data, os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot/test.pk"))
+        test_data, os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot.pk"))
     )
 
     safe_save_json(onehot_log, os.path.normpath(os.path.join(config.path_data, "log/onehot_log.json")))
@@ -505,6 +547,7 @@ def make_onehot():
 if __name__ == '__main__':
     random.seed(config.random_seed)
     # main()
+    # show_training_data(pid_or_training_data=47)
     # check_log()
     # check_len()
-    # make_onehot()
+    make_onehot()
