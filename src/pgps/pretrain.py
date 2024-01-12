@@ -1,39 +1,10 @@
 from pgps.utils import Configuration as config
 from pgps.utils import load_pickle, save_pickle
-from pgps.module import init_weights
-from pgps.model import Sentence2Vector
+from pgps.model import make_nodes_model, make_edges_model
 import torch
 from torch.utils.data import Dataset, DataLoader
 import random
 import os
-
-
-def make_nodes_model():
-    model = Sentence2Vector(
-        vocab=config.vocab_nodes,
-        d_model=config.d_model // 2,
-        max_len=config.max_len_nodes,
-        h=config.h_nodes,
-        N_encoder=config.N_encoder_nodes,
-        N_decoder=config.N_decoder_nodes,
-        p_drop=config.p_drop_nodes
-    )
-    model.apply(init_weights)
-    return model
-
-
-def make_edges_model():
-    model = Sentence2Vector(
-        vocab=config.vocab_edges,
-        d_model=config.d_model,
-        max_len=config.max_len_edges,
-        h=config.h_edges,
-        N_encoder=config.N_encoder_edges,
-        N_decoder=config.N_decoder_edges,
-        p_drop=config.p_drop_nodes
-    )
-    model.apply(init_weights)
-    return model
 
 
 class NodesDataset(Dataset):
@@ -89,13 +60,15 @@ def train_nodes_model():
         batch_size=config.batch_size_nodes,
         shuffle=False
     )
-    print("Data loading completed.")
+    print("Nodes Data loading completed.")
 
-    for d in data_loader:
-        print(d.shape)
-        exit(0)
+    model = make_nodes_model()
 
-    # model = make_nodes_model()
+    for batch_data in data_loader:
+        print("batch_data.shape: {}".format(batch_data.shape))
+        result = model(batch_data)
+        print("result.shape: {}".format(result.shape))
+        return
 
 
 def train_edges_model():
@@ -112,19 +85,34 @@ def train_edges_model():
         batch_size=config.batch_size_edges,
         shuffle=True
     )
-    print("Data loading completed.")
+    print("Edges Data loading completed.")
 
-    for d in data_loader:
-        print(d.shape)
-        exit(0)
+    model = make_edges_model()
 
-    # model = make_edges_model()
+    for batch_data in data_loader:
+        print("batch_data.shape: {}".format(batch_data.shape))
+        result = model(batch_data)
+        print("result.shape: {}".format(result.shape))
+        return
 
 
 if __name__ == '__main__':
+    """
+    Loading nodes data (the first time loading may be slow)...
+    Nodes Data loading completed.
+    batch_data.shape: torch.Size([64, 22])
+    result.shape: torch.Size([64, 22, 144])
+
+    Loading edges data (the first time loading may be slow)...
+    Edges Data loading completed.
+    batch_data.shape: torch.Size([64, 16])
+    result.shape: torch.Size([64, 16, 257])
+    """
+
     random.seed(config.random_seed)
     torch.manual_seed(config.random_seed)
     torch.cuda.manual_seed_all(config.random_seed)
 
     train_nodes_model()
+    print()
     train_edges_model()

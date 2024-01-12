@@ -1,36 +1,10 @@
 from pgps.utils import Configuration as config
 from pgps.utils import load_pickle, save_pickle
-from pgps.module import init_weights
-from pgps.model import Predictor
+from pgps.model import make_predictor_model
 import random
 import os
 import torch
 from torch.utils.data import Dataset, DataLoader
-
-
-def make_model():
-    model = Predictor(
-        vocab_nodes=config.vocab_nodes,
-        max_len_nodes=config.max_len_nodes,
-        h_nodes=config.h_nodes,
-        N_encoder_nodes=config.N_encoder_nodes,
-        N_decoder_nodes=config.N_decoder_nodes,
-        p_drop_nodes=config.p_drop_nodes,
-        vocab_edges=config.vocab_edges,
-        max_len_edges=config.max_len_edges,
-        h_edges=config.h_edges,
-        N_encoder_edges=config.N_encoder_edges,
-        N_decoder_edges=config.N_decoder_edges,
-        p_drop_edges=config.p_drop_edges,
-        vocab=config.vocab_theorems,
-        max_len=config.max_len,
-        h=config.h,
-        N=config.N,
-        p_drop=config.p_drop,
-        d_model=config.d_model
-    )
-    model.apply(init_weights)
-    return model
 
 
 class PGPSDataset(Dataset):
@@ -94,18 +68,31 @@ def train():
     )
     print("Data loading completed.")
 
-    for nodes, edges, edges_structural, goal, theorems in data_loader:
-        print(nodes.shape)
-        print(edges.shape)
-        print(edges_structural.shape)
-        print(goal.shape)
-        print(theorems.shape)
-        exit(0)
+    model = make_predictor_model()
 
-    # model = make_model()
+    for nodes, edges, edges_structural, goal, theorems in data_loader:
+        print("nodes.shape: {}".format(nodes.shape))
+        print("edges.shape: {}".format(edges.shape))
+        print("edges_structural.shape: {}".format(edges_structural.shape))
+        print("goal.shape: {}".format(goal.shape))
+        print("theorems.shape: {}".format(theorems.shape))
+        result = model(nodes, edges, edges_structural, goal)
+        print("result.shape: {}".format(result.shape))
+        return
 
 
 if __name__ == '__main__':
+    """
+    Loading training data (the first time loading may be slow)...
+    Data loading completed.
+    nodes.shape: torch.Size([64, 64, 22])
+    edges.shape: torch.Size([64, 64, 16])
+    edges_structural.shape: torch.Size([64, 64, 16])
+    goal.shape: torch.Size([64, 22])
+    theorems.shape: torch.Size([64, 251])
+    result.shape: torch.Size([64, 251])
+    """
+
     random.seed(config.random_seed)
     torch.manual_seed(config.random_seed)
     torch.cuda.manual_seed_all(config.random_seed)

@@ -1,6 +1,4 @@
-from pgps.module import *
-from pgps.pretrain import SentenceEncoder, SentenceDecoder, Sentence2Vector
-from pgps.train import Encoder, Decoder, Predictor
+from pgps.model import *
 from pgps.utils import Configuration as config
 import random
 import formalgeo
@@ -8,6 +6,8 @@ import torch
 
 
 def test_env():
+    # print("formalgeo.__version__: {}".format(formalgeo.__version__))
+
     print("torch.__version__: {}".format(torch.__version__))
     print("torch.cuda.is_available(): {}".format(torch.cuda.is_available()))
 
@@ -26,25 +26,42 @@ def test_module():
     h = 2
 
     tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
+    structural = torch.randint(low=1, high=max_len, size=(batch_size, max_len))
     tensor[0][3] = 0
     tensor[1][3] = 0
     tensor[1][2] = 0
-    print("tensor:")
+    structural[0][3] = 0
+    structural[1][3] = 0
+    structural[1][2] = 0
+
+    print("tensor: {}".format(tensor.shape))
     print(tensor)
     print()
 
     embedding = Embedding(vocab=vocab, d_model=d_model)
     tensor = embedding(tensor)
-    print("embedding(tensor):")
+    print("embedding(tensor): {}".format(tensor.shape))
     print(tensor)
     print()
 
     p_encoding = PositionalEncoding(max_len, d_model)
-    print("p_encoding.pe:")
+    print("p_encoding.pe: {}".format(p_encoding.pe.shape))
     print(p_encoding.pe)
     print()
-    print("tensor + p_encoding.pe:")
     tensor = p_encoding(tensor)
+    print("tensor + p_encoding.pe: {}".format(tensor.shape))
+    print(tensor)
+    print()
+
+    s_encoding = StructuralEncoding(max_len, d_model)
+    print("s_encoding.se: {}".format(s_encoding.se.shape))
+    print(s_encoding.se)
+    print()
+    print("structural: {}".format(structural.shape))
+    print(structural)
+    print()
+    tensor = s_encoding(tensor, structural)
+    print("tensor + s_encoding.se: {}".format(tensor.shape))
     print(tensor)
     print()
 
@@ -161,6 +178,7 @@ def test_sentence_encoder(choice=1):
 def test_pretrain():
     batch_size = 2
     max_len = 4
+    max_len_se = 8
     d_model = 6
     vocab = 8
     h = 2
@@ -169,6 +187,8 @@ def test_pretrain():
 
     tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
     print("tensor:{}".format(str(tensor.shape)))
+    structural = torch.randint(low=1, high=max_len_se, size=(batch_size, max_len))
+    print("structural:{}".format(str(structural.shape)))
     mask = torch.tril(torch.ones((max_len, max_len)))
     print("mask:{}".format(str(mask.shape)))
     embedding = Embedding(vocab, d_model)
@@ -182,11 +202,21 @@ def test_pretrain():
     sentence_decoder = SentenceDecoder(d_model, h, N, p_drop)
     tensor_decoding = sentence_decoder(tensor_encoding, tensor_emb, mask)
     print("tensor_decoding:{}".format(str(tensor_decoding.shape)))
+    print()
 
-    sentence_2_vector = Sentence2Vector(vocab, d_model, max_len, h, N, N, p_drop)
-    encoding = sentence_2_vector(tensor, True)
+    nodes_2_vector = Nodes2Vector(vocab, d_model, max_len, h, N, N, p_drop)
+    encoding = nodes_2_vector(tensor, use_encoding=True)
     print("encoding:{}".format(str(encoding.shape)))
-    output = sentence_2_vector(tensor, False, mask)
+    output = nodes_2_vector(tensor, use_encoding=False, mask=mask)
+    print("output:{}".format(str(output.shape)))
+    print()
+
+    edges_2_vector = Edges2Vector(vocab, d_model, max_len, max_len_se, h, N, N, p_drop)
+    encoding = edges_2_vector(tensor, use_encoding=True)
+    print("encoding:{}".format(str(encoding.shape)))
+    se_encoding = edges_2_vector(tensor, x_structural=structural, use_encoding=True)
+    print("se_encoding:{}".format(str(se_encoding.shape)))
+    output = edges_2_vector(tensor, x_structural=structural, use_encoding=False, mask=mask)
     print("output:{}".format(str(output.shape)))
 
     # encoding = torch.rand((batch_size, d_model))
@@ -200,37 +230,38 @@ def test_pretrain():
 
 
 def test_train():
-    # batch_size = 2
-    # max_len = 4
-    # d_model = 6
-    # vocab = 8
-    # h = 2
-    # p_drop = 0.2
-    # N = 5
-    # 
-    # tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
-    # print("tensor:{}".format(str(tensor.shape)))
-    # task = torch.randint(low=1, high=vocab, size=(batch_size,))
-    # print("task:{}".format(str(task.shape)))
-    # embedding = Embedding(vocab, d_model)
-    # tensor_emb = embedding(tensor)
-    # print("tensor_emb:{}".format(str(tensor_emb.shape)))
-    # task_emb = embedding(task)
-    # print("task_emb:{}".format(str(task_emb.shape)))
-    # 
-    # encoder = Encoder(d_model, h, N, p_drop)
-    # encoding = encoder(tensor_emb)
-    # print("encoding:{}".format(str(encoding.shape)))
-    # 
-    # decoder = Decoder(d_model, h, N, p_drop)
-    # decoding = decoder(tensor_emb, task_emb)
-    # print("decoding:{}".format(str(decoding.shape)))
-    # print()
+    batch_size = 2
+    max_len = 4
+    d_model = 6
+    vocab = 8
+    h = 2
+    p_drop = 0.2
+    N = 5
+
+    tensor = torch.randint(low=1, high=vocab, size=(batch_size, max_len))
+    print("tensor:{}".format(str(tensor.shape)))
+    task = torch.randint(low=1, high=vocab, size=(batch_size,))
+    print("task:{}".format(str(task.shape)))
+    embedding = Embedding(vocab, d_model)
+    tensor_emb = embedding(tensor)
+    print("tensor_emb:{}".format(str(tensor_emb.shape)))
+    task_emb = embedding(task)
+    print("task_emb:{}".format(str(task_emb.shape)))
+
+    encoder = Encoder(d_model, h, N, p_drop)
+    encoding = encoder(tensor_emb)
+    print("encoding:{}".format(str(encoding.shape)))
+
+    decoder = Decoder(d_model, h, N, p_drop)
+    decoding = decoder(tensor_emb, task_emb)
+    print("decoding:{}".format(str(decoding.shape)))
+    print()
 
     batch_size = 2
     max_len_nodes = 2
     max_len_edges = 4
     max_len = 6
+    max_len_se = 8
     vocab_nodes = 13
     vocab_edges = 15
     vocab_theorems = 17
@@ -241,9 +272,11 @@ def test_train():
 
     nodes = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len, max_len_nodes))
     edges = torch.randint(low=1, high=vocab_edges, size=(batch_size, max_len, max_len_edges))
+    edges_structural = torch.randint(low=0, high=max_len_se, size=(batch_size, max_len, max_len_edges))
     goal = torch.randint(low=1, high=vocab_nodes, size=(batch_size, max_len_nodes))
     print("nodes:{}".format(str(nodes.shape)))
     print("edges:{}".format(str(edges.shape)))
+    print("edges_structural:{}".format(str(edges_structural.shape)))
     print("goal:{}".format(str(goal.shape)))
 
     predictor = Predictor(
@@ -255,6 +288,7 @@ def test_train():
         p_drop_nodes=p_drop,
         vocab_edges=vocab_edges,
         max_len_edges=max_len_edges,
+        max_len_se=max_len_se,
         h_edges=h,
         N_encoder_edges=N,
         N_decoder_edges=N,
@@ -267,17 +301,17 @@ def test_train():
         d_model=d_model
     )
 
-    result = predictor(nodes, edges, goal)
+    result = predictor(nodes, edges, edges_structural, goal)
     print("result:{}".format(str(result.shape)))
 
 
 if __name__ == '__main__':
-    test_env()
-
-    # random.seed(config.random_seed)
-    # torch.manual_seed(config.random_seed)
-    # torch.cuda.manual_seed_all(config.random_seed)
+    # test_env()
+    random.seed(config.random_seed)
+    torch.manual_seed(config.random_seed)
+    torch.cuda.manual_seed_all(config.random_seed)
     # test_module()
     # test_sentence_encoder()
     # test_pretrain()
     # test_train()
+    check_model_parameters()
