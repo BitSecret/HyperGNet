@@ -1,7 +1,7 @@
 import copy
 import time
 from pgps.utils import Configuration as config
-from pgps.utils import load_pickle, save_pickle
+from pgps.utils import load_pickle, save_pickle, nodes_words
 from pgps.model import make_nodes_model, make_edges_model
 from formalgeo.tools import load_json, safe_save_json
 import torch
@@ -9,6 +9,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import random
 import os
+import Levenshtein
 from tqdm import tqdm
 
 
@@ -54,10 +55,39 @@ class EdgesDataset(Dataset):
         return self.data[idx]
 
 
+def evaluate(output_seqs_list):
+    score_count = 0
+    num_count = 0
+    for seqs, seqs_gt in output_seqs_list:  # trans to srt
+        for i in range(seqs.size(0)):
+            seqs_cleand = []
+            for j in range(len(seqs[i])):
+                if seqs[i][j] == 2:  # <end>
+                    break
+                seqs_cleand.append(chr(seqs[i][j]))
+                # seqs_cleand.append(nodes_words[seqs[i][j]])
+            seqs_gt_cleand = []
+            for j in range(len(seqs_gt[i])):
+                if seqs_gt[i][j] == 2:  # <end>
+                    break
+                seqs_gt_cleand.append(chr(seqs_gt[i][j]))
+                # seqs_gt_cleand.append(nodes_words[seqs_gt[i][j]])
+
+            seqs_cleand = "".join(seqs_cleand)
+            seqs_gt_cleand = "".join(seqs_gt_cleand)
+
+            score_count += Levenshtein.ratio(seqs_cleand, seqs_gt_cleand) * len(seqs_gt_cleand)  # edition distance
+            num_count += len(seqs_gt_cleand)
+            # print(f"GT: {seqs_gt_cleand}    PD: {seqs_cleand}")
+
+    return score_count / num_count
+
+
 def train_nodes_model():
     dataset_path_train = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
     dataset_path_val = os.path.normpath(os.path.join(config.path_data, "training_data/val"))
     log_path = os.path.normpath(os.path.join(config.path_data, "log/training_log_nodes_model.json"))
+    model_save_path = os.path.normpath(os.path.join(config.path_data, "trained_model"))
     print("Loading nodes data (the first time loading may be slow)...")
     if "dataset_nodes.pk" in os.listdir(dataset_path_train):
         dataset_train = load_pickle(os.path.normpath(os.path.join(dataset_path_train, "dataset_nodes.pk")))
@@ -88,16 +118,28 @@ def train_nodes_model():
     data_loader_eval = DataLoader(dataset=dataset_eval, batch_size=config.batch_size_nodes, shuffle=False)
     print("Nodes Data loading completed.")
 
-    model = make_nodes_model()
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print("GPU is available. Using GPU.")
+    else:
+        device = torch.device("cpu")
+        print("GPU is not available. Using CPU.")
+
+    model_filename = None
+    if log["next_epoch"] > 1:
+        model_filename = os.path.normpath(os.path.join(model_save_path, f"nodes_{log['next_epoch'] - 1}.pth"))
+    model = make_nodes_model(model_filename).to(device)  # make model
+
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr_nodes)  # Adam optimizer
     loss_func = nn.CrossEntropyLoss(ignore_index=0)  # ignore padding
-    tril_mask = torch.tril(torch.ones((config.max_len_nodes, config.max_len_nodes)))
+    tril_mask = torch.tril(torch.ones((config.max_len_nodes, config.max_len_nodes))).to(device)
 
     for epoch in range(log["next_epoch"], config.epoch_nodes + 1):
         model.train()
         timing = time.time()
         loop = tqdm(enumerate(data_loader_train), total=len(data_loader_train), leave=True)  # training loop
         for step, (input_seqs, output_seqs_gt) in loop:
+            input_seqs, output_seqs_gt = input_seqs.to(device), output_seqs_gt.to(device)
             outputs = model(x_input=input_seqs, x_output=input_seqs, mask=tril_mask)  # output
             loss = loss_func(outputs.transpose(1, 2), output_seqs_gt)  # loss
             optimizer.zero_grad()  # clean grad
@@ -107,39 +149,33 @@ def train_nodes_model():
             log["train"]["loss"].append(float(loss))
             loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Training)")
             loop.set_postfix(loss=float(loss))
-            break
         log["train"]["timing"].append(time.time() - timing)
 
         model.eval()
         timing = time.time()
         output_seqs_list = []
-        output_seqs_gt_list = []
         loop = tqdm(enumerate(data_loader_eval), total=len(data_loader_eval), leave=True)  # evaluating loop
         with torch.no_grad():
             for step, (input_seqs, output_seqs_gt) in loop:
+                input_seqs = input_seqs.to(device)
                 input_encoding = model(x_input=input_seqs)
-                output_seqs = torch.zeros(size=output_seqs_gt.size(), dtype=torch.int)
-                start_vector = torch.ones(size=(output_seqs_gt.size(0), 1), dtype=torch.int)
-                for i in range(config.max_len_nodes):
+                output_seqs = torch.zeros(size=output_seqs_gt.size(), dtype=torch.int).to(device)
+                start_vector = torch.ones(size=(output_seqs_gt.size(0), 1), dtype=torch.int).to(device)
+                for i in range(config.max_len_nodes):  # iterative decoding
                     output_seqs = torch.cat([start_vector, output_seqs], dim=1)[:, :-1]
                     output_seqs = model(x_encoding=input_encoding, x_output=output_seqs, mask=tril_mask)
                     output_seqs = torch.argmax(output_seqs, dim=2).int()
 
-                output_seqs_list.append(output_seqs)
-                output_seqs_gt_list.append(output_seqs_gt)
+                output_seqs_list.append((output_seqs.cpu(), output_seqs_gt))
                 loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Evaluating)")
-                break
-        print("Calculate the predicted results...")
-        acc = evaluate_nodes_model(output_seqs_list, output_seqs_gt_list)
-        log["eval"][str(epoch)] = [acc, time.time() - timing]
 
-        # 保存模型
+        print("Calculate the predicted results...")
+        log["eval"][str(epoch)] = {"acc": evaluate(output_seqs_list), "timing": time.time() - timing}
+
+        model_filename = os.path.normpath(os.path.join(model_save_path, f"nodes_{log['next_epoch']}.pth"))
+        torch.save(model.state_dict(), model_filename)
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
-
-
-def evaluate_nodes_model(output_seqs_list, output_seqs_gt_list):
-    return 1
 
 
 def train_edges_model():
@@ -168,10 +204,6 @@ def train_edges_model():
         return
 
 
-def evaluate_edges_model(model, data_loader):
-    pass
-
-
 if __name__ == '__main__':
     """
     Loading nodes data (the first time loading may be slow)...
@@ -192,5 +224,5 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(config.random_seed)
 
     train_nodes_model()
-    print()
+    # print()
     # train_edges_model()

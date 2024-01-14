@@ -254,4 +254,5 @@ def project_init():
 
 
 if __name__ == '__main__':
-    project_init()
+    # project_init()
+    show_word_list()

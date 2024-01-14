@@ -303,21 +303,24 @@ class Predictor(nn.Module):
         return output
 
 
-def make_nodes_model():
+def make_nodes_model(model_filename=None):
     model = Nodes2Vector(
         vocab=config.vocab_nodes,
-        d_model=config.d_model // 2,
+        d_model=config.d_model,
         max_len=config.max_len_nodes,
         h=config.h_nodes,
         N_encoder=config.N_encoder_nodes,
         N_decoder=config.N_decoder_nodes,
         p_drop=config.p_drop_nodes
     )
-    model.apply(init_weights)
+    if model_filename is None:
+        model.apply(init_weights)
+    else:
+        model.load_state_dict(torch.load(model_filename))
     return model
 
 
-def make_edges_model():
+def make_edges_model(model_filename=None):
     model = Edges2Vector(
         vocab=config.vocab_edges,
         d_model=config.d_model,
@@ -329,10 +332,14 @@ def make_edges_model():
         p_drop=config.p_drop_nodes
     )
     model.apply(init_weights)
+    if model_filename is None:
+        model.apply(init_weights)
+    else:
+        model.load_state_dict(torch.load(model_filename))
     return model
 
 
-def make_predictor_model():
+def make_predictor_model(model_filename=None):
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
         max_len_nodes=config.max_len_nodes,
@@ -354,7 +361,10 @@ def make_predictor_model():
         p_drop=config.p_drop,
         d_model=config.d_model
     )
-    model.apply(init_weights)
+    if model_filename is None:
+        model.apply(init_weights)
+    else:
+        model.load_state_dict(torch.load(model_filename))
     return model
 
 
