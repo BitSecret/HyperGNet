@@ -13,20 +13,17 @@ class PGPSDataset(Dataset):
         for one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, theorems_index in raw_data:
             for node in one_hot_nodes:
                 node.insert(0, 1)  # <start>
-                node.append(2)  # <end>
                 node.extend([0] * (config.max_len_nodes - len(node)))  # padding
 
             for edge in one_hot_edges:
                 edge.insert(0, 1)  # <start>
-                edge.append(2)  # <end>
                 edge.extend([0] * (config.max_len_edges - len(edge)))  # padding
 
             for item in edges_structural:
-                item.insert(0, 0)
+                item.insert(0, 0)    # position 0 in edges is <start>, so padding
                 item.extend([0] * (config.max_len_edges - len(item)))  # padding
 
             one_hot_goal.insert(0, 1)  # <start>
-            one_hot_goal.append(2)  # <end>
             one_hot_goal.extend([0] * (config.max_len_nodes - len(one_hot_goal)))  # padding
 
             theorems = [0] * config.vocab_theorems
@@ -64,7 +61,7 @@ def train():
     data_loader = DataLoader(
         dataset=dataset,
         batch_size=config.batch_size,
-        shuffle=False
+        shuffle=True
     )
     print("Data loading completed.")
 

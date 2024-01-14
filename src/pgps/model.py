@@ -94,24 +94,29 @@ class Nodes2Vector(nn.Module):
         self.decoder = SentenceDecoder(d_model, h, N_decoder, p_drop)
         self.linear = nn.Linear(d_model, vocab)
 
-    def forward(self, x, use_encoding=False, mask=None):
+    def forward(self, x_input=None, x_encoding=None, x_output=None, mask=None):
         """
-        :param x: torch.Size([batch_size, max_len])
-        :param use_encoding: set True when use model, set False when train and test model.
-        :param mask: torch.Size([max_len, max_len]), only useful when use_encoding=False.
+        Training mode: x_input=x, x_encoding=None, x_output=x, mask=tril_mask
+        Evaluating mode: x_input=None, x_encoding=x_encoding, x_output=output, mask=tril_mask
+        Using mode: x_input=x, x_encoding=None, x_output=None, mask=None
+        :param x_input: torch.Size([batch_size, max_len])
+        :param x_encoding: torch.Size([batch_size, max_len, d_model])
+        :param x_output: torch.Size([batch_size, max_len])
+        :param mask: torch.Size([max_len, max_len])
         :return x_encoding: torch.Size([batch_size, 1, d_model])
-        :return output: torch.Size([batch_size, max_len, d_model])
+        :return output: torch.Size([batch_size, max_len, vocab])
         """
-        x_embedding = self.pe(self.embedding(x))
-
-        x_encoding = self.encoder(x_embedding)
-        if use_encoding:
-            return x_encoding
-
-        x_decoding = self.decoder(x_encoding, x_embedding, mask)
-        output = F.softmax(self.linear(x_decoding), dim=-1)
-
-        return output
+        if x_input is None:  # evaluating mode
+            output_embedding = self.pe(self.embedding(x_output))
+            x_decoding = self.decoder(x_encoding, output_embedding, mask)
+            return F.softmax(self.linear(x_decoding), dim=-1)
+        elif x_output is None:  # using mode
+            return self.encoder(self.pe(self.embedding(x_input)))
+        else:  # training mode
+            x_embedding = self.pe(self.embedding(x_input))
+            x_encoding = self.encoder(x_embedding)
+            x_decoding = self.decoder(x_encoding, x_embedding, mask)
+            return F.softmax(self.linear(x_decoding), dim=-1)
 
 
 class Edges2Vector(nn.Module):
@@ -137,27 +142,35 @@ class Edges2Vector(nn.Module):
         self.decoder = SentenceDecoder(d_model, h, N_decoder, p_drop)
         self.linear = nn.Linear(d_model, vocab)
 
-    def forward(self, x, x_structural=None, use_encoding=False, mask=None):
+    def forward(self, x_input=None, x_structural=None, x_encoding=None, x_output=None, mask=None):
         """
-        :param x: torch.Size([batch_size, max_len])
+        Training mode: x_input=x, x_encoding=None, x_output=x, mask=tril_mask
+        Evaluating mode: x_input=None, x_encoding=x_encoding, x_output=output, mask=tril_mask
+        Using mode: x_input=x, x_encoding=None, x_output=None, mask=None
+        :param x_input: torch.Size([batch_size, max_len])
         :param x_structural: torch.Size([batch_size, max_len])
-        :param use_encoding: set True when use model, set False when train and test model.
-        :param mask: torch.Size([max_len, max_len]), only useful when use_encoding=False.
+        :param x_encoding: torch.Size([batch_size, max_len, d_model])
+        :param x_output: torch.Size([batch_size, max_len])
+        :param mask: torch.Size([max_len, max_len])
         :return x_encoding: torch.Size([batch_size, 1, d_model])
-        :return output: torch.Size([batch_size, max_len, d_model])
+        :return output: torch.Size([batch_size, max_len, vocab])
         """
-        x_embedding = self.pe(self.embedding(x))
-        if x_structural is not None:
-            x_embedding = self.se(x_embedding, x_structural)
-
-        x_encoding = self.encoder(x_embedding)
-        if use_encoding:
-            return x_encoding
-
-        x_decoding = self.decoder(x_encoding, x_embedding, mask)
-        output = F.softmax(self.linear(x_decoding), dim=-1)
-
-        return output
+        if x_input is None:  # evaluating mode
+            output_embedding = self.pe(self.embedding(x_output))
+            x_decoding = self.decoder(x_encoding, output_embedding, mask)
+            return F.softmax(self.linear(x_decoding), dim=-1)
+        elif x_output is None:  # using mode
+            x_embedding = self.pe(self.embedding(x_input))
+            if x_structural is not None:
+                x_embedding = self.se(x_embedding, x_structural)
+            return self.encoder(x_embedding)
+        else:  # training mode
+            x_embedding = self.pe(self.embedding(x_input))
+            if x_structural is not None:
+                x_embedding = self.se(x_embedding, x_structural)
+            x_encoding = self.encoder(x_embedding)
+            x_decoding = self.decoder(x_encoding, x_embedding, mask)
+            return F.softmax(self.linear(x_decoding), dim=-1)
 
 
 class Encoder(nn.Module):
@@ -260,25 +273,22 @@ class Predictor(nn.Module):
         :param edges: torch.Size([batch_size, max_len, max_len_edges])
         :param edges_structural: torch.Size([batch_size, max_len, max_len_edges])
         :param goal: torch.Size([batch_size, max_len_nodes])
-        :return result: torch.Size([batch_size, theorem_vocab])
+        :return result: torch.Size([batch_size, vocab])
         """
         # [batch_size, max_len, d_model]
         hypertree_encoding = self.encoder(
             self.nodes_emb(
-                x=nodes.view(-1, self.max_len_nodes),
-                use_encoding=True
+                x_input=nodes.view(-1, self.max_len_nodes)
             ).view(-1, self.max_len, self.d_model) +
             self.edges_emb(
-                x=edges.view(-1, self.max_len_edges),
-                x_structural=edges_structural.view(-1, self.max_len_edges),
-                use_encoding=True
+                x_input=edges.view(-1, self.max_len_edges),
+                x_structural=edges_structural.view(-1, self.max_len_edges)
             ).view(-1, self.max_len, self.d_model)
         )
 
         # [batch_size, d_model]
         goal_embedding = self.nodes_emb(
-            x=goal.view(-1, self.max_len_nodes),
-            use_encoding=True
+            x_input=goal.view(-1, self.max_len_nodes)
         ).view(-1, self.d_model)
 
         # [batch_size, d_model]

@@ -471,24 +471,24 @@ def make_onehot():
                     edges_structural.pop(idx)
             one_hot_nodes = []
             for node in nodes:
-                if len(node) > config.max_len_nodes - 2:  # truncation
-                    node = node[:config.max_len_nodes - 2]
+                if len(node) > config.max_len_nodes - 1:  # truncation
+                    node = node[:config.max_len_nodes - 1]
                 node = [nodes_words.index(n) for n in node]
                 one_hot_nodes.append(node)
 
             one_hot_edges = []
             for edge in edges:
-                if len(edge) > config.max_len_edges - 2:  # truncation
-                    edge = edge[:config.max_len_edges - 2]
+                if len(edge) > config.max_len_edges - 1:  # truncation
+                    edge = edge[:config.max_len_edges - 1]
                 edge = [edges_words.index(n) for n in edge]
                 one_hot_edges.append(edge)
 
             for i in range(len(edges_structural)):
-                if len(edges_structural[i]) > config.max_len_edges - 2:  # truncation
-                    edges_structural[i] = edges_structural[i][:config.max_len_edges - 2]
+                if len(edges_structural[i]) > config.max_len_edges - 1:  # truncation
+                    edges_structural[i] = edges_structural[i][:config.max_len_edges - 1]
 
-            if len(goal) > config.max_len_nodes - 2:  # truncation
-                goal = goal[:config.max_len_nodes - 2]
+            if len(goal) > config.max_len_nodes - 1:  # truncation
+                goal = goal[:config.max_len_nodes - 1]
             one_hot_goal = [nodes_words.index(g) for g in goal]
 
             theorems_index = [theorem_words.index(theorem) for theorem in theorems]
