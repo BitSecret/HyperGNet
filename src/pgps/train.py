@@ -90,8 +90,4 @@ if __name__ == '__main__':
     result.shape: torch.Size([64, 251])
     """
 
-    random.seed(config.random_seed)
-    torch.manual_seed(config.random_seed)
-    torch.cuda.manual_seed_all(config.random_seed)
-
     train()

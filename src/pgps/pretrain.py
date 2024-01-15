@@ -1,4 +1,3 @@
-import copy
 import time
 from pgps.utils import Configuration as config
 from pgps.utils import load_pickle, save_pickle, nodes_words
@@ -55,30 +54,36 @@ class EdgesDataset(Dataset):
         return self.data[idx]
 
 
-def evaluate(output_seqs_list):
+def evaluate(output_seqs_list, save_filename=None):
     score_count = 0
     num_count = 0
+    results = []
     for seqs, seqs_gt in output_seqs_list:  # trans to srt
         for i in range(seqs.size(0)):
             seqs_cleand = []
             for j in range(len(seqs[i])):
                 if seqs[i][j] == 2:  # <end>
                     break
-                seqs_cleand.append(chr(seqs[i][j]))
-                # seqs_cleand.append(nodes_words[seqs[i][j]])
+                # seqs_cleand.append(chr(seqs[i][j]))
+                seqs_cleand.append(nodes_words[seqs[i][j]])
             seqs_gt_cleand = []
             for j in range(len(seqs_gt[i])):
                 if seqs_gt[i][j] == 2:  # <end>
                     break
-                seqs_gt_cleand.append(chr(seqs_gt[i][j]))
-                # seqs_gt_cleand.append(nodes_words[seqs_gt[i][j]])
+                # seqs_gt_cleand.append(chr(seqs_gt[i][j]))
+                seqs_gt_cleand.append(nodes_words[seqs_gt[i][j]])
 
             seqs_cleand = "".join(seqs_cleand)
             seqs_gt_cleand = "".join(seqs_gt_cleand)
 
             score_count += Levenshtein.ratio(seqs_cleand, seqs_gt_cleand) * len(seqs_gt_cleand)  # edition distance
             num_count += len(seqs_gt_cleand)
-            # print(f"GT: {seqs_gt_cleand}    PD: {seqs_cleand}")
+            results.append(f"GT: {seqs_gt_cleand}\tPD: {seqs_cleand}")
+
+    if save_filename is not None:
+        with open(save_filename, 'w', encoding='utf-8') as file:
+            for line in results:
+                file.write(line + '\n')
 
     return score_count / num_count
 
@@ -170,7 +175,8 @@ def train_nodes_model():
                 loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Evaluating)")
 
         print("Calculate the predicted results...")
-        log["eval"][str(epoch)] = {"acc": evaluate(output_seqs_list), "timing": time.time() - timing}
+        save_filename = os.path.normpath(os.path.join(config.path_data, f"log/eval_detail/nodes_{epoch}.text"))
+        log["eval"][str(epoch)] = {"acc": evaluate(output_seqs_list, save_filename), "timing": time.time() - timing}
 
         model_filename = os.path.normpath(os.path.join(model_save_path, f"nodes_{log['next_epoch']}.pth"))
         torch.save(model.state_dict(), model_filename)
@@ -196,9 +202,9 @@ def train_edges_model():
 
     model = make_edges_model()
 
-    for input_seqs, output_seqs in data_loader:
+    for input_seqs, output_seqs_gt in data_loader:
         print("input_seqs.shape: {}".format(input_seqs.shape))
-        print("output_seqs.shape: {}".format(output_seqs.shape))
+        print("output_seqs_gt.shape: {}".format(output_seqs_gt.shape))
         result = model(input_seqs)
         print("result.shape: {}".format(result.shape))
         return
@@ -218,10 +224,6 @@ if __name__ == '__main__':
     output_seqs.shape: torch.Size([64, 16])
     result.shape: torch.Size([64, 16, 257])
     """
-
-    random.seed(config.random_seed)
-    torch.manual_seed(config.random_seed)
-    torch.cuda.manual_seed_all(config.random_seed)
 
     train_nodes_model()
     # print()

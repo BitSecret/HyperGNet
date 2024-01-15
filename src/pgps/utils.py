@@ -178,8 +178,8 @@ class Configuration:
     vocab_nodes = len(nodes_words)
     max_len_nodes = 22
     h_nodes = 8
-    N_encoder_nodes = 3
-    N_decoder_nodes = 3
+    N_encoder_nodes = 4
+    N_decoder_nodes = 4
     p_drop_nodes = 0.5
 
     # pretrain - edges
@@ -191,8 +191,8 @@ class Configuration:
     max_len_edges = 16
     max_len_edges_se = 1070
     h_edges = 8
-    N_encoder_edges = 3
-    N_decoder_edges = 3
+    N_encoder_edges = 4
+    N_decoder_edges = 4
     p_drop_edges = 0.5
 
     # train
@@ -239,7 +239,9 @@ def project_init():
 
     filepaths = [  # create_archi
         os.path.normpath(os.path.join(Configuration.path_data, "log/words_len")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/tensorboard")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/example_data")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/raw"))

@@ -1,8 +1,6 @@
 from pgps.module import *
-from pgps.utils import Configuration as config
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class SentenceEncoder(nn.Module):
@@ -109,14 +107,14 @@ class Nodes2Vector(nn.Module):
         if x_input is None:  # evaluating mode
             output_embedding = self.pe(self.embedding(x_output))
             x_decoding = self.decoder(x_encoding, output_embedding, mask)
-            return F.softmax(self.linear(x_decoding), dim=-1)
+            return self.linear(x_decoding)
         elif x_output is None:  # using mode
             return self.encoder(self.pe(self.embedding(x_input)))
         else:  # training mode
             x_embedding = self.pe(self.embedding(x_input))
             x_encoding = self.encoder(x_embedding)
             x_decoding = self.decoder(x_encoding, x_embedding, mask)
-            return F.softmax(self.linear(x_decoding), dim=-1)
+            return self.linear(x_decoding)
 
 
 class Edges2Vector(nn.Module):
@@ -158,7 +156,7 @@ class Edges2Vector(nn.Module):
         if x_input is None:  # evaluating mode
             output_embedding = self.pe(self.embedding(x_output))
             x_decoding = self.decoder(x_encoding, output_embedding, mask)
-            return F.softmax(self.linear(x_decoding), dim=-1)
+            return self.linear(x_decoding)
         elif x_output is None:  # using mode
             x_embedding = self.pe(self.embedding(x_input))
             if x_structural is not None:
@@ -170,7 +168,7 @@ class Edges2Vector(nn.Module):
                 x_embedding = self.se(x_embedding, x_structural)
             x_encoding = self.encoder(x_embedding)
             x_decoding = self.decoder(x_encoding, x_embedding, mask)
-            return F.softmax(self.linear(x_decoding), dim=-1)
+            return self.linear(x_decoding)
 
 
 class Encoder(nn.Module):
@@ -297,10 +295,7 @@ class Predictor(nn.Module):
             task=goal_embedding
         )
 
-        # [batch_size, theorem_vocab]
-        output = F.softmax(self.linear(decoding), dim=-1)  # 好像不需要softmax
-
-        return output
+        return self.linear(decoding)  # [batch_size, theorem_vocab]
 
 
 def make_nodes_model(model_filename=None):

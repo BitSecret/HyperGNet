@@ -1,7 +1,13 @@
+import random
 import torch
 import torch.nn as nn
 import torch.nn.init as init
 import torch.nn.functional as F
+from pgps.utils import Configuration as config
+
+random.seed(config.random_seed)
+torch.manual_seed(config.random_seed)
+torch.cuda.manual_seed_all(config.random_seed)
 
 
 class Embedding(nn.Module):
