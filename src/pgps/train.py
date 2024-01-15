@@ -1,7 +1,6 @@
 from pgps.utils import Configuration as config
 from pgps.utils import load_pickle, save_pickle
 from pgps.model import make_predictor_model
-import random
 import os
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -20,7 +19,7 @@ class PGPSDataset(Dataset):
                 edge.extend([0] * (config.max_len_edges - len(edge)))  # padding
 
             for item in edges_structural:
-                item.insert(0, 0)    # position 0 in edges is <start>, so padding
+                item.insert(0, 0)  # position 0 in edges is <start>, so padding
                 item.extend([0] * (config.max_len_edges - len(item)))  # padding
 
             one_hot_goal.insert(0, 1)  # <start>
@@ -49,33 +48,33 @@ class PGPSDataset(Dataset):
         return self.data[idx][0], self.data[idx][1], self.data[idx][2], self.data[idx][3], self.data[idx][4]
 
 
-def train():
-    dataset_path = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
-    print("Loading training data (the first time loading may be slow)...")
-    if "dataset_pgps.pk" in os.listdir(dataset_path):
-        dataset = load_pickle(os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
-    else:
-        dataset = PGPSDataset(load_pickle(os.path.normpath(os.path.join(dataset_path, "one-hot.pk"))))
-        save_pickle(dataset, os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
-
-    data_loader = DataLoader(
-        dataset=dataset,
-        batch_size=config.batch_size,
-        shuffle=True
-    )
-    print("Data loading completed.")
-
-    model = make_predictor_model()
-
-    for nodes, edges, edges_structural, goal, theorems in data_loader:
-        print("nodes.shape: {}".format(nodes.shape))
-        print("edges.shape: {}".format(edges.shape))
-        print("edges_structural.shape: {}".format(edges_structural.shape))
-        print("goal.shape: {}".format(goal.shape))
-        print("theorems.shape: {}".format(theorems.shape))
-        result = model(nodes, edges, edges_structural, goal)
-        print("result.shape: {}".format(result.shape))
-        return
+# def train():
+#     dataset_path = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
+#     print("Loading training data (the first time loading may be slow)...")
+#     if "dataset_pgps.pk" in os.listdir(dataset_path):
+#         dataset = load_pickle(os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
+#     else:
+#         dataset = PGPSDataset(load_pickle(os.path.normpath(os.path.join(dataset_path, "one-hot.pk"))))
+#         save_pickle(dataset, os.path.normpath(os.path.join(dataset_path, "dataset_pgps.pk")))
+#
+#     data_loader = DataLoader(
+#         dataset=dataset,
+#         batch_size=config.batch_size,
+#         shuffle=True
+#     )
+#     print("Data loading completed.")
+#
+#     model = make_predictor_model()
+#
+#     for nodes, edges, edges_structural, goal, theorems in data_loader:
+#         print("nodes.shape: {}".format(nodes.shape))
+#         print("edges.shape: {}".format(edges.shape))
+#         print("edges_structural.shape: {}".format(edges_structural.shape))
+#         print("goal.shape: {}".format(goal.shape))
+#         print("theorems.shape: {}".format(theorems.shape))
+#         result = model(nodes, edges, edges_structural, goal)
+#         print("result.shape: {}".format(result.shape))
+#         return
 
 
 if __name__ == '__main__':
@@ -90,4 +89,5 @@ if __name__ == '__main__':
     result.shape: torch.Size([64, 251])
     """
 
-    train()
+    # train()
+    pass

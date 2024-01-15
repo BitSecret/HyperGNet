@@ -173,7 +173,7 @@ class Configuration:
     # pretrain - nodes
     batch_size_nodes = 64
     epoch_nodes = 10
-    lr_nodes = 0.001
+    lr_nodes = 1e-5
 
     vocab_nodes = len(nodes_words)
     max_len_nodes = 22
@@ -185,7 +185,7 @@ class Configuration:
     # pretrain - edges
     batch_size_edges = 64
     epoch_edges = 10
-    lr_edges = 0.001
+    lr_edges = 1e-5
 
     vocab_edges = len(edges_words)
     max_len_edges = 16
@@ -198,7 +198,7 @@ class Configuration:
     # train
     batch_size = 64
     epoch = 10
-    lr = 0.001
+    lr = 1e-5
 
     vocab_theorems = len(theorem_words)
     max_len = 64
@@ -238,8 +238,10 @@ def project_init():
         download_dataset("formalgeo-imo_v1", "./datasets")
 
     filepaths = [  # create_archi
-        os.path.normpath(os.path.join(Configuration.path_data, "log/words_len")),
-        os.path.normpath(os.path.join(Configuration.path_data, "log/tensorboard")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/words_length")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/nodes_pretrain")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/edges_pretrain")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/example_data")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
@@ -256,5 +258,4 @@ def project_init():
 
 
 if __name__ == '__main__':
-    # project_init()
-    show_word_list()
+    project_init()

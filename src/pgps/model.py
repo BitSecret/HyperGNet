@@ -1,4 +1,5 @@
 from pgps.module import *
+from pgps.utils import load_pickle
 import torch
 import torch.nn as nn
 
@@ -311,7 +312,7 @@ def make_nodes_model(model_filename=None):
     if model_filename is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(torch.load(model_filename))
+        model.load_state_dict(load_pickle(model_filename))
     return model
 
 
@@ -330,7 +331,7 @@ def make_edges_model(model_filename=None):
     if model_filename is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(torch.load(model_filename))
+        model.load_state_dict(load_pickle(model_filename))
     return model
 
 
@@ -359,7 +360,7 @@ def make_predictor_model(model_filename=None):
     if model_filename is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(torch.load(model_filename))
+        model.load_state_dict(load_pickle(model_filename))
     return model
 
 

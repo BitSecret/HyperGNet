@@ -1,12 +1,11 @@
 import time
 from pgps.utils import Configuration as config
-from pgps.utils import load_pickle, save_pickle, nodes_words
+from pgps.utils import load_pickle, save_pickle, nodes_words, edges_words
 from pgps.model import make_nodes_model, make_edges_model
 from formalgeo.tools import load_json, safe_save_json
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-import random
 import os
 import Levenshtein
 from tqdm import tqdm
@@ -54,73 +53,91 @@ class EdgesDataset(Dataset):
         return self.data[idx]
 
 
-def evaluate(output_seqs_list, save_filename=None):
-    score_count = 0
-    num_count = 0
+def evaluate(output_seqs_list, eval_nodes=True, save_filename=None):
+    """
+    Evaluate pretrain and save evaluation results.
+    :param output_seqs_list: list of (seqs, seqs_gt), seqs/seqs_gt: torch.Size([batch_size, max_len]).
+    :param eval_nodes: Pretrain nodes or edges.
+    :param save_filename: File that saving evaluation results.
+    :return acc: Weighted Levenshtein ratio.
+    """
+    acc_count = 0  # edition distance
+    num_count = 0  # sequence length
     results = []
     for seqs, seqs_gt in output_seqs_list:  # trans to srt
         for i in range(seqs.size(0)):
-            seqs_cleand = []
+            seqs_unicode = []  # for compute Levenshtein ratio
+            seqs_sematic = []  # for human check
             for j in range(len(seqs[i])):
                 if seqs[i][j] == 2:  # <end>
                     break
-                # seqs_cleand.append(chr(seqs[i][j]))
-                seqs_cleand.append(nodes_words[seqs[i][j]])
-            seqs_gt_cleand = []
+                seqs_unicode.append(chr(seqs[i][j]))
+                if eval_nodes:
+                    seqs_sematic.append(nodes_words[seqs[i][j]])
+                else:
+                    seqs_sematic.append(edges_words[seqs[i][j]])
+
+            seqs_gt_unicode = []  # for compute Levenshtein ratio
+            seqs_gt_sematic = []  # for human check
             for j in range(len(seqs_gt[i])):
                 if seqs_gt[i][j] == 2:  # <end>
                     break
-                # seqs_gt_cleand.append(chr(seqs_gt[i][j]))
-                seqs_gt_cleand.append(nodes_words[seqs_gt[i][j]])
+                seqs_gt_unicode.append(chr(seqs_gt[i][j]))
+                if eval_nodes:
+                    seqs_gt_sematic.append(nodes_words[seqs_gt[i][j]])
+                else:
+                    seqs_gt_sematic.append(edges_words[seqs_gt[i][j]])
 
-            seqs_cleand = "".join(seqs_cleand)
-            seqs_gt_cleand = "".join(seqs_gt_cleand)
+            acc_count += Levenshtein.ratio("".join(seqs_unicode), "".join(seqs_gt_unicode)) * len(seqs_gt_unicode)
+            num_count += len(seqs_gt_unicode)
 
-            score_count += Levenshtein.ratio(seqs_cleand, seqs_gt_cleand) * len(seqs_gt_cleand)  # edition distance
-            num_count += len(seqs_gt_cleand)
-            results.append(f"GT: {seqs_gt_cleand}\tPD: {seqs_cleand}")
+            seqs_sematic.insert(1, "(")
+            seqs_sematic.append(")")
+            seqs_gt_sematic.insert(1, "(")
+            seqs_gt_sematic.append(")")
+            results.append(f"GT: {''.join(seqs_gt_sematic)}\tPD: {''.join(seqs_sematic)}")
 
     if save_filename is not None:
         with open(save_filename, 'w', encoding='utf-8') as file:
             for line in results:
                 file.write(line + '\n')
 
-    return score_count / num_count
+    return acc_count / num_count
 
 
 def train_nodes_model():
-    dataset_path_train = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
-    dataset_path_val = os.path.normpath(os.path.join(config.path_data, "training_data/val"))
-    log_path = os.path.normpath(os.path.join(config.path_data, "log/training_log_nodes_model.json"))
-    model_save_path = os.path.normpath(os.path.join(config.path_data, "trained_model"))
-    print("Loading nodes data (the first time loading may be slow)...")
-    if "dataset_nodes.pk" in os.listdir(dataset_path_train):
-        dataset_train = load_pickle(os.path.normpath(os.path.join(dataset_path_train, "dataset_nodes.pk")))
-    else:
-        dataset_train = NodesDataset(load_pickle(os.path.normpath(os.path.join(dataset_path_train, "one-hot.pk"))))
-        save_pickle(dataset_train, os.path.normpath(os.path.join(dataset_path_train, "dataset_nodes.pk")))
+    onehot_train_path = os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot.pk"))
+    dataset_train_path = os.path.normpath(os.path.join(config.path_data, "training_data/train/dataset_nodes.pk"))
+    onehot_val_path = os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot.pk"))
+    dataset_val_path = os.path.normpath(os.path.join(config.path_data, "training_data/val/dataset_nodes.pk"))
+    log_path = os.path.normpath(os.path.join(config.path_data, "log/nodes_pretrain_log.json"))
+    loss_save_path = os.path.normpath(os.path.join(config.path_data, "log/nodes_pretrain/{}_loss.pk"))
+    text_save_path = os.path.normpath(os.path.join(config.path_data, "log/nodes_pretrain/{}_eval.text"))
+    model_save_path = os.path.normpath(os.path.join(config.path_data, "trained_model/nodes_pretrain_{}.pth"))
 
-    if "dataset_nodes.pk" in os.listdir(dataset_path_val):
-        dataset_eval = load_pickle(os.path.normpath(os.path.join(dataset_path_val, "dataset_nodes.pk")))
+    print("Loading nodes data (the first time loading may be slow)...")
+    if os.path.exists(dataset_train_path):
+        dataset_train = load_pickle(dataset_train_path)
     else:
-        dataset_eval = NodesDataset(load_pickle(os.path.normpath(os.path.join(dataset_path_val, "one-hot.pk"))))
-        save_pickle(dataset_eval, os.path.normpath(os.path.join(dataset_path_val, "dataset_nodes.pk")))
+        dataset_train = NodesDataset(load_pickle(onehot_train_path))
+        save_pickle(dataset_train, dataset_train_path)
+    if os.path.exists(dataset_val_path):
+        dataset_val = load_pickle(dataset_val_path)
+    else:
+        dataset_val = NodesDataset(load_pickle(onehot_val_path))
+        save_pickle(dataset_val, dataset_val_path)
     log = {
         "batch_size": config.batch_size_nodes,
         "lr": config.lr_nodes,
         "max_epoch": config.epoch_nodes,
         "next_epoch": 1,
-        "train": {
-            "step": [],
-            "loss": [],
-            "timing": []
-        },
+        "train": {},  # epoch: {"avg_loss": 1, "timing": 1}
         "eval": {}  # epoch: {"acc": 1, "timing": 1}
     }
     if os.path.exists(log_path):
         log = load_json(log_path)
     data_loader_train = DataLoader(dataset=dataset_train, batch_size=config.batch_size_nodes, shuffle=True)
-    data_loader_eval = DataLoader(dataset=dataset_eval, batch_size=config.batch_size_nodes, shuffle=False)
+    data_loader_eval = DataLoader(dataset=dataset_val, batch_size=config.batch_size_nodes, shuffle=False)
     print("Nodes Data loading completed.")
 
     if torch.cuda.is_available():
@@ -130,16 +147,18 @@ def train_nodes_model():
         device = torch.device("cpu")
         print("GPU is not available. Using CPU.")
 
-    model_filename = None
     if log["next_epoch"] > 1:
-        model_filename = os.path.normpath(os.path.join(model_save_path, f"nodes_{log['next_epoch'] - 1}.pth"))
-    model = make_nodes_model(model_filename).to(device)  # make model
+        model = make_nodes_model(model_save_path.format(log['next_epoch'] - 1)).to(device)  # load model
+    else:
+        model = make_nodes_model().to(device)  # make new model
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr_nodes)  # Adam optimizer
     loss_func = nn.CrossEntropyLoss(ignore_index=0)  # ignore padding
     tril_mask = torch.tril(torch.ones((config.max_len_nodes, config.max_len_nodes))).to(device)
 
     for epoch in range(log["next_epoch"], config.epoch_nodes + 1):
+        step_list = []
+        loss_list = []
         model.train()
         timing = time.time()
         loop = tqdm(enumerate(data_loader_train), total=len(data_loader_train), leave=True)  # training loop
@@ -150,11 +169,17 @@ def train_nodes_model():
             optimizer.zero_grad()  # clean grad
             loss.backward()  # backward
             optimizer.step()  # optimize para
-            log["train"]["step"].append((epoch - 1) * len(loop) + step)
-            log["train"]["loss"].append(float(loss))
+
+            step_list.append((epoch - 1) * len(loop) + step)
+            loss_list.append(float(loss))
             loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Training)")
             loop.set_postfix(loss=float(loss))
-        log["train"]["timing"].append(time.time() - timing)
+
+        save_pickle((step_list, loss_list), loss_save_path.format(epoch))
+        log["train"][str(epoch)] = {
+            "avg_loss": sum(loss_list) / len(loss_list),
+            "timing": time.time() - timing
+        }
 
         model.eval()
         timing = time.time()
@@ -175,39 +200,41 @@ def train_nodes_model():
                 loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Evaluating)")
 
         print("Calculate the predicted results...")
-        save_filename = os.path.normpath(os.path.join(config.path_data, f"log/eval_detail/nodes_{epoch}.text"))
-        log["eval"][str(epoch)] = {"acc": evaluate(output_seqs_list, save_filename), "timing": time.time() - timing}
 
-        model_filename = os.path.normpath(os.path.join(model_save_path, f"nodes_{log['next_epoch']}.pth"))
-        torch.save(model.state_dict(), model_filename)
+        log["eval"][str(epoch)] = {
+            "acc": evaluate(output_seqs_list, eval_nodes=True, save_filename=text_save_path.format(epoch)),
+            "timing": time.time() - timing
+        }
+
+        save_pickle(model.state_dict(), model_save_path.format(epoch))
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
 
 
-def train_edges_model():
-    dataset_path = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
-    print("Loading edges data (the first time loading may be slow)...")
-    if "dataset_edges.pk" in os.listdir(dataset_path):
-        dataset = load_pickle(os.path.normpath(os.path.join(dataset_path, "dataset_edges.pk")))
-    else:
-        dataset = EdgesDataset(load_pickle(os.path.normpath(os.path.join(dataset_path, "one-hot.pk"))))
-        save_pickle(dataset, os.path.normpath(os.path.join(dataset_path, "dataset_edges.pk")))
-
-    data_loader = DataLoader(
-        dataset=dataset,
-        batch_size=config.batch_size_edges,
-        shuffle=True
-    )
-    print("Edges Data loading completed.")
-
-    model = make_edges_model()
-
-    for input_seqs, output_seqs_gt in data_loader:
-        print("input_seqs.shape: {}".format(input_seqs.shape))
-        print("output_seqs_gt.shape: {}".format(output_seqs_gt.shape))
-        result = model(input_seqs)
-        print("result.shape: {}".format(result.shape))
-        return
+# def train_edges_model():
+#     dataset_path = os.path.normpath(os.path.join(config.path_data, "training_data/train"))
+#     print("Loading edges data (the first time loading may be slow)...")
+#     if "dataset_edges.pk" in os.listdir(dataset_path):
+#         dataset = load_pickle(os.path.normpath(os.path.join(dataset_path, "dataset_edges.pk")))
+#     else:
+#         dataset = EdgesDataset(load_pickle(os.path.normpath(os.path.join(dataset_path, "one-hot.pk"))))
+#         save_pickle(dataset, os.path.normpath(os.path.join(dataset_path, "dataset_edges.pk")))
+#
+#     data_loader = DataLoader(
+#         dataset=dataset,
+#         batch_size=config.batch_size_edges,
+#         shuffle=True
+#     )
+#     print("Edges Data loading completed.")
+#
+#     model = make_edges_model()
+#
+#     for input_seqs, output_seqs_gt in data_loader:
+#         print("input_seqs.shape: {}".format(input_seqs.shape))
+#         print("output_seqs_gt.shape: {}".format(output_seqs_gt.shape))
+#         result = model(input_seqs)
+#         print("result.shape: {}".format(result.shape))
+#         return
 
 
 if __name__ == '__main__':

@@ -331,10 +331,10 @@ def check_log():
 
 
 def check_len():
-    nodes_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/nodes_len.pk"))
-    nodes_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/nodes_words_len.pk"))
-    edges_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/edges_words_len.pk"))
-    se_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_len/se_len.pk"))
+    nodes_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_length/nodes_len.pk"))
+    nodes_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_length/nodes_words_len.pk"))
+    edges_words_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_length/edges_words_len.pk"))
+    se_len_file = os.path.normpath(os.path.join(config.path_data, "log/words_length/se_len.pk"))
 
     if not os.path.exists(nodes_len_file):
         log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
@@ -410,7 +410,7 @@ def draw_pic(data, title, fig_size):
     y_integral = [item / y_integral[-1] for item in y_integral]
     for i in range(len(x)):
         log[i] += ", accumulate: {:.6f}%".format(y_integral[i] * 100)
-    safe_save_json(log, os.path.normpath(os.path.join(config.path_data, "log/words_len/{}.json".format(title))))
+    safe_save_json(log, os.path.normpath(os.path.join(config.path_data, "log/words_length/{}.json".format(title))))
     print("{}:".format(title))
     for i in range(len(x) - 1):
         if y_integral[i] <= 0.9:
@@ -428,7 +428,7 @@ def draw_pic(data, title, fig_size):
     plt.figure(figsize=fig_size)
     plt.plot(x, y, marker='o')
     plt.title('{} (Density)'.format(title))
-    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_len/{}_density.png".format(title))))
+    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_length/{}_density.png".format(title))))
     plt.show()
 
     plt.figure(figsize=fig_size)
@@ -444,7 +444,7 @@ def draw_pic(data, title, fig_size):
         else:
             plt.plot(x[i], y_integral[i], 'o', color="red")
     plt.title('{} (Integral)'.format(title))
-    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_len/{}_integral.png".format(title))))
+    plt.savefig(os.path.normpath(os.path.join(config.path_data, "log/words_length/{}_integral.png".format(title))))
     plt.show()
 
 
@@ -507,7 +507,8 @@ def make_onehot():
 
     onehot_log = {
         "train": {
-            "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/train/raw")))),
+            "problem_count": len(
+                os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/train/raw")))),
             "item_count": len(train_data)
         },
         "val": {
@@ -515,7 +516,8 @@ def make_onehot():
             "item_count": len(val_data)
         },
         "test": {
-            "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/test/raw")))),
+            "problem_count": len(
+                os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/test/raw")))),
             "item_count": len(test_data)
         }
     }
@@ -540,7 +542,7 @@ def make_onehot():
         test_data, os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot.pk"))
     )
 
-    safe_save_json(onehot_log, os.path.normpath(os.path.join(config.path_data, "log/onehot_log.json")))
+    safe_save_json(onehot_log, os.path.normpath(os.path.join(config.path_data, "log/make_onehot_log.json")))
     print(onehot_log)
 
 
