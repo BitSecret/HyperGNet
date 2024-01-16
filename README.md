@@ -30,23 +30,68 @@ Install Python dependencies:
 
 We provide a short code to test if the environment setup is successful:
 
-    $ cd tests
+    $ cd PGPS/tests
     $ python test.py
 
 Download datasets and initialize the project:
 
-    $ cd src/pgps
-    $ python utils.py
+    $ cd PGPS/src/pgps
+    $ python utils.py --func project_init
 
-## Run
+Enter the code path (all subsequent code will be executed in this path):
 
-Enter the code path:
+    $ cd PGPS/src/pgps
 
-    $ cd src/pgps
+## Preparing Training Data
 
-### Check Our Results
+We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the *
+*formalgeo7k_v1** dataset. Following the dataset's recommended division ratio and random seed, the dataset is split
+into `training:validation:test=3:1:1`. Each problem-solving theorem sequence can be organized into a directed acyclic
+graph (DAG). We randomly traverse this DAG and apply each step's theorem while obtaining the state information of the
+problem.  
+This process ultimately generated 20,571 training data entries (from 4,079 problems), 7,072 validation data entries (
+from 1,370 problems), and 7,046 test data entries (from 1,372 problems). Each data entry can be viewed as a
+5-tuple `(nodes, edges, edges_structural, goal, theorems)`.   
+These data are saved in `231121/training_data`. View the generated data (problem 1):
 
-### Run Your Own
+    $ python symbolic_system.py --func show_training_data
+
+View the statistical information of the generated data:
+
+    $ python symbolic_system.py --func check
+
+This will generate message about the length distribution and visual images of the training data in
+the `231221/log/words_length` folder.  
+If you want to regenerate the training data:
+
+    $ python symbolic_system.py --func main
+
+The training data will be regenerated using multiple processes. The log files will be saved
+in `231221/log/gen_training_data_log.json`. Subsequently, the generated data need to be converted into a vector form
+suitable for neural networks input.
+
+    $ python symbolic_system.py --func make_onehot
+
+## Training
+
+Before starting the training, ensure that the training data `231121/training_data/train/one-hot.pk` has been generated.
+If not, run `python symbolic_system.py --func make_onehot` to generate the data.  
+We first pretrain the embedding networks for nodes and edges using a self-supervised method.
+
+    $ python pretrain.py --func nodes
+    $ python pretrain.py --func edges
+
+Then, train the theorem prediction network:
+
+    $ python train.py --func train --nodes_model your_best_nodes_model_name --edges_model your_best_edges_model_name
+
+Pretraining and Training log information will be saved in `231221/log`.
+
+## Testing
+
+The test results of the model will be saved in `231221/log/testing`.
+
+    $ python train.py --func test --predictor_model your_best_model_name
 
 ## Results
 

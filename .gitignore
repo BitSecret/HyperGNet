@@ -3,4 +3,3 @@ __pycache__
 PGPS.egg-info
 src/pgps/datasets
 src/pgps/231221
-src/pgps/embedding

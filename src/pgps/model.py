@@ -335,7 +335,7 @@ def make_edges_model(model_filename=None):
     return model
 
 
-def make_predictor_model(model_filename=None):
+def make_predictor_model(model_filename=None, nodes_model_state_dict=None, edges_model_state_dict=None):
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
         max_len_nodes=config.max_len_nodes,
@@ -359,6 +359,10 @@ def make_predictor_model(model_filename=None):
     )
     if model_filename is None:
         model.apply(init_weights)
+        if nodes_model_state_dict is not None:
+            model.nodes_emb.load_state_dict(nodes_model_state_dict)
+        if edges_model_state_dict is not None:
+            model.edges_emb.load_state_dict(edges_model_state_dict)
     else:
         model.load_state_dict(load_pickle(model_filename))
     return model

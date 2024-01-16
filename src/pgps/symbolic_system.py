@@ -2,7 +2,7 @@ from formalgeo.tools import get_meta_hypertree, load_json, safe_save_json
 from formalgeo.solver import Interactor
 from formalgeo.parse import parse_one_theorem
 from formalgeo.data import DatasetLoader
-from pgps.utils import load_pickle, save_pickle, random_index
+from pgps.utils import load_pickle, save_pickle, get_args
 from pgps.utils import Configuration as config
 from pgps.utils import symbol_words, nodes_words, edges_words, theorem_words
 import os
@@ -465,7 +465,7 @@ def make_onehot():
         training_data = []
         for nodes, edges, edges_structural, goal, theorems in raw_data:
             if len(nodes) > config.max_len:  # random truncation
-                for idx in random_index(len(nodes), len(nodes) - config.max_len)[::-1]:
+                for idx in sorted(random.sample(range(1, len(nodes)), len(nodes) - config.max_len))[::-1]:
                     nodes.pop(idx)
                     edges.pop(idx)
                     edges_structural.pop(idx)
@@ -547,9 +547,16 @@ def make_onehot():
 
 
 if __name__ == '__main__':
-    random.seed(config.random_seed)
-    # main()
-    # show_training_data(pid_or_training_data=47)
-    # check_log()
-    # check_len()
-    make_onehot()
+    args = get_args()
+    if args.func == "show_training_data":
+        show_training_data(pid_or_training_data=1)
+    elif args.func == "check":
+        check_log()
+        check_len()
+    elif args.func == "main":
+        main()
+    elif args.func == "make_onehot":
+        make_onehot()
+    else:
+        msg = "No function name {}.".format(args.func)
+        raise Exception(msg)

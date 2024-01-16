@@ -1,6 +1,4 @@
 from pgps.model import *
-from pgps.utils import Configuration as config
-import random
 import formalgeo
 import torch
 
@@ -303,11 +301,8 @@ def test_train():
 
 
 if __name__ == '__main__':
-    # test_env()
-    random.seed(config.random_seed)
-    torch.manual_seed(config.random_seed)
-    torch.cuda.manual_seed_all(config.random_seed)
+    test_env()
     # test_module()
     # test_sentence_encoder()
-    test_pretrain()
+    # test_pretrain()
     # test_train()

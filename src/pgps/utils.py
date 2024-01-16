@@ -4,6 +4,7 @@ import pickle
 import psutil
 import random
 from formalgeo.data import download_dataset
+import argparse
 
 predicate_words = [
     'Equation', 'Shape', 'Collinear', 'Cocircular', 'Point', 'Line', 'Arc', 'Angle', 'Polygon', 'Circle',
@@ -165,28 +166,28 @@ class Configuration:
 
     """---------random_seed---------"""
     random_seed = 619
+    torch_seed = 619
+    cuda_seed = 619
 
     """---------training data generation---------"""
     process_count = int(psutil.cpu_count() * 0.8)
 
     """---------model hyperparameter---------"""
     # pretrain - nodes
-    batch_size_nodes = 64
+    batch_size_nodes = 128
     epoch_nodes = 10
     lr_nodes = 1e-5
-
     vocab_nodes = len(nodes_words)
     max_len_nodes = 22
-    h_nodes = 8
+    h_nodes = 4
     N_encoder_nodes = 4
     N_decoder_nodes = 4
-    p_drop_nodes = 0.5
+    p_drop_nodes = 0.25
 
     # pretrain - edges
     batch_size_edges = 64
     epoch_edges = 10
     lr_edges = 1e-5
-
     vocab_edges = len(edges_words)
     max_len_edges = 16
     max_len_edges_se = 1070
@@ -199,13 +200,16 @@ class Configuration:
     batch_size = 64
     epoch = 10
     lr = 1e-5
-
     vocab_theorems = len(theorem_words)
     max_len = 64
     h = 8
     N = 6
     p_drop = 0.5
     d_model = 512
+    beam_size = 5
+
+
+random.seed(Configuration.random_seed)
 
 
 def show_word_list():
@@ -213,6 +217,26 @@ def show_word_list():
         len(nodes_words)))
     print("Input - edges (special_words + theorem_words + special_theorems): {} words.".format(len(edges_words)))
     print("Output - theorem (theorem_words): {} words.".format(len(theorem_words)))
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Welcome to use FGPS!")
+
+    parser.add_argument("--func", type=str, required=True,
+                        help="function that you want to run")
+    parser.add_argument("--path_data", type=str, required=False, default=Configuration.path_data,
+                        help="path that you want to save your data")
+    parser.add_argument("--nodes_model", type=str, required=False,
+                        help="best nodes model name in trained_model")
+    parser.add_argument("--edges_model", type=str, required=False,
+                        help="best edges model name in trained_model")
+    parser.add_argument("--predictor_model", type=str, required=False,
+                        help="best theorem prediction model name in trained_model")
+
+    parsed_args = parser.parse_args()
+    Configuration.path_data = parsed_args.path_data
+
+    return parsed_args
 
 
 def load_pickle(path):
@@ -226,11 +250,6 @@ def save_pickle(data, path):
         pickle.dump(data, f)
 
 
-def random_index(n, k):
-    """Return k random idx. 1 is set intentionally."""
-    return sorted(random.sample(range(1, n), k))
-
-
 def project_init():
     if not os.path.exists("./datasets"):  # download_datasets
         os.makedirs("./datasets")
@@ -242,6 +261,7 @@ def project_init():
         os.path.normpath(os.path.join(Configuration.path_data, "log/nodes_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/edges_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/testing")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/example_data")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
@@ -258,4 +278,11 @@ def project_init():
 
 
 if __name__ == '__main__':
-    project_init()
+    args = get_args()
+    if args.func == "project_init":
+        project_init()
+    elif args.func == "show_word_list":
+        show_word_list()
+    else:
+        msg = "No function name {}.".format(args.func)
+        raise Exception(msg)
