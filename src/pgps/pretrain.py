@@ -91,11 +91,14 @@ def evaluate(output_seqs_list, name, save_filename=None):
             acc_count += Levenshtein.ratio("".join(seqs_unicode), "".join(seqs_gt_unicode)) * len(seqs_gt_unicode)
             num_count += len(seqs_gt_unicode)
 
-            seqs_sematic.insert(1, "(")
-            seqs_sematic.append(")")
-            seqs_gt_sematic.insert(1, "(")
-            seqs_gt_sematic.append(")")
-            results.append(f"GT: {''.join(seqs_gt_sematic)}\tPD: {''.join(seqs_sematic)}")
+            if name == "nodes":
+                seqs_sematic.insert(1, "(")
+                seqs_sematic.append(")")
+                seqs_gt_sematic.insert(1, "(")
+                seqs_gt_sematic.append(")")
+                results.append(f"GT: {''.join(seqs_gt_sematic)}\tPD: {''.join(seqs_sematic)}")
+            else:
+                results.append(f"GT: {', '.join(seqs_gt_sematic)}\tPD: {', '.join(seqs_sematic)}")
 
     if save_filename is not None:
         with open(save_filename, 'w', encoding='utf-8') as file:
@@ -157,13 +160,19 @@ def pretrain(name="nodes"):
         device = torch.device("cpu")
         print("GPU is not available. Using CPU.")
 
-    model_filename = None
+    model_state = None
+    optimizer_state = None
     if log["next_epoch"] > 1:
-        model_filename = model_save_path.format(name, log['next_epoch'] - 1)
-    model = make_nodes_model(model_filename).to(device) if name == "nodes" \
-        else make_edges_model(model_filename).to(device)
+        last_epoch_msg = load_pickle(model_save_path.format(name, log['next_epoch'] - 1))
+        model_state = last_epoch_msg["model"]
+        optimizer_state = last_epoch_msg["optimizer"]
+
+    model = make_nodes_model(model_state).to(device) if name == "nodes" \
+        else make_edges_model(model_state).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # Adam optimizer
+    if optimizer_state is not None:
+        optimizer.load_state_dict(optimizer_state)
     loss_func = nn.CrossEntropyLoss(ignore_index=0)  # ignore padding
     tril_mask = torch.tril(torch.ones((config.max_len_nodes, config.max_len_nodes))).to(device) if name == "nodes" \
         else torch.tril(torch.ones((config.max_len_edges, config.max_len_edges))).to(device)
@@ -184,7 +193,7 @@ def pretrain(name="nodes"):
 
             step_list.append((epoch - 1) * len(loop) + step)
             loss_list.append(float(loss))
-            loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Pretraining)")
+            loop.set_description(f"Epoch [{epoch}/{max_epoch}] (Pretraining)")
             loop.set_postfix(loss=float(loss))
 
         save_pickle((step_list, loss_list), loss_save_path.format(name, epoch))
@@ -209,7 +218,7 @@ def pretrain(name="nodes"):
                     output_seqs = torch.argmax(output_seqs, dim=2).int()
 
                 output_seqs_list.append((output_seqs.cpu(), output_seqs_gt))
-                loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Evaluating)")
+                loop.set_description(f"Epoch [{epoch}/{max_epoch}] (Evaluating)")
 
         print("Calculate the predicted results...")
 
@@ -218,18 +227,20 @@ def pretrain(name="nodes"):
             "timing": time.time() - timing
         }
 
-        save_pickle(model.state_dict(), model_save_path.format(name, epoch))
+        save_pickle(
+            {"model": model.state_dict(), "optimizer": optimizer.state_dict()},
+            model_save_path.format(name, epoch)
+        )
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
 
 
 if __name__ == '__main__':
-    pretrain(name="nodes")
-    # args = get_args()
-    # if args.func == "nodes":
-    #     pretrain(name="nodes")
-    # elif args.func == "edges":
-    #     pretrain(name="edges")
-    # else:
-    #     msg = "No function name {}.".format(args.func)
-    #     raise Exception(msg)
+    args = get_args()
+    if args.func == "nodes":
+        pretrain(name="nodes")
+    elif args.func == "edges":
+        pretrain(name="edges")
+    else:
+        msg = "No function name {}.".format(args.func)
+        raise Exception(msg)

@@ -174,19 +174,19 @@ class Configuration:
 
     """---------model hyperparameter---------"""
     # pretrain - nodes
-    batch_size_nodes = 128
-    epoch_nodes = 10
+    batch_size_nodes = 64
+    epoch_nodes = 50
     lr_nodes = 1e-5
     vocab_nodes = len(nodes_words)
     max_len_nodes = 22
-    h_nodes = 4
+    h_nodes = 8
     N_encoder_nodes = 4
     N_decoder_nodes = 4
-    p_drop_nodes = 0.25
+    p_drop_nodes = 0.5
 
     # pretrain - edges
     batch_size_edges = 64
-    epoch_edges = 10
+    epoch_edges = 50
     lr_edges = 1e-5
     vocab_edges = len(edges_words)
     max_len_edges = 16
@@ -198,7 +198,7 @@ class Configuration:
 
     # train
     batch_size = 64
-    epoch = 10
+    epoch = 50
     lr = 1e-5
     vocab_theorems = len(theorem_words)
     max_len = 64

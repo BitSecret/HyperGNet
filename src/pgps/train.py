@@ -1,6 +1,6 @@
 from formalgeo.tools import load_json, safe_save_json
 from pgps.utils import Configuration as config
-from pgps.utils import load_pickle, save_pickle, get_args
+from pgps.utils import load_pickle, save_pickle, get_args, theorem_words
 from pgps.model import make_predictor_model
 import torch
 import torch.nn as nn
@@ -66,14 +66,14 @@ def evaluate(output_list, beam_size, save_filename=None):
     results = []
     for theorems, theorems_gt in output_list:  # trans to srt
         for i in range(len(theorems)):
-            theorems_idx = [idx for _, idx in
+            theorems_str = [theorem_words[idx] for _, idx in
                             heapq.nlargest(beam_size, [(t, idx) for idx, t in enumerate(theorems[i])])]
-            theorems_gt_idx = [idx for idx, t in enumerate(theorems_gt[i]) if t != 0]
+            theorems_gt_str = [theorem_words[idx] for idx, t in enumerate(theorems_gt[i]) if t != 0]
 
             num_count += 1
-            if len(set(theorems_idx) & set(theorems_gt_idx)) > 0:
+            if len(set(theorems_str) & set(theorems_gt_str)) > 0:
                 acc_count += 1
-            results.append(f"GT: [{', '.join(theorems_gt_idx)}]\tPD: [{', '.join(theorems_idx)}]")
+            results.append(f"GT: [{', '.join(theorems_gt_str)}]\tPD: [{', '.join(theorems_str)}]")
 
     if save_filename is not None:
         with open(save_filename, 'w', encoding='utf-8') as file:
@@ -121,24 +121,29 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
     print("Nodes loading completed.")
 
     if torch.cuda.is_available():
-        device = torch.device("cuda")
+        device = torch.device("cuda:1")
         print("GPU is available. Using GPU.")
     else:
         device = torch.device("cpu")
         print("GPU is not available. Using CPU.")
 
-    model_filename = None
+    model_state = None
+    optimizer_state = None
     if log["next_epoch"] > 1:
-        model_filename = model_save_path.format(log['next_epoch'] - 1)
-    model = make_predictor_model(model_filename, nodes_model_state_dict, edges_model_state_dict).to(device)
+        last_epoch_msg = load_pickle(model_save_path.format(log['next_epoch'] - 1))
+        model_state = last_epoch_msg["model"]
+        optimizer_state = last_epoch_msg["optimizer"]
+    model = make_predictor_model(model_state, nodes_model_state_dict, edges_model_state_dict).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)  # Adam optimizer
+    if optimizer_state is not None:
+        optimizer.load_state_dict(optimizer_state)
     loss_func = nn.BCEWithLogitsLoss()  # Binary Cross-Entropy Loss
 
     for epoch in range(log["next_epoch"], config.epoch + 1):
+        model.train()
         step_list = []
         loss_list = []
-        model.train()
         timing = time.time()
         loop = tqdm(enumerate(data_loader_train), total=len(data_loader_train), leave=True)  # training loop
         for step, (nodes, edges, edges_structural, goal, theorems_gt) in loop:
@@ -148,15 +153,16 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
             goal = goal.to(device)
             theorems_gt = theorems_gt.to(device)
             theorems = model(nodes, edges, edges_structural, goal)  # model prediction results
-            loss = loss_func(theorems, theorems_gt)  # loss
+            loss = loss_func(theorems.float(), theorems_gt.float())  # loss
             optimizer.zero_grad()  # clean grad
             loss.backward()  # backward
             optimizer.step()  # optimize param
 
             step_list.append((epoch - 1) * len(loop) + step)
             loss_list.append(float(loss))
-            loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Pretraining)")
+            loop.set_description(f"Epoch [{epoch}/{config.epoch}] (Pretraining)")
             loop.set_postfix(loss=float(loss))
+            break
 
         save_pickle((step_list, loss_list), loss_save_path.format(epoch))
         log["train"][str(epoch)] = {
@@ -177,7 +183,8 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
                 theorems = model(nodes, edges, edges_structural, goal)
 
                 output_list.append((theorems.cpu(), theorems_gt))
-                loop.set_description(f"Epoch [{epoch}/{config.epoch_nodes}] (Evaluating)")
+                loop.set_description(f"Epoch [{epoch}/{config.epoch}] (Evaluating)")
+                break
 
         print("Calculate the predicted results...")
 
@@ -186,7 +193,10 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
             "timing": time.time() - timing
         }
 
-        save_pickle(model.state_dict(), model_save_path.format(epoch))
+        save_pickle(
+            {"model": model.state_dict(), "optimizer": optimizer.state_dict()},
+            model_save_path.format(epoch)
+        )
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
 
@@ -202,11 +212,11 @@ if __name__ == '__main__':
             os.path.join(config.path_data, f"log/trained_model/{args.nodes_model}"))
         best_edges_model_path = os.path.normpath(
             os.path.join(config.path_data, f"log/trained_model/{args.edges_model}"))
-        train(load_pickle(best_nodes_model_path), load_pickle(best_edges_model_path))
+        train(load_pickle(best_nodes_model_path)["model"], load_pickle(best_edges_model_path)["model"])
     elif args.func == "test":
         best_model_path = os.path.normpath(
             os.path.join(config.path_data, f"log/trained_model/{args.predictor_model}"))
-        test(load_pickle(best_model_path))
+        test(load_pickle(best_model_path)["model"])
     else:
         msg = "No function name {}.".format(args.func)
         raise Exception(msg)

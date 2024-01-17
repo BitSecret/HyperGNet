@@ -1,5 +1,4 @@
 from pgps.module import *
-from pgps.utils import load_pickle
 import torch
 import torch.nn as nn
 
@@ -299,7 +298,7 @@ class Predictor(nn.Module):
         return self.linear(decoding)  # [batch_size, theorem_vocab]
 
 
-def make_nodes_model(model_filename=None):
+def make_nodes_model(model_state_dict=None):
     model = Nodes2Vector(
         vocab=config.vocab_nodes,
         d_model=config.d_model,
@@ -309,14 +308,14 @@ def make_nodes_model(model_filename=None):
         N_decoder=config.N_decoder_nodes,
         p_drop=config.p_drop_nodes
     )
-    if model_filename is None:
+    if model_state_dict is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(load_pickle(model_filename))
+        model.load_state_dict(model_state_dict)
     return model
 
 
-def make_edges_model(model_filename=None):
+def make_edges_model(model_state_dict=None):
     model = Edges2Vector(
         vocab=config.vocab_edges,
         d_model=config.d_model,
@@ -328,14 +327,14 @@ def make_edges_model(model_filename=None):
         p_drop=config.p_drop_nodes
     )
     model.apply(init_weights)
-    if model_filename is None:
+    if model_state_dict is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(load_pickle(model_filename))
+        model.load_state_dict(model_state_dict)
     return model
 
 
-def make_predictor_model(model_filename=None, nodes_model_state_dict=None, edges_model_state_dict=None):
+def make_predictor_model(model_state_dict=None, nodes_model_state_dict=None, edges_model_state_dict=None):
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
         max_len_nodes=config.max_len_nodes,
@@ -357,22 +356,22 @@ def make_predictor_model(model_filename=None, nodes_model_state_dict=None, edges
         p_drop=config.p_drop,
         d_model=config.d_model
     )
-    if model_filename is None:
+    if model_state_dict is None:
         model.apply(init_weights)
         if nodes_model_state_dict is not None:
             model.nodes_emb.load_state_dict(nodes_model_state_dict)
         if edges_model_state_dict is not None:
             model.edges_emb.load_state_dict(edges_model_state_dict)
     else:
-        model.load_state_dict(load_pickle(model_filename))
+        model.load_state_dict(model_state_dict)
     return model
 
 
 def check_model_parameters():
     """
-    Nodes model: 4806288 (18.33 MB)
-    Edges model: 19165441 (73.11 MB)
-    Predictor model: 76147852 (290.48 MB)
+    Nodes model: 25350288 (96.70 MB)
+    Edges model: 25466113 (97.15 MB)
+    Predictor model: 88749196 (338.55 MB)
     """
     count = sum(p.numel() for p in make_nodes_model().parameters())
     print("Nodes model: {} ({:.2f} MB)".format(count, count * 4 / 1024 / 1024))
