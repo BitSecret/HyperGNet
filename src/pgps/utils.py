@@ -259,7 +259,6 @@ def project_init():
         os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/test")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
-        os.path.normpath(os.path.join(Configuration.path_data, "training_data/example_data")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/raw"))

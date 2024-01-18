@@ -97,7 +97,7 @@ def serialize_edge(edge):
     """
     Serialize one edge and add delimiter.
     >> serialize_edge([['self'], ['a', 'b'], ['none'], ['c']])
-    >> (['self', 'a', 'b', 'c'], [0, 1, 1, 3])
+    >> (['self', 'a', 'b', 'c'], [3, 4, 4, 6])
     """
     serialized = []
     token_index = []
@@ -107,9 +107,9 @@ def serialize_edge(edge):
             continue
         for token in edge[j]:
             serialized.append(token)
-            token_index.append(j + 1)
+            token_index.append(j + 3)
 
-    return [serialized, token_index]
+    return serialized, token_index
 
 
 def tokenize_theorem(theorem):

@@ -51,18 +51,6 @@ def test_module():
     print(tensor)
     print()
 
-    s_encoding = StructuralEncoding(max_len, d_model)
-    print("s_encoding.se: {}".format(s_encoding.se.shape))
-    print(s_encoding.se)
-    print()
-    print("structural: {}".format(structural.shape))
-    print(structural)
-    print()
-    tensor = s_encoding(tensor, structural)
-    print("tensor + s_encoding.se: {}".format(tensor.shape))
-    print(tensor)
-    print()
-
     self_attention = SelfAttention(h=h, d_model=d_model)
     mask = torch.tril(torch.ones((max_len, max_len)))
     print("self_attention(tensor, mask):")

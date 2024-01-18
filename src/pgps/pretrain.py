@@ -124,7 +124,8 @@ def pretrain(model_type, device):
     log_path = os.path.normpath(os.path.join(config.path_data, f"log/{model_type}_pretrain_log.json"))
     loss_save_path = os.path.normpath(os.path.join(config.path_data, "log/{}_pretrain/{}_loss.pk"))
     text_save_path = os.path.normpath(os.path.join(config.path_data, "log/{}_pretrain/{}_eval.text"))
-    model_save_path = os.path.normpath(os.path.join(config.path_data, "trained_model/{}_pretrain_{}.pth"))
+    model_path = os.path.normpath(os.path.join(config.path_data, f"trained_model/{model_type}_model.pth"))
+    model_bk_path = os.path.normpath(os.path.join(config.path_data, f"trained_model/{model_type}_model_bk.pth"))
     device = torch.device(device)
 
     print("Load data and make model (the first time may be slow)...")
@@ -134,7 +135,9 @@ def pretrain(model_type, device):
     log = {
         "next_epoch": 1,
         "train": {},  # epoch: {"avg_loss": 1, "timing": 1}
-        "eval": {}  # epoch: {"acc": 1, "timing": 1}
+        "eval": {},  # epoch: {"acc": 1, "timing": 1}
+        "best_acc": 0,
+        "best_epoch": 0,
     }
     if os.path.exists(log_path):
         log = load_json(log_path)
@@ -146,8 +149,7 @@ def pretrain(model_type, device):
     model_state = None
     optimizer_state = None
     if log["next_epoch"] > 1:
-        last_epoch_state = torch.load(model_save_path.format(model_type, log['next_epoch'] - 1),
-                                      map_location=torch.device("cpu"))
+        last_epoch_state = torch.load(model_bk_path, map_location=torch.device("cpu"))
         model_state = last_epoch_state["model"]
         optimizer_state = last_epoch_state["optimizer"]
 
@@ -187,10 +189,11 @@ def pretrain(model_type, device):
         acc, timing = evaluate(model, data_loader_val, model_type, device, mask,
                                text_save_path.format(model_type, epoch))
         log["eval"][str(epoch)] = {"acc": acc, "timing": timing}
-        torch.save(
-            {"model": model.state_dict(), "optimizer": optimizer.state_dict()},
-            model_save_path.format(model_type, epoch)
-        )
+        if acc > log["best_acc"]:
+            log["best_acc"] = acc
+            log["best_epoch"] = epoch
+            torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict()}, model_path)
+        torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict()}, model_bk_path)
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
 

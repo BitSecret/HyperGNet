@@ -44,15 +44,15 @@ Enter the code path (all subsequent code will be executed in this path):
 
 ## Preparing Training Data
 
-We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the *
-*formalgeo7k_v1** dataset. Following the dataset's recommended division ratio and random seed, the dataset is split
+We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the
+**formalgeo7k_v1** dataset. Following the dataset's recommended division ratio and random seed, the dataset is split
 into `training:validation:test=3:1:1`. Each problem-solving theorem sequence can be organized into a directed acyclic
 graph (DAG). We randomly traverse this DAG and apply each step's theorem while obtaining the state information of the
 problem.  
 This process ultimately generated 20,571 training data entries (from 4,079 problems), 7,072 validation data entries (
 from 1,370 problems), and 7,046 test data entries (from 1,372 problems). Each data entry can be viewed as a
 5-tuple `(nodes, edges, edges_structural, goal, theorems)`.   
-These data are saved in `231121/training_data`. View the generated data (problem 1):
+These data are saved in `data/training_data`. View the generated data (problem 1):
 
     $ python symbolic_system.py --func show_training_data
 
@@ -74,7 +74,7 @@ suitable for neural networks input.
 
 ## Training
 
-Before starting the training, ensure that the training data `231121/training_data/train/one-hot.pk` has been generated.
+Before starting the training, ensure that the training data `data/training_data/train/one-hot.pk` has been generated.
 If not, run `python symbolic_system.py --func make_onehot` to generate the data.  
 We first pretrain the embedding networks for nodes, edges and graph structure using a self-supervised method.
 
@@ -84,7 +84,7 @@ We first pretrain the embedding networks for nodes, edges and graph structure us
 
 Then, train the theorem prediction network:
 
-    $ python train.py --func train --device cuda:0 --nodes_model nodes_pretrain_48.pth --edges_model edges_pretrain_46.pth --gs_model gs_pretrain_32.pth --freeze_pretrained True --beam_size 5
+    $ python train.py --func train --device cuda:0 --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth --freeze_pretrained True --beam_size 5
 
 Pretraining log information will be saved in `data/log/xxx_pretrain_log.json` and `data/log/xxx_pretrain`. Training log
 information will be saved in `data/log/train_log.json` and `data/log/train`.
@@ -93,13 +93,13 @@ information will be saved in `data/log/train_log.json` and `data/log/train`.
 
 We first test pretrained nodes model, edges model and gs model:
 
-    $ python pretrain.py --func test --device cuda:0 --model_type nodes --model_name nodes_pretrain_48.pth
-    $ python pretrain.py --func test --device cuda:1 --model_type edges --model_name edges_pretrain_46.pth
-    $ python pretrain.py --func test --device cuda:2 --model_type gs --model_name gs_pretrain_32.pth
+    $ python pretrain.py --func test --device cuda:0 --model_type nodes --model_name nodes_model.pth
+    $ python pretrain.py --func test --device cuda:1 --model_type edges --model_name edges_model.pth
+    $ python pretrain.py --func test --device cuda:2 --model_type gs --model_name gs_model.pth
 
 Test theorem prediction model:
 
-    $ python train.py --func test --device cuda:0 --model_name train_xx.pth --beam_size 5
+    $ python train.py --func test --device cuda:0 --model_name predictor_model.pth --beam_size 5
 
 The test results of the model will be saved in `data/log/test`.
 
