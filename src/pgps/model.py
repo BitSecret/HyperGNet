@@ -71,7 +71,7 @@ class SentenceDecoder(nn.Module):
         return x
 
 
-class Nodes2Vector(nn.Module):
+class Sentence2Vector(nn.Module):
 
     def __init__(self, vocab, d_model, max_len, h, N_encoder, N_decoder, p_drop):
         """
@@ -84,7 +84,7 @@ class Nodes2Vector(nn.Module):
         :param N_decoder: Number of MultiHeadAttention in Decoder.
         :param p_drop: Dropout rate.
         """
-        super(Nodes2Vector, self).__init__()
+        super(Sentence2Vector, self).__init__()
 
         self.embedding = Embedding(vocab, d_model)
         self.pe = PositionalEncoding(max_len, d_model)
@@ -112,60 +112,6 @@ class Nodes2Vector(nn.Module):
             return self.encoder(self.pe(self.embedding(x_input)))
         else:  # training mode
             x_embedding = self.pe(self.embedding(x_input))
-            x_encoding = self.encoder(x_embedding)
-            x_decoding = self.decoder(x_encoding, x_embedding, mask)
-            return self.linear(x_decoding)
-
-
-class Edges2Vector(nn.Module):
-
-    def __init__(self, vocab, d_model, max_len, max_len_se, h, N_encoder, N_decoder, p_drop):
-        """
-        Sentence to Vector, encode sentence with n words to 1 dimension-fixed vector.
-        :param vocab: The number of words in the vocabulary list.
-        :param d_model: Embedding dim.
-        :param max_len: Max length of input sentence.
-        :param max_len_se: Max index of structural msg.
-        :param h: Head number in MultiHeadAttention.
-        :param N_encoder: Number of MultiHeadAttention in Encoder.
-        :param N_decoder: Number of MultiHeadAttention in Decoder.
-        :param p_drop: Dropout rate.
-        """
-        super(Edges2Vector, self).__init__()
-
-        self.embedding = Embedding(vocab, d_model)
-        self.pe = PositionalEncoding(max_len, d_model)
-        self.se = StructuralEncoding(max_len_se, d_model)
-        self.encoder = SentenceEncoder(d_model, h, N_encoder)
-        self.decoder = SentenceDecoder(d_model, h, N_decoder, p_drop)
-        self.linear = nn.Linear(d_model, vocab)
-
-    def forward(self, x_input=None, x_structural=None, x_encoding=None, x_output=None, mask=None):
-        """
-        Training mode: x_input=x, x_encoding=None, x_output=x, mask=tril_mask
-        Evaluating mode: x_input=None, x_encoding=x_encoding, x_output=output, mask=tril_mask
-        Using mode: x_input=x, x_encoding=None, x_output=None, mask=None
-        :param x_input: torch.Size([batch_size, max_len])
-        :param x_structural: torch.Size([batch_size, max_len])
-        :param x_encoding: torch.Size([batch_size, max_len, d_model])
-        :param x_output: torch.Size([batch_size, max_len])
-        :param mask: torch.Size([max_len, max_len])
-        :return x_encoding: torch.Size([batch_size, 1, d_model])
-        :return output: torch.Size([batch_size, max_len, vocab])
-        """
-        if x_input is None:  # evaluating mode
-            output_embedding = self.pe(self.embedding(x_output))
-            x_decoding = self.decoder(x_encoding, output_embedding, mask)
-            return self.linear(x_decoding)
-        elif x_output is None:  # using mode
-            x_embedding = self.pe(self.embedding(x_input))
-            if x_structural is not None:
-                x_embedding = self.se(x_embedding, x_structural)
-            return self.encoder(x_embedding)
-        else:  # training mode
-            x_embedding = self.pe(self.embedding(x_input))
-            if x_structural is not None:
-                x_embedding = self.se(x_embedding, x_structural)
             x_encoding = self.encoder(x_embedding)
             x_decoding = self.decoder(x_encoding, x_embedding, mask)
             return self.linear(x_decoding)
@@ -237,7 +183,8 @@ class Decoder(nn.Module):
 class Predictor(nn.Module):
 
     def __init__(self, vocab_nodes, max_len_nodes, h_nodes, N_encoder_nodes, N_decoder_nodes, p_drop_nodes,
-                 vocab_edges, max_len_edges, max_len_se, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges,
+                 vocab_edges, max_len_edges, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges,
+                 vocab_gs, max_len_gs, h_gs, N_encoder_gs, N_decoder_gs, p_drop_gs,
                  vocab, max_len, h, N, p_drop, d_model):
         """
         Theorem predictor.
@@ -251,13 +198,17 @@ class Predictor(nn.Module):
         super(Predictor, self).__init__()
         self.max_len_nodes = max_len_nodes
         self.max_len_edges = max_len_edges
+        self.max_len_gs = max_len_gs
         self.max_len = max_len
         self.d_model = d_model
 
-        self.nodes_emb = Nodes2Vector(
+        self.nodes_emb = Sentence2Vector(
             vocab_nodes, d_model, max_len_nodes, h_nodes, N_encoder_nodes, N_decoder_nodes, p_drop_nodes)
-        self.edges_emb = Edges2Vector(
-            vocab_edges, d_model, max_len_edges, max_len_se, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges
+        self.edges_emb = Sentence2Vector(
+            vocab_edges, d_model, max_len_edges, h_edges, N_encoder_edges, N_decoder_edges, p_drop_edges
+        )
+        self.gs_emb = Sentence2Vector(
+            vocab_gs, d_model, max_len_gs, h_gs, N_encoder_gs, N_decoder_gs, p_drop_gs
         )
 
         self.encoder = Encoder(d_model, h, N, p_drop)
@@ -265,11 +216,11 @@ class Predictor(nn.Module):
 
         self.linear = nn.Linear(d_model, vocab)
 
-    def forward(self, nodes, edges, edges_structural, goal):
+    def forward(self, nodes, edges, graph_structure, goal):
         """
         :param nodes: torch.Size([batch_size, max_len, max_len_nodes])
         :param edges: torch.Size([batch_size, max_len, max_len_edges])
-        :param edges_structural: torch.Size([batch_size, max_len, max_len_edges])
+        :param graph_structure: torch.Size([batch_size, max_len, max_len_edges])
         :param goal: torch.Size([batch_size, max_len_nodes])
         :return result: torch.Size([batch_size, vocab])
         """
@@ -280,7 +231,9 @@ class Predictor(nn.Module):
             ).view(-1, self.max_len, self.d_model) +
             self.edges_emb(
                 x_input=edges.view(-1, self.max_len_edges),
-                x_structural=edges_structural.view(-1, self.max_len_edges)
+            ).view(-1, self.max_len, self.d_model) +
+            self.gs_emb(
+                x_input=graph_structure.view(-1, self.max_len_gs),
             ).view(-1, self.max_len, self.d_model)
         )
 
@@ -298,43 +251,46 @@ class Predictor(nn.Module):
         return self.linear(decoding)  # [batch_size, theorem_vocab]
 
 
-def make_nodes_model(model_state_dict=None):
-    model = Nodes2Vector(
-        vocab=config.vocab_nodes,
-        d_model=config.d_model,
-        max_len=config.max_len_nodes,
-        h=config.h_nodes,
-        N_encoder=config.N_encoder_nodes,
-        N_decoder=config.N_decoder_nodes,
-        p_drop=config.p_drop_nodes
-    )
-    if model_state_dict is None:
+def make_sentence_model(model_type, state_dict=None):
+    if model_type == "nodes":
+        model = Sentence2Vector(
+            vocab=config.vocab_nodes,
+            d_model=config.d_model,
+            max_len=config.max_len_nodes,
+            h=config.h_nodes,
+            N_encoder=config.N_encoder_nodes,
+            N_decoder=config.N_decoder_nodes,
+            p_drop=config.p_drop_nodes
+        )
+    elif model_type == "edges":
+        model = Sentence2Vector(
+            vocab=config.vocab_edges,
+            d_model=config.d_model,
+            max_len=config.max_len_edges,
+            h=config.h_edges,
+            N_encoder=config.N_encoder_edges,
+            N_decoder=config.N_decoder_edges,
+            p_drop=config.p_drop_edges
+        )
+    else:
+        model = Sentence2Vector(
+            vocab=config.vocab_gs,
+            d_model=config.d_model,
+            max_len=config.max_len_gs,
+            h=config.h_gs,
+            N_encoder=config.N_encoder_gs,
+            N_decoder=config.N_decoder_gs,
+            p_drop=config.p_drop_gs
+        )
+
+    if state_dict is None:
         model.apply(init_weights)
     else:
-        model.load_state_dict(model_state_dict)
+        model.load_state_dict(state_dict)
     return model
 
 
-def make_edges_model(model_state_dict=None):
-    model = Edges2Vector(
-        vocab=config.vocab_edges,
-        d_model=config.d_model,
-        max_len=config.max_len_edges,
-        max_len_se=config.max_len_edges_se,
-        h=config.h_edges,
-        N_encoder=config.N_encoder_edges,
-        N_decoder=config.N_decoder_edges,
-        p_drop=config.p_drop_nodes
-    )
-    model.apply(init_weights)
-    if model_state_dict is None:
-        model.apply(init_weights)
-    else:
-        model.load_state_dict(model_state_dict)
-    return model
-
-
-def make_predictor_model(model_state_dict=None, nodes_model_state_dict=None, edges_model_state_dict=None):
+def make_predictor_model(state_dict=None, nodes=None, edges=None, gs=None, freeze_pretrained=True):
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
         max_len_nodes=config.max_len_nodes,
@@ -344,11 +300,16 @@ def make_predictor_model(model_state_dict=None, nodes_model_state_dict=None, edg
         p_drop_nodes=config.p_drop_nodes,
         vocab_edges=config.vocab_edges,
         max_len_edges=config.max_len_edges,
-        max_len_se=config.max_len_edges_se,
         h_edges=config.h_edges,
         N_encoder_edges=config.N_encoder_edges,
         N_decoder_edges=config.N_decoder_edges,
         p_drop_edges=config.p_drop_edges,
+        vocab_gs=config.vocab_gs,
+        max_len_gs=config.max_len_gs,
+        h_gs=config.h_gs,
+        N_encoder_gs=config.N_encoder_gs,
+        N_decoder_gs=config.N_decoder_gs,
+        p_drop_gs=config.p_drop_gs,
         vocab=config.vocab_theorems,
         max_len=config.max_len,
         h=config.h,
@@ -356,14 +317,25 @@ def make_predictor_model(model_state_dict=None, nodes_model_state_dict=None, edg
         p_drop=config.p_drop,
         d_model=config.d_model
     )
-    if model_state_dict is None:
+    if state_dict is None:
         model.apply(init_weights)
-        if nodes_model_state_dict is not None:
-            model.nodes_emb.load_state_dict(nodes_model_state_dict)
-        if edges_model_state_dict is not None:
-            model.edges_emb.load_state_dict(edges_model_state_dict)
+        if nodes is not None:  # load pretrained model
+            model.nodes_emb.load_state_dict(nodes)
+        if edges is not None:
+            model.edges_emb.load_state_dict(edges)
+        if gs is not None:
+            model.gs_emb.load_state_dict(gs)
     else:
-        model.load_state_dict(model_state_dict)
+        model.load_state_dict(state_dict)
+
+    if freeze_pretrained:  # freeze pretrained parameter
+        for param in model.nodes_emb.parameters():
+            param.requires_grad = False
+        for param in model.edges_emb.parameters():
+            param.requires_grad = False
+        for param in model.gs_emb.parameters():
+            param.requires_grad = False
+
     return model
 
 
@@ -373,10 +345,12 @@ def check_model_parameters():
     Edges model: 25466113 (97.15 MB)
     Predictor model: 88749196 (338.55 MB)
     """
-    count = sum(p.numel() for p in make_nodes_model().parameters())
+    count = sum(p.numel() for p in make_sentence_model("nodes").parameters())
     print("Nodes model: {} ({:.2f} MB)".format(count, count * 4 / 1024 / 1024))
-    count = sum(p.numel() for p in make_edges_model().parameters())
+    count = sum(p.numel() for p in make_sentence_model("edges").parameters())
     print("Edges model: {} ({:.2f} MB)".format(count, count * 4 / 1024 / 1024))
+    count = sum(p.numel() for p in make_sentence_model("gs").parameters())
+    print("Gs model: {} ({:.2f} MB)".format(count, count * 4 / 1024 / 1024))
     count = sum(p.numel() for p in make_predictor_model().parameters())
     print("Predictor model: {} ({:.2f} MB)".format(count, count * 4 / 1024 / 1024))
 

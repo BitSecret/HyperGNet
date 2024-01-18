@@ -61,13 +61,13 @@ View the statistical information of the generated data:
     $ python symbolic_system.py --func check
 
 This will generate message about the length distribution and visual images of the training data in
-the `231221/log/words_length` folder.  
+the `data/log/words_length` folder.  
 If you want to regenerate the training data:
 
     $ python symbolic_system.py --func main
 
 The training data will be regenerated using multiple processes. The log files will be saved
-in `231221/log/gen_training_data_log.json`. Subsequently, the generated data need to be converted into a vector form
+in `data/log/gen_training_data_log.json`. Subsequently, the generated data need to be converted into a vector form
 suitable for neural networks input.
 
     $ python symbolic_system.py --func make_onehot
@@ -76,22 +76,32 @@ suitable for neural networks input.
 
 Before starting the training, ensure that the training data `231121/training_data/train/one-hot.pk` has been generated.
 If not, run `python symbolic_system.py --func make_onehot` to generate the data.  
-We first pretrain the embedding networks for nodes and edges using a self-supervised method.
+We first pretrain the embedding networks for nodes, edges and graph structure using a self-supervised method.
 
-    $ python pretrain.py --func nodes
-    $ python pretrain.py --func edges
+    $ python pretrain.py --func pretrain --device cuda:0 --model_type nodes
+    $ python pretrain.py --func pretrain --device cuda:1 --model_type edges
+    $ python pretrain.py --func pretrain --device cuda:2 --model_type gs
 
 Then, train the theorem prediction network:
 
-    $ python train.py --func train --nodes_model your_best_nodes_model_name --edges_model your_best_edges_model_name
+    $ python train.py --func train --device cuda:0 --nodes_model nodes_pretrain_48.pth --edges_model edges_pretrain_46.pth --gs_model gs_pretrain_32.pth --freeze_pretrained True --beam_size 5
 
-Pretraining and Training log information will be saved in `231221/log`.
+Pretraining log information will be saved in `data/log/xxx_pretrain_log.json` and `data/log/xxx_pretrain`. Training log
+information will be saved in `data/log/train_log.json` and `data/log/train`.
 
 ## Testing
 
-The test results of the model will be saved in `231221/log/testing`.
+We first test pretrained nodes model, edges model and gs model:
 
-    $ python train.py --func test --predictor_model your_best_model_name
+    $ python pretrain.py --func test --device cuda:0 --model_type nodes --model_name nodes_pretrain_48.pth
+    $ python pretrain.py --func test --device cuda:1 --model_type edges --model_name edges_pretrain_46.pth
+    $ python pretrain.py --func test --device cuda:2 --model_type gs --model_name gs_pretrain_32.pth
+
+Test theorem prediction model:
+
+    $ python train.py --func test --device cuda:0 --model_name train_xx.pth --beam_size 5
+
+The test results of the model will be saved in `data/log/test`.
 
 ## Results
 

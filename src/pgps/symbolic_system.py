@@ -2,7 +2,7 @@ from formalgeo.tools import get_meta_hypertree, load_json, safe_save_json
 from formalgeo.solver import Interactor
 from formalgeo.parse import parse_one_theorem
 from formalgeo.data import DatasetLoader
-from pgps.utils import load_pickle, save_pickle, get_args
+from pgps.utils import load_pickle, save_pickle
 from pgps.utils import Configuration as config
 from pgps.utils import symbol_words, nodes_words, edges_words, theorem_words
 import os
@@ -13,6 +13,7 @@ import warnings
 from multiprocessing import Process, Queue
 import psutil
 import matplotlib.pyplot as plt
+import argparse
 
 """--------------data generation--------------"""
 
@@ -546,6 +547,14 @@ def make_onehot():
     print(onehot_log)
 
 
+def get_args():
+    parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
+    parser.add_argument("--func", type=str, required=True,
+                        choices=["show_training_data", "check", "main", "make_onehot"],
+                        help="function that you want to run")
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
     args = get_args()
     if args.func == "show_training_data":
@@ -557,6 +566,3 @@ if __name__ == '__main__':
         main()
     elif args.func == "make_onehot":
         make_onehot()
-    else:
-        msg = "No function name {}.".format(args.func)
-        raise Exception(msg)

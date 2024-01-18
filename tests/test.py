@@ -202,24 +202,12 @@ def test_pretrain():
     print("tensor_decoding:{}".format(str(tensor_decoding.shape)))
     print()
 
-    nodes_2_vector = Nodes2Vector(vocab, d_model, max_len, h, N, N, p_drop)
-    encoding = nodes_2_vector(x_input=tensor)
+    sentence_2_vector = Sentence2Vector(vocab, d_model, max_len, h, N, N, p_drop)
+    encoding = sentence_2_vector(x_input=tensor)
     print("encoding (using mode):{}".format(str(encoding.shape)))
-    output = nodes_2_vector(x_input=tensor, x_output=tensor, mask=mask)
+    output = sentence_2_vector(x_input=tensor, x_output=tensor, mask=mask)
     print("output (training mode):{}".format(str(output.shape)))
-    output = nodes_2_vector(x_encoding=encoding, x_output=tensor, mask=mask)
-    print("output (evaluating mode):{}".format(str(output.shape)))
-    print()
-
-    edges_2_vector = Edges2Vector(vocab, d_model, max_len, max_len_se, h, N, N, p_drop)
-    encoding = edges_2_vector(x_input=tensor)
-    print("encoding (using mode):{}".format(str(encoding.shape)))
-    se_encoding = edges_2_vector(x_input=tensor, x_structural=structural)
-    print("se_encoding:{}".format(str(se_encoding.shape)))
-
-    output = edges_2_vector(x_input=tensor, x_structural=structural, x_output=tensor, mask=mask)
-    print("output (training mode):{}".format(str(output.shape)))
-    output = edges_2_vector(x_encoding=encoding, x_output=tensor, mask=mask)
+    output = sentence_2_vector(x_encoding=encoding, x_output=tensor, mask=mask)
     print("output (evaluating mode):{}".format(str(output.shape)))
     print()
 
@@ -283,11 +271,16 @@ def test_train():
         p_drop_nodes=p_drop,
         vocab_edges=vocab_edges,
         max_len_edges=max_len_edges,
-        max_len_se=max_len_se,
         h_edges=h,
         N_encoder_edges=N,
         N_decoder_edges=N,
         p_drop_edges=p_drop,
+        vocab_gs=vocab_edges,
+        max_len_gs=max_len_edges,
+        h_gs=h,
+        N_encoder_gs=N,
+        N_decoder_gs=N,
+        p_drop_gs=p_drop,
         vocab=vocab_theorems,
         max_len=max_len,
         h=h,

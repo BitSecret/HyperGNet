@@ -157,20 +157,17 @@ edges_words = ["<padding>", "<start>", "<end>"] + theorem_words + ["self", "exte
 
 
 class Configuration:
-    """---------path---------"""
-    path_data = "./231221"
+    """---------os---------"""
+    path_data = "data"  # path
 
-    """---------datasets---------"""
-    path_datasets = "./datasets"
+    path_datasets = "datasets"  # datasets
     dataset_name = "formalgeo7k_v1"
 
-    """---------random_seed---------"""
-    random_seed = 619
+    random_seed = 619  # random_seed
     torch_seed = 619
     cuda_seed = 619
 
-    """---------training data generation---------"""
-    process_count = int(psutil.cpu_count() * 0.8)
+    process_count = int(psutil.cpu_count() * 0.8)  # training data generation
 
     """---------model hyperparameter---------"""
     # pretrain - nodes
@@ -196,6 +193,17 @@ class Configuration:
     N_decoder_edges = 4
     p_drop_edges = 0.5
 
+    # pretrain - graph structure
+    batch_size_gs = 64
+    epoch_gs = 50
+    lr_gs = 1e-5
+    vocab_gs = 1070
+    max_len_gs = max_len_edges
+    h_gs = 8
+    N_encoder_gs = 4
+    N_decoder_gs = 4
+    p_drop_gs = 0.5
+
     # train
     batch_size = 64
     epoch = 50
@@ -206,7 +214,6 @@ class Configuration:
     N = 6
     p_drop = 0.5
     d_model = 512
-    beam_size = 5
 
 
 random.seed(Configuration.random_seed)
@@ -220,23 +227,11 @@ def show_word_list():
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description="Welcome to use FGPS!")
-
+    parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
     parser.add_argument("--func", type=str, required=True,
+                        choices=["project_init", "show_word_list"],
                         help="function that you want to run")
-    parser.add_argument("--path_data", type=str, required=False, default=Configuration.path_data,
-                        help="path that you want to save your data")
-    parser.add_argument("--nodes_model", type=str, required=False,
-                        help="best nodes model name in trained_model")
-    parser.add_argument("--edges_model", type=str, required=False,
-                        help="best edges model name in trained_model")
-    parser.add_argument("--predictor_model", type=str, required=False,
-                        help="best theorem prediction model name in trained_model")
-
-    parsed_args = parser.parse_args()
-    Configuration.path_data = parsed_args.path_data
-
-    return parsed_args
+    return parser.parse_args()
 
 
 def load_pickle(path):
@@ -251,17 +246,18 @@ def save_pickle(data, path):
 
 
 def project_init():
-    if not os.path.exists("./datasets"):  # download_datasets
-        os.makedirs("./datasets")
-        download_dataset("formalgeo7k_v1", "./datasets")
-        download_dataset("formalgeo-imo_v1", "./datasets")
+    if not os.path.exists(Configuration.path_datasets):  # download_datasets
+        os.makedirs(Configuration.path_datasets)
+        download_dataset("formalgeo7k_v1", Configuration.path_datasets)
+        download_dataset("formalgeo-imo_v1", Configuration.path_datasets)
 
     filepaths = [  # create_archi
         os.path.normpath(os.path.join(Configuration.path_data, "log/words_length")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/nodes_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/edges_pretrain")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/gs_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
-        os.path.normpath(os.path.join(Configuration.path_data, "log/testing")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/test")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/example_data")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
@@ -272,8 +268,8 @@ def project_init():
         if not os.path.exists(filepath):
             os.makedirs(filepath)
 
-    if os.path.exists("./231221.zip"):  # unzip_results
-        with zipfile.ZipFile("231221.zip", 'r') as zip_ref:
+    if os.path.exists("data.zip"):  # unzip_results
+        with zipfile.ZipFile("data.zip", 'r') as zip_ref:
             zip_ref.extractall("./")
 
 
@@ -283,6 +279,3 @@ if __name__ == '__main__':
         project_init()
     elif args.func == "show_word_list":
         show_word_list()
-    else:
-        msg = "No function name {}.".format(args.func)
-        raise Exception(msg)

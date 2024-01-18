@@ -1,6 +1,6 @@
 from formalgeo.tools import load_json, safe_save_json
 from pgps.utils import Configuration as config
-from pgps.utils import load_pickle, save_pickle, get_args, theorem_words
+from pgps.utils import load_pickle, save_pickle
 from pgps.model import make_predictor_model
 import torch
 import torch.nn as nn
@@ -8,7 +8,7 @@ from torch.utils.data import Dataset, DataLoader
 import time
 import os
 from tqdm import tqdm
-import heapq
+import argparse
 
 
 class PGPSDataset(Dataset):
@@ -53,63 +53,34 @@ class PGPSDataset(Dataset):
         return self.data[idx][0], self.data[idx][1], self.data[idx][2], self.data[idx][3], self.data[idx][4]
 
 
-def evaluate(output_list, beam_size, save_filename=None):
+def load_dataset(dataset_type):
     """
-    Evaluate pretrain and save evaluation results.
-    :param output_list: list of (theorems, theorems_gt), theorems/theorems_gt: torch.Size([batch_size, vocab_theorems]).
-    :param beam_size: beam size when calculate acc.
-    :param save_filename: File that saving evaluation results.
-    :return acc: theorem prediction acc.
+    Pretrain nodes model and edges model.
+    :param dataset_type: 'train', 'val' or 'test'.
     """
-    acc_count = 0  # edition distance
-    num_count = 0  # sequence length
-    results = []
-    for theorems, theorems_gt in output_list:  # trans to srt
-        for i in range(len(theorems)):
-            theorems_str = [theorem_words[idx] for _, idx in
-                            heapq.nlargest(beam_size, [(t, idx) for idx, t in enumerate(theorems[i])])]
-            theorems_gt_str = [theorem_words[idx] for idx, t in enumerate(theorems_gt[i]) if t != 0]
-
-            num_count += 1
-            if len(set(theorems_str) & set(theorems_gt_str)) > 0:
-                acc_count += 1
-            results.append(f"GT: [{', '.join(theorems_gt_str)}]\tPD: [{', '.join(theorems_str)}]")
-
-    if save_filename is not None:
-        with open(save_filename, 'w', encoding='utf-8') as file:
-            for line in results:
-                file.write(line + '\n')
-
-    return acc_count / num_count
+    onehot_path = os.path.normpath(os.path.join(config.path_data, f"training_data/{dataset_type}/one-hot.pk"))
+    dataset_path = os.path.normpath(os.path.join(config.path_data, f"training_data/{dataset_type}/dataset_pgps.pk"))
+    if os.path.exists(dataset_path):
+        dataset = load_pickle(dataset_path)
+    else:
+        dataset = PGPSDataset(load_pickle(onehot_path))
+        save_pickle(dataset, dataset_path)
+    return dataset
 
 
-def train(nodes_model_state_dict=None, edges_model_state_dict=None):
+def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pretrained, beam_size):
     """Train theorem prediction model."""
-    onehot_train_path = os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot.pk"))
-    onehot_val_path = os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot.pk"))
-    dataset_train_path = os.path.normpath(os.path.join(config.path_data, "training_data/train/dataset_pgps.pk"))
-    dataset_val_path = os.path.normpath(os.path.join(config.path_data, "training_data/val/dataset_pgps.pk"))
-    log_path = os.path.normpath(os.path.join(config.path_data, "log/pgps_train_log.json"))
-
+    log_path = os.path.normpath(os.path.join(config.path_data, "log/train_log.json"))
     loss_save_path = os.path.normpath(os.path.join(config.path_data, "log/train/{}_loss.pk"))
     text_save_path = os.path.normpath(os.path.join(config.path_data, "log/train/{}_eval.text"))
+    pretrained_path = os.path.normpath(os.path.join(config.path_data, "trained_model/{}"))
     model_save_path = os.path.normpath(os.path.join(config.path_data, "trained_model/train_{}.pth"))
+    device = torch.device(device)
 
-    print("Loading data (the first time loading may be slow)...")
-    if os.path.exists(dataset_train_path):
-        dataset_train = load_pickle(dataset_train_path)
-    else:
-        dataset_train = PGPSDataset(load_pickle(onehot_train_path))
-        save_pickle(dataset_train, dataset_train_path)
-    if os.path.exists(dataset_val_path):
-        dataset_val = load_pickle(dataset_val_path)
-    else:
-        dataset_val = PGPSDataset(load_pickle(onehot_val_path))
-        save_pickle(dataset_val, dataset_val_path)
+    print("Load data and make model (the first time may be slow)...")
+    dataset_train = load_dataset("train")
+    dataset_val = load_dataset("val")
     log = {
-        "batch_size": config.batch_size,
-        "max_epoch": config.epoch,
-        "lr": config.lr,
         "next_epoch": 1,
         "train": {},  # epoch: {"avg_loss": 1, "timing": 1}
         "eval": {}  # epoch: {"acc": 1, "timing": 1}
@@ -117,23 +88,22 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
     if os.path.exists(log_path):
         log = load_json(log_path)
     data_loader_train = DataLoader(dataset=dataset_train, batch_size=config.batch_size, shuffle=True)
-    data_loader_eval = DataLoader(dataset=dataset_val, batch_size=config.batch_size, shuffle=False)
-    print("Nodes loading completed.")
-
-    if torch.cuda.is_available():
-        device = torch.device("cuda:1")
-        print("GPU is available. Using GPU.")
-    else:
-        device = torch.device("cpu")
-        print("GPU is not available. Using CPU.")
+    data_loader_eval = DataLoader(dataset=dataset_val, batch_size=config.batch_size * 2, shuffle=False)
 
     model_state = None
     optimizer_state = None
+    nodes_model = None
+    edges_model = None
+    gs_model = None
     if log["next_epoch"] > 1:
-        last_epoch_msg = load_pickle(model_save_path.format(log['next_epoch'] - 1))
+        last_epoch_msg = torch.load(model_save_path.format(log['next_epoch'] - 1), map_location=torch.device("cpu"))
         model_state = last_epoch_msg["model"]
         optimizer_state = last_epoch_msg["optimizer"]
-    model = make_predictor_model(model_state, nodes_model_state_dict, edges_model_state_dict).to(device)
+    else:
+        nodes_model = torch.load(pretrained_path.format(nodes_model_name), map_location=torch.device("cpu"))["model"]
+        edges_model = torch.load(pretrained_path.format(edges_model_name), map_location=torch.device("cpu"))["model"]
+        gs_model = torch.load(pretrained_path.format(gs_model_name), map_location=torch.device("cpu"))["model"]
+    model = make_predictor_model(model_state, nodes_model, edges_model, gs_model, freeze_pretrained).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)  # Adam optimizer
     if optimizer_state is not None:
@@ -162,61 +132,112 @@ def train(nodes_model_state_dict=None, edges_model_state_dict=None):
             loss_list.append(float(loss))
             loop.set_description(f"Epoch [{epoch}/{config.epoch}] (Pretraining)")
             loop.set_postfix(loss=float(loss))
-            break
 
         save_pickle((step_list, loss_list), loss_save_path.format(epoch))
-        log["train"][str(epoch)] = {
-            "avg_loss": sum(loss_list) / len(loss_list),
-            "timing": time.time() - timing
-        }
+        log["train"][str(epoch)] = {"avg_loss": sum(loss_list) / len(loss_list), "timing": time.time() - timing}
 
-        model.eval()
-        timing = time.time()
-        output_list = []
-        loop = tqdm(enumerate(data_loader_eval), total=len(data_loader_eval), leave=True)  # evaluating loop
-        with torch.no_grad():
-            for step, (nodes, edges, edges_structural, goal, theorems_gt) in loop:
-                nodes = nodes.to(device)
-                edges = edges.to(device)
-                edges_structural = edges_structural.to(device)
-                goal = goal.to(device)
-                theorems = model(nodes, edges, edges_structural, goal)
-
-                output_list.append((theorems.cpu(), theorems_gt))
-                loop.set_description(f"Epoch [{epoch}/{config.epoch}] (Evaluating)")
-                break
-
-        print("Calculate the predicted results...")
-
-        log["eval"][str(epoch)] = {
-            "acc": evaluate(output_list, beam_size=config.beam_size, save_filename=text_save_path.format(epoch)),
-            "timing": time.time() - timing
-        }
-
-        save_pickle(
-            {"model": model.state_dict(), "optimizer": optimizer.state_dict()},
-            model_save_path.format(epoch)
-        )
+        acc, timing = evaluate(model, data_loader_eval, device, beam_size, save_filename=text_save_path.format(epoch))
+        log["eval"][str(epoch)] = {"beam_size": beam_size, "acc": acc, "timing": timing}
+        torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict()}, model_save_path.format(epoch))
         log["next_epoch"] += 1
         safe_save_json(log, log_path)
 
 
-def test(model_state_dict):
-    pass
+def test(device, model_name, beam_size):
+    """
+    Test trained model.
+    :param device: 'cpu' or 'cuda:gpu_id'.
+    :param model_name: tested model name in data/trained_model.
+    :param beam_size: beam size used for calculate acc.
+    """
+    print("Load data and make model (the first time may be slow)...")
+    text_path = os.path.normpath(os.path.join(config.path_data, f"log/test/predictor_eval.text"))
+    results_path = os.path.normpath(os.path.join(config.path_data, f"log/test/predictor_test_log.json"))
+    device = torch.device(device)
+
+    state_dict = torch.load(
+        os.path.normpath(os.path.join(config.path_data, "trained_model", model_name)), map_location=torch.device("cpu")
+    )["model"]
+    model = make_predictor_model(state_dict).to(device)
+    data_loader = DataLoader(dataset=load_dataset("test"), batch_size=config.batch_size * 2, shuffle=False)
+
+    acc, timing = evaluate(model, data_loader, device, beam_size, text_path)
+
+    safe_save_json({"acc": acc, "timing": timing}, results_path)
+    print(f"Acc: {acc}. Details saved in {text_path}")
+
+
+def evaluate(model, data_loader, device, beam_size, save_filename=None):
+    """
+    Evaluate model and save evaluation results.
+    :param model: tested model, instance of <Predictor>.
+    :param data_loader: test datasets data loader.
+    :param device: device that model run, torch.device().
+    :param beam_size: beam size used for calculate acc.
+    :param save_filename: file that save evaluation results.
+    :return acc: Weighted Levenshtein ratio.
+    :return timing: timing.
+    """
+    timing = time.time()
+    model.eval()
+    acc_count = 0  # acc with beam_size
+    num_count = 0  # all data count
+    results = []  # saved text
+    loop = tqdm(enumerate(data_loader), total=len(data_loader), leave=True)  # evaluating loop
+    with torch.no_grad():
+        for step, (nodes, edges, edges_structural, goal, theorems_gt) in loop:
+            nodes = nodes.to(device)
+            edges = edges.to(device)
+            edges_structural = edges_structural.to(device)
+            goal = goal.to(device)
+            theorems = model(nodes, edges, edges_structural, goal).cpu()
+
+            for i in range(len(theorems)):
+                theorems_str = [str(idx) for idx, _ in sorted(enumerate(theorems[i]), key=lambda x: x[1], reverse=True)]
+                theorems_gt_str = [str(idx) for idx, t in enumerate(theorems_gt[i]) if t != 0]
+
+                num_count += 1
+                if len(set(theorems_str[:beam_size]) & set(theorems_gt_str)) > 0:
+                    acc_count += 1
+                results.append(f"GT: [{', '.join(theorems_gt_str)}]\tPD: [{', '.join(theorems_str)}]")
+
+            loop.set_description("Evaluating")
+
+    if save_filename is not None:
+        with open(save_filename, 'w', encoding='utf-8') as file:
+            for line in results:
+                file.write(line + '\n')
+            file.write(f"result: {acc_count / num_count}({acc_count}/{num_count})")
+
+    return acc_count / num_count, time.time() - timing
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
+
+    parser.add_argument("--func", type=str, required=True, default="train", choices=["train", "test"],
+                        help="function that you want to run")
+    parser.add_argument("--model_name", type=str, required=False,
+                        help="The tested model name.")
+    parser.add_argument("--nodes_model", type=str, required=False,
+                        help="Nodes model name.")
+    parser.add_argument("--edges_model", type=str, required=False,
+                        help="Edges model name.")
+    parser.add_argument("--gs_model", type=str, required=False,
+                        help="GS model name.")
+    parser.add_argument("--freeze_pretrained", type=bool, required=False, default=True,
+                        help="Weather freeze pretrained model para or not.")
+    parser.add_argument("--beam_size", type=int, required=True,
+                        help="Beam size when calculate acc.")
+    parser.add_argument("--device", type=str, required=True, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
+                        help="Device for pretraining.")
+
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = get_args()
     if args.func == "train":
-        best_nodes_model_path = os.path.normpath(
-            os.path.join(config.path_data, f"log/trained_model/{args.nodes_model}"))
-        best_edges_model_path = os.path.normpath(
-            os.path.join(config.path_data, f"log/trained_model/{args.edges_model}"))
-        train(load_pickle(best_nodes_model_path)["model"], load_pickle(best_edges_model_path)["model"])
+        train(args.device, args.nodes_model, args.edges_model, args.gs_model, args.freeze_pretrained, args.beam_size)
     elif args.func == "test":
-        best_model_path = os.path.normpath(
-            os.path.join(config.path_data, f"log/trained_model/{args.predictor_model}"))
-        test(load_pickle(best_model_path)["model"])
-    else:
-        msg = "No function name {}.".format(args.func)
-        raise Exception(msg)
+        test(args.device, args.model_name, args.beam_size)
