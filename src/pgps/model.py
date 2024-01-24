@@ -225,17 +225,18 @@ class Predictor(nn.Module):
         :return result: torch.Size([batch_size, vocab])
         """
         # [batch_size, max_len, d_model]
-        hypertree_encoding = self.encoder(
-            self.nodes_emb(
-                x_input=nodes.view(-1, self.max_len_nodes)
-            ).view(-1, self.max_len, self.d_model) +
-            self.edges_emb(
+        hypertree_embedding = self.nodes_emb(
+            x_input=nodes.view(-1, self.max_len_nodes)
+        ).view(-1, self.max_len, self.d_model)
+        if edges is not None:
+            hypertree_embedding += self.edges_emb(
                 x_input=edges.view(-1, self.max_len_edges),
-            ).view(-1, self.max_len, self.d_model) +
-            self.gs_emb(
+            ).view(-1, self.max_len, self.d_model)
+        if graph_structure is not None:
+            hypertree_embedding += self.gs_emb(
                 x_input=graph_structure.view(-1, self.max_len_gs),
             ).view(-1, self.max_len, self.d_model)
-        )
+        hypertree_encoding = self.encoder(hypertree_embedding)
 
         # [batch_size, d_model]
         goal_embedding = self.nodes_emb(
@@ -290,7 +291,7 @@ def make_sentence_model(model_type, state_dict=None):
     return model
 
 
-def make_predictor_model(state_dict=None, nodes=None, edges=None, gs=None, freeze_pretrained=True):
+def make_predictor_model(state_dict=None, nodes=None, edges=None, gs=None):
     model = Predictor(
         vocab_nodes=config.vocab_nodes,
         max_len_nodes=config.max_len_nodes,
@@ -327,14 +328,6 @@ def make_predictor_model(state_dict=None, nodes=None, edges=None, gs=None, freez
             model.gs_emb.load_state_dict(gs)
     else:
         model.load_state_dict(state_dict)
-
-    if freeze_pretrained:  # freeze pretrained parameter
-        for param in model.nodes_emb.parameters():
-            param.requires_grad = False
-        for param in model.edges_emb.parameters():
-            param.requires_grad = False
-        for param in model.gs_emb.parameters():
-            param.requires_grad = False
 
     return model
 

@@ -552,7 +552,10 @@ def get_args():
     parser.add_argument("--func", type=str, required=True,
                         choices=["show_training_data", "check", "main", "make_onehot"],
                         help="function that you want to run")
-    return parser.parse_args()
+
+    parsed_args = parser.parse_args()
+    print(f"args: {str(parsed_args)}\n")
+    return parsed_args
 
 
 if __name__ == '__main__':

@@ -30,10 +30,6 @@ class NodesDataset(Dataset):
 
         self.mask = torch.tril(torch.ones((config.max_len_nodes, config.max_len_nodes)))
 
-        self.batch_size = config.batch_size_nodes
-        self.max_epoch = config.epoch_nodes
-        self.lr = config.lr_nodes
-
     def __len__(self):
         return len(self.data)
 
@@ -55,10 +51,6 @@ class EdgesDataset(Dataset):
 
         self.mask = torch.tril(torch.ones((config.max_len_edges, config.max_len_edges)))
 
-        self.batch_size = config.batch_size_edges
-        self.max_epoch = config.epoch_edges
-        self.lr = config.lr_edges
-
     def __len__(self):
         return len(self.data)
 
@@ -78,10 +70,6 @@ class GSDataset(Dataset):
                 self.data.append((torch.tensor(input_seqs), torch.tensor(output_seqs)))
 
         self.mask = torch.tril(torch.ones((config.max_len_gs, config.max_len_gs)))
-
-        self.batch_size = config.batch_size_gs
-        self.max_epoch = config.epoch_gs
-        self.lr = config.lr_gs
 
     def __len__(self):
         return len(self.data)
@@ -132,6 +120,19 @@ def pretrain(model_type, device):
     dataset_train = load_dataset(model_type, "train")
     dataset_val = load_dataset(model_type, "val")
 
+    if model_type == "nodes":
+        batch_size = config.batch_size_nodes
+        max_epoch = config.epoch_nodes
+        lr = config.lr_nodes
+    elif model_type == "edges":
+        batch_size = config.batch_size_edges
+        max_epoch = config.epoch_edges
+        lr = config.lr_edges
+    else:
+        batch_size = config.batch_size_gs
+        max_epoch = config.epoch_gs
+        lr = config.lr_gs
+
     log = {
         "next_epoch": 1,
         "train": {},  # epoch: {"avg_loss": 1, "timing": 1}
@@ -142,8 +143,8 @@ def pretrain(model_type, device):
     if os.path.exists(log_path):
         log = load_json(log_path)
 
-    data_loader_train = DataLoader(dataset=dataset_train, batch_size=dataset_train.batch_size, shuffle=True)
-    data_loader_val = DataLoader(dataset=dataset_val, batch_size=dataset_train.batch_size * 2, shuffle=False)
+    data_loader_train = DataLoader(dataset=dataset_train, batch_size=batch_size, shuffle=True)
+    data_loader_val = DataLoader(dataset=dataset_val, batch_size=batch_size * 2, shuffle=False)
     mask = dataset_train.mask.to(device)
 
     model_state = None
@@ -155,13 +156,13 @@ def pretrain(model_type, device):
 
     model = make_sentence_model(model_type, model_state).to(device)  # make model
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=dataset_train.lr)  # Adam optimizer
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # Adam optimizer
     if optimizer_state is not None:
         optimizer.load_state_dict(optimizer_state)
 
     loss_func = nn.CrossEntropyLoss(ignore_index=0)  # ignore padding
 
-    for epoch in range(log["next_epoch"], dataset_train.max_epoch + 1):
+    for epoch in range(log["next_epoch"], max_epoch + 1):
         step_list = []
         loss_list = []
         model.train()
@@ -177,7 +178,7 @@ def pretrain(model_type, device):
 
             step_list.append((epoch - 1) * len(loop) + step)
             loss_list.append(float(loss))
-            loop.set_description(f"Pretraining {model_type} (epoch [{epoch}/{dataset_train.max_epoch}])")
+            loop.set_description(f"Pretraining {model_type} (epoch [{epoch}/{max_epoch}])")
             loop.set_postfix(loss=float(loss))
 
         save_pickle((step_list, loss_list), loss_save_path.format(model_type, epoch))
@@ -215,8 +216,14 @@ def test(model_type, device, model_name):
     )["model"]
     model = make_sentence_model(model_type, state_dict).to(device)
 
+    if model_type == "nodes":
+        batch_size = config.batch_size_nodes
+    elif model_type == "edges":
+        batch_size = config.batch_size_edges
+    else:
+        batch_size = config.batch_size_gs
     dataset = load_dataset(args.model_type, "test")
-    data_loader = DataLoader(dataset=dataset, batch_size=dataset.batch_size * 2, shuffle=False)
+    data_loader = DataLoader(dataset=dataset, batch_size=batch_size * 2, shuffle=False)
 
     acc, timing = evaluate(model, data_loader, model_type, device, dataset.mask.to(device), text_path)
 
@@ -308,14 +315,16 @@ def get_args():
 
     parser.add_argument("--func", type=str, required=True, default="pretrain", choices=["pretrain", "test"],
                         help="Function that you want to run.")
-    parser.add_argument("--device", type=str, required=True, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
-                        help="Device for pretraining.")
-    parser.add_argument("--model_type", type=str, required=True, default="nodes", choices=["nodes", "edges", "gs"],
+    parser.add_argument("--model_type", type=str, required=True, choices=["nodes", "edges", "gs"],
                         help="Pretrained model type.")
+    parser.add_argument("--device", type=str, required=False, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
+                        help="Device for pretraining.")
     parser.add_argument("--model_name", type=str, required=False,
                         help="The tested model name.")
 
-    return parser.parse_args()
+    parsed_args = parser.parse_args()
+    print(f"args: {str(parsed_args)}\n")
+    return parsed_args
 
 
 if __name__ == '__main__':

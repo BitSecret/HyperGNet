@@ -4,6 +4,7 @@ from pgps.utils import load_pickle, save_pickle
 from pgps.model import make_predictor_model
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import time
 import os
@@ -68,7 +69,7 @@ def load_dataset(dataset_type):
     return dataset
 
 
-def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pretrained, beam_size):
+def train(device, beam_size, use_hypertree, nodes_model_name, edges_model_name, gs_model_name):
     """Train theorem prediction model."""
     log_path = os.path.normpath(os.path.join(config.path_data, "log/train_log.json"))
     loss_save_path = os.path.normpath(os.path.join(config.path_data, "log/train/{}_loss.pk"))
@@ -103,10 +104,16 @@ def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pret
         model_state = last_epoch_msg["model"]
         optimizer_state = last_epoch_msg["optimizer"]
     else:
-        nodes_model = torch.load(pretrained_path.format(nodes_model_name), map_location=torch.device("cpu"))["model"]
-        edges_model = torch.load(pretrained_path.format(edges_model_name), map_location=torch.device("cpu"))["model"]
-        gs_model = torch.load(pretrained_path.format(gs_model_name), map_location=torch.device("cpu"))["model"]
-    model = make_predictor_model(model_state, nodes_model, edges_model, gs_model, freeze_pretrained).to(device)
+        if nodes_model_name is not None:
+            nodes_model = torch.load(
+                pretrained_path.format(nodes_model_name), map_location=torch.device("cpu"))["model"]
+        if edges_model_name is not None:
+            edges_model = torch.load(
+                pretrained_path.format(edges_model_name), map_location=torch.device("cpu"))["model"]
+        if gs_model_name is not None:
+            gs_model = torch.load(
+                pretrained_path.format(gs_model_name), map_location=torch.device("cpu"))["model"]
+    model = make_predictor_model(model_state, nodes_model, edges_model, gs_model).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)  # Adam optimizer
     if optimizer_state is not None:
@@ -121,11 +128,14 @@ def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pret
         loop = tqdm(enumerate(data_loader_train), total=len(data_loader_train), leave=True)  # training loop
         for step, (nodes, edges, edges_structural, goal, theorems_gt) in loop:
             nodes = nodes.to(device)
-            edges = edges.to(device)
-            edges_structural = edges_structural.to(device)
             goal = goal.to(device)
             theorems_gt = theorems_gt.to(device)
-            theorems = model(nodes, edges, edges_structural, goal)  # model prediction results
+            if use_hypertree:
+                edges = edges.to(device)
+                edges_structural = edges_structural.to(device)
+                theorems = model(nodes, edges, edges_structural, goal)  # prediction results
+            else:
+                theorems = model(nodes, None, None, goal)  # prediction results
             loss = loss_func(theorems.float(), theorems_gt.float())  # loss
             optimizer.zero_grad()  # clean grad
             loss.backward()  # backward
@@ -133,13 +143,13 @@ def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pret
 
             step_list.append((epoch - 1) * len(loop) + step)
             loss_list.append(float(loss))
-            loop.set_description(f"Epoch [{epoch}/{config.epoch}] (Pretraining)")
+            loop.set_description(f"Training (Epoch [{epoch}/{config.epoch}])")
             loop.set_postfix(loss=float(loss))
 
         save_pickle((step_list, loss_list), loss_save_path.format(epoch))
         log["train"][str(epoch)] = {"avg_loss": sum(loss_list) / len(loss_list), "timing": time.time() - timing}
 
-        acc, timing = evaluate(model, data_loader_eval, device, beam_size, save_filename=text_save_path.format(epoch))
+        acc, timing = evaluate(model, data_loader_eval, device, beam_size, use_hypertree, text_save_path.format(epoch))
         log["eval"][str(epoch)] = {"beam_size": beam_size, "acc": acc, "timing": timing}
         if acc > log["best_acc"]:
             log["best_acc"] = acc
@@ -150,7 +160,7 @@ def train(device, nodes_model_name, edges_model_name, gs_model_name, freeze_pret
         safe_save_json(log, log_path)
 
 
-def test(device, model_name, beam_size):
+def test(device, model_name, beam_size, use_hypertree):
     """
     Test trained model.
     :param device: 'cpu' or 'cuda:gpu_id'.
@@ -168,19 +178,20 @@ def test(device, model_name, beam_size):
     model = make_predictor_model(state_dict).to(device)
     data_loader = DataLoader(dataset=load_dataset("test"), batch_size=config.batch_size * 2, shuffle=False)
 
-    acc, timing = evaluate(model, data_loader, device, beam_size, text_path)
+    acc, timing = evaluate(model, data_loader, device, beam_size, use_hypertree, text_path)
 
-    safe_save_json({"acc": acc, "timing": timing}, results_path)
+    safe_save_json({"acc": acc, "timing": timing, "beam_size": beam_size}, results_path)
     print(f"Acc: {acc}. Details saved in {text_path}")
 
 
-def evaluate(model, data_loader, device, beam_size, save_filename=None):
+def evaluate(model, data_loader, device, beam_size, use_hypertree, save_filename=None):
     """
     Evaluate model and save evaluation results.
     :param model: tested model, instance of <Predictor>.
     :param data_loader: test datasets data loader.
     :param device: device that model run, torch.device().
     :param beam_size: beam size used for calculate acc.
+    :param use_hypertree: Weather use hypertree information or not.
     :param save_filename: file that save evaluation results.
     :return acc: Weighted Levenshtein ratio.
     :return timing: timing.
@@ -194,10 +205,15 @@ def evaluate(model, data_loader, device, beam_size, save_filename=None):
     with torch.no_grad():
         for step, (nodes, edges, edges_structural, goal, theorems_gt) in loop:
             nodes = nodes.to(device)
-            edges = edges.to(device)
-            edges_structural = edges_structural.to(device)
             goal = goal.to(device)
-            theorems = model(nodes, edges, edges_structural, goal).cpu()
+
+            if use_hypertree:
+                edges = edges.to(device)
+                edges_structural = edges_structural.to(device)
+                theorems = model(nodes, edges, edges_structural, goal).cpu()
+            else:
+                theorems = model(nodes, None, None, goal).cpu()
+            theorems = F.softmax(theorems, dim=1)    # no need
 
             for i in range(len(theorems)):
                 theorems_str = [str(idx) for idx, _ in sorted(enumerate(theorems[i]), key=lambda x: x[1], reverse=True)]
@@ -222,8 +238,12 @@ def evaluate(model, data_loader, device, beam_size, save_filename=None):
 def get_args():
     parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
 
-    parser.add_argument("--func", type=str, required=True, default="train", choices=["train", "test"],
+    parser.add_argument("--func", type=str, required=True, choices=["train", "test"],
                         help="function that you want to run")
+    parser.add_argument("--device", type=str, required=False, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
+                        help="Device for pretraining.")
+    parser.add_argument("--beam_size", type=int, required=False, default=5,
+                        help="Beam size when calculate acc.")
     parser.add_argument("--model_name", type=str, required=False,
                         help="The tested model name.")
     parser.add_argument("--nodes_model", type=str, required=False,
@@ -232,19 +252,32 @@ def get_args():
                         help="Edges model name.")
     parser.add_argument("--gs_model", type=str, required=False,
                         help="GS model name.")
-    parser.add_argument("--freeze_pretrained", type=bool, required=False, default=True,
-                        help="Weather freeze pretrained model para or not.")
-    parser.add_argument("--beam_size", type=int, required=True,
-                        help="Beam size when calculate acc.")
-    parser.add_argument("--device", type=str, required=True, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
-                        help="Device for pretraining.")
+    parser.add_argument("--use_hypertree", type=bool, required=False, default=False,
+                        help="Weather use hypertree information or not.")
 
-    return parser.parse_args()
+    parsed_args = parser.parse_args()
+    print(f"args: {str(parsed_args)}\n")
+    return parsed_args
 
 
 if __name__ == '__main__':
+    """
+    no use pretrain: 
+    python train.py --func train --use_hypertree true
+    
+    use pretrain: 
+    python train.py --func train --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth --use_hypertree true
+
+    no use hypertree:
+    python train.py --func train --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth
+    
+    test:
+    python train.py --func test --device cuda:0 --model_name predictor_model_pretrain.pth --use_hypertree true --beam_size 1
+    python train.py --func test --device cuda:0 --model_name predictor_model_pretrain.pth --beam_size 1
+    """
     args = get_args()
     if args.func == "train":
-        train(args.device, args.nodes_model, args.edges_model, args.gs_model, args.freeze_pretrained, args.beam_size)
+        train(device=args.device, beam_size=args.beam_size, use_hypertree=args.use_hypertree,
+              nodes_model_name=args.nodes_model, edges_model_name=args.edges_model, gs_model_name=args.gs_model)
     elif args.func == "test":
-        test(args.device, args.model_name, args.beam_size)
+        test(device=args.device, model_name=args.model_name, beam_size=args.beam_size, use_hypertree=args.use_hypertree)

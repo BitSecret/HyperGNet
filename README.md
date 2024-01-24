@@ -78,13 +78,13 @@ Before starting the training, ensure that the training data `data/training_data/
 If not, run `python symbolic_system.py --func make_onehot` to generate the data.  
 We first pretrain the embedding networks for nodes, edges and graph structure using a self-supervised method.
 
-    $ python pretrain.py --func pretrain --device cuda:0 --model_type nodes
-    $ python pretrain.py --func pretrain --device cuda:1 --model_type edges
-    $ python pretrain.py --func pretrain --device cuda:2 --model_type gs
+    $ python pretrain.py --func pretrain --model_type nodes
+    $ python pretrain.py --func pretrain --model_type edges
+    $ python pretrain.py --func pretrain --model_type gs
 
 Then, train the theorem prediction network:
 
-    $ python train.py --func train --device cuda:0 --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth --freeze_pretrained True --beam_size 5
+    $ python train.py --func train --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth --use_hypertree true
 
 Pretraining log information will be saved in `data/log/xxx_pretrain_log.json` and `data/log/xxx_pretrain`. Training log
 information will be saved in `data/log/train_log.json` and `data/log/train`.
@@ -93,17 +93,27 @@ information will be saved in `data/log/train_log.json` and `data/log/train`.
 
 We first test pretrained nodes model, edges model and gs model:
 
-    $ python pretrain.py --func test --device cuda:0 --model_type nodes --model_name nodes_model.pth
-    $ python pretrain.py --func test --device cuda:1 --model_type edges --model_name edges_model.pth
-    $ python pretrain.py --func test --device cuda:2 --model_type gs --model_name gs_model.pth
+    $ python pretrain.py --func test --model_type nodes --model_name nodes_model.pth
+    $ python pretrain.py --func test --model_type edges --model_name edges_model.pth
+    $ python pretrain.py --func test --model_type gs --model_name gs_model.pth
 
 Test theorem prediction model:
 
-    $ python train.py --func test --device cuda:0 --model_name predictor_model.pth --beam_size 5
+    $ python train.py --func test --model_name predictor_model.pth
 
 The test results of the model will be saved in `data/log/test`.
 
 ## Results
+
+You can obtain the figure or tabular data in the paper using the following command.
+
+Obtain table data:
+
+    $ python utils.py --func evaluate
+
+Draw figures:
+
+    $ python utils.py --func draw
 
 coming soon...
 

@@ -3,7 +3,8 @@ import zipfile
 import pickle
 import psutil
 import random
-from formalgeo.data import download_dataset
+from formalgeo.data import download_dataset, DatasetLoader
+from formalgeo.tools import load_json
 import argparse
 
 predicate_words = [
@@ -176,7 +177,7 @@ class Configuration:
     lr_nodes = 1e-5
     vocab_nodes = len(nodes_words)
     max_len_nodes = 22
-    h_nodes = 8
+    h_nodes = 4
     N_encoder_nodes = 4
     N_decoder_nodes = 4
     p_drop_nodes = 0.5
@@ -188,7 +189,7 @@ class Configuration:
     vocab_edges = len(edges_words)
     max_len_edges = 16
     max_len_edges_se = 1070
-    h_edges = 8
+    h_edges = 4
     N_encoder_edges = 4
     N_decoder_edges = 4
     p_drop_edges = 0.5
@@ -199,7 +200,7 @@ class Configuration:
     lr_gs = 1e-5
     vocab_gs = 1070
     max_len_gs = max_len_edges
-    h_gs = 8
+    h_gs = 4
     N_encoder_gs = 4
     N_decoder_gs = 4
     p_drop_gs = 0.5
@@ -210,10 +211,10 @@ class Configuration:
     lr = 1e-5
     vocab_theorems = len(theorem_words)
     max_len = 64
-    h = 8
-    N = 6
+    h = 4
+    N = 4
     p_drop = 0.5
-    d_model = 512
+    d_model = 256
 
 
 random.seed(Configuration.random_seed)
@@ -224,14 +225,6 @@ def show_word_list():
         len(nodes_words)))
     print("Input - edges (special_words + theorem_words + special_theorems): {} words.".format(len(edges_words)))
     print("Output - theorem (theorem_words): {} words.".format(len(theorem_words)))
-
-
-def get_args():
-    parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
-    parser.add_argument("--func", type=str, required=True,
-                        choices=["project_init", "show_word_list"],
-                        help="function that you want to run")
-    return parser.parse_args()
 
 
 def load_pickle(path):
@@ -258,6 +251,8 @@ def project_init():
         os.path.normpath(os.path.join(Configuration.path_data, "log/gs_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/test")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/evaluation")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/ablation_study")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
@@ -272,9 +267,81 @@ def project_init():
             zip_ref.extractall("./")
 
 
+def evaluate():
+    """
+    pac_log_pretrain_beam_1.json
+    pac_log_no_pretrain_beam_1.json
+    pac_log_no_pretrain_beam_3.json
+    pac_log_no_pretrain_beam_5.json
+    pac_log_no_hyper_1.json
+    pac_log_no_hyper_3.json
+    pac_log_no_hyper_5.json
+    """
+    evaluation_data_path = os.path.normpath(os.path.join(Configuration.path_data, "log/experiments/{}"))
+    files = [
+        "formalgeo7k_v1-data-fw-bfs.json",
+        "formalgeo7k_v1-data-fw-dfs.json",
+        "formalgeo7k_v1-data-fw-rs.json",
+        "formalgeo7k_v1-data-fw-bs.json",
+        "pac_log_pretrain_beam_3.json",
+        "pac_log_pretrain_beam_5.json"
+    ]
+    dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
+    test_pids = dl.get_problem_split()["split"]["test"]
+    print("Table 1:")
+    print("solved\tunsolved\ttimeout\terror\ttotal")
+    for file in files:
+        count = {"solved": 0, "unsolved": 0, "timeout": 0, "error": 0}
+        log = load_json(evaluation_data_path.format(file))
+        for key in log:
+            for pid in log[key]:
+                if int(pid) in test_pids:
+                    count[key] += 1
+        print("{}\t{}\t{}\t{}".format(
+            count["solved"] / len(test_pids),
+            count["unsolved"] / len(test_pids),
+            count["timeout"] / len(test_pids),
+            count["error"] / len(test_pids)
+        ))
+
+
+def draw():
+    pass
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Welcome to use PGPS!")
+    parser.add_argument("--func", type=str, required=True,
+                        choices=["project_init", "show_word_list", "evaluate", "draw", "kill"],
+                        help="function that you want to run")
+    parser.add_argument("--py_filename", type=str, required=False,
+                        help="python filename that you want to kill")
+
+    parsed_args = parser.parse_args()
+    print(f"args: {str(parsed_args)}\n")
+    return parsed_args
+
+
+def clean_process(py_filename):
+    for pid in psutil.pids():
+        process = psutil.Process(pid)
+        if process.name() == "python" and py_filename in process.cmdline():
+            print(f"kill -9 {pid}")
+
+
 if __name__ == '__main__':
-    args = get_args()
-    if args.func == "project_init":
-        project_init()
-    elif args.func == "show_word_list":
-        show_word_list()
+    """
+    python utils.py --func kill --py_filename agent.py
+    """
+    evaluate()
+    # args = get_args()
+    # if args.func == "project_init":
+    #     project_init()
+    # elif args.func == "show_word_list":
+    #     show_word_list()
+    # elif args.func == "evaluate":
+    #     evaluate()
+    # elif args.func == "draw":
+    #     draw()
+    # elif args.func == "kill":
+    #     clean_process(args.py_filename)
