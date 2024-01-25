@@ -7,15 +7,15 @@ from formalgeo.data import DatasetLoader
 from formalgeo.problem import Problem
 from formalgeo.solver import Interactor
 from formalgeo.parse import inverse_parse_one_theorem
+from multiprocessing import Process, Queue
+from func_timeout import func_timeout, FunctionTimedOut
+import torch.nn.functional as F
+import torch
 import warnings
 import random
 import time
 import argparse
 import os
-import torch
-import torch.nn.functional as F
-from multiprocessing import Process, Queue
-from func_timeout import func_timeout, FunctionTimedOut
 
 
 def make_onehot(state_info):
@@ -91,7 +91,7 @@ def get_state(beam_stacks, goal):
     return make_onehot(state_info)
 
 
-def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size):
+def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam):
     predicted_theorems = F.softmax(predicted_theorems, dim=1)    # convert to a probability distribution
     for i in range(len(beam_stacks)):    # consider previous prob
         predicted_theorems[i] = predicted_theorems[i] * beam_stacks[i][1]
@@ -101,26 +101,36 @@ def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size):
                        for idx, prob in sorted(enumerate(predicted_theorems), key=lambda x: x[1], reverse=True)]
 
     new_beam_stacks = []
-    i = 0
     prob_sum = 0
-    while len(new_beam_stacks) < beam_size and i < len(sorted_theorems):
-        idx, prob = sorted_theorems[i]
-        problem = Problem()
-        problem.load_problem_by_copy(beam_stacks[int(idx / len(theorem_words))][0])
-        t_name, t_branch = theorem_words[idx % len(theorem_words)].rsplit('_', 1)
-        solver.problem = problem
-        if solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
-            new_beam_stacks.append([solver.problem, prob])
-            prob_sum += prob
-        i += 1
+    if greedy_beam:
+        i = 0
+        while len(new_beam_stacks) < beam_size and i < len(sorted_theorems):
+            idx, prob = sorted_theorems[i]
+            problem = Problem()
+            problem.load_problem_by_copy(beam_stacks[int(idx / len(theorem_words))][0])
+            t_name, t_branch = theorem_words[idx % len(theorem_words)].rsplit('_', 1)
+            solver.problem = problem
+            if solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
+                new_beam_stacks.append([solver.problem, prob])
+                prob_sum += prob
+            i += 1
+    else:
+        for idx, prob in sorted_theorems[:beam_size]:
+            problem = Problem()
+            problem.load_problem_by_copy(beam_stacks[int(idx / len(theorem_words))][0])
+            t_name, t_branch = theorem_words[idx % len(theorem_words)].rsplit('_', 1)
+            solver.problem = problem
+            if solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
+                new_beam_stacks.append([solver.problem, prob])
+                prob_sum += prob
 
-    for i in range(len(new_beam_stacks)):
+    for i in range(len(new_beam_stacks)):    # probability normalization
         new_beam_stacks[i][1] = new_beam_stacks[i][1] / prob_sum
 
     return new_beam_stacks
 
 
-def solve_one(problem_id, request_queue, reply_queue, beam_size, step_size):
+def solve_one(problem_id, request_queue, reply_queue, beam_size, greedy_beam, step_size):
     dl = DatasetLoader(config.dataset_name, config.path_datasets)
     solver = Interactor(dl.predicate_GDL, dl.theorem_GDL)
     problem_CDL = dl.get_problem(problem_id)
@@ -149,14 +159,14 @@ def solve_one(problem_id, request_queue, reply_queue, beam_size, step_size):
         while reply_problem_id != problem_id:
             reply_problem_id, predicted_theorems = reply_queue.get()
 
-        beam_stacks = apply_theorem(solver, predicted_theorems, beam_stacks, beam_size)
+        beam_stacks = apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam)
 
         step_size["epoch"] += 1
 
     return "unsolved", "Out of stacks."
 
 
-def solve(task_queue, request_queue, reply_queue, beam_size, timeout):
+def solve(task_queue, request_queue, reply_queue, beam_size, greedy_beam, timeout):
     warnings.filterwarnings("ignore")
     if not task_queue.empty():
         problem_id = task_queue.get()
@@ -165,7 +175,7 @@ def solve(task_queue, request_queue, reply_queue, beam_size, timeout):
 
         try:
             solved, msg = func_timeout(
-                timeout, solve_one, args=(problem_id, request_queue, reply_queue, beam_size, step_size))
+                timeout, solve_one, args=(problem_id, request_queue, reply_queue, beam_size, greedy_beam, step_size))
             info = (solved, msg, time.time() - timing, step_size["epoch"])
         except FunctionTimedOut:
             info = ("timeout", f"FunctionTimedOut({timeout})", time.time() - timing, step_size["epoch"])
@@ -175,7 +185,7 @@ def solve(task_queue, request_queue, reply_queue, beam_size, timeout):
         request_queue.put((os.getpid(), problem_id, "write", info))
 
 
-def start_process(task_queue, request_queue, reply_queues, beam_size, timeout, max_process):
+def start_process(task_queue, request_queue, reply_queues, beam_size, greedy_beam, timeout, max_process):
     """clean process and start new process."""
     removed = []
     for process_id in reply_queues:
@@ -186,12 +196,12 @@ def start_process(task_queue, request_queue, reply_queues, beam_size, timeout, m
 
     while not task_queue.empty() and max_process - len(reply_queues) > 0:
         reply_queue = Queue()
-        process = Process(target=solve, args=(task_queue, request_queue, reply_queue, beam_size, timeout))
+        process = Process(target=solve, args=(task_queue, request_queue, reply_queue, beam_size, greedy_beam, timeout))
         process.start()
         reply_queues[process.pid] = (reply_queue, time.time())
 
 
-def main(model_name, device, beam_size, use_hypertree, timeout, max_process):
+def main(model_name, device, beam_size, greedy_beam, use_hypertree, timeout, max_process):
     model_path = os.path.normpath(os.path.join(config.path_data, f"trained_model/{model_name}"))
     log_path = os.path.normpath(os.path.join(config.path_data, f"log/pac_log.json"))
 
@@ -219,7 +229,7 @@ def main(model_name, device, beam_size, use_hypertree, timeout, max_process):
     model = make_predictor_model(torch.load(model_path, map_location=torch.device("cpu"))["model"]).to(device)
 
     while True:
-        start_process(task_queue, request_queue, reply_queues, beam_size, timeout, max_process)
+        start_process(task_queue, request_queue, reply_queues, beam_size, greedy_beam, timeout, max_process)
         process_id, problem_id, request, info = request_queue.get()
         if request == "write":  # write log
             del reply_queues[process_id]
@@ -251,6 +261,8 @@ def get_args():
                         help="Device for pretraining.")
     parser.add_argument("--beam_size", type=int, required=False, default=5,
                         help="Beam size when calculate acc.")
+    parser.add_argument("--greedy_beam", type=bool, required=False, default=False,
+                        help="Weather use greedy beam search or not.")
     parser.add_argument("--use_hypertree", type=bool, required=False, default=False,
                         help="Weather use hypertree information or not.")
     parser.add_argument("--timeout", type=int, required=False, default=30,
@@ -265,8 +277,12 @@ def get_args():
 
 if __name__ == '__main__':
     """
-    python agent.py --model_name predictor_model_pretrain.pth --device cuda:1 --beam_size 5 --use_hypertree true --timeout 30 --max_process 5
+    run pac:
+    python agent.py --model_name predictor_model_no_pretrain.pth --use_hypertree true
+    python agent.py --model_name predictor_model_no_pretrain.pth --use_hypertree true --greedy_beam true
+    
+    kill subprocess:
     python utils.py --func kill --py_filename agent.py
     """
     args = get_args()
-    main(args.model_name, args.device, args.beam_size, args.use_hypertree, args.timeout, args.max_process)
+    main(args.model_name, args.device, args.beam_size, args.greedy_beam, args.use_hypertree, args.timeout, args.max_process)

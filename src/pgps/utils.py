@@ -1,10 +1,11 @@
+from formalgeo.data import download_dataset, DatasetLoader
+from formalgeo.tools import load_json
+import matplotlib.pyplot as plt
 import os
 import zipfile
 import pickle
 import psutil
 import random
-from formalgeo.data import download_dataset, DatasetLoader
-from formalgeo.tools import load_json
 import argparse
 
 predicate_words = [
@@ -251,8 +252,7 @@ def project_init():
         os.path.normpath(os.path.join(Configuration.path_data, "log/gs_pretrain")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/train")),
         os.path.normpath(os.path.join(Configuration.path_data, "log/test")),
-        os.path.normpath(os.path.join(Configuration.path_data, "log/evaluation")),
-        os.path.normpath(os.path.join(Configuration.path_data, "log/ablation_study")),
+        os.path.normpath(os.path.join(Configuration.path_data, "log/experiments")),
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
@@ -267,41 +267,153 @@ def project_init():
             zip_ref.extractall("./")
 
 
+def search_alignment(log, test_pids, timeout=30):
+    """
+    Alignment search results.
+    1.select the test set data.
+    2.view the problem which search time greater than <timeout> as timeout.
+    """
+    alignment_log = {"solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
+    for pid in test_pids:
+        pid = str(pid)
+        for key in log:
+            if pid in log[key]:
+                if log[key][pid]["timing"] > timeout:
+                    alignment_log["timeout"][pid] = log[key][pid]
+                else:
+                    alignment_log[key][pid] = log[key][pid]
+                break
+    return pac_alignment(alignment_log, test_pids, timeout)
+
+
+def pac_alignment(log, test_pids, timeout=30):
+    """
+    Alignment PAC results.
+    1.set the unhandled problems as unsolved and set it timeout as <timeout>.
+    2.sort by problem id.
+    3.set the search time greater than <timeout> as timeout.
+    """
+    alignment_log = {"solved": {}, "unsolved": {}, "timeout": {}}
+    for pid in test_pids:
+        pid = str(pid)
+        added = False
+        for key in log:
+            if pid in log[key]:
+                if key != "error":
+                    alignment_log[key][pid] = log[key][pid]
+                    if alignment_log[key][pid]["timing"] > timeout:
+                        alignment_log[key][pid]["timing"] = timeout
+                else:
+                    alignment_log["unsolved"][pid] = log[key][pid]
+                    if alignment_log["unsolved"][pid]["timing"] > timeout:
+                        alignment_log["unsolved"][pid]["timing"] = timeout
+                added = True
+                break
+
+        if not added:
+            alignment_log["unsolved"][pid] = {"msg": "Unhandled problems.", "timing": timeout * 0.5, "step_size": 1}
+
+    return alignment_log
+
+
 def evaluate():
-    """
-    pac_log_pretrain_beam_1.json
-    pac_log_no_pretrain_beam_1.json
-    pac_log_no_pretrain_beam_3.json
-    pac_log_no_pretrain_beam_5.json
-    pac_log_no_hyper_1.json
-    pac_log_no_hyper_3.json
-    pac_log_no_hyper_5.json
-    """
     evaluation_data_path = os.path.normpath(os.path.join(Configuration.path_data, "log/experiments/{}"))
-    files = [
-        "formalgeo7k_v1-data-fw-bfs.json",
-        "formalgeo7k_v1-data-fw-dfs.json",
-        "formalgeo7k_v1-data-fw-rs.json",
-        "formalgeo7k_v1-data-fw-bs.json",
-        "pac_log_pretrain_beam_3.json",
-        "pac_log_pretrain_beam_5.json"
+    dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
+    test_pids = dl.get_problem_split()["split"]["test"]
+
+    contrast_log_files = [  # table 1 and 2
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bfs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-dfs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-rs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bs.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_greedy_beam_5.json")), test_pids),
     ]
     dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
     test_pids = dl.get_problem_split()["split"]["test"]
+
     print("Table 1:")
-    print("solved\tunsolved\ttimeout\terror\ttotal")
-    for file in files:
-        count = {"solved": 0, "unsolved": 0, "timeout": 0, "error": 0}
-        log = load_json(evaluation_data_path.format(file))
-        for key in log:
-            for pid in log[key]:
-                if int(pid) in test_pids:
-                    count[key] += 1
-        print("{}\t{}\t{}\t{}".format(
-            count["solved"] / len(test_pids),
-            count["unsolved"] / len(test_pids),
-            count["timeout"] / len(test_pids),
-            count["error"] / len(test_pids)
+    print("solved\tunsolved\ttimeout")
+    for file in contrast_log_files:
+        print("{:.2f}\t{:.2f}\t{:.2f}".format(
+            len(file["solved"]) / len(test_pids) * 100,
+            len(file["unsolved"]) / len(test_pids) * 100,
+            len(file["timeout"]) / len(test_pids) * 100
+        ))
+    print()
+
+    level_count = 6
+    level_map = {}
+    for pid in test_pids:
+        t_length = dl.get_problem(pid)["problem_level"]
+        if t_length <= 2:
+            level_map[pid] = 0
+        elif t_length <= 4:
+            level_map[pid] = 1
+        elif t_length <= 6:
+            level_map[pid] = 2
+        elif t_length <= 8:
+            level_map[pid] = 3
+        elif t_length <= 10:
+            level_map[pid] = 4
+        else:
+            level_map[pid] = 5
+
+    level_total = [0 for _ in range(level_count)]
+    for pid in test_pids:
+        level_total[level_map[pid]] += 1
+
+    table_data = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
+    for i in range(len(contrast_log_files)):
+        for pid in test_pids:
+            if str(pid) in contrast_log_files[i]["solved"]:
+                table_data[i][level_map[pid]] += 1
+
+    print("Table 2:")
+    print("total" + "".join([f"\tl{i + 1}" for i in range(level_count)]))
+    for i in range(len(contrast_log_files)):
+        print("{:.2f}".format(len(contrast_log_files[i]["solved"]) / len(test_pids) * 100), end="")
+        for j in range(level_count):
+            print("\t{:.2f}".format(table_data[i][j] / level_total[j] * 100), end="")
+        print()
+    print()
+
+    step_wised_log_files = [  # table 3
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_1.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_3.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_5.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_1.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_3.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_5.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_1.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_3.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_5.json"))
+    ]
+    pac_log_files = [  # table 3
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_1.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_3.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_1.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_3.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_5.json")), test_pids)
+    ]
+    print("Table 3:")
+    print("step_wised_acc\toverall_acc\tavg_time\tavg_step")
+    for i in range(len(step_wised_log_files)):
+        time_sum = 0
+        step_sum = 0
+        for key in pac_log_files[i]:
+            for pid in pac_log_files[i][key]:
+                time_sum += pac_log_files[i][key][pid]["timing"]
+                step_sum += pac_log_files[i][key][pid]["step_size"]
+        print("{:.2f}\t{:.2f}\t{:.2f}\t{:.2f}".format(
+            step_wised_log_files[i]["acc"] * 100,
+            len(pac_log_files[i]["solved"]) / len(test_pids) * 100,
+            time_sum / len(test_pids),
+            step_sum / len(test_pids)
         ))
 
 
@@ -330,18 +442,14 @@ def clean_process(py_filename):
 
 
 if __name__ == '__main__':
-    """
-    python utils.py --func kill --py_filename agent.py
-    """
-    evaluate()
-    # args = get_args()
-    # if args.func == "project_init":
-    #     project_init()
-    # elif args.func == "show_word_list":
-    #     show_word_list()
-    # elif args.func == "evaluate":
-    #     evaluate()
-    # elif args.func == "draw":
-    #     draw()
-    # elif args.func == "kill":
-    #     clean_process(args.py_filename)
+    args = get_args()
+    if args.func == "project_init":
+        project_init()
+    elif args.func == "show_word_list":
+        show_word_list()
+    elif args.func == "evaluate":
+        evaluate()
+    elif args.func == "draw":
+        draw()
+    elif args.func == "kill":
+        clean_process(args.py_filename)

@@ -559,6 +559,10 @@ def get_args():
 
 
 if __name__ == '__main__':
+    """
+    kill subprocess:
+    python utils.py --func kill --py_filename symbolic_system.py
+    """
     args = get_args()
     if args.func == "show_training_data":
         show_training_data(pid_or_training_data=1)
