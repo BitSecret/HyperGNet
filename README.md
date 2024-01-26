@@ -20,7 +20,7 @@ encode the structural and semantic information of the hypertree, and a solver to
 The neural part predicts theorems according to the hypertree, and the symbolic part applies theorems and updates the
 hypertree, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic solving of
 geometric problems. Experiments demonstrate the correctness and effectiveness of this neural-symbolic architecture. We
-achieved a step-wised accuracy of 89.57% and an overall accuracy of 75% on
+achieved a step-wised accuracy of 87.65% and an overall accuracy of 85.53% on
 the [formalgeo7k](https://github.com/FormalGeo/Datasets) datasets.
 
 More information about FormalGeo will be found in [homepage](https://formalgeo.github.io/). FormalGeo is in its early
