@@ -3,5 +3,5 @@
 # Contact: xiaokaizhang1999@163.com
 
 __all__ = [
-    "module", "model", "train", "pretrain", "utils", "symbolic_system"
+    "module", "model", "train", "pretrain", "utils", "symbolic_system", "agent", "imo"
 ]

@@ -91,11 +91,11 @@ def get_state(beam_stacks, goal):
     return make_onehot(state_info)
 
 
-def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam):
-    predicted_theorems = F.softmax(predicted_theorems, dim=1)    # convert to a probability distribution
-    for i in range(len(beam_stacks)):    # consider previous prob
+def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam, timing, debug=False):
+    predicted_theorems = F.softmax(predicted_theorems, dim=1)  # convert to a probability distribution
+    for i in range(len(beam_stacks)):  # consider previous prob
         predicted_theorems[i] = predicted_theorems[i] * beam_stacks[i][1]
-    predicted_theorems = predicted_theorems.flatten()    # flatten for sorting
+    predicted_theorems = predicted_theorems.flatten()  # flatten for sorting
 
     sorted_theorems = [(idx, prob)
                        for idx, prob in sorted(enumerate(predicted_theorems), key=lambda x: x[1], reverse=True)]
@@ -109,10 +109,24 @@ def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_bea
             problem = Problem()
             problem.load_problem_by_copy(beam_stacks[int(idx / len(theorem_words))][0])
             t_name, t_branch = theorem_words[idx % len(theorem_words)].rsplit('_', 1)
+            applied = False
             solver.problem = problem
             if solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
                 new_beam_stacks.append([solver.problem, prob])
                 prob_sum += prob
+                applied = True
+
+            if debug:
+                print("beam: {}, selected: {}, t_name: {}, t_branch: {}, applied: {}, new_beam: {}, timing: {}s".format(
+                    len(beam_stacks),
+                    int(idx / len(theorem_words)),
+                    t_name,
+                    t_branch,
+                    applied,
+                    len(new_beam_stacks),
+                    time.time() - timing
+                ))
+
             i += 1
     else:
         for idx, prob in sorted_theorems[:beam_size]:
@@ -124,13 +138,14 @@ def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_bea
                 new_beam_stacks.append([solver.problem, prob])
                 prob_sum += prob
 
-    for i in range(len(new_beam_stacks)):    # probability normalization
+    for i in range(len(new_beam_stacks)):  # probability normalization
         new_beam_stacks[i][1] = new_beam_stacks[i][1] / prob_sum
 
     return new_beam_stacks
 
 
 def solve_one(problem_id, request_queue, reply_queue, beam_size, greedy_beam, step_size):
+    timing = time.time()
     dl = DatasetLoader(config.dataset_name, config.path_datasets)
     solver = Interactor(dl.predicate_GDL, dl.theorem_GDL)
     problem_CDL = dl.get_problem(problem_id)
@@ -159,7 +174,7 @@ def solve_one(problem_id, request_queue, reply_queue, beam_size, greedy_beam, st
         while reply_problem_id != problem_id:
             reply_problem_id, predicted_theorems = reply_queue.get()
 
-        beam_stacks = apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam)
+        beam_stacks = apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam, timing)
 
         step_size["epoch"] += 1
 
@@ -285,4 +300,5 @@ if __name__ == '__main__':
     python utils.py --func kill --py_filename agent.py
     """
     args = get_args()
-    main(args.model_name, args.device, args.beam_size, args.greedy_beam, args.use_hypertree, args.timeout, args.max_process)
+    main(args.model_name, args.device, args.beam_size, args.greedy_beam, args.use_hypertree, args.timeout,
+         args.max_process)
