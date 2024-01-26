@@ -262,9 +262,10 @@ def project_init():
         if not os.path.exists(filepath):
             os.makedirs(filepath)
 
-    if os.path.exists("data.zip"):  # unzip_results
-        with zipfile.ZipFile("data.zip", 'r') as zip_ref:
-            zip_ref.extractall("./")
+    zip_data_path = "../../data.zip"
+    if os.path.exists(zip_data_path):  # unzip_results
+        with zipfile.ZipFile(zip_data_path, 'r') as zip_ref:
+            zip_ref.extractall()
 
 
 def search_alignment(log, test_pids, timeout=30):
@@ -318,29 +319,9 @@ def pac_alignment(log, test_pids, timeout=30):
 
 def evaluate():
     evaluation_data_path = os.path.normpath(os.path.join(Configuration.path_data, "log/experiments/{}"))
+    figure_save_path = os.path.normpath(os.path.join(Configuration.path_data, "log/{}"))
     dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
     test_pids = dl.get_problem_split()["split"]["test"]
-
-    contrast_log_files = [  # table 1 and 2
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bfs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-dfs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-rs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bs.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_greedy_beam_5.json")), test_pids),
-    ]
-    dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
-    test_pids = dl.get_problem_split()["split"]["test"]
-
-    print("Table 1:")
-    print("solved\tunsolved\ttimeout")
-    for file in contrast_log_files:
-        print("{:.2f}\t{:.2f}\t{:.2f}".format(
-            len(file["solved"]) / len(test_pids) * 100,
-            len(file["unsolved"]) / len(test_pids) * 100,
-            len(file["timeout"]) / len(test_pids) * 100
-        ))
-    print()
 
     level_count = 6
     level_map = {}
@@ -358,10 +339,31 @@ def evaluate():
             level_map[pid] = 4
         else:
             level_map[pid] = 5
-
     level_total = [0 for _ in range(level_count)]
     for pid in test_pids:
         level_total[level_map[pid]] += 1
+
+    contrast_log_files = [  # table 1 and 2
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bfs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-dfs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-rs.json")), test_pids),
+        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bs.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_best.json")), test_pids, 600)
+    ]
+    dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
+    test_pids = dl.get_problem_split()["split"]["test"]
+
+    print("Table 1:")
+    print("solved\tunsolved\ttimeout")
+    for file in contrast_log_files:
+        print("{:.2f}\t{:.2f}\t{:.2f}".format(
+            len(file["solved"]) / len(test_pids) * 100,
+            len(file["unsolved"]) / len(test_pids) * 100,
+            len(file["timeout"]) / len(test_pids) * 100
+        ))
+    print()
 
     table_data = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
     for i in range(len(contrast_log_files)):
@@ -379,23 +381,23 @@ def evaluate():
     print()
 
     step_wised_log_files = [  # table 3
-        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_1.json")),
-        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_3.json")),
-        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_5.json")),
         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_1.json")),
         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_3.json")),
         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_5.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_1.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_3.json")),
+        load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_5.json")),
         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_1.json")),
         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_3.json")),
         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_5.json"))
     ]
     pac_log_files = [  # table 3
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_1.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_3.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
+        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_1.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_3.json")), test_pids),
         pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_5.json")), test_pids)
@@ -416,9 +418,51 @@ def evaluate():
             step_sum / len(test_pids)
         ))
 
+    timing = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
+    step = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
 
-def draw():
-    pass
+    for i in range(len(contrast_log_files)):
+        for key in contrast_log_files[i]:
+            for pid in contrast_log_files[i][key]:
+                timing[i][level_map[int(pid)]] += contrast_log_files[i][key][pid]["timing"]
+                step[i][level_map[int(pid)]] += contrast_log_files[i][key][pid]["step_size"]
+
+    for i in range(len(contrast_log_files)):
+        for j in range(level_count):
+            timing[i][j] /= level_total[j]
+            step[i][j] /= level_total[j]
+
+    x = [i + 1 for i in range(level_count)]
+    fontsize = 24
+    axis_fontsize = 20
+    line_width = 4
+    plt.figure(figsize=(16, 8))  # figure 1
+    plt.plot(x, timing[0], label="FW-BFS", linewidth=line_width)
+    plt.plot(x, timing[1], label="FW-DFS", linewidth=line_width)
+    plt.plot(x, timing[2], label="FW-RS", linewidth=line_width)
+    plt.plot(x, timing[3], label="FW-RBS", linewidth=line_width)
+    plt.plot(x, timing[4], label="HyperGNet-NB", linewidth=line_width)
+    plt.plot(x, timing[5], label="HyperGNet-GB", linewidth=line_width)
+    plt.xlabel("Problem Difficulty", fontsize=fontsize)
+    plt.ylabel("Avg Time (s)", fontsize=fontsize)
+    plt.legend(loc="lower right", fontsize=axis_fontsize)
+    plt.tick_params(axis='both', labelsize=axis_fontsize)
+
+    plt.tight_layout()
+    plt.savefig(figure_save_path.format("timing.pdf"), format='pdf')
+    plt.show()
+
+    plt.figure(figsize=(16, 8))  # figure 1
+    plt.plot(x, step[4], label="HyperGNet-NB", linewidth=line_width)
+    plt.plot(x, step[5], label="HyperGNet-GB", linewidth=line_width)
+    plt.xlabel("Problem Difficulty", fontsize=fontsize)
+    plt.ylabel("Avg Step", fontsize=fontsize)
+    plt.legend(loc="lower right", fontsize=axis_fontsize)
+    plt.tick_params(axis='both', labelsize=axis_fontsize)
+
+    plt.tight_layout()
+    plt.savefig(figure_save_path.format("step.pdf"), format='pdf')
+    plt.show()
 
 
 def get_args():
@@ -442,14 +486,13 @@ def clean_process(py_filename):
 
 
 if __name__ == '__main__':
-    args = get_args()
-    if args.func == "project_init":
-        project_init()
-    elif args.func == "show_word_list":
-        show_word_list()
-    elif args.func == "evaluate":
-        evaluate()
-    elif args.func == "draw":
-        draw()
-    elif args.func == "kill":
-        clean_process(args.py_filename)
+    project_init()
+    # args = get_args()
+    # if args.func == "project_init":
+    #     project_init()
+    # elif args.func == "show_word_list":
+    #     show_word_list()
+    # elif args.func == "evaluate":
+    #     evaluate()
+    # elif args.func == "kill":
+    #     clean_process(args.py_filename)

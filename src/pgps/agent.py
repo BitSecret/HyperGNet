@@ -278,8 +278,8 @@ def get_args():
 if __name__ == '__main__':
     """
     run pac:
-    python agent.py --model_name predictor_model_no_pretrain.pth --use_hypertree true
-    python agent.py --model_name predictor_model_no_pretrain.pth --use_hypertree true --greedy_beam true
+    python agent.py --model_name predictor_model_pretrain.pth --use_hypertree true
+    python agent.py --model_name predictor_model_pretrain.pth --use_hypertree true --greedy_beam true --timeout 600
     
     kill subprocess:
     python utils.py --func kill --py_filename agent.py
