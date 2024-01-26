@@ -486,13 +486,12 @@ def clean_process(py_filename):
 
 
 if __name__ == '__main__':
-    project_init()
-    # args = get_args()
-    # if args.func == "project_init":
-    #     project_init()
-    # elif args.func == "show_word_list":
-    #     show_word_list()
-    # elif args.func == "evaluate":
-    #     evaluate()
-    # elif args.func == "kill":
-    #     clean_process(args.py_filename)
+    args = get_args()
+    if args.func == "project_init":
+        project_init()
+    elif args.func == "show_word_list":
+        show_word_list()
+    elif args.func == "evaluate":
+        evaluate()
+    elif args.func == "kill":
+        clean_process(args.py_filename)
