@@ -1,6 +1,6 @@
 from pgps.agent import get_state, apply_theorem
 from pgps.model import make_predictor_model
-from formalgeo.tools import get_used_pid_and_theorem
+from formalgeo.tools import get_used_pid_and_theorem, save_json
 from formalgeo.data import DatasetLoader
 from formalgeo.solver import Interactor
 from formalgeo.parse import inverse_parse_one_theorem
@@ -33,7 +33,7 @@ def solve_one(problem_CDL, solver, predictor, device, beam_size, greedy_beam):
                 seqs = [inverse_parse_one_theorem(s, solver.parsed_theorem_GDL) for s in seqs]
                 print(f"{problem_CDL['problem_id']} solved.")
                 print(seqs)
-                return
+                return True
 
         nodes, edges, edges_structural, goal = get_state(beam_stacks, raw_goal)
         predicted_theorems = predictor(
@@ -48,6 +48,7 @@ def solve_one(problem_CDL, solver, predictor, device, beam_size, greedy_beam):
 
     print(f"{problem_CDL['problem_id']} unsolved.")
     print("Out of stacks.")
+    return False
 
 
 def main():
@@ -55,7 +56,7 @@ def main():
     path_datasets = "datasets"
     path_predictor = "data/trained_model/predictor_model_pretrain.pth"
     timeout = 3600
-    beam_size = 3
+    beam_size = 5
     greedy_beam = True
 
     warnings.filterwarnings("ignore")
@@ -63,19 +64,28 @@ def main():
     predictor = make_predictor_model(torch.load(path_predictor, map_location=torch.device("cpu"))["model"]).to(device)
     dl = DatasetLoader(dataset_name, path_datasets)
     solver = Interactor(dl.predicate_GDL, dl.theorem_GDL)
+    results = {"solved": [], "unsolved": [], "timeout": [], "error": []}
 
-    while True:
-        pid = int(input("input pid (-1 to stop):"))
-        if pid == -1:
-            break
+    for pid in range(1, dl.info["problem_number"] + 1):
         print(f"start solving {pid} ...")
 
         try:
-            func_timeout(timeout, solve_one,
-                         args=(dl.get_problem(pid), solver, predictor, device, beam_size, greedy_beam))
+            solved = func_timeout(timeout, solve_one,
+                                  args=(dl.get_problem(pid), solver, predictor, device, beam_size, greedy_beam))
+            if solved:
+                results["solved"].append(pid)
+            else:
+                results["unsolved"].append(pid)
         except FunctionTimedOut as e:
             print(f"{pid} unsolved.")
             print(repr(e))
+            results["timeout"].append(pid)
+        except BaseException as e:
+            print(f"{pid} error.")
+            print(repr(e))
+            results["error"].append(pid)
+
+        save_json(results, "data/log/imo_log.json")
 
 
 if __name__ == '__main__':

@@ -111,7 +111,7 @@ def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_bea
             t_name, t_branch = theorem_words[idx % len(theorem_words)].rsplit('_', 1)
             applied = False
             solver.problem = problem
-            if solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
+            if t_name not in ["sine_theorem", "cosine_theorem"] and solver.apply_theorem(t_name=t_name, t_branch=t_branch):  # if update
                 new_beam_stacks.append([solver.problem, prob])
                 prob_sum += prob
                 applied = True

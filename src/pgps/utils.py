@@ -165,7 +165,7 @@ class Configuration:
     path_datasets = "datasets"  # datasets
     dataset_name = "formalgeo7k_v1"
 
-    random_seed = 619  # random_seed
+    random_seed = 619  # I set 619 as the random seed to commemorate June 19, 2023.
     torch_seed = 619
     cuda_seed = 619
 
@@ -434,9 +434,11 @@ def evaluate():
 
     x = [i + 1 for i in range(level_count)]
     fontsize = 24
-    axis_fontsize = 20
-    line_width = 4
+    axis_fontsize = 15
+    line_width = 3
     plt.figure(figsize=(16, 8))  # figure 1
+
+    plt.subplot(121)
     plt.plot(x, timing[0], label="FW-BFS", linewidth=line_width)
     plt.plot(x, timing[1], label="FW-DFS", linewidth=line_width)
     plt.plot(x, timing[2], label="FW-RS", linewidth=line_width)
@@ -448,11 +450,7 @@ def evaluate():
     plt.legend(loc="lower right", fontsize=axis_fontsize)
     plt.tick_params(axis='both', labelsize=axis_fontsize)
 
-    plt.tight_layout()
-    plt.savefig(figure_save_path.format("timing.pdf"), format='pdf')
-    plt.show()
-
-    plt.figure(figsize=(16, 8))  # figure 1
+    plt.subplot(122)
     plt.plot(x, step[4], label="HyperGNet-NB", linewidth=line_width)
     plt.plot(x, step[5], label="HyperGNet-GB", linewidth=line_width)
     plt.xlabel("Problem Difficulty", fontsize=fontsize)
@@ -461,7 +459,7 @@ def evaluate():
     plt.tick_params(axis='both', labelsize=axis_fontsize)
 
     plt.tight_layout()
-    plt.savefig(figure_save_path.format("step.pdf"), format='pdf')
+    plt.savefig(figure_save_path.format("time_and_step.pdf"), format='pdf')
     plt.show()
 
 
