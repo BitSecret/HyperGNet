@@ -19,7 +19,8 @@ dependencies = [
     "formalgeo==0.0.3",
     "psutil==5.9.7",
     "matplotlib==3.8.2",
-    "python-Levenshtein==0.23.0"
+    "python-Levenshtein==0.23.0",
+    "transformers==4.39.2"
 ]
 [project.urls]
 "Homepage" = "https://github.com/BitSecret/PGPS"

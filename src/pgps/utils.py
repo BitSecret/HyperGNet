@@ -256,7 +256,8 @@ def project_init():
         os.path.normpath(os.path.join(Configuration.path_data, "trained_model")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/train/raw")),
         os.path.normpath(os.path.join(Configuration.path_data, "training_data/val/raw")),
-        os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/raw"))
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/test/raw")),
+        os.path.normpath(os.path.join(Configuration.path_data, "training_data/inter-gps"))
     ]
     for filepath in filepaths:
         if not os.path.exists(filepath):
@@ -268,50 +269,27 @@ def project_init():
             zip_ref.extractall()
 
 
-def search_alignment(log, test_pids, timeout=30):
-    """
-    Alignment search results.
-    1.select the test set data.
-    2.view the problem which search time greater than <timeout> as timeout.
-    """
-    alignment_log = {"solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
-    for pid in test_pids:
-        pid = str(pid)
-        for key in log:
-            if pid in log[key]:
-                if log[key][pid]["timing"] > timeout:
-                    alignment_log["timeout"][pid] = log[key][pid]
-                else:
-                    alignment_log[key][pid] = log[key][pid]
-                break
-    return pac_alignment(alignment_log, test_pids, timeout)
-
-
-def pac_alignment(log, test_pids, timeout=30):
+def result_alignment(log, test_pids, timeout=600):
     """
     Alignment PAC results.
-    1.set the unhandled problems as unsolved and set it timeout as <timeout>.
-    2.sort by problem id.
-    3.set the search time greater than <timeout> as timeout.
+    1.select the test set data.
+    2.set the max search time as timeout.
+    3.set the unhandled and error problems as unsolved and set it timeout as <timeout> * 0.5.
     """
     alignment_log = {"solved": {}, "unsolved": {}, "timeout": {}}
-    for pid in test_pids:
+    for pid in test_pids:  # 1.select the test set data.
         pid = str(pid)
         added = False
-        for key in log:
+        for key in alignment_log:
             if pid in log[key]:
-                if key != "error":
-                    alignment_log[key][pid] = log[key][pid]
-                    if alignment_log[key][pid]["timing"] > timeout:
-                        alignment_log[key][pid]["timing"] = timeout
+                if log[key][pid]["timing"] > timeout:  # 2.set the max search time as timeout.
+                    alignment_log["timeout"][pid] = log[key][pid]
+                    alignment_log["timeout"][pid]["timing"] = timeout
                 else:
-                    alignment_log["unsolved"][pid] = log[key][pid]
-                    if alignment_log["unsolved"][pid]["timing"] > timeout:
-                        alignment_log["unsolved"][pid]["timing"] = timeout
+                    alignment_log[key][pid] = log[key][pid]
                 added = True
                 break
-
-        if not added:
+        if not added:  # 3.set the unhandled and error problems as unsolved and set it timeout as <timeout> * 0.5.
             alignment_log["unsolved"][pid] = {"msg": "Unhandled problems.", "timing": timeout * 0.5, "step_size": 1}
 
     return alignment_log
@@ -343,38 +321,36 @@ def evaluate():
     for pid in test_pids:
         level_total[level_map[pid]] += 1
 
-    contrast_log_files = [  # table 1 and 2
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bfs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-dfs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-rs.json")), test_pids),
-        search_alignment(load_json(evaluation_data_path.format("formalgeo7k_v1-data-fw-bs.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_best.json")), test_pids, 600)
-    ]
+    contrast_log_files = {  # table 1
+        "Inter-GPS-600": result_alignment(
+            load_json(evaluation_data_path.format("inter_gps.json")),
+            test_pids, 600),
+        "HyperGNet-NB-30": result_alignment(
+            load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")),
+            test_pids, 30),
+        "HyperGNet-GB-30": result_alignment(
+            load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")),
+            test_pids, 30),
+        "HyperGNet-GB-600": result_alignment(
+            load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")),
+            test_pids, 600)
+    }
+    contrast_filenames = list(contrast_log_files.keys())
     dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
     test_pids = dl.get_problem_split()["split"]["test"]
 
-    print("Table 1:")
-    print("solved\tunsolved\ttimeout")
-    for file in contrast_log_files:
-        print("{:.2f}\t{:.2f}\t{:.2f}".format(
-            len(file["solved"]) / len(test_pids) * 100,
-            len(file["unsolved"]) / len(test_pids) * 100,
-            len(file["timeout"]) / len(test_pids) * 100
-        ))
-    print()
-
     table_data = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
-    for i in range(len(contrast_log_files)):
+    for i in range(len(contrast_filenames)):
         for pid in test_pids:
-            if str(pid) in contrast_log_files[i]["solved"]:
+            if str(pid) in contrast_log_files[contrast_filenames[i]]["solved"]:
                 table_data[i][level_map[pid]] += 1
 
-    print("Table 2:")
+    print("Table 1:")
     print("total" + "".join([f"\tl{i + 1}" for i in range(level_count)]))
-    for i in range(len(contrast_log_files)):
-        print("{:.2f}".format(len(contrast_log_files[i]["solved"]) / len(test_pids) * 100), end="")
+    for i in range(len(contrast_filenames)):
+        print(contrast_filenames[i], end="")
+        print("\t{:.2f}".format(len(contrast_log_files[contrast_filenames[i]]["solved"]) / len(test_pids) * 100),
+              end="")
         for j in range(level_count):
             print("\t{:.2f}".format(table_data[i][j] / level_total[j] * 100), end="")
         print()
@@ -392,17 +368,17 @@ def evaluate():
         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_5.json"))
     ]
     pac_log_files = [  # table 3
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_1.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_3.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_1.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_3.json")), test_pids),
-        pac_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_5.json")), test_pids)
+        result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_1.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_3.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_1.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_3.json")), test_pids),
+        result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_5.json")), test_pids)
     ]
-    print("Table 3:")
+    print("Table 2:")
     print("step_wised_acc\toverall_acc\tavg_time\tavg_step")
     for i in range(len(step_wised_log_files)):
         time_sum = 0
@@ -418,16 +394,16 @@ def evaluate():
             step_sum / len(test_pids)
         ))
 
-    timing = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
-    step = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
+    timing = [[0 for _ in range(level_count)] for _ in range(len(contrast_filenames))]
+    step = [[0 for _ in range(level_count)] for _ in range(len(contrast_filenames))]
 
-    for i in range(len(contrast_log_files)):
-        for key in contrast_log_files[i]:
-            for pid in contrast_log_files[i][key]:
-                timing[i][level_map[int(pid)]] += contrast_log_files[i][key][pid]["timing"]
-                step[i][level_map[int(pid)]] += contrast_log_files[i][key][pid]["step_size"]
+    for i in range(len(contrast_filenames)):
+        for key in contrast_log_files[contrast_filenames[i]]:
+            for pid in contrast_log_files[contrast_filenames[i]][key]:
+                timing[i][level_map[int(pid)]] += contrast_log_files[contrast_filenames[i]][key][pid]["timing"]
+                step[i][level_map[int(pid)]] += contrast_log_files[contrast_filenames[i]][key][pid]["step_size"]
 
-    for i in range(len(contrast_log_files)):
+    for i in range(len(contrast_filenames)):
         for j in range(level_count):
             timing[i][j] /= level_total[j]
             step[i][j] /= level_total[j]
@@ -438,28 +414,36 @@ def evaluate():
     line_width = 3
     plt.figure(figsize=(16, 8))  # figure 1
 
-    plt.subplot(121)
-    plt.plot(x, timing[0], label="FW-BFS", linewidth=line_width)
-    plt.plot(x, timing[1], label="FW-DFS", linewidth=line_width)
-    plt.plot(x, timing[2], label="FW-RS", linewidth=line_width)
-    plt.plot(x, timing[3], label="FW-RBS", linewidth=line_width)
-    plt.plot(x, timing[4], label="HyperGNet-NB", linewidth=line_width)
-    plt.plot(x, timing[5], label="HyperGNet-GB", linewidth=line_width)
+    plt.subplot(131)
+    i = contrast_filenames.index("HyperGNet-NB-30")
+    y = [table_data[i][j] / level_total[j] * 100 for j in range(level_count)]
+    plt.plot(x, y, label="HyperGNet-NB", linewidth=line_width)
+    i = contrast_filenames.index("HyperGNet-GB-30")
+    y = [table_data[i][j] / level_total[j] * 100 for j in range(level_count)]
+    plt.plot(x, y, label="HyperGNet-GB", linewidth=line_width)
     plt.xlabel("Problem Difficulty", fontsize=fontsize)
-    plt.ylabel("Avg Time (s)", fontsize=fontsize)
-    plt.legend(loc="lower right", fontsize=axis_fontsize)
+    plt.ylabel("Acc (%)", fontsize=fontsize)
+    plt.legend(loc="upper right", fontsize=axis_fontsize)
     plt.tick_params(axis='both', labelsize=axis_fontsize)
 
-    plt.subplot(122)
-    plt.plot(x, step[4], label="HyperGNet-NB", linewidth=line_width)
-    plt.plot(x, step[5], label="HyperGNet-GB", linewidth=line_width)
+    plt.subplot(132)
+    plt.plot(x, timing[contrast_filenames.index("HyperGNet-NB-30")], label="HyperGNet-NB", linewidth=line_width)
+    plt.plot(x, timing[contrast_filenames.index("HyperGNet-GB-30")], label="HyperGNet-GB", linewidth=line_width)
+    plt.xlabel("Problem Difficulty", fontsize=fontsize)
+    plt.ylabel("Avg Time (s)", fontsize=fontsize)
+    plt.legend(loc="upper left", fontsize=axis_fontsize)
+    plt.tick_params(axis='both', labelsize=axis_fontsize)
+
+    plt.subplot(133)
+    plt.plot(x, step[contrast_filenames.index("HyperGNet-NB-30")], label="HyperGNet-NB", linewidth=line_width)
+    plt.plot(x, step[contrast_filenames.index("HyperGNet-GB-30")], label="HyperGNet-GB", linewidth=line_width)
     plt.xlabel("Problem Difficulty", fontsize=fontsize)
     plt.ylabel("Avg Step", fontsize=fontsize)
-    plt.legend(loc="lower right", fontsize=axis_fontsize)
+    plt.legend(loc="upper left", fontsize=axis_fontsize)
     plt.tick_params(axis='both', labelsize=axis_fontsize)
 
     plt.tight_layout()
-    plt.savefig(figure_save_path.format("time_and_step.pdf"), format='pdf')
+    plt.savefig(figure_save_path.format("acc_time_step.pdf"), format='pdf')
     plt.show()
 
 

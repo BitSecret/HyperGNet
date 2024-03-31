@@ -135,29 +135,19 @@ You can obtain the figure or tabular data in the paper using the following comma
 
     $ python utils.py --func evaluate
 
-### An overview of the problem-solving success rates
-
-| Method         | Strategy      | Timeout | Solved | Unsolved | Timeout |
-|----------------|---------------|---------|--------|----------|---------|
-| Forward Search | Breadth-First | 30      | 11.46  | 3.87     | 84.67   |
-| Forward Search | Depth-First   | 30      | 15.40  | 5.44     | 79.15   |
-| Forward Search | Random        | 30      | 17.91  | 5.95     | 76.15   |
-| Forward Search | Random Beam   | 30      | 13.90  | 11.82    | 74.28   |
-| HyperGNet      | Normal Beam   | 30      | 62.18  | 28.15    | 9.67    |
-| HyperGNet      | Greedy Beam   | 30      | 75.00  | 0.50     | 24.50   |
-| HyperGNet      | Greedy Beam   | 600     | 85.53  | 2.22     | 12.25   |
-
 ### Details of the problem-solving success rates
 
-| Method         | Strategy      | Timeout | Total | L1    | L2    | L3    | L4    | L5    | L6    |
-|----------------|---------------|---------|-------|-------|-------|-------|-------|-------|-------|
-| Forward Search | Breadth-First | 30      | 11.46 | 26.56 | 8.38  | 0.39  | 0.00  | 0.00  | 0.00  |
-| Forward Search | Depth-First   | 30      | 15.40 | 31.54 | 15.41 | 1.57  | 0.60  | 0.00  | 1.69  |
-| Forward Search | Random        | 30      | 17.91 | 37.97 | 14.59 | 2.76  | 2.99  | 0.00  | 1.69  |
-| Forward Search | Random Beam   | 30      | 13.90 | 32.57 | 8.65  | 1.18  | 1.20  | 0.00  | 0.00  |
-| HyperGNet      | Normal Beam   | 30      | 62.18 | 82.57 | 65.14 | 51.57 | 46.71 | 20.31 | 11.86 |
-| HyperGNet      | Greedy Beam   | 30      | 75.00 | 91.49 | 80.27 | 68.11 | 61.08 | 29.69 | 25.42 |
-| HyperGNet      | Greedy Beam   | 600     | 85.53 | 95.44 | 89.46 | 84.25 | 77.84 | 50.00 | 45.76 |
+| Method          | Strategy      | Timeout | Total | L1    | L2    | L3    | L4    | L5    | L6    |
+|-----------------|---------------|---------|-------|-------|-------|-------|-------|-------|-------|
+| Forward Search  | Random Search | 600     | 39.71 | 59.24 | 40.04 | 33.68 | 16.38 | 5.43  | 4.79  |
+| Backward Search | Breadth-First | 600     | 35.44 | 67.22 | 33.72 | 11.15 | 6.67  | 6.07  | 1.03  |
+| Inter-GPS       | Beam Search   | 600     | 40.76 | 63.90 | 36.49 | 27.95 | 23.95 | 12.50 | 11.86 |
+| TP-Forward      | Random Search | 600     | 68.76 | 84.68 | 70.78 | 66.51 | 51.09 | 30.03 | 25.09 |
+| TP-Backward     | Random Search | 600     | 80.86 | 96.43 | 85.44 | 76.12 | 62.26 | 48.88 | 29.55 |
+| DRL             | Beam Search   | 1200    | 86.40 | 97.65 | 94.21 | 85.87 | 70.45 | 46.81 | 32.18 |
+| HyperGNet       | Normal Beam   | 30      | 62.18 | 82.57 | 65.14 | 51.57 | 46.71 | 20.31 | 11.86 |
+| HyperGNet       | Greedy Beam   | 30      | 79.58 | 94.61 | 84.32 | 75.98 | 67.66 | 32.81 | 27.12 |
+| HyperGNet       | Greedy Beam   | 600     | 85.53 | 95.44 | 89.46 | 84.25 | 77.84 | 50.00 | 45.76 |
 
 ### Ablation study
 
@@ -183,4 +173,16 @@ Please contact with the author (xiaokaizhang1999@163.com) if you encounter any i
 
 ## Citation
 
-coming soon...
+To cite HyperGNet in publications use:
+> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and Hypergraph
+Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
+
+A BibTeX entry for LaTeX users is:
+> @misc{zhang2024fgeohypergnet,  
+> title={FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network},  
+> author={Xiaokai Zhang and Na Zhu and Yiming He and Jia Zou and Cheng Qin and Yang Li and Zhenbing Zeng and Tuo
+> Leng},  
+> year={2024},  
+> eprint={2402.11461},  
+> primaryClass={cs.AI}  
+> }
