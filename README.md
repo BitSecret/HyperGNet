@@ -58,6 +58,11 @@ Enter the code path (all subsequent code will be executed in this path):
 
     $ cd PGPS/src/pgps
 
+Download the trained model
+through [Google Drive](https://drive.google.com/file/d/1XELvToJji-AIJDZaVUSIAwdsThvAkBOd/view?usp=sharing)
+or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and extract them
+into `src/pgps/trained_model`.
+
 ## Preparing Training Data
 
 We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the
@@ -174,8 +179,9 @@ Please contact with the author (xiaokaizhang1999@163.com) if you encounter any i
 ## Citation
 
 To cite HyperGNet in publications use:
-> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and Hypergraph
-Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
+> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and
+> Hypergraph
+> Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
 
 A BibTeX entry for LaTeX users is:
 > @misc{zhang2024fgeohypergnet,  
