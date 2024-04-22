@@ -7,7 +7,7 @@ version = "1.0.0"
 authors = [
     { name = "Xiaokai Zhang", email = "xiaokaizhang1999@163.com" },
 ]
-description = "Human-like IMO-level Plane Geometry Problem Solving."
+description = "Plane Geometric Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [

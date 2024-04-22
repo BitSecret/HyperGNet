@@ -4,7 +4,7 @@ import torch
 
 
 def test_env():
-    # print("formalgeo.__version__: {}".format(formalgeo.__version__))
+    print("formalgeo.__version__: {}".format(formalgeo.__version__))
 
     print("torch.__version__: {}".format(torch.__version__))
     print("torch.cuda.is_available(): {}".format(torch.cuda.is_available()))

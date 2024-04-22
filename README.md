@@ -142,17 +142,20 @@ You can obtain the figure or tabular data in the paper using the following comma
 
 ### Details of the problem-solving success rates
 
-| Method          | Strategy      | Timeout | Total | L1    | L2    | L3    | L4    | L5    | L6    |
-|-----------------|---------------|---------|-------|-------|-------|-------|-------|-------|-------|
-| Forward Search  | Random Search | 600     | 39.71 | 59.24 | 40.04 | 33.68 | 16.38 | 5.43  | 4.79  |
-| Backward Search | Breadth-First | 600     | 35.44 | 67.22 | 33.72 | 11.15 | 6.67  | 6.07  | 1.03  |
-| Inter-GPS       | Beam Search   | 600     | 40.76 | 63.90 | 36.49 | 27.95 | 23.95 | 12.50 | 11.86 |
-| TP-Forward      | Random Search | 600     | 68.76 | 84.68 | 70.78 | 66.51 | 51.09 | 30.03 | 25.09 |
-| TP-Backward     | Random Search | 600     | 80.86 | 96.43 | 85.44 | 76.12 | 62.26 | 48.88 | 29.55 |
-| DRL             | Beam Search   | 1200    | 86.40 | 97.65 | 94.21 | 85.87 | 70.45 | 46.81 | 32.18 |
-| HyperGNet       | Normal Beam   | 30      | 62.18 | 82.57 | 65.14 | 51.57 | 46.71 | 20.31 | 11.86 |
-| HyperGNet       | Greedy Beam   | 30      | 79.58 | 94.61 | 84.32 | 75.98 | 67.66 | 32.81 | 27.12 |
-| HyperGNet       | Greedy Beam   | 600     | 85.53 | 95.44 | 89.46 | 84.25 | 77.84 | 50.00 | 45.76 |
+| Method       | Strategy             | Timeout | Total | L1    | L2    | L3    | L4    | L5    | L6    |
+|--------------|----------------------|---------|-------|-------|-------|-------|-------|-------|-------|
+| FW           | Random Search        | 600     | 39.71 | 59.24 | 40.04 | 33.68 | 16.38 | 5.43  | 4.79  |
+| BW           | Breadth-First Search | 600     | 35.44 | 67.22 | 33.72 | 11.15 | 6.67  | 6.07  | 1.03  |
+| Inter-GPS    | Beam Search          | 600     | 40.76 | 63.90 | 36.49 | 27.95 | 23.95 | 12.50 | 11.86 |
+| FGeo-TP (FW) | Random Search        | 600     | 68.76 | 84.68 | 70.78 | 66.51 | 51.09 | 30.03 | 25.09 |
+| FGeo-TP (BW) | Breadth-First Search | 600     | 80.12 | 96.55 | 85.60 | 74.36 | 59.59 | 45.69 | 28.18 |
+| FGeo-TP (BW) | Depth-First Search   | 600     | 79.56 | 96.18 | 84.18 | 73.72 | 60.32 | 45.05 | 28.52 |
+| FGeo-TP (BW) | Random Search        | 600     | 80.86 | 96.43 | 85.44 | 76.12 | 62.26 | 48.88 | 29.55 |
+| FGeo-TP (BW) | Beam Search          | 600     | 79.06 | 96.10 | 84.55 | 72.92 | 58.37 | 43.45 | 25.43 |
+| FGeo-DRL     | Beam Search          | 1200    | 86.40 | 97.65 | 94.21 | 85.87 | 70.45 | 46.81 | 32.18 |
+| HyperGNet    | Normal Beam Search   | 30      | 62.18 | 82.57 | 65.14 | 51.57 | 46.71 | 20.31 | 11.86 |
+| HyperGNet    | Greedy Beam Search   | 30      | 79.58 | 94.61 | 84.32 | 75.98 | 67.66 | 32.81 | 27.12 |
+| HyperGNet    | Greedy Beam Search   | 600     | 85.53 | 95.44 | 89.46 | 84.25 | 77.84 | 50.00 | 45.76 |
 
 ### Ablation study
 
@@ -174,18 +177,18 @@ This project is maintained by
 [FormalGeo Development Team](https://formalgeo.github.io/)
 and Supported by
 [Geometric Cognitive Reasoning Group of Shanghai University (GCRG, SHU)](https://euclidesprobationem.github.io/).  
-Please contact with the author (xiaokaizhang1999@163.com) if you encounter any issues.
+Please contact with [Xiaokai Zhang](https://bitsecret.github.io/) if you encounter any issues.
 
 ## Citation
 
 To cite HyperGNet in publications use:
-> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and
+> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and
 > Hypergraph
 > Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
 
 A BibTeX entry for LaTeX users is:
 > @misc{zhang2024fgeohypergnet,  
-> title={FGeo-HyperGNet: Geometry Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network},  
+> title={FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network},  
 > author={Xiaokai Zhang and Na Zhu and Yiming He and Jia Zou and Cheng Qin and Yang Li and Zhenbing Zeng and Tuo
 > Leng},  
 > year={2024},  
