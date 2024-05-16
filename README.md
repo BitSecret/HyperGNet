@@ -30,7 +30,7 @@ stages and brimming with potential. We welcome anyone to join us in this excitin
 
 Clone project:
 
-    $ git clone --depth 1 https://github.com/BitSecret/PGPS.git
+    $ git clone --depth 1 https://github.com/BitSecret/HyperGNet.git
     $ cd PGPS
 
 Create Python environments using Conda:

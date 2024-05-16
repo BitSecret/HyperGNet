@@ -255,15 +255,17 @@ def main(problem_id=None):
 def show_training_data(pid_or_training_data, onehot=False):
     if isinstance(pid_or_training_data, int):
         pid = pid_or_training_data
-        log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
-        log = load_json(log_filename)
-        if str(pid) not in log:
-            print("{} not generated.".format(pid))
-            return
-        data_filename = os.path.normpath(
-            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[str(pid)][0], pid)))
+        dl = DatasetLoader(config.dataset_name, config.path_datasets)
+        problem_split = dl.get_problem_split()["split"]  # official partition
+        if pid in problem_split["train"]:
+            data_filename = os.path.normpath(os.path.join(config.path_data, f"training_data/train/raw/{pid}.pk"))
+        elif pid in problem_split["val"]:
+            data_filename = os.path.normpath(os.path.join(config.path_data, f"training_data/val/raw/{pid}.pk"))
+        else:
+            data_filename = os.path.normpath(os.path.join(config.path_data, f"training_data/test/raw/{pid}.pk"))
+
         if not os.path.exists(data_filename):
-            print("{} {} not generated.".format(log[pid][0], pid))
+            print(f"'{data_filename}' not generated.")
             return
         training_data = load_pickle(data_filename)
     else:
@@ -450,76 +452,69 @@ def draw_pic(data, title, fig_size):
 
 
 def make_onehot():
-    log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
-    log = load_json(log_filename)
-    train_data = []
-    val_data = []
-    test_data = []
-    for pid in log:
-        data_filename = os.path.normpath(
-            os.path.join(config.path_data, "training_data/{}/raw/{}.pk".format(log[pid][0], pid)))
-        if not os.path.exists(data_filename):
-            continue
+    dl = DatasetLoader(config.dataset_name, config.path_datasets)
+    problem_split = dl.get_problem_split()["split"]  # official partition
+    one_hot_data = {"train": [], "val": [], "test": []}
 
-        print("{} start.".format(pid))
-        raw_data = load_pickle(data_filename)
-        training_data = []
-        for nodes, edges, edges_structural, goal, theorems in raw_data:
-            if len(nodes) > config.max_len:  # random truncation
-                for idx in sorted(random.sample(range(1, len(nodes)), len(nodes) - config.max_len))[::-1]:
-                    nodes.pop(idx)
-                    edges.pop(idx)
-                    edges_structural.pop(idx)
-            one_hot_nodes = []
-            for node in nodes:
-                if len(node) > config.max_len_nodes - 1:  # truncation
-                    node = node[:config.max_len_nodes - 1]
-                node = [nodes_words.index(n) for n in node]
-                one_hot_nodes.append(node)
+    for split_set_name in problem_split:
+        for pid in problem_split[split_set_name]:
+            data_filename = os.path.normpath(
+                os.path.join(config.path_data, f"training_data/{split_set_name}/raw/{pid}.pk"))
+            if not os.path.exists(data_filename):
+                continue
 
-            one_hot_edges = []
-            for edge in edges:
-                if len(edge) > config.max_len_edges - 1:  # truncation
-                    edge = edge[:config.max_len_edges - 1]
-                edge = [edges_words.index(n) for n in edge]
-                one_hot_edges.append(edge)
+            print("{} start.".format(pid))
+            raw_data = load_pickle(data_filename)
+            training_data = []
+            for nodes, edges, edges_structural, goal, theorems in raw_data:
+                if len(nodes) > config.max_len:  # random truncation
+                    for idx in sorted(random.sample(range(1, len(nodes)), len(nodes) - config.max_len))[::-1]:
+                        nodes.pop(idx)
+                        edges.pop(idx)
+                        edges_structural.pop(idx)
+                one_hot_nodes = []
+                for node in nodes:
+                    if len(node) > config.max_len_nodes - 1:  # truncation
+                        node = node[:config.max_len_nodes - 1]
+                    node = [nodes_words.index(n) for n in node]
+                    one_hot_nodes.append(node)
 
-            for i in range(len(edges_structural)):
-                if len(edges_structural[i]) > config.max_len_edges - 1:  # truncation
-                    edges_structural[i] = edges_structural[i][:config.max_len_edges - 1]
+                one_hot_edges = []
+                for edge in edges:
+                    if len(edge) > config.max_len_edges - 1:  # truncation
+                        edge = edge[:config.max_len_edges - 1]
+                    edge = [edges_words.index(n) for n in edge]
+                    one_hot_edges.append(edge)
 
-            if len(goal) > config.max_len_nodes - 1:  # truncation
-                goal = goal[:config.max_len_nodes - 1]
-            one_hot_goal = [nodes_words.index(g) for g in goal]
+                for i in range(len(edges_structural)):
+                    if len(edges_structural[i]) > config.max_len_edges - 1:  # truncation
+                        edges_structural[i] = edges_structural[i][:config.max_len_edges - 1]
 
-            theorems_index = [theorem_words.index(theorem) for theorem in theorems]
+                if len(goal) > config.max_len_nodes - 1:  # truncation
+                    goal = goal[:config.max_len_nodes - 1]
+                one_hot_goal = [nodes_words.index(g) for g in goal]
 
-            training_data.append([one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, theorems_index])
+                theorems_index = [theorem_words.index(theorem) for theorem in theorems]
 
-        if log[pid][0] == "train":
-            train_data += training_data
+                training_data.append([one_hot_nodes, one_hot_edges, edges_structural, one_hot_goal, theorems_index])
 
-        elif log[pid][0] == "val":
-            val_data += training_data
-        elif log[pid][0] == "test":
-            test_data += training_data
-
-        print("{} ok.".format(pid))
+            one_hot_data[split_set_name] += training_data
+            print("{} ok.".format(pid))
 
     onehot_log = {
         "train": {
             "problem_count": len(
                 os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/train/raw")))),
-            "item_count": len(train_data)
+            "item_count": len(one_hot_data["train"])
         },
         "val": {
             "problem_count": len(os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/val/raw")))),
-            "item_count": len(val_data)
+            "item_count": len(one_hot_data["val"])
         },
         "test": {
             "problem_count": len(
                 os.listdir(os.path.normpath(os.path.join(config.path_data, "training_data/test/raw")))),
-            "item_count": len(test_data)
+            "item_count": len(one_hot_data["test"])
         }
     }
     problem_count = (onehot_log["train"]["problem_count"] + onehot_log["val"]["problem_count"] +
@@ -534,13 +529,13 @@ def make_onehot():
     onehot_log["test"]["item_count_percent"] = onehot_log["test"]["item_count"] / item_count
 
     save_pickle(
-        train_data, os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot.pk"))
+        one_hot_data["train"], os.path.normpath(os.path.join(config.path_data, "training_data/train/one-hot.pk"))
     )
     save_pickle(
-        val_data, os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot.pk"))
+        one_hot_data["val"], os.path.normpath(os.path.join(config.path_data, "training_data/val/one-hot.pk"))
     )
     save_pickle(
-        test_data, os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot.pk"))
+        one_hot_data["test"], os.path.normpath(os.path.join(config.path_data, "training_data/test/one-hot.pk"))
     )
 
     safe_save_json(onehot_log, os.path.normpath(os.path.join(config.path_data, "log/make_onehot_log.json")))
