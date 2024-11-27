@@ -1,5 +1,11 @@
+# IDEA
 .idea
 __pycache__
-PGPS.egg-info
-src/pgps/datasets
-src/pgps/data
+
+# release
+GPS.egg-info
+
+# data
+data/checkpoints
+data/outputs
+data/training_data

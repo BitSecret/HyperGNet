@@ -1,6 +1,6 @@
-# FGeo-HyperGNet
+# HyperGNet
 
-[![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen)](https://github.com/BitSecret/PGPS)
+[![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen)](https://github.com/BitSecret/HyperGNet)
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 [![Survey](https://img.shields.io/badge/Survey-FormalGeo-blue)](https://github.com/FormalGeo/FormalGeo)
 
@@ -12,16 +12,16 @@ We built a neural-symbolic system to automatically perform human-like geometric 
 
 The symbolic part is a formal system built on [FormalGeo](https://github.com/FormalGeo/FormalGeo), which can
 automatically perform algebraic calculations and relational reasoning and organize the solving process into a solution
-hypertree with conditions as hypernodes and theorems as hyperedges.
+hypergraph with conditions as hypernodes and theorems as hyperedges.
 
 The neural part is a hypergraph neural network based on the attention mechanism, including a encoder to effectively
-encode the structural and semantic information of the hypertree, and a solver to provide problem-solving guidance.
+encode the structural and semantic information of the hypergraph, and a solver to provide problem-solving guidance.
 
-The neural part predicts theorems according to the hypertree, and the symbolic part applies theorems and updates the
-hypertree, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic solving of
+The neural part predicts theorems according to the hypergraph, and the symbolic part applies theorems and updates the
+hypergraph, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic solving of
 geometric problems. Experiments demonstrate the correctness and effectiveness of this neural-symbolic architecture. We
 achieved a step-wised accuracy of 87.65% and an overall accuracy of 85.53% on
-the [formalgeo7k](https://github.com/FormalGeo/Datasets) datasets.
+the [formalgeo7k-v2](https://github.com/FormalGeo/Datasets) datasets.
 
 More information about FormalGeo will be found in [homepage](https://formalgeo.github.io/). FormalGeo is in its early
 stages and brimming with potential. We welcome anyone to join us in this exciting endeavor.
@@ -31,114 +31,94 @@ stages and brimming with potential. We welcome anyone to join us in this excitin
 Clone project:
 
     $ git clone --depth 1 https://github.com/BitSecret/HyperGNet.git
-    $ cd PGPS
 
 Create Python environments using Conda:
 
-    $ conda create -n PGPS python=3.10
-    $ conda activate PGPS
+    $ conda create -n HyperGNet python=3.10
+    $ conda activate HyperGNet
 
 Install Python dependencies:
 
-    $ cd PGPS
+    $ cd HyperGNet
     $ pip install -e .
     $ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 
+Enter the code path (all subsequent code will be executed in this path):
+
+    $ cd src/gps
+
 We provide a short code to test if the environment setup is successful:
 
-    $ cd PGPS/tests
-    $ python test.py
+    $ python utils.py --func test_env
 
 Download datasets and initialize the project:
 
-    $ cd PGPS/src/pgps
     $ python utils.py --func project_init
 
-Enter the code path (all subsequent code will be executed in this path):
-
-    $ cd PGPS/src/pgps
-
-Download the trained model
+Download our trained model
 through [Google Drive](https://drive.google.com/file/d/1XELvToJji-AIJDZaVUSIAwdsThvAkBOd/view?usp=sharing)
-or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and extract them
-into `src/pgps/trained_model`.
+or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and put them
+into `HyperGNet/data/checkpoints`.
 
 ## Preparing Training Data
 
 We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the
-**formalgeo7k_v1** dataset. Following the dataset's recommended division ratio and random seed, the dataset is split
-into `training:validation:test=3:1:1`. Each problem-solving theorem sequence can be organized into a directed acyclic
-graph (DAG). We randomly traverse this DAG and apply each step's theorem while obtaining the state information of the
-problem.  
+**formalgeo7k-v2** dataset. The dataset is split into `training:validation:test=3:1:1`. Each problem-solving theorem
+sequence can be organized into a directed acyclic graph (DAG). We randomly traverse this DAG and apply each step's
+theorem while obtaining the state information of the problem. Each problem will repeat these steps 5 times (the number
+of repetitions is defined in the `HyperGNet/data/config.json` file).
+
 This process ultimately generated 20,571 training data entries (from 4,079 problems), 7,072 validation data entries (
 from 1,370 problems), and 7,046 test data entries (from 1,372 problems). Each data entry can be viewed as a
-5-tuple `(nodes, edges, edges_structural, goal, theorems)`.   
-These data are saved in `data/training_data`. View the generated data (problem 1):
+5-tuple `(nodes, edges, structures, goals, theorems)`.
 
-    $ python symbolic_system.py --func show_training_data
+Download our generated data
+through [Google Drive](https://drive.google.com/file/d/1XELvToJji-AIJDZaVUSIAwdsThvAkBOd/view?usp=sharing)
+or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and put them
+into `HyperGNet/data/training_data`.
 
-View the statistical information of the generated data:
+You can also use multiprocessing approach to generate your own training data:
 
-    $ python symbolic_system.py --func check
+    $ python data.py --func make_data
+    $ python data.py --func make_onehot
 
-This will generate message about the length distribution and visual images of the training data in
-the `data/log/words_length` folder.  
-If you want to regenerate the training data:
-
-    $ python symbolic_system.py --func main
-
-The training data will be regenerated using multiple processes. The log files will be saved
-in `data/log/gen_training_data_log.json`. Subsequently, the generated data need to be converted into a vector form
-suitable for neural networks input.
-
-    $ python symbolic_system.py --func make_onehot
+In the end, you will obtain the files `nodes_pretrain_data.pkl`, `edges_pretrain_data.pkl`, and `train_data.pkl` in
+the `HyperGNet/data/training_data` path.
 
 ## Training
 
-Before starting the training, ensure that the training data `data/training_data/train/one-hot.pk` has been generated.
-If not, run `python symbolic_system.py --func make_onehot` to generate the data.  
-We first pretrain the embedding networks for nodes, edges and graph structure using a self-supervised method.
+We first pretrain the embedding networks for nodes and edges using a self-supervised method.
 
-    $ python pretrain.py --func pretrain --model_type nodes
-    $ python pretrain.py --func pretrain --model_type edges
-    $ python pretrain.py --func pretrain --model_type gs
+    $ python train.py --func pretrain_nodes
+    $ python train.py --func pretrain_edges
 
 Then, train the theorem prediction network:
 
-    $ python train.py --func train --nodes_model nodes_model.pth --edges_model edges_model.pth --gs_model gs_model.pth --use_hypertree true
+    $ python train.py --func train
 
-Pretraining log information will be saved in `data/log/xxx_pretrain_log.json` and `data/log/xxx_pretrain`. Training log
-information will be saved in `data/log/train_log.json` and `data/log/train`.
+The training log will be saved in `HyperGNet/data/outputs`.
 
 ## Testing
-
-### Testing Pretrained
-
-We first test pretrained nodes model, edges model and gs model:
-
-    $ python pretrain.py --func test --model_type nodes --model_name nodes_model.pth
-    $ python pretrain.py --func test --model_type edges --model_name edges_model.pth
-    $ python pretrain.py --func test --model_type gs --model_name gs_model.pth
 
 ### Testing Step-wised Prediction
 
 Test theorem prediction model:
 
-    $ python train.py --func test --model_name predictor_model.pth
+    $ python train.py --func test
 
-The test results of the model will be saved in `data/log/test`.
+The test results of the model will be saved in `HyperGNet/data/outputs`.
 
 ### Testing PA Cycle
 
 Obtain the overall problem-solving success rate:
 
-    $ python agent.py --model_name predictor_model.pth --use_hypertree true
+    $ python pac.py
 
 ## Results
 
 You can obtain the figure or tabular data in the paper using the following command:
 
-    $ python utils.py --func evaluate
+    $ python utils.py --func statictic
 
 ### Details of the problem-solving success rates
 
