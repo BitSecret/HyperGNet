@@ -49,7 +49,7 @@ def init_project():
     """Build dir and download dataset."""
     config = get_config()
 
-    dirs = [config["data"]["path_datasets"], "../../data/checkpoints", "../../data/outputs", "../../data/training_data"]
+    dirs = [config["data"]["datasets_path"], "../../data/checkpoints", "../../data/outputs", "../../data/training_data"]
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
@@ -83,7 +83,41 @@ def init_project():
 #     return alignment_log
 #
 #
-def statistic():
+
+
+def show_contrast_results(level=6, span=2):
+    log_files = {
+        "HyperGNet-NB-600": "../../data/outputs/log_pac_TFTT_bs5_nb_tm600.json",
+        "HyperGNet-GB-600": "../../data/outputs/log_pac_TFTT_bs5_gb_tm600.json"
+    }
+    problem_level = {}  # map problem_id to level
+    problem_total = [0 for _ in range(level + 1)]  # total number of a level
+
+    config = get_config()
+    dl = DatasetLoader(config["data"]["dataset_name"], config["data"]["datasets_path"])
+    test_problem_ids = load_json("../../data/outputs/problem_split.json")["test"]
+    level_map = {}  # map t_length to level (start from 0)
+    for i in range(level):
+        for j in range(span):
+            level_map[i * span + j + 1] = i + 1
+    for pid in test_problem_ids:
+        t_length = len(dl.get_problem(pid)["theorem_seqs"])
+        problem_level[pid] = level_map[t_length] if t_length <= level * span else level
+        problem_total[0] += 1
+        problem_total[problem_level[pid]] += 1
+
+    for model_name in log_files.keys():
+        print(model_name, end="\t")
+        model_results = [0 for _ in range(level + 1)]  # model solved problem
+        for pid in load_json(log_files[model_name])["solved"]:
+            model_results[0] += 1
+            model_results[problem_level[int(pid)]] += 1
+        for i in range(level + 1):
+            print(round(model_results[i] / problem_total[i] * 100, 2), end="\t")
+        print()
+
+
+def show_ablation_results():
     pass
 
 
@@ -241,7 +275,7 @@ def statistic():
 def get_args():
     parser = argparse.ArgumentParser(description="Welcome to use GPS!")
     parser.add_argument("--func", type=str, required=True,
-                        choices=["test_env, init_project", "evaluate", "kill"],
+                        choices=["test_env", "init_project", "show_contrast_results", "show_ablation_results", "kill"],
                         help="function that you want to run")
     parser.add_argument("--py_filename", type=str, required=False,
                         help="python filename that you want to kill")
@@ -262,7 +296,8 @@ if __name__ == '__main__':
     """
     python utils.py --func test_env
     python utils.py --func init_project
-    python utils.py --func statistic
+    python utils.py --func show_contrast_results
+    python utils.py --func show_ablation_results
     python utils.py --func kill
     """
     args = get_args()
@@ -270,7 +305,9 @@ if __name__ == '__main__':
         test_env()
     if args.func == "init_project":
         init_project()
-    elif args.func == "statistic":
-        statistic()
+    elif args.func == "show_contrast_results":
+        show_contrast_results()
+    elif args.func == "show_ablation_results":
+        show_ablation_results()
     elif args.func == "kill":
         clean_process(args.py_filename)

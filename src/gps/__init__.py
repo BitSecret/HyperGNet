@@ -3,5 +3,5 @@
 # Contact: xiaokaizhang1999@163.com
 
 __all__ = [
-    "data", "model", "train", "utils", "utils", "pac"
+    "data", "model", "train", "utils", "pac"
 ]

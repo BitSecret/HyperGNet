@@ -179,7 +179,7 @@ def get_hypertree(problem):
     :return nodes: n*1, List of hyper nodes.
     :return path: n*n, Path from hyper node i to other nodes.
     """
-    nodes, edges, _, tree = get_meta_hypertree(problem)
+    nodes, edges, _, _, tree = get_meta_hypertree(problem)
 
     for edge_id in edges:
         if "(" in edges[edge_id]:
@@ -255,7 +255,8 @@ def tokenize_edge(edge):
 def tokenize_goal(problem):
     """Tokenize goal."""
     if problem.goal.type == "algebra":
-        goal = inverse_parse_one("Equation", problem.goal.item - problem.goal.answer, problem)
+        item = problem.goal.item - problem.goal.answer
+        goal = "Equation" + "(" + str(item).replace(" ", "") + ")"
     else:
         goal = inverse_parse_one(problem.goal.item, problem.goal.answer, problem)
     return tokenize_cdl(goal)
@@ -320,7 +321,7 @@ def generate(dl, problem_id):
         if in_degree[tail] == 0:
             zero_in_degree.append(tail)
 
-    while len(zero_in_degree) > 0:
+    while len(zero_in_degree) > 0:  # topology traversal of DAG
         nodes, serialized_edges, edges_structure, goal = get_problem_state(solver.problem)
         theorems = list(set(tokenize_theorem(theorem) for theorem in zero_in_degree))
         training_data.append([nodes, serialized_edges, edges_structure, goal, theorems])  # add one step's data
@@ -352,10 +353,9 @@ def generate(dl, problem_id):
 def multiprocess_generate(dl, task_queue, reply_queue):
     warnings.filterwarnings("ignore")
     while not task_queue.empty():
+        problem_id = task_queue.get()
         training_data_repeat = []
         msg = []
-        problem_id = task_queue.get()
-        reply_queue.put((os.getpid(), problem_id, "handled"))
 
         for i in range(config["data"]["make_data_repeat"]):  # data augmentation
             try:
@@ -375,37 +375,63 @@ def multiprocess_generate(dl, task_queue, reply_queue):
         reply_queue.put((os.getpid(), problem_id, msg))
 
 
-def make_data():
+def pid_alive(process_id):
+    try:
+        process = psutil.Process(process_id)
+        if process.status() in [psutil.STATUS_ZOMBIE, psutil.STATUS_DEAD]:
+            return False
+    except psutil.NoSuchProcess:
+        return False
+    return True
+
+
+def make_data(repeat_unsolved):
     """Generate original training data."""
     dl = DatasetLoader(dataset_name=config["data"]["dataset_name"], datasets_path=config["data"]["datasets_path"])
-    log_filename = "../../data/outputs/log_data_generating.json"
-    log = {"handled": [], "generated": {}}  # {pid: ['solved', 'unsolved', 'error']}
+    log_filename = "../../data/outputs/log_make_data.json"
+    log = {}  # {pid: ['solved', 'unsolved', 'error']}
     if os.path.exists(log_filename):
         log = load_json(log_filename)
 
     task_queue = Queue()
+    problem_ids = []
     for problem_id in range(1, dl.info["problem_number"] + 1):
-        if problem_id not in log["handled"]:
-            task_queue.put(problem_id)
+        if str(problem_id) not in log:  # run problem which unhandled
+            problem_ids.append(problem_id)
+
+    if repeat_unsolved:  # run problem which unsolved
+        for problem_id in log.keys():
+            has_solved = False
+            for state in log[problem_id].split(", "):
+                state = state.split(": ")[1]
+                if state == "solved":
+                    has_solved = True
+                    break
+            if not has_solved:
+                problem_ids.append(int(problem_id))
+
+    random.shuffle(problem_ids)
+    for problem_id in problem_ids:
+        task_queue.put(problem_id)
 
     reply_queue = Queue()
     process_ids = []  # child process id
+    count = 0
     while True:
         for i in range(len(process_ids))[::-1]:  # Remove non-existent pid
-            if not psutil.pid_exists(process_ids[i]):
+            if not pid_alive(process_ids[i]):
                 process_ids.pop(i)
         while not task_queue.empty() and config["multiprocess"] - len(process_ids) > 0:  # start new process
             process = Process(target=multiprocess_generate, args=(dl, task_queue, reply_queue))
             process.start()
             process_ids.append(process.pid)
 
-        process_id, problem_id, msg = reply_queue.get()
-        if msg == "handled":
-            log["handled"].append(problem_id)
-        else:
-            log["generated"][problem_id] = msg
-            print("{}: {}".format(problem_id, msg))
-        safe_save_json(log, log_filename)
+        if not reply_queue.empty():  # directly calling .get() will block
+            process_id, problem_id, msg = reply_queue.get()
+            log[problem_id] = msg
+            count += 1
+            print(f"({count}/{len(problem_ids)}) {problem_id}: {msg}")
+            safe_save_json(log, log_filename)
 
 
 def make_train_val_test_split():
@@ -503,7 +529,8 @@ def make_onehot():
     """Truncate oversize data and make onehot data."""
     dl = DatasetLoader(dataset_name=config["data"]["dataset_name"], datasets_path=config["data"]["datasets_path"])
     log = {"non_exist": [], "generated": [], "error": []}
-    problem_split = load_json("../../data/outputs/problem_split.json")
+    make_data_log = load_json("../../data/outputs/log_make_data.json")
+    problem_split = make_train_val_test_split()
     nodes_pretrain = []  # list of nodes
     edges_pretrain = []  # list of [edges, edges_structure]
     pretrain_ratio = config["data"]["training_train_val_test"][0] + config["data"]["training_train_val_test"][1]
@@ -518,8 +545,9 @@ def make_onehot():
             what_sets = "val"
         if problem_id in problem_split["test"]:
             what_sets = "test"
-        if not os.path.exists(f"../../data/training_data/{problem_id}.pkl"):
+        if str(problem_id) not in make_data_log:
             log["non_exist"].append(f"{problem_id}: {what_sets}")
+            print(log["non_exist"][-1])
             continue
         try:
             training_data_repeat = load_pickle(f"../../data/training_data/{problem_id}.pkl")
@@ -534,6 +562,8 @@ def make_onehot():
                         nodes_pretrain.append(node)
                     nodes_pretrain.append(goal)
                     for i in range(len(edges)):
+                        if len(edges[i]) == 0:
+                            continue
                         edges_pretrain.append([edges[i], edges_structure[i]])
 
                     if what_sets == "train":  # training data
@@ -542,8 +572,9 @@ def make_onehot():
                         val.append([nodes, edges, edges_structure, goal, theorems])
                     else:
                         test.append([nodes, edges, edges_structure, goal, theorems])
-        except IOError as e:
+        except Exception as e:
             log["error"].append(f"{problem_id}: {repr(e)}")
+            print(log["error"][-1])
         else:
             log["generated"].append(problem_id)
             print("{} ok.".format(problem_id))
@@ -560,7 +591,7 @@ def make_onehot():
 
     save_pickle((train, val, test), "../../data/training_data/train_data.pkl")
 
-    save_json(log, "../../data/outputs/log_make_data.json")
+    save_json(log, "../../data/outputs/log_make_onehot.json")
 
 
 class GeoDataset(Dataset):
@@ -659,65 +690,47 @@ def show_training_data(problem_id):
         print()
 
 
-def statistic_training_data():
-    nodes_pretrain, nodes_pretrain_val = load_pickle("../../data/training_data/nodes_pretrain_data.pkl")
-    edges_pretrain, edges_pretrain_val = load_pickle("../../data/training_data/edges_pretrain_data.pkl")
-    print(f"nodes pretrain: {len(nodes_pretrain)}, nodes val: {len(nodes_pretrain_val)}")
-    print(f"edges pretrain: {len(edges_pretrain)}, edges val: {len(edges_pretrain_val)}")
+def check_make_data(show_data_len=False):
+    log = load_json("../../data/outputs/log_make_data.json")
+    dl = DatasetLoader(dataset_name=config["data"]["dataset_name"], datasets_path=config["data"]["datasets_path"])
 
-    print("train (problem, item):")
-    problem_split = make_train_val_test_split()
-    print(f"train: {len(problem_split['train'])}, val: {len(problem_split['val'])}, test: {len(problem_split['test'])}")
-
-    train, val, test = load_pickle("../../data/training_data/train_data.pkl")
-    print(f"train: {len(train)}, val: {len(val)}, test: {len(test)}")
-
-
-def check_log():
-    """solved, unsolved, error"""
-    log_filename = os.path.normpath(os.path.join(config.path_data, "log/gen_training_data_log.json"))
-    log = load_json(log_filename)
-    log = {int(k): log[k] for k in log}
-    log = {k: log[k] for k in sorted(log)}
-    safe_save_json(log, log_filename)  # save sorted log
-
-    timeout = []
-    unsolved = []
-    error = []
     unhandled = []
-    for pid in range(1, 6982):
-        if pid not in log:
-            unhandled.append(pid)
-        elif "timeout" in log[pid]:
-            timeout.append(pid)
-        elif "error" in log[pid]:
-            error.append(pid)
-        elif "unsolved" in log[pid]:
-            unsolved.append(pid)
+    generated = {"solved": 0, "unsolved": 0, "error": 0}
+    for problem_id in range(1, dl.info["problem_number"] + 1):
+        if str(problem_id) not in log:
+            unhandled.append(problem_id)
+            continue
 
-    print("timeout ({}):".format(len(timeout)))
-    for pid in timeout:
-        print("{}: {}".format(pid, log[pid]))
-    print()
-    print("unsolved ({}):".format(len(unsolved)))
-    for pid in unsolved:
-        print("{}: {}".format(pid, log[pid]))
-    print()
-    print("error ({}):".format(len(error)))
-    for pid in error:
-        print("{}: {}".format(pid, log[pid]))
-    print()
-    print("unhandled ({}):".format(len(unhandled)))
-    print(unhandled)
+        for state in log[str(problem_id)].split(", "):
+            state = state.split(": ")[1]
+            if state == "solved":
+                generated["solved"] += 1
+            elif state == "unsolved":
+                generated["unsolved"] += 1
+            else:
+                generated["error"] += 1
 
+    print(f"unhandled problems: "
+          f"{len(unhandled)} ({round(len(unhandled) / dl.info['problem_number'] * 100, 2)}%), "
+          f"generated problems: "
+          f"{len(log)} ({round(len(log) / dl.info['problem_number'] * 100, 2)}%)")
+    print(f"unhandled problem id: {unhandled}")
+    total = generated["solved"] + generated["unsolved"] + generated["error"]
+    print(f"solved problems: "
+          f"{generated['solved']} ({round(generated['solved'] / total * 100, 2)}%), "
+          f"unsolved problems: "
+          f"{generated['unsolved']} ({round(generated['unsolved'] / total * 100, 2)}%), "
+          f"error problems: "
+          f"{generated['error']} ({round(generated['error'] / total * 100, 2)}%)"
+          )
 
-def check_len():
-    """Show length distribution of training data."""
+    if not show_data_len:
+        return
     graph_len = {}
     nodes_len = {}
     edges_len = {}
     se_len = {}
-    for pid in load_json("../../data/outputs/log_data_generating.json")["generated"]:
+    for pid in log:
         training_data_repeat = load_pickle(f"../../data/training_data/{pid}.pkl")
         for training_data in training_data_repeat:
             for nodes, serialized_edges, edges_structure, goal, theorems in training_data:
@@ -814,11 +827,39 @@ def draw_length_pic(data, title, fig_size):
     plt.close()
 
 
+def check_make_onehot():
+    log = load_json("../../data/outputs/log_make_onehot.json")
+    total = len(log["non_exist"]) + len(log["generated"]) + len(log["error"])
+    print(f"non_exist: {len(log['non_exist'])} ({round(len(log['non_exist']) / total * 100, 2)}%), "
+          f"generated: {len(log['generated'])} ({round(len(log['generated']) / total * 100, 2)}%), "
+          f"error: {len(log['error'])} ({round(len(log['error']) / total * 100, 2)}%)")
+    print(f"non_exist: {log['non_exist']}")
+    print(f"error: {log['error']}")
+    print()
+
+    nodes_pretrain, nodes_pretrain_val = load_pickle("../../data/training_data/nodes_pretrain_data.pkl")
+    edges_pretrain, edges_pretrain_val = load_pickle("../../data/training_data/edges_pretrain_data.pkl")
+    print(f"nodes pretrain: {len(nodes_pretrain)}, nodes val: {len(nodes_pretrain_val)}")
+    print(f"edges pretrain: {len(edges_pretrain)}, edges val: {len(edges_pretrain_val)}")
+    print()
+
+    print("problem training:")
+    problem_split = make_train_val_test_split()
+    print(f"train: {len(problem_split['train'])}, val: {len(problem_split['val'])}, test: {len(problem_split['test'])}")
+
+    print("train (item):")
+    train, val, test = load_pickle("../../data/training_data/train_data.pkl")
+    print(f"train: {len(train)}, val: {len(val)}, test: {len(test)}")
+
+
 def get_args():
     parser = argparse.ArgumentParser(description="Welcome to use GPS!")
     parser.add_argument("--func", type=str, required=True,
-                        choices=["generate_training_data", "make_data"],
+                        choices=["make_data", "check_make_data", "make_onehot", "check_make_onehot"],
                         help="function that you want to run")
+
+    parser.add_argument("--repeat_unsolved", type=lambda x: x == "True", default=False,
+                        help="repeat unsolved problem.")
 
     parsed_args = parser.parse_args()
     print(f"args: {str(parsed_args)}\n")
@@ -827,17 +868,25 @@ def get_args():
 
 if __name__ == '__main__':
     """
-    kill subprocess:
+    Run in background:
+    nohup <python test.py> >/dev/null 2>&1 &
+    Kill subprocess:
     python utils.py --func kill --py_filename data.py
     
     Generating raw data using FormalGeo:
-    python data.py --func make_data
+    python data.py --func make_data --repeat_unsolved True
+    python data.py --func check_make_data
     
     Making training data:
     python data.py --func make_onehot
+    python data.py --func check_make_onehot
     """
     args = get_args()
     if args.func == "make_data":
-        make_data()
+        make_data(repeat_unsolved=args.repeat_unsolved)
     elif args.func == "make_onehot":
         make_onehot()
+    elif args.func == "check_make_data":
+        check_make_data()
+    elif args.func == "check_make_onehot":
+        check_make_onehot()

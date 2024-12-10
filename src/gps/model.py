@@ -173,17 +173,15 @@ class FeedForward(nn.Module):
 
 
 class SentenceEncoder(nn.Module):
-    def __init__(self, d_model, h, N, p_drop, use_residual):
+    def __init__(self, d_model, h, N, p_drop):
         """
         Sentence encoder, encode sentence with n words to 1 dimension-fixed vector.
         :param d_model: Embedding dim.
         :param h: Head number in MultiHeadAttention.
         :param N: Number of MultiHeadAttention.
         :param p_drop: Dropout rate.
-        :param use_residual: Use residual connection.
         """
         super(SentenceEncoder, self).__init__()
-        self.use_residual = use_residual
 
         self.dropout = nn.Dropout(p_drop)
 
@@ -200,12 +198,8 @@ class SentenceEncoder(nn.Module):
         """
 
         for i in range(len(self.attentions)):
-            if self.use_residual:
-                x = self.ln_attn[i](x + self.dropout(self.attentions[i](x)))  # multi-head attention and layer norm
-                x = self.ln_ffd[i](x + self.dropout(self.feedforwards[i](x)))  # feedforward and layer norm
-            else:
-                x = self.ln_attn[i](self.dropout(self.attentions[i](x)))  # multi-head attention and layer norm
-                x = self.ln_ffd[i](self.dropout(self.feedforwards[i](x)))  # feedforward and layer norm
+            x = self.ln_attn[i](x + self.dropout(self.attentions[i](x)))  # multi-head attention and layer norm
+            x = self.ln_ffd[i](x + self.dropout(self.feedforwards[i](x)))  # feedforward and layer norm
 
         x = torch.mean(x, dim=1)  # pooling
 
@@ -254,7 +248,7 @@ class SentenceDecoder(nn.Module):
 
 class Sentence2Vector(nn.Module):
 
-    def __init__(self, vocab, h, N, p_drop, d_model, use_residual, use_structural_encoding):
+    def __init__(self, vocab, h, N, p_drop, d_model, use_structural_encoding):
         """
         Sentence to Vector, encode sentence with n words to 1 dimension-fixed vector.
         :param vocab: The number of words in the vocabulary list.
@@ -262,14 +256,13 @@ class Sentence2Vector(nn.Module):
         :param N: Number of MultiHeadAttention in Encoder and Decoder.
         :param p_drop: Dropout rate.
         :param d_model: Embedding dim.
-        :param use_residual: Use residual connection in encoder.
         :param use_structural_encoding: Use structural encoding.
         """
         super(Sentence2Vector, self).__init__()
 
         self.embedding = Embedding(vocab, d_model)
         self.pe = PositionalEncoding(d_model, use_structural_encoding)
-        self.encoder = SentenceEncoder(d_model, h, N, p_drop, use_residual)
+        self.encoder = SentenceEncoder(d_model, h, N, p_drop)
         self.decoder = SentenceDecoder(d_model, h, N, p_drop)
         self.linear = nn.Linear(d_model, vocab)
 
@@ -375,19 +368,17 @@ class Predictor(nn.Module):
     def __init__(self, vocab_nodes, vocab_edges, vocab_theorems,
                  h_encoder, N_encoder, p_drop_encoder,
                  h_predictor, N_predictor, p_drop_predictor,
-                 d_model, use_residual, use_structural_encoding, use_hypertree):
+                 d_model, use_structural_encoding, use_hypertree):
         """Theorem predictor."""
         super(Predictor, self).__init__()
         self.d_model = d_model
         self.use_hypertree = use_hypertree
 
         self.nodes_emb = Sentence2Vector(
-            vocab_nodes, h_encoder, N_encoder, p_drop_encoder, d_model,
-            use_residual=use_residual, use_structural_encoding=False
+            vocab_nodes, h_encoder, N_encoder, p_drop_encoder, d_model, use_structural_encoding=False
         )
         self.edges_emb = Sentence2Vector(
-            vocab_edges, h_encoder, N_encoder, p_drop_encoder, d_model,
-            use_residual=use_residual, use_structural_encoding=use_structural_encoding
+            vocab_edges, h_encoder, N_encoder, p_drop_encoder, d_model, use_structural_encoding=use_structural_encoding
         )
         self.reduction = nn.Linear(d_model * 2, d_model)
 
@@ -420,7 +411,7 @@ class Predictor(nn.Module):
                 x_structure=structures.view(-1, edges_seq_len)
             )  # torch.Size([batch_size * node_len, self.d_model])
         else:
-            edge_encoding = torch.zeros(batch_size * node_len, self.d_model)
+            edge_encoding = torch.zeros(batch_size * node_len, self.d_model).to(next(self.parameters()).device)
 
         goal_encoding = self.nodes_emb(
             mode="encode",
@@ -443,7 +434,7 @@ def init_weights(m):
             init.zeros_(m.bias)
 
 
-def make_model(use_residual, use_structural_encoding, use_hypertree, init_model=True):
+def make_model(use_structural_encoding, use_hypertree, init_model=True):
     model = Predictor(vocab_nodes=len(nodes_words),
                       vocab_edges=len(edges_words),
                       vocab_theorems=len(theorem_words),
@@ -454,7 +445,6 @@ def make_model(use_residual, use_structural_encoding, use_hypertree, init_model=
                       N_predictor=config["predictor"]["model"]["N"],
                       p_drop_predictor=config["predictor"]["model"]["p_drop"],
                       d_model=config["d_model"],
-                      use_residual=use_residual,
                       use_structural_encoding=use_structural_encoding,
                       use_hypertree=use_hypertree)
     if init_model:

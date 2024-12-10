@@ -2,7 +2,7 @@ from gps.utils import get_config
 from gps.model import make_model
 from gps.data import get_problem_state, make_problem_state_onehot, make_train_val_test_split, graph_collate_fn
 from gps.train import get_mark
-from gps.utils import nodes_words, edges_words, theorem_words
+from gps.data import theorem_words, pid_alive
 from formalgeo.tools import load_json, safe_save_json, get_used_pid_and_theorem
 from formalgeo.data import DatasetLoader
 from formalgeo.problem import Problem
@@ -17,7 +17,6 @@ import random
 import time
 import argparse
 import os
-import psutil
 
 config = get_config()
 random.seed(config["random_seed"])
@@ -70,14 +69,16 @@ def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_bea
                 new_beam_stacks.append([solver.problem, prob])
                 prob_sum += prob
 
-    for i in range(len(new_beam_stacks)):  # probability normalization
-        new_beam_stacks[i][1] = new_beam_stacks[i][1] / prob_sum
+    for i in range(len(new_beam_stacks)):
+        problem, prob = new_beam_stacks[i]
+        prob = prob / prob_sum  # probability normalization
+        new_beam_stacks[i] = [problem, prob]
 
     return new_beam_stacks
 
 
 def solve(problem_id, request_queue, reply_queue, beam_size, greedy_beam):
-    dl = DatasetLoader(config.dataset_name, config.path_datasets)
+    dl = DatasetLoader(config["data"]["dataset_name"], config["data"]["datasets_path"])
     solver = Interactor(dl.predicate_GDL, dl.theorem_GDL)
     solver.load_problem(dl.get_problem(problem_id))
 
@@ -91,10 +92,10 @@ def solve(problem_id, request_queue, reply_queue, beam_size, greedy_beam):
                 return "solved", seqs
 
         request_queue.put((os.getpid(), problem_id, "predict", get_state(beam_stacks)))
-
-        reply_problem_id, predicted_theorems = reply_queue.get()
-        while reply_problem_id != problem_id:  # may get last problem reply when last problem timeout
-            reply_problem_id, predicted_theorems = reply_queue.get()
+        reply_problem_id, predicted_theorems = None, None
+        while reply_problem_id is None or reply_problem_id != problem_id:
+            if not reply_queue.empty():
+                reply_problem_id, predicted_theorems = reply_queue.get()
 
         beam_stacks = apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam)
 
@@ -105,7 +106,6 @@ def multiprocess_solve(task_queue, request_queue, reply_queue, beam_size, greedy
     warnings.filterwarnings("ignore")
     while not task_queue.empty():
         problem_id = task_queue.get()
-        request_queue.put((os.getpid(), problem_id, "record", "None"))
 
         timing = time.time()
         try:
@@ -123,35 +123,54 @@ def multiprocess_solve(task_queue, request_queue, reply_queue, beam_size, greedy
         request_queue.put((os.getpid(), problem_id, "write", info))
 
 
-def main(use_pretrain, use_residual, use_structural_encoding, use_hypertree, beam_size, greedy_beam, timeout, device):
+def main(use_pretrain, use_structural_encoding, use_hypertree,
+         beam_size, greedy_beam, timeout,
+         device, solve_again):
     """Run PAC cycle."""
-    mark = get_mark(use_pretrain, use_residual, use_structural_encoding, use_hypertree, beam_size)
-    bst_model_path = f"../../data/checkpoints/train_model_{mark}_bst.pth"
+    mark = get_mark(use_pretrain, use_structural_encoding, use_hypertree)
+    bst_model_path = f"../../data/checkpoints/train_model_bst_{mark}.pth"
+    mark += f"_bs{beam_size}"
     mark += "_gb" if greedy_beam else "_nb"
     mark += f"_tm{timeout}"
     log_path = f"../../data/outputs/log_pac_{mark}.json"
 
-    log = {"processed": [], "solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
+    log = {"solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
     if os.path.exists(log_path):
         log = load_json(log_path)
 
     task_queue = Queue()
-    for problem_id in make_train_val_test_split()["test"]:
-        if problem_id in log["processed"]:
-            continue
-        task_queue.put(problem_id)
+    problem_ids = []
+    if solve_again:  # clear unsolved, timeout, and error, run again
+        log["unsolved"] = {}
+        log["timeout"] = {}
+        log["error"] = {}
 
+    for problem_id in make_train_val_test_split()["test"]:
+        if str(problem_id) in log["solved"]:
+            continue
+        if str(problem_id) in log["unsolved"]:
+            continue
+        if str(problem_id) in log["timeout"]:
+            continue
+        if str(problem_id) in log["error"]:
+            continue
+        problem_ids.append(problem_id)
+
+    random.shuffle(problem_ids)
+    for problem_id in problem_ids:
+        task_queue.put(problem_id)
     request_queue = Queue()
     reply_queues = {}  # map pid to process queue
 
-    device = torch.device(device)
-    model = make_model(use_residual, use_structural_encoding, use_hypertree)
-    model.load_state_dict(torch.load(bst_model_path, map_location=torch.device("cpu"))).to(device)
-
+    model = make_model(use_structural_encoding, use_hypertree)
+    model.load_state_dict(torch.load(bst_model_path, map_location=torch.device(device), weights_only=True))
+    model.eval()
+    model = model.to(device)
+    count = 0
     while True:
         removed = []
         for process_id in reply_queues:  # Remove non-existent pid
-            if not psutil.pid_exists(process_id):
+            if not pid_alive(process_id):
                 removed.append(process_id)
         for process_id in removed:
             del reply_queues[process_id]
@@ -163,22 +182,22 @@ def main(use_pretrain, use_residual, use_structural_encoding, use_hypertree, bea
             process.start()
             reply_queues[process.pid] = reply_queue
 
-        process_id, problem_id, request, info = request_queue.get()
-        if request == "record":  # processed problem
-            log["processed"].append(process_id)
-            safe_save_json(log, log_path)
-        elif request == "write":  # write log
-            result, msg, timing = info
-            log[result][str(problem_id)] = {"msg": msg, "timing": timing}
-            safe_save_json(log, log_path)
-            print(f"process_id={process_id}, problem_id={problem_id}, result={result}, timing={timing}")
-        elif request == "predict":  # predict theorem
-            nodes, edges, structures, goals = info
-            reply_queue = reply_queues[process_id]
-
-            predicted_theorems = model(nodes=nodes.to(device), edges=edges.to(device),
-                                       structures=structures.to(device), goals=goals.to(device)).cpu()
-            reply_queue.put((problem_id, predicted_theorems))
+        if not request_queue.empty():  # directly calling .get() will block
+            process_id, problem_id, request, info = request_queue.get()
+            if request == "write":  # write log
+                count += 1
+                result, msg, timing = info
+                log[result][str(problem_id)] = {"msg": msg, "timing": timing}
+                safe_save_json(log, log_path)
+                print(f"({count}/{len(problem_ids)}) process_id={process_id}, problem_id={problem_id}, "
+                      f"result={result}, timing={timing}")
+            elif request == "predict":  # predict theorem
+                nodes, edges, structures, goals = info
+                reply_queue = reply_queues[process_id]
+                with torch.no_grad():
+                    predicted_theorems = model(nodes=nodes.to(device), edges=edges.to(device),
+                                               structures=structures.to(device), goals=goals.to(device)).cpu()
+                reply_queue.put((problem_id, predicted_theorems))
 
 
 def get_args():
@@ -186,11 +205,11 @@ def get_args():
 
     parser.add_argument("--device", type=str, default="cuda:0", choices=["cpu", "cuda:0", "cuda:1"],
                         help="Device for pretraining.")
+    parser.add_argument("--solve_again", type=lambda x: x == "True", default=True,
+                        help="Solve problem which not in log['solved'].")
 
     parser.add_argument("--use_pretrain", type=lambda x: x == "True", default=True,
                         help="Use pretrain.")
-    parser.add_argument("--use_residual", type=lambda x: x == "True", default=False,
-                        help="Use residual.")
     parser.add_argument("--use_structural_encoding", type=lambda x: x == "True", default=True,
                         help="Use structural encoding.")
     parser.add_argument("--use_hypertree", type=lambda x: x == "True", default=True,
@@ -210,13 +229,32 @@ def get_args():
 
 if __name__ == '__main__':
     """
-    kill subprocess:
+    Run in background:
+    nohup <python test.py> >/dev/null 2>&1 &
+    Kill subprocess:
     python utils.py --func kill --py_filename pac.py
     
-    run pac:
+    Run pac:
     python pac.py
+    python pac.py --use_pretrain False
+    python pac.py --use_structural_encoding False
+    python pac.py --use_hypertree False
+    
+    python pac.py --beam_size 3
+    python pac.py --use_pretrain False --beam_size 3
+    python pac.py --use_structural_encoding False --beam_size 3
+    python pac.py --use_hypertree False --beam_size 3
+    
+    python pac.py --beam_size 1
+    python pac.py --use_pretrain False --beam_size 1
+    python pac.py --use_structural_encoding False --beam_size 1
+    python pac.py --use_hypertree False --beam_size 1
+    
+    Best result:
+    python pac.py --greedy_beam True
     """
     args = get_args()
-    main(use_pretrain=args.use_pretrain, use_residual=args.use_residual,
+    main(use_pretrain=args.use_pretrain,
          use_structural_encoding=args.use_structural_encoding, use_hypertree=args.use_hypertree,
-         beam_size=args.beam_size, greedy_beam=args.greedy_beam, timeout=args.timeout, device=args.device)
+         beam_size=args.beam_size, greedy_beam=args.greedy_beam, timeout=args.timeout,
+         device=args.device, solve_again=args.solve_again)

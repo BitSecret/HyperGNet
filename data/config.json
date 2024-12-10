@@ -1,19 +1,19 @@
 {
   "data": {
     "datasets_path": "D:/Projects/released",
-    "datasets_path_linux": "./datasets",
+    "datasets_path_linux": "../../datasets",
     "dataset_name": "formalgeo7k_v2",
     "pretraining_train_val": [9, 1],
     "training_train_val_test": [3, 1, 1],
     "make_data_repeat": 5,
-    "make_data_timeout": 30,
-    "max_len_nodes": 256,
-    "max_len_edges": 256,
-    "max_len_se": 5000,
-    "max_len_graphs": 256
+    "make_data_timeout": 40,
+    "max_len_nodes": 40,
+    "max_len_edges": 40,
+    "max_len_graphs": 200,
+    "max_len_se": 3000
   },
   "random_seed": 619,
-  "multiprocess": 0.8,
+  "multiprocess": 0.9,
   "d_model": 256,
   "encoder": {
     "model": {
@@ -22,7 +22,7 @@
       "p_drop": 0.5
     },
     "training": {
-      "batch_size": 64,
+      "batch_size": 128,
       "epochs": 50,
       "lr": 0.00001
     }
@@ -34,8 +34,8 @@
       "p_drop": 0.5
     },
     "training": {
-      "batch_size": 64,
-      "epochs": 50,
+      "batch_size": 1,
+      "epochs": 20,
       "lr": 0.00001
     }
   }

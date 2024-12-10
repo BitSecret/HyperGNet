@@ -18,9 +18,21 @@ torch.manual_seed(config["random_seed"])
 torch.cuda.manual_seed_all(config["random_seed"])
 
 
-def pretrain(model_type, device):
+def get_pretrain_mark(model_type, use_structural_encoding):
+    if model_type == "nodes":
+        return "nodes"
+    else:
+        return f"{model_type}_{str(use_structural_encoding)[0]}"
+
+
+def get_train_mark(use_pretrain, use_structural_encoding, use_hypertree):
+    return "".join([str(use_pretrain)[0], str(use_structural_encoding)[0], str(use_hypertree)[0]])
+
+
+def pretrain(use_structural_encoding, model_type, device):
     """Pretrain node or edges model."""
-    log_path = f"../../data/outputs/log_pretrain_{model_type}.json"
+    mark = get_pretrain_mark(model_type, use_structural_encoding)
+    log_path = f"../../data/outputs/log_pretrain_{mark}.json"
     log = {
         "next_epoch": 1,
         "train": {},  # epoch: {"avg_loss": 1, "timing": 1}
@@ -28,13 +40,14 @@ def pretrain(model_type, device):
         "best_epoch": 0,
         "best_levenshtein": 0
     }
-    bst_model_path = f"../../data/checkpoints/pretrain_model_{model_type}_bst.pth"
-    bk_model_path = f"../../data/checkpoints/pretrain_model_{model_type}_bk.pth"
-    bk_optimizer_path = f"../../data/checkpoints/pretrain_optimizer_{model_type}_bk.pth"
-    bst_model_results_path = f"../../data/outputs/pretrain_bst_model_{model_type}.txt"
+    bst_model_path = f"../../data/checkpoints/pretrain_model_bst_{mark}.pth"
+    bk_model_path = f"../../data/checkpoints/pretrain_model_bk_{mark}.pth"
+    bk_optimizer_path = f"../../data/checkpoints/pretrain_optimizer_bk_{mark}.pth"
+    bst_model_results_path = f"../../data/outputs/results_pretrain_model_bst_{mark}.txt"
+    training_data_path = f"../../data/training_data/{model_type}_pretrain_data.pkl"
 
-    model = make_model(use_residual=False, use_structural_encoding=True, use_hypertree=True).to(device)
-    train_sets, val_sets = load_pickle(f"../../data/training_data/{model_type}_pretrain_data.pkl")
+    model = make_model(use_structural_encoding=use_structural_encoding, use_hypertree=True).to(device)
+    train_sets, val_sets = load_pickle(training_data_path)
     if model_type == "nodes":
         model = model.nodes_emb
         data_loader_train = DataLoader(
@@ -57,8 +70,8 @@ def pretrain(model_type, device):
 
     if os.path.exists(log_path):
         log = load_json(log_path)
-        model.load_state_dict(torch.load(bk_model_path, map_location=torch.device("cpu"), weights_only=True))
-        optimizer.load_state_dict(torch.load(bk_optimizer_path, map_location=torch.device("cpu"), weights_only=True))
+        model.load_state_dict(torch.load(bk_model_path, map_location=torch.device(device), weights_only=True))
+        optimizer.load_state_dict(torch.load(bk_optimizer_path, map_location=torch.device(device), weights_only=True))
 
     epochs = config["encoder"]["training"]["epochs"]
     for epoch in range(log["next_epoch"], epochs + 1):
@@ -81,13 +94,13 @@ def pretrain(model_type, device):
             optimizer.step()
 
             loss_list.append(loss.item())
-            loop.set_description(f"Pretraining <{model_type}> (epoch [{epoch}/{epochs}])")
+            loop.set_description(f"Pretraining <{mark}> (epoch [{epoch}/{epochs}])")
             loop.set_postfix(loss=loss.item())
         loop.close()
 
         avg_loss = round(sum(loss_list) / len(loss_list), 4)
         timing = round(time.time() - timing, 4)
-        print(f"Pretrain <{model_type}> (Epoch [{epoch}/{epochs}]): avg_loss={avg_loss}, timing={timing}.")
+        print(f"Pretrain <{mark}> (Epoch [{epoch}/{epochs}]): avg_loss={avg_loss}, timing={timing}.")
         log["train"][str(epoch)] = {"avg_loss": avg_loss, "timing": timing}
 
         model.eval()
@@ -120,14 +133,14 @@ def pretrain(model_type, device):
                 levenshtein_sums += levenshtein_sum
                 num_counts += num_count
                 results.extend(result)
-                loop.set_description(f"Evaluating <{model_type}> (epoch [{epoch}/{epochs}])")
+                loop.set_description(f"Evaluating <{mark}> (epoch [{epoch}/{epochs}])")
                 loop.set_postfix(acc=levenshtein_sum / num_count)
             loop.close()
 
         levenshtein = round(levenshtein_sums / num_counts, 4)
         timing = round(time.time() - timing, 4)
         log["eval"][str(epoch)] = {"levenshtein": levenshtein, "timing": timing}
-        print(f"Evaluate <{model_type}> (Epoch [{epoch}/{epochs}]): levenshtein={levenshtein}, timing={timing}.")
+        print(f"Evaluate <{mark}> (Epoch [{epoch}/{epochs}]): levenshtein={levenshtein}, timing={timing}.")
 
         if levenshtein > log["best_levenshtein"]:
             log["best_levenshtein"] = levenshtein
@@ -143,11 +156,14 @@ def pretrain(model_type, device):
         safe_save_json(log, log_path)
 
 
-def train(use_pretrain, use_residual, use_structural_encoding, use_hypertree, beam_size, device, training=True):
+def train(use_pretrain, use_structural_encoding, use_hypertree, device, beam_size, training):
     """Train theorem predictor."""
-    bst_pretrain_nodes_model_path = f"../../data/checkpoints/pretrain_model_nodes_bst.pth"
-    bst_pretrain_edges_model_path = f"../../data/checkpoints/pretrain_model_edges_bst.pth"
-    mark = get_mark(use_pretrain, use_residual, use_structural_encoding, use_hypertree, beam_size)
+
+    mark = get_pretrain_mark("nodes", use_structural_encoding)
+    bst_pretrain_nodes_model_path = f"../../data/checkpoints/pretrain_model_bst_{mark}.pth"
+    mark = get_pretrain_mark("edges", use_structural_encoding)
+    bst_pretrain_edges_model_path = f"../../data/checkpoints/pretrain_model_bst_{mark}.pth"
+    mark = get_train_mark(use_pretrain, use_structural_encoding, use_hypertree)
     log_path = f"../../data/outputs/log_train_{mark}.json"
     log = {
         "next_epoch": 1,
@@ -157,14 +173,15 @@ def train(use_pretrain, use_residual, use_structural_encoding, use_hypertree, be
         "best_eval_loss": 100000,
         "best_eval_acc": 0
     }
-    bst_model_path = f"../../data/checkpoints/train_model_{mark}_bst.pth"
-    bk_model_path = f"../../data/checkpoints/train_model_{mark}_bk.pth"
-    bk_optimizer_path = f"../../data/checkpoints/train_optimizer_{mark}_bk.pth"
-    bst_model_val_results_path = f"../../data/outputs/train_bst_model_val_{mark}.txt"
-    bst_model_test_results_path = f"../../data/outputs/train_bst_model_test_{mark}.txt"
+    bst_model_path = f"../../data/checkpoints/train_model_bst_{mark}.pth"
+    bk_model_path = f"../../data/checkpoints/train_model_bk_{mark}.pth"
+    bk_optimizer_path = f"../../data/checkpoints/train_optimizer_bk_{mark}.pth"
+    bst_model_val_results_path = f"../../data/outputs/results_train_bst_model_val_{mark}.txt"
+    bst_model_test_results_path = f"../../data/outputs/results_train_bst_model_test_{mark}_bs{beam_size}.txt"
+    training_data_path = "../../data/training_data/train_data.pkl"
 
-    model = make_model(use_residual, use_structural_encoding, use_hypertree)
-    train_sets, val_sets, test_sets = load_pickle(f"../../data/training_data/train_data.pkl")
+    model = make_model(use_structural_encoding, use_hypertree).to(device)
+    train_sets, val_sets, test_sets = load_pickle(training_data_path)
     data_loader_train = DataLoader(
         dataset=GeoDataset(train_sets), collate_fn=graph_collate_fn,
         batch_size=config["predictor"]["training"]["batch_size"], shuffle=True)
@@ -180,28 +197,28 @@ def train(use_pretrain, use_residual, use_structural_encoding, use_hypertree, be
         optimizer = torch.optim.Adam(model.parameters(), lr=config["predictor"]["training"]["lr"])  # Adam optimizer
         if os.path.exists(log_path):
             log = load_json(log_path)
-            model.load_state_dict(torch.load(bk_model_path, map_location=torch.device("cpu"), weights_only=True))
+            model.load_state_dict(torch.load(bk_model_path, map_location=torch.device(device), weights_only=True))
             optimizer.load_state_dict(
-                torch.load(bk_optimizer_path, map_location=torch.device("cpu"), weights_only=True))
+                torch.load(bk_optimizer_path, map_location=torch.device(device), weights_only=True))
         elif use_pretrain:
             model.nodes_emb.load_state_dict(
-                torch.load(bst_pretrain_nodes_model_path, map_location=torch.device("cpu"), weights_only=True))
+                torch.load(bst_pretrain_nodes_model_path, map_location=torch.device(device), weights_only=True))
             model.edges_emb.load_state_dict(
-                torch.load(bst_pretrain_edges_model_path, map_location=torch.device("cpu"), weights_only=True))
-        model = model.to(device)
+                torch.load(bst_pretrain_edges_model_path, map_location=torch.device(device), weights_only=True))
 
         epochs = config["predictor"]["training"]["epochs"]
         for epoch in range(log["next_epoch"], epochs + 1):
-            loop_description = f"Training <{mark}> (epoch [{epoch}/{epochs}])"  # training
-            avg_loss, acc, timing, results = run_one_epoch(model, data_loader_train, loss_func, optimizer,
-                                                           beam_size, loop_description)
+
+            avg_loss, acc, timing, results = run_one_epoch(  # training
+                model, data_loader_train, loss_func, optimizer,
+                loop_description=f"Training <{mark}> (epoch [{epoch}/{epochs}])")
             print(f"Train <{mark}> (Epoch [{epoch}/{epochs}]): avg_loss={avg_loss}, acc={acc}, timing={timing}.")
             log["train"][str(epoch)] = {"avg_loss": avg_loss, "acc": acc, "timing": timing}
 
-            loop_description = f"Evaluating <{mark}> (epoch [{epoch}/{epochs}])"  # evaluating
-            with torch.no_grad():
-                avg_loss, acc, timing, results = run_one_epoch(model, data_loader_val, loss_func, None,
-                                                               beam_size, loop_description)
+            with torch.no_grad():  # evaluating
+                avg_loss, acc, timing, results = run_one_epoch(
+                    model, data_loader_val, loss_func, None,
+                    loop_description=f"Evaluating <{mark}> (epoch [{epoch}/{epochs}])")
             log["eval"][str(epoch)] = {"avg_loss": avg_loss, "acc": acc, "timing": timing}
             print(f"Evaluate <{mark}> (Epoch [{epoch}/{epochs}]): avg_loss={avg_loss}, acc={acc}, timing={timing}.")
 
@@ -213,38 +230,30 @@ def train(use_pretrain, use_residual, use_structural_encoding, use_hypertree, be
                 with open(bst_model_val_results_path, 'w', encoding='utf-8') as file:
                     file.write("\n".join(results))
                     file.write(f"\navg_loss: {avg_loss}, acc: {acc}")
-
             torch.save(model.state_dict(), bk_model_path)
             torch.save(optimizer.state_dict(), bk_optimizer_path)
             log["next_epoch"] += 1
             safe_save_json(log, log_path)
 
-    model.load_state_dict(torch.load(bst_model_path, map_location=torch.device("cpu"), weights_only=True)).to(device)
-    loop_description = f"Testing <{mark}>"  # testing
+    model.load_state_dict(torch.load(bst_model_path, map_location=torch.device(device), weights_only=True))  # testing
     with torch.no_grad():
-        avg_loss, acc, timing, results = run_one_epoch(model, data_loader_test, loss_func, None,
-                                                       beam_size, loop_description)
-    print(f"Test <{mark}>: avg_loss={avg_loss}, acc={acc}, timing={timing}.")
+        avg_loss, acc, timing, results = run_one_epoch(
+            model, data_loader_test, loss_func, None,
+            loop_description=f"Testing <{mark}>", beam_size=beam_size)
+    print(f"Test <{mark}>: avg_loss={avg_loss}, acc={acc}, beam_size: {beam_size}, timing={timing}.")
     with open(bst_model_test_results_path, 'w', encoding='utf-8') as file:
         file.write("\n".join(results))
-        file.write(f"\navg_loss: {avg_loss}, acc: {acc}")
+        file.write(f"\navg_loss: {avg_loss}, acc: {acc}, beam_size: {beam_size}")
 
 
-def get_mark(use_pretrain, use_residual, use_structural_encoding, use_hypertree, beam_size):
-    return "".join([str(use_pretrain)[0], str(use_residual)[0], str(use_structural_encoding)[0],
-                    str(use_hypertree)[0], f"_bs{beam_size}"])
-
-
-def run_one_epoch(model, data_loader, loss_func, optimizer, beam_size, loop_description):
+def run_one_epoch(model, data_loader, loss_func, optimizer, loop_description, beam_size=5):
     """evaluate theorem predictor."""
     if optimizer is not None:
         model.train()
     else:
         model.eval()
 
-    # with torch.no_grad():
-
-    device = model.device
+    device = next(model.parameters()).device
     timing = time.time()
     loss_list = []  # for acv_loss calculation
     acc_count = 0  # for acc calculation
@@ -274,7 +283,7 @@ def run_one_epoch(model, data_loader, loss_func, optimizer, beam_size, loop_desc
                               for idx, _ in sorted(enumerate(predictions[i]), key=lambda x: x[1], reverse=True)]
             if len(set(prediction_str[:beam_size]) & set(theorem_str)) > 0:
                 acc_count += 1
-            results.append(f"GT: [{', '.join(theorem_str)}]\tPD: [{', '.join(prediction_str)}]")
+            results.append(f"GT: [{', '.join(theorem_str)}]\tPD: [{', '.join(prediction_str[:beam_size])}]")
 
         loop.set_postfix(loss=loss.item())
 
@@ -346,15 +355,13 @@ def get_args():
 
     parser.add_argument("--use_pretrain", type=lambda x: x == "True", default=True,
                         help="Use pretrain.")
-    parser.add_argument("--use_residual", type=lambda x: x == "True", default=False,
-                        help="Use residual.")
     parser.add_argument("--use_structural_encoding", type=lambda x: x == "True", default=True,
                         help="Use structural encoding.")
     parser.add_argument("--use_hypertree", type=lambda x: x == "True", default=True,
                         help="Use hypertree.")
 
     parser.add_argument("--beam_size", type=int, required=False, default=5,
-                        help="Beam size when calculate acc.")
+                        help="Beam size when calculate acc, only used in testing.")
 
     parsed_args = parser.parse_args()
     print(f"args: {str(parsed_args)}\n")
@@ -363,36 +370,45 @@ def get_args():
 
 if __name__ == '__main__':
     """
+    Run in background:
+    nohup <python test.py> >/dev/null 2>&1 &
+    nohup <python test.py> --device cuda:1 >/dev/null 2>&1 &
+    
     Pretrain:
     python train.py --func pretrain_nodes
     python train.py --func pretrain_edges
+    python train.py --func pretrain_edges --use_structural_encoding False
     
     Train:
     python train.py --func train
-    
-    Ablation study:
     python train.py --func train --use_pretrain False
-    python train.py --func train --use_residual True
     python train.py --func train --use_structural_encoding False
     python train.py --func train --use_hypertree False
     
     Test:
-    python train.py --func test
+    python train.py --func test --beam_size 3
+    python train.py --func test --use_pretrain False --beam_size 3
+    python train.py --func test --use_structural_encoding False --beam_size 3
+    python train.py --func test --use_hypertree False --beam_size 3
+    
+    python train.py --func test --beam_size 1
+    python train.py --func test --use_pretrain False --beam_size 1
+    python train.py --func test --use_structural_encoding False --beam_size 1
+    python train.py --func test --use_hypertree False --beam_size 1
     """
-    # pretrain(device="cuda:0", model_type="nodes")
-    # pretrain(device="cpu", model_type="edges")
-    # train(True, False, True, True, 5, "cuda:0", True)
-    # exit(0)
+
     args = get_args()
     if args.func == "pretrain_nodes":
-        pretrain(device=args.device, model_type="nodes")
+        pretrain(use_structural_encoding=args.use_structural_encoding,
+                 model_type="nodes", device=args.device)
     elif args.func == "pretrain_edges":
-        pretrain(device=args.device, model_type="edges")
+        pretrain(use_structural_encoding=args.use_structural_encoding,
+                 model_type="edges", device=args.device)
     elif args.func == "train":
-        train(use_pretrain=args.use_pretrain, use_residual=args.use_residual,
+        train(use_pretrain=args.use_pretrain,
               use_structural_encoding=args.use_structural_encoding, use_hypertree=args.use_hypertree,
-              beam_size=args.beam_size, device=args.device, training=True)
+              device=args.device, beam_size=args.beam_size, training=True)
     elif args.func == "test":
-        train(use_pretrain=args.use_pretrain, use_residual=args.use_residual,
+        train(use_pretrain=args.use_pretrain,
               use_structural_encoding=args.use_structural_encoding, use_hypertree=args.use_hypertree,
-              beam_size=args.beam_size, device=args.device, training=False)
+              device=args.device, beam_size=args.beam_size, training=False)
