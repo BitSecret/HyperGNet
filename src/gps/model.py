@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.init as init
 from gps.utils import get_config
 from gps.data import nodes_words, edges_words, theorem_words
 
@@ -427,14 +426,7 @@ class Predictor(nn.Module):
         return predicted_theorems
 
 
-def init_weights(m):
-    if isinstance(m, nn.Linear):
-        init.xavier_uniform_(m.weight)
-        if m.bias is not None:
-            init.zeros_(m.bias)
-
-
-def make_model(use_structural_encoding, use_hypertree, init_model=True):
+def make_model(use_structural_encoding, use_hypertree):
     model = Predictor(vocab_nodes=len(nodes_words),
                       vocab_edges=len(edges_words),
                       vocab_theorems=len(theorem_words),
@@ -447,18 +439,16 @@ def make_model(use_structural_encoding, use_hypertree, init_model=True):
                       d_model=config["d_model"],
                       use_structural_encoding=use_structural_encoding,
                       use_hypertree=use_hypertree)
-    if init_model:
-        model.apply(init_weights)
 
     return model
 
 
 def show_parameters():
     """
-    Params: 31,920,268
-    Memory: 121.77 MB
+    Params: 20,380,297
+    Memory: 77.74 MB
     """
-    m = make_model(False, True, True)
+    m = make_model(True, True)
     total_params = sum(p.numel() for p in m.parameters())  # 参数总数
     param_memory = sum(p.numel() * p.element_size() for p in m.parameters())  # 占用字节数
     print("Params: {}, Memory: {:.2f} MB.".format(total_params, param_memory / 1024 / 1024))

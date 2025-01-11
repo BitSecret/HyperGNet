@@ -1,27 +1,28 @@
-# HyperGNet
+# FGeo-HyperGNet
 
 [![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen)](https://github.com/BitSecret/HyperGNet)
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 [![Survey](https://img.shields.io/badge/Survey-FormalGeo-blue)](https://github.com/FormalGeo/FormalGeo)
 
-We built a neural-symbolic system to automatically perform human-like geometric deductive reasoning.
+We built a neural-symbolic system, called FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
 
 <div>
     <img src="architecture.png" alt="overall architecture">
 </div>
 
-The symbolic part is a formal system built on [FormalGeo](https://github.com/FormalGeo/FormalGeo), which can
-automatically perform algebraic calculations and relational reasoning and organize the solving process into a solution
+The symbolic component is a formal system built on [FormalGeo](https://github.com/FormalGeo/FormalGeo), which can
+automatically perform geometric relational reasoning and algebraic calculations and organize the solution into a
 hypergraph with conditions as hypernodes and theorems as hyperedges.
 
-The neural part is a hypergraph neural network based on the attention mechanism, including a encoder to effectively
-encode the structural and semantic information of the hypergraph, and a solver to provide problem-solving guidance.
+The neural component, called HyperGNet, is a hypergraph neural network based on the attention mechanism, including an
+encoder to effectively encode the structural and semantic information of the hypergraph, and a solver to provide
+guidance of solving geometric problem.
 
-The neural part predicts theorems according to the hypergraph, and the symbolic part applies theorems and updates the
-hypergraph, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic solving of
-geometric problems. Experiments demonstrate the correctness and effectiveness of this neural-symbolic architecture. We
-achieved a step-wised accuracy of 87.65% and an overall accuracy of 85.53% on
-the [formalgeo7k-v2](https://github.com/FormalGeo/Datasets) datasets.
+The neural component predicts theorems according to the hypergraph, and the symbolic component applies theorems and
+updates the hypergraph, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic
+solving of geometric problems. Experiments demonstrate the correctness and effectiveness of this neural-symbolic
+architecture. Experiments demonstrate the correctness and effectiveness of this neural-symbolic architecture. We
+achieved a TAP of 87.65% and a PSSR of 88.36% on the [FormalGeo7K-v2](https://github.com/FormalGeo/FormalGeo) datasets.
 
 More information about FormalGeo will be found in [homepage](https://formalgeo.github.io/). FormalGeo is in its early
 stages and brimming with potential. We welcome anyone to join us in this exciting endeavor.
@@ -51,43 +52,67 @@ We provide a short code to test if the environment setup is successful:
 
     $ python utils.py --func test_env
 
-Download datasets and initialize the project:
+Modify the addresses of datasets `datasets_path` (for windows or macOS) and `datasets_path_linux` in
+the `data/config.json` file, and then run the script to download the FormalGeo7K-v2 datasets:
 
-    $ python utils.py --func project_init
+    $ python utils.py --func download_dataset
 
-Download our trained model
-through [Google Drive](https://drive.google.com/file/d/1XELvToJji-AIJDZaVUSIAwdsThvAkBOd/view?usp=sharing)
-or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and put them
-into `HyperGNet/data/checkpoints`.
+Download our trained model and generated data
+through [Google Drive](https://drive.google.com/file/d/1hqlObUC7GKFrJ4hakMZAplx6GJdVdVH-/view?usp=sharing)
+or [Baidu NetDisk](https://pan.baidu.com/s/14zMcV3dXAPKvbF0kKgYNeg?pwd=3m9y) and put them
+into `data/` path.
+
+Now, your working directory should looks like this:
+
+```
+|--data
+|  |--checkpoints
+|  |--outputs
+|  |--training_data
+|  |--config.json
+|
+|--src
+|  |--gps
+|     |--__init__.py
+|     |--data.py
+|     |--model.py
+|     |--pac.py
+|     |--train.py
+|     |--utils.py
+|
+|--architecture.png
+|
+|--LICENSE
+|
+|--pyproject.toml
+|
+|--README.md
+```
 
 ## Preparing Training Data
 
 We use **FormalGeo** as the formal environment for solving geometric problems and generate training data using the
-**formalgeo7k-v2** dataset. The dataset is split into `training:validation:test=3:1:1`. Each problem-solving theorem
+**FormalGeo7K-v2** dataset. The dataset is split into `training:validation:test=3:1:1`. Each annotated theorem
 sequence can be organized into a directed acyclic graph (DAG). We randomly traverse this DAG and apply each step's
-theorem while obtaining the state information of the problem. Each problem will repeat these steps 5 times (the number
-of repetitions is defined in the `HyperGNet/data/config.json` file).
+theorem while obtaining the state information of the problem. Each problem will repeat 5 times (the number of
+repetitions is defined in the `data/config.json` file).
 
-This process ultimately generated 20,571 training data entries (from 4,079 problems), 7,072 validation data entries (
-from 1,370 problems), and 7,046 test data entries (from 1,372 problems). Each data entry can be viewed as a
-5-tuple `(nodes, edges, structures, goals, theorems)`.
+This process ultimately generated 71,234 training data entries (from 4,200 problems), 23,878 validation data entries (
+from 1,400 problems), and 23,522 test data entries (from 1,400 problems). Each data entry can be viewed as an
+input-label pair `((nodes, edges, structural_encoding, goals), theorems)`.
 
-Download our generated data
-through [Google Drive](https://drive.google.com/file/d/1XELvToJji-AIJDZaVUSIAwdsThvAkBOd/view?usp=sharing)
-or [Baidu NetDisk](https://pan.baidu.com/s/1HER9YGf_L-0gJMq5Kfioow?pwd=ddjb) and put them
-into `HyperGNet/data/training_data`.
-
-You can also use multiprocessing approach to generate your own training data:
+We have provided the generated data, located at the path `data/training_data`. You can also use a multi-process approach
+to generate training data:
 
     $ python data.py --func make_data
     $ python data.py --func make_onehot
 
 In the end, you will obtain the files `nodes_pretrain_data.pkl`, `edges_pretrain_data.pkl`, and `train_data.pkl` in
-the `HyperGNet/data/training_data` path.
+the `data/training_data` path.
 
 ## Training
 
-We first pretrain the embedding networks for nodes and edges using a self-supervised method.
+We first pretrain the hypernode embedding networks using a self-supervised method.
 
     $ python train.py --func pretrain_nodes
     $ python train.py --func pretrain_edges
@@ -96,60 +121,75 @@ Then, train the theorem prediction network:
 
     $ python train.py --func train
 
-The training log will be saved in `HyperGNet/data/outputs`.
+The training log will be saved in `data/outputs`.
 
 ## Testing
 
-### Testing Step-wised Prediction
-
-Test theorem prediction model:
+Test theorem prediction accuracy (TPA):
 
     $ python train.py --func test
 
-The test results of the model will be saved in `HyperGNet/data/outputs`.
-
-### Testing PA Cycle
-
-Obtain the overall problem-solving success rate:
+Test problem solving success rate (PSSR):
 
     $ python pac.py
 
+The test results of the model will be saved in `HyperGNet/data/outputs`.
+
 ## Results
 
-You can obtain the figure or tabular data in the paper using the following command:
+Show experimental results:
 
-    $ python utils.py --func statictic
+    $ python utils.py --func show_contrast_results
+    $ python utils.py --func show_ablation_results
 
-### Details of the problem-solving success rates
+### Comparative Experiment
 
-| Method       | Strategy             | Timeout | Total | L1    | L2    | L3    | L4    | L5    | L6    |
-|--------------|----------------------|---------|-------|-------|-------|-------|-------|-------|-------|
-| FW           | Random Search        | 600     | 39.71 | 59.24 | 40.04 | 33.68 | 16.38 | 5.43  | 4.79  |
-| BW           | Breadth-First Search | 600     | 35.44 | 67.22 | 33.72 | 11.15 | 6.67  | 6.07  | 1.03  |
-| Inter-GPS    | Beam Search          | 600     | 40.76 | 63.90 | 36.49 | 27.95 | 23.95 | 12.50 | 11.86 |
-| FGeo-TP (FW) | Random Search        | 600     | 68.76 | 84.68 | 70.78 | 66.51 | 51.09 | 30.03 | 25.09 |
-| FGeo-TP (BW) | Breadth-First Search | 600     | 80.12 | 96.55 | 85.60 | 74.36 | 59.59 | 45.69 | 28.18 |
-| FGeo-TP (BW) | Depth-First Search   | 600     | 79.56 | 96.18 | 84.18 | 73.72 | 60.32 | 45.05 | 28.52 |
-| FGeo-TP (BW) | Random Search        | 600     | 80.86 | 96.43 | 85.44 | 76.12 | 62.26 | 48.88 | 29.55 |
-| FGeo-TP (BW) | Beam Search          | 600     | 79.06 | 96.10 | 84.55 | 72.92 | 58.37 | 43.45 | 25.43 |
-| FGeo-DRL     | Beam Search          | 1200    | 86.40 | 97.65 | 94.21 | 85.87 | 70.45 | 46.81 | 32.18 |
-| HyperGNet    | Normal Beam Search   | 30      | 62.18 | 82.57 | 65.14 | 51.57 | 46.71 | 20.31 | 11.86 |
-| HyperGNet    | Greedy Beam Search   | 30      | 79.58 | 94.61 | 84.32 | 75.98 | 67.66 | 32.81 | 27.12 |
-| HyperGNet    | Greedy Beam Search   | 600     | 85.53 | 95.44 | 89.46 | 84.25 | 77.84 | 50.00 | 45.76 |
+Table 1: PSSR of different methods on the FormalGeo7K dataset.
+
+| Method              | Total | L1    | L2    | L3    | L4    | L5    | L6    |
+|---------------------|-------|-------|-------|-------|-------|-------|-------|
+| Forward Search      | 39.71 | 58.47 | 41.01 | 34.16 | 16.40 | 5.45  | 4.79  |
+| Backward Search     | 35.44 | 66.43 | 34.98 | 11.78 | 6.56  | 6.09  | 1.03  |
+| FGeo with T5-small  | 36.14 | 49.90 | 34.84 | 34.59 | 23.57 | 8.06  | 3.33  |
+| FGeo with BART-base | 54.00 | 73.90 | 56.12 | 50.38 | 26.75 | 16.13 | 8.33  |
+| DeepSeek-v3         | 60.79 | 75.99 | 56.38 | 63.91 | 43.31 | 32.26 | 28.33 |
+| Inter-GPS           | 60.50 | 76.2  | 63.30 | 60.90 | 39.49 | 17.74 | 15.00 |
+| NGS                 | 62.60 | 62.22 | 64.97 | 72.79 | 57.47 | 56.41 | 36.59 |
+| DualGeoSolver       | 62.11 | 62.96 | 67.80 | 65.44 | 60.92 | 53.85 | 34.15 |
+| FGeo-TP             | 80.86 | 96.43 | 85.44 | 76.12 | 62.26 | 48.88 | 29.55 |
+| FGeo-DRL            | 80.85 | 97.61 | 91.88 | 70.82 | 57.55 | 36.17 | 27.59 |
+| FGeo-HyperGNet      | 88.36 | 96.24 | 91.76 | 87.59 | 82.17 | 56.45 | 56.67 |
+
+Table 2: PSSR of existing state-of-the-art methods and FGeo-HyperGNet on different datasets.
+
+| Method         | Geometry3K | GeoQA | FormalGeo7K |
+|----------------|------------|-------|-------------|
+| GeoDRL         | 89.40      | -     | -           |
+| E-GPS          | 90.40      | -     | -           |
+| SCA-GPS        | -          | 64.10 | -           |
+| DualGeoSolver  | -          | 65.20 | -           |
+| FGeo-TP        | -          | -     | 80.86       |
+| DFE-GPS        | -          | -     | 82.38       |
+| FGeo-HyperGNet | 91.99      | 85.64 | 88.36       |
 
 ### Ablation study
 
-| Method         | Beam Size | Step-wised Acc (%) | Overall Acc (%) | Avg Time (s) | Avg Step |
-|----------------|-----------|--------------------|-----------------|--------------|----------|
-| HyperGNet      | 1         | 63.03              | 30.23           | 0.96         | 2.62     |
-| HyperGNet      | 3         | 82.05              | 53.30           | 3.05         | 3.31     |
-| HyperGNet      | 5         | 87.65              | 62.18           | 5.47         | 3.46     |
-| -w/o Pretrain  | 1         | 62.80              | 27.15           | 0.86         | 2.57     |
-| -w/o Pretrain  | 3         | 82.86              | 48.21           | 2.70         | 3.33     |
-| -w/o Pretrain  | 5         | 88.66              | 57.95           | 4.86         | 3.50     |
-| -w/o Hypertree | 1         | 62.48              | 29.66           | 0.80         | 2.55     |
-| -w/o Hypertree | 3         | 83.08              | 51.29           | 2.80         | 3.28     |
-| -w/o Hypertree | 5         | 89.24              | 60.67           | 4.73         | 3.38     |
+Table 3: Ablation study results of HyperGNet on the FormalGeo7k dataset.
+
+| Method         | Beam Size | TPA   | PSSR  |
+|----------------|-----------|-------|-------|
+|                | 1         | 71.58 | 44.86 |
+| FGeo-HyperGNet | 3         | 88.91 | 62.93 |
+|                | 5         | 93.50 | 67.79 |
+|                | 1         | 70.73 | 41.57 |
+| -w/o Pretrain  | 3         | 87.36 | 59.36 |
+|                | 5         | 92.21 | 64.43 |
+|                | 1         | 70.33 | 39.64 |
+| -w/o SE        | 3         | 88.14 | 60.21 |
+|                | 5         | 92.48 | 64.14 |
+|                | 1         | 68.11 | 36.93 |
+| -w/o Hypertree | 3         | 87.38 | 57.57 |
+|                | 5         | 92.00 | 63.07 |
 
 ## Acknowledge
 
@@ -163,8 +203,7 @@ Please contact with [Xiaokai Zhang](https://bitsecret.github.io/) if you encount
 
 To cite HyperGNet in publications use:
 > Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and
-> Hypergraph
-> Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
+> Hypergraph Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
 
 A BibTeX entry for LaTeX users is:
 > @misc{zhang2024fgeohypergnet,  

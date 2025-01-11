@@ -1,8 +1,6 @@
-from formalgeo.data import download_dataset, DatasetLoader
+from formalgeo.data import DatasetLoader
 from formalgeo.tools import load_json
-import matplotlib.pyplot as plt
 import os
-import zipfile
 import pickle
 import psutil
 import torch
@@ -45,231 +43,121 @@ def save_pickle(data, path):
         pickle.dump(data, f)
 
 
-def init_project():
+def download_dataset():
     """Build dir and download dataset."""
     config = get_config()
 
-    dirs = [config["data"]["datasets_path"], "../../data/checkpoints", "../../data/outputs", "../../data/training_data"]
-    for d in dirs:
-        if not os.path.exists(d):
-            os.makedirs(d)
-    if not os.path.exists(f"{config['data']['datasets_path']}/{config['data']['dataset_name']}.json"):
-        download_dataset(dataset_name=config["data"]["dataset_name"], datasets_path=config["data"]["datasets_path"])
+    if not os.path.exists(config["data"]["datasets_path"]):
+        os.makedirs(config["data"]["datasets_path"])
+        formalgeo.data.download_dataset(dataset_name=config["data"]["dataset_name"],
+                                        datasets_path=config["data"]["datasets_path"])
 
 
-# def result_alignment(log, test_pids, timeout=600):
-#     """
-#     Alignment PAC results.
-#     1.select the test set data.
-#     2.set the max search time as timeout.
-#     3.set the unhandled and error problems as unsolved and set it timeout as <timeout> * 0.5.
-#     """
-#     alignment_log = {"solved": {}, "unsolved": {}, "timeout": {}}
-#     for pid in test_pids:  # 1.select the test set data.
-#         pid = str(pid)
-#         added = False
-#         for key in alignment_log:
-#             if pid in log[key]:
-#                 if log[key][pid]["timing"] > timeout:  # 2.set the max search time as timeout.
-#                     alignment_log["timeout"][pid] = log[key][pid]
-#                     alignment_log["timeout"][pid]["timing"] = timeout
-#                 else:
-#                     alignment_log[key][pid] = log[key][pid]
-#                 added = True
-#                 break
-#         if not added:  # 3.set the unhandled and error problems as unsolved and set it timeout as <timeout> * 0.5.
-#             alignment_log["unsolved"][pid] = {"msg": "Unhandled problems.", "timing": timeout * 0.5, "step_size": 1}
-#
-#     return alignment_log
-#
-#
+def get_level_count(problem_level, log, level):
+    total_level_count = [0 for _ in range(level + 1)]  # [total, l1, l2, ...]
+    solved_level_count = [0 for _ in range(level + 1)]
+
+    for pid in log["total"]:
+        total_level_count[0] += 1
+        total_level_count[problem_level[pid]] += 1
+        if str(pid) in log["solved"]:
+            solved_level_count[0] += 1
+            solved_level_count[problem_level[pid]] += 1
+
+    return total_level_count, solved_level_count
 
 
 def show_contrast_results(level=6, span=2):
     log_files = {
-        "HyperGNet-NB-600": "../../data/outputs/log_pac_TFTT_bs5_nb_tm600.json",
-        "HyperGNet-GB-600": "../../data/outputs/log_pac_TFTT_bs5_gb_tm600.json"
-    }
-    problem_level = {}  # map problem_id to level
-    problem_total = [0 for _ in range(level + 1)]  # total number of a level
+        "Forward Search": "../../data/outputs/log_pssr_fw-rs.json",
+        "Backward Search": "../../data/outputs/log_pssr_bw-bfs.json",
 
-    config = get_config()
-    dl = DatasetLoader(config["data"]["dataset_name"], config["data"]["datasets_path"])
-    test_problem_ids = load_json("../../data/outputs/problem_split.json")["test"]
+        "FGeo with T5-small": "../../data/outputs/log_pssr_t5-small_bs20_timeout600.json",
+        "FGeo with BART-base": "../../data/outputs/log_pssr_bart-base_bs20_timeout600.json",
+
+        # "GPT-4o": "../../data/outputs/log_pssr_gpt4o.json",
+        "DeepSeek-v3": "../../data/outputs/log_pssr_deepseek.json",
+
+        "Inter-GPS": "../../data/outputs/log_pssr_intergps.json",
+        "NGS": "../../data/outputs/log_pssr_ngs_bs10_timeout600.json",
+        "DualGeoSolver": "../../data/outputs/log_pssr_dualgeosolver_bs10_timeout600.json",
+        "FGeo-TP": [80.86, 96.43, 85.44, 76.12, 62.26, 48.88, 29.55],  # FGeo-TP-Results.csv
+        "FGeo-DRL": "../../data/outputs/log_pssr_fgeodrl.json",
+        "FGeo-HyperGNet": "../../data/outputs/log_pac_TTT_bs5_gb_tm600.json",
+        "FGeo-HyperGNet on Geometry3K": "../../data/outputs/log_pssr_geometry3k.json",
+        "FGeo-HyperGNet on GeoQA": "../../data/outputs/log_pssr_geoqa.json"
+    }
+    methods_max_len = max([len(m) for m in log_files])
+    problem_level = {}  # map problem_id to level
     level_map = {}  # map t_length to level (start from 0)
     for i in range(level):
         for j in range(span):
             level_map[i * span + j + 1] = i + 1
-    for pid in test_problem_ids:
+    config = get_config()
+    dl = DatasetLoader(config["data"]["dataset_name"], config["data"]["datasets_path"])
+    for pid in range(1, dl.info["problem_number"] + 1):
         t_length = len(dl.get_problem(pid)["theorem_seqs"])
         problem_level[pid] = level_map[t_length] if t_length <= level * span else level
-        problem_total[0] += 1
-        problem_total[problem_level[pid]] += 1
 
-    for model_name in log_files.keys():
-        print(model_name, end="\t")
-        model_results = [0 for _ in range(level + 1)]  # model solved problem
-        for pid in load_json(log_files[model_name])["solved"]:
-            model_results[0] += 1
-            model_results[problem_level[int(pid)]] += 1
-        for i in range(level + 1):
-            print(round(model_results[i] / problem_total[i] * 100, 2), end="\t")
+    print("--------------------------------------------------------------------------------------")
+    for method in log_files.keys():  # log
+        print(method + "".join([" "] * (methods_max_len - len(method))), end="\t")
+        results = log_files[method]
+        if isinstance(results, list):
+            if len(results) != 0:
+                for result in results:
+                    print(round(result, 2), end="\t")
+        else:
+            total_level_count, solved_level_count = get_level_count(problem_level, load_json(results), level)
+            for i in range(level + 1):
+                print(round(solved_level_count[i] / total_level_count[i] * 100, 2), end="\t")
         print()
+        if method in ["Backward Search", "DeepSeek-v3", "FGeo with BART-base", "FGeo-HyperGNet"]:
+            print("--------------------------------------------------------------------------------------")
+    print("--------------------------------------------------------------------------------------")
+
+
+def read_last_line(file_path):
+    with open(file_path, 'rb') as file:
+        file.seek(0, 2)
+        file_size = file.tell()
+        buffer_size = 1024
+        buffer = b""
+        position = file_size
+
+        while position > 0:
+            step = min(buffer_size, position)
+            position -= step
+            file.seek(position)
+            buffer = file.read(step) + buffer
+            if b'\n' in buffer:
+                break
+
+        lines = buffer.splitlines()
+        return lines[-1].decode('utf-8') if lines else None
 
 
 def show_ablation_results():
-    pass
+    methods = ["FGeo-HyperGNet", "-w/o Pretrain", "-w/o SE", "-w/o Hypertree"]
+    methods_max_len = max([len(m) for m in methods])
+    marks = ["TTT", "FTT", "TFT", "TTF"]
+    beams = [1, 3, 5]
+    print("-----------------------------")
+    for i in range(4):
+        for j in range(3):
+            if j == 1:
+                print(methods[i] + "".join([" "] * (methods_max_len - len(methods[i]))), end="\t")
+            else:
+                print("".join([" "] * methods_max_len), end="\t")
 
-
-#     evaluation_data_path = os.path.normpath(os.path.join(Configuration.path_data, "log/experiments/{}"))
-#     figure_save_path = os.path.normpath(os.path.join(Configuration.path_data, "log/{}"))
-#     dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
-#     test_pids = dl.get_problem_split()["split"]["test"]
-#
-#     level_count = 6
-#     level_map = {}
-#     for pid in test_pids:
-#         t_length = dl.get_problem(pid)["problem_level"]
-#         if t_length <= 2:
-#             level_map[pid] = 0
-#         elif t_length <= 4:
-#             level_map[pid] = 1
-#         elif t_length <= 6:
-#             level_map[pid] = 2
-#         elif t_length <= 8:
-#             level_map[pid] = 3
-#         elif t_length <= 10:
-#             level_map[pid] = 4
-#         else:
-#             level_map[pid] = 5
-#     level_total = [0 for _ in range(level_count)]
-#     for pid in test_pids:
-#         level_total[level_map[pid]] += 1
-#
-#     contrast_log_files = {  # table 1
-#         "Inter-GPS-600": result_alignment(
-#             load_json(evaluation_data_path.format("inter_gps.json")),
-#             test_pids, 600),
-#         "HyperGNet-NB-30": result_alignment(
-#             load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")),
-#             test_pids, 30),
-#         "HyperGNet-GB-30": result_alignment(
-#             load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")),
-#             test_pids, 30),
-#         "HyperGNet-GB-600": result_alignment(
-#             load_json(evaluation_data_path.format("pac_log_pretrain_greedy_beam_5.json")),
-#             test_pids, 600)
-#     }
-#     contrast_filenames = list(contrast_log_files.keys())
-#     dl = DatasetLoader(Configuration.dataset_name, Configuration.path_datasets)
-#     test_pids = dl.get_problem_split()["split"]["test"]
-#
-#     table_data = [[0 for _ in range(level_count)] for _ in range(len(contrast_log_files))]
-#     for i in range(len(contrast_filenames)):
-#         for pid in test_pids:
-#             if str(pid) in contrast_log_files[contrast_filenames[i]]["solved"]:
-#                 table_data[i][level_map[pid]] += 1
-#
-#     print("Table 1:")
-#     print("total" + "".join([f"\tl{i + 1}" for i in range(level_count)]))
-#     for i in range(len(contrast_filenames)):
-#         print(contrast_filenames[i], end="")
-#         print("\t{:.2f}".format(len(contrast_log_files[contrast_filenames[i]]["solved"]) / len(test_pids) * 100),
-#               end="")
-#         for j in range(level_count):
-#             print("\t{:.2f}".format(table_data[i][j] / level_total[j] * 100), end="")
-#         print()
-#     print()
-#
-#     step_wised_log_files = [  # table 3
-#         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_1.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_3.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_pretrain_beam_5.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_1.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_3.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_pretrain_beam_5.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_1.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_3.json")),
-#         load_json(evaluation_data_path.format("predictor_test_log_no_hyper_beam_5.json"))
-#     ]
-#     pac_log_files = [  # table 3
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_1.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_3.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_pretrain_beam_5.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_1.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_3.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_pretrain_beam_5.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_1.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_3.json")), test_pids),
-#         result_alignment(load_json(evaluation_data_path.format("pac_log_no_hyper_beam_5.json")), test_pids)
-#     ]
-#     print("Table 2:")
-#     print("step_wised_acc\toverall_acc\tavg_time\tavg_step")
-#     for i in range(len(step_wised_log_files)):
-#         time_sum = 0
-#         step_sum = 0
-#         for key in pac_log_files[i]:
-#             for pid in pac_log_files[i][key]:
-#                 time_sum += pac_log_files[i][key][pid]["timing"]
-#                 step_sum += pac_log_files[i][key][pid]["step_size"]
-#         print("{:.2f}\t{:.2f}\t{:.2f}\t{:.2f}".format(
-#             step_wised_log_files[i]["acc"] * 100,
-#             len(pac_log_files[i]["solved"]) / len(test_pids) * 100,
-#             time_sum / len(test_pids),
-#             step_sum / len(test_pids)
-#         ))
-#
-#     timing = [[0 for _ in range(level_count)] for _ in range(len(contrast_filenames))]
-#     step = [[0 for _ in range(level_count)] for _ in range(len(contrast_filenames))]
-#
-#     for i in range(len(contrast_filenames)):
-#         for key in contrast_log_files[contrast_filenames[i]]:
-#             for pid in contrast_log_files[contrast_filenames[i]][key]:
-#                 timing[i][level_map[int(pid)]] += contrast_log_files[contrast_filenames[i]][key][pid]["timing"]
-#                 step[i][level_map[int(pid)]] += contrast_log_files[contrast_filenames[i]][key][pid]["step_size"]
-#
-#     for i in range(len(contrast_filenames)):
-#         for j in range(level_count):
-#             timing[i][j] /= level_total[j]
-#             step[i][j] /= level_total[j]
-#
-#     x = [i + 1 for i in range(level_count)]
-#     fontsize = 24
-#     axis_fontsize = 15
-#     line_width = 3
-#     plt.figure(figsize=(16, 8))  # figure 1
-#
-#     plt.subplot(131)
-#     i = contrast_filenames.index("HyperGNet-NB-30")
-#     y = [table_data[i][j] / level_total[j] * 100 for j in range(level_count)]
-#     plt.plot(x, y, label="HyperGNet-NB", linewidth=line_width)
-#     i = contrast_filenames.index("HyperGNet-GB-30")
-#     y = [table_data[i][j] / level_total[j] * 100 for j in range(level_count)]
-#     plt.plot(x, y, label="HyperGNet-GB", linewidth=line_width)
-#     plt.xlabel("Problem Difficulty", fontsize=fontsize)
-#     plt.ylabel("Acc (%)", fontsize=fontsize)
-#     plt.legend(loc="upper right", fontsize=axis_fontsize)
-#     plt.tick_params(axis='both', labelsize=axis_fontsize)
-#
-#     plt.subplot(132)
-#     plt.plot(x, timing[contrast_filenames.index("HyperGNet-NB-30")], label="HyperGNet-NB", linewidth=line_width)
-#     plt.plot(x, timing[contrast_filenames.index("HyperGNet-GB-30")], label="HyperGNet-GB", linewidth=line_width)
-#     plt.xlabel("Problem Difficulty", fontsize=fontsize)
-#     plt.ylabel("Avg Time (s)", fontsize=fontsize)
-#     plt.legend(loc="upper left", fontsize=axis_fontsize)
-#     plt.tick_params(axis='both', labelsize=axis_fontsize)
-#
-#     plt.subplot(133)
-#     plt.plot(x, step[contrast_filenames.index("HyperGNet-NB-30")], label="HyperGNet-NB", linewidth=line_width)
-#     plt.plot(x, step[contrast_filenames.index("HyperGNet-GB-30")], label="HyperGNet-GB", linewidth=line_width)
-#     plt.xlabel("Problem Difficulty", fontsize=fontsize)
-#     plt.ylabel("Avg Step", fontsize=fontsize)
-#     plt.legend(loc="upper left", fontsize=axis_fontsize)
-#     plt.tick_params(axis='both', labelsize=axis_fontsize)
-#
-#     plt.tight_layout()
-#     plt.savefig(figure_save_path.format("acc_time_step.pdf"), format='pdf')
-#     plt.show()
+            tpa = read_last_line(f"../../data/outputs/results_train_bst_model_test_{marks[i]}_bs{beams[j]}.txt")
+            tpa = round(float(tpa.split("acc: ")[1].split(", ")[0]) * 100, 2)
+            print(tpa, end="\t")
+            pssr = load_json(f"../../data/outputs/log_pac_{marks[i]}_bs{beams[j]}_bs_tm60.json")
+            pssr = round(len(pssr["solved"]) / len(pssr["total"]) * 100, 2)
+            print(pssr, end="\t")
+            print()
+        print("-----------------------------")
 
 
 def get_args():
@@ -295,16 +183,20 @@ def clean_process(py_filename):
 if __name__ == '__main__':
     """
     python utils.py --func test_env
-    python utils.py --func init_project
+    python utils.py --func download_dataset
     python utils.py --func show_contrast_results
     python utils.py --func show_ablation_results
     python utils.py --func kill
     """
+    print("Contrast Results:")
+    show_contrast_results()
+    print("\n\nAblation Results:")
+    show_ablation_results()
     args = get_args()
     if args.func == "test_env":
         test_env()
-    if args.func == "init_project":
-        init_project()
+    if args.func == "download_dataset":
+        download_dataset()
     elif args.func == "show_contrast_results":
         show_contrast_results()
     elif args.func == "show_ablation_results":

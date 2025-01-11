@@ -1,7 +1,7 @@
 from gps.utils import get_config
 from gps.model import make_model
 from gps.data import get_problem_state, make_problem_state_onehot, make_train_val_test_split, graph_collate_fn
-from gps.train import get_mark
+from gps.train import get_train_mark
 from gps.data import theorem_words, pid_alive
 from formalgeo.tools import load_json, safe_save_json, get_used_pid_and_theorem
 from formalgeo.data import DatasetLoader
@@ -10,7 +10,6 @@ from formalgeo.solver import Interactor
 from formalgeo.parse import inverse_parse_one_theorem
 from multiprocessing import Process, Queue
 from func_timeout import func_timeout, FunctionTimedOut
-import torch.nn.functional as F
 import torch
 import warnings
 import random
@@ -38,7 +37,7 @@ def get_state(beam_stacks):
 
 
 def apply_theorem(solver, predicted_theorems, beam_stacks, beam_size, greedy_beam):
-    predicted_theorems = F.softmax(predicted_theorems, dim=1)  # convert to a probability distribution
+    predicted_theorems = predicted_theorems.softmax(dim=1)  # convert to a probability distribution
     for i in range(len(beam_stacks)):  # consider previous prob
         predicted_theorems[i] = predicted_theorems[i] * beam_stacks[i][1]
     predicted_theorems = predicted_theorems.flatten()  # flatten for sorting
@@ -127,14 +126,15 @@ def main(use_pretrain, use_structural_encoding, use_hypertree,
          beam_size, greedy_beam, timeout,
          device, solve_again):
     """Run PAC cycle."""
-    mark = get_mark(use_pretrain, use_structural_encoding, use_hypertree)
+    mark = get_train_mark(use_pretrain, use_structural_encoding, use_hypertree)
     bst_model_path = f"../../data/checkpoints/train_model_bst_{mark}.pth"
     mark += f"_bs{beam_size}"
-    mark += "_gb" if greedy_beam else "_nb"
+    mark += "_gb" if greedy_beam else "_bs"
     mark += f"_tm{timeout}"
     log_path = f"../../data/outputs/log_pac_{mark}.json"
+    test_problem_ids = make_train_val_test_split()["test"]
 
-    log = {"solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
+    log = {"total": test_problem_ids, "solved": {}, "unsolved": {}, "timeout": {}, "error": {}}
     if os.path.exists(log_path):
         log = load_json(log_path)
 
@@ -145,7 +145,7 @@ def main(use_pretrain, use_structural_encoding, use_hypertree,
         log["timeout"] = {}
         log["error"] = {}
 
-    for problem_id in make_train_val_test_split()["test"]:
+    for problem_id in test_problem_ids:
         if str(problem_id) in log["solved"]:
             continue
         if str(problem_id) in log["unsolved"]:
@@ -219,7 +219,7 @@ def get_args():
                         help="Beam size when calculate acc.")
     parser.add_argument("--greedy_beam", type=lambda x: x == "True", default=False,
                         help="Use greedy beam search.")
-    parser.add_argument("--timeout", type=int, default=600,
+    parser.add_argument("--timeout", type=int, default=60,
                         help="Timeout for one problem.")
 
     parsed_args = parser.parse_args()
@@ -251,7 +251,8 @@ if __name__ == '__main__':
     python pac.py --use_hypertree False --beam_size 1
     
     Best result:
-    python pac.py --greedy_beam True
+    python pac.py --timeout 600
+    python pac.py --greedy_beam True --timeout 600
     """
     args = get_args()
     main(use_pretrain=args.use_pretrain,

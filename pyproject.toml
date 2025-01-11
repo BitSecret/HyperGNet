@@ -2,8 +2,8 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "GPS"
-version = "1.1.0"
+name = "FGeo-HyperGNet"
+version = "2.0.0"
 authors = [
     { name = "Xiaokai Zhang", email = "xiaokaizhang1999@163.com" },
 ]
