@@ -5,7 +5,7 @@
 [![Survey](https://img.shields.io/badge/Survey-FormalGeo-blue)](https://github.com/FormalGeo/FormalGeo)
 
 This project is the official implementation of the IJCAI 2025 paper ["FGeo-HyperGNet: Geometric Problem Solving
-Integrating Formal Symbolic System and Hypergraph Neural Network"](https://github.com/BitSecret/HyperGNet). We built a
+Integrating FormalGeo Symbolic System and Hypergraph Neural Network"](https://github.com/BitSecret/HyperGNet). We built a
 neural-symbolic system, called
 FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
 
