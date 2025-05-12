@@ -202,13 +202,13 @@ Please contact with [Xiaokai Zhang](https://bitsecret.github.io/) if you encount
 ## Citation
 
 To cite HyperGNet in publications use:
-> Zhang X, Li Y, Zhu N, Qin C, Zeng Z, and Tuo L. FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo
+> Zhang X, Li Y, Zhu N, Qin C, Zeng Z, and Leng T. FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo
 > Symbolic System and Hypergraph Neural Network[C]. Proceedings of the Thirty-Fourth International Joint Conference on
 > Artificial Intelligence. 2025.
 
 A BibTeX entry for LaTeX users is:
 > @inproceedings{zhang2025fgeohypergnet,  
 > title={FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo Symbolic System and Hypergraph Neural Network},  
-> author={Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhengbing and Leng Tuo},  
+> author={Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhengbing and Leng, Tuo},  
 > year={2025},  
 > }
