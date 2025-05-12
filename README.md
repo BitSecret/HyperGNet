@@ -210,5 +210,6 @@ A BibTeX entry for LaTeX users is:
 > @inproceedings{zhang2025fgeohypergnet,  
 > title={FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo Symbolic System and Hypergraph Neural Network},  
 > author={Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhengbing and Leng, Tuo},  
+> booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence},  
 > year={2025},  
 > }
