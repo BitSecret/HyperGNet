@@ -4,7 +4,10 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 [![Survey](https://img.shields.io/badge/Survey-FormalGeo-blue)](https://github.com/FormalGeo/FormalGeo)
 
-We built a neural-symbolic system, called FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
+This project is the official implementation of the IJCAI 2025 paper ["FGeo-HyperGNet: Geometric Problem Solving
+Integrating Formal Symbolic System and Hypergraph Neural Network"](https://github.com/BitSecret/HyperGNet). We built a
+neural-symbolic system, called
+FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
 
 <div>
     <img src="architecture.png" alt="overall architecture">
@@ -22,7 +25,7 @@ The neural component predicts theorems according to the hypergraph, and the symb
 updates the hypergraph, thus forming a predict-apply cycle to ultimately achieve readable and traceable automatic
 solving of geometric problems. Experiments demonstrate the correctness and effectiveness of this neural-symbolic
 architecture. Experiments demonstrate the correctness and effectiveness of this neural-symbolic architecture. We
-achieved a TAP of 87.65% and a PSSR of 88.36% on the [FormalGeo7K-v2](https://github.com/FormalGeo/FormalGeo) datasets.
+achieved a TAP of 93.50% and a PSSR of 88.36% on the [FormalGeo7K-v2](https://github.com/FormalGeo/FormalGeo) datasets.
 
 More information about FormalGeo will be found in [homepage](https://formalgeo.github.io/). FormalGeo is in its early
 stages and brimming with potential. We welcome anyone to join us in this exciting endeavor.
@@ -52,7 +55,7 @@ We provide a short code to test if the environment setup is successful:
 
     $ python utils.py --func test_env
 
-Modify the addresses of datasets `datasets_path` (for windows or macOS) and `datasets_path_linux` in
+Modify the addresses of datasets `datasets_path` (for windows or macOS) and `datasets_path_linux` (for linux) in
 the `data/config.json` file, and then run the script to download the FormalGeo7K-v2 datasets:
 
     $ python utils.py --func download_dataset
@@ -150,8 +153,8 @@ Table 1: PSSR of different methods on the FormalGeo7K dataset.
 |---------------------|-------|-------|-------|-------|-------|-------|-------|
 | Forward Search      | 39.71 | 58.47 | 41.01 | 34.16 | 16.40 | 5.45  | 4.79  |
 | Backward Search     | 35.44 | 66.43 | 34.98 | 11.78 | 6.56  | 6.09  | 1.03  |
-| FGeo with T5-small  | 36.14 | 49.90 | 34.84 | 34.59 | 23.57 | 8.06  | 3.33  |
-| FGeo with BART-base | 54.00 | 73.90 | 56.12 | 50.38 | 26.75 | 16.13 | 8.33  |
+| T5-small with FGeo  | 36.14 | 49.90 | 34.84 | 34.59 | 23.57 | 8.06  | 3.33  |
+| BART-base with FGeo | 54.00 | 73.90 | 56.12 | 50.38 | 26.75 | 16.13 | 8.33  |
 | DeepSeek-v3         | 60.79 | 75.99 | 56.38 | 63.91 | 43.31 | 32.26 | 28.33 |
 | Inter-GPS           | 60.50 | 76.2  | 63.30 | 60.90 | 39.49 | 17.74 | 15.00 |
 | NGS                 | 62.60 | 62.22 | 64.97 | 72.79 | 57.47 | 56.41 | 36.59 |
@@ -193,24 +196,19 @@ Table 3: Ablation study results of HyperGNet on the FormalGeo7k dataset.
 
 ## Acknowledge
 
-This project is maintained by
-[FormalGeo Development Team](https://formalgeo.github.io/)
-and Supported by
-[Geometric Cognitive Reasoning Group of Shanghai University (GCRG, SHU)](https://euclidesprobationem.github.io/).  
+This project is maintained by [FormalGeo Development Team](https://formalgeo.github.io/).  
 Please contact with [Xiaokai Zhang](https://bitsecret.github.io/) if you encounter any issues.
 
 ## Citation
 
 To cite HyperGNet in publications use:
-> Zhang X, Zhu N, He Y, et al. FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and
-> Hypergraph Neural Network[J]. arXiv preprint arXiv:2402.11461, 2024.
+> Zhang X, Li Y, Zhu N, Qin C, Zeng Z, and Tuo L. FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo
+> Symbolic System and Hypergraph Neural Network[C]. Proceedings of the Thirty-Fourth International Joint Conference on
+> Artificial Intelligence. 2025.
 
 A BibTeX entry for LaTeX users is:
-> @misc{zhang2024fgeohypergnet,  
-> title={FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network},  
-> author={Xiaokai Zhang and Na Zhu and Yiming He and Jia Zou and Cheng Qin and Yang Li and Zhenbing Zeng and Tuo
-> Leng},  
-> year={2024},  
-> eprint={2402.11461},  
-> primaryClass={cs.AI}  
+> @inproceedings{zhang2025fgeohypergnet,  
+> title={FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo Symbolic System and Hypergraph Neural Network},  
+> author={Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhengbing and Leng Tuo},  
+> year={2025},  
 > }

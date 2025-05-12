@@ -445,13 +445,15 @@ def make_model(use_structural_encoding, use_hypertree):
 
 def show_parameters():
     """
-    Params: 20,380,297
+    Params: 20,380,297 (20.38 M)
     Memory: 77.74 MB
     """
     m = make_model(True, True)
     total_params = sum(p.numel() for p in m.parameters())  # 参数总数
     param_memory = sum(p.numel() * p.element_size() for p in m.parameters())  # 占用字节数
-    print("Params: {}, Memory: {:.2f} MB.".format(total_params, param_memory / 1024 / 1024))
+    print("Params: {} ({:.2f} M), Memory: {:.2f} MB.".format(total_params,
+                                                             total_params / 1000000,
+                                                             param_memory / 1024 / 1024))
 
 
 if __name__ == '__main__':

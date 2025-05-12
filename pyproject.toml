@@ -7,7 +7,7 @@ version = "2.0.0"
 authors = [
     { name = "Xiaokai Zhang", email = "xiaokaizhang1999@163.com" },
 ]
-description = "Plane Geometric Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network"
+description = "This project is the official implementation of the IJCAI 2025 paper FGeo-HyperGNet: Geometric Problem Solving Integrating Formal Symbolic System and Hypergraph Neural Network"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
