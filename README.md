@@ -5,9 +5,8 @@
 [![Survey](https://img.shields.io/badge/Survey-FormalGeo-blue)](https://github.com/FormalGeo/FormalGeo)
 
 This project is the official implementation of the IJCAI 2025 paper ["FGeo-HyperGNet: Geometric Problem Solving
-Integrating FormalGeo Symbolic System and Hypergraph Neural Network"](https://github.com/BitSecret/HyperGNet). We built a
-neural-symbolic system, called
-FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
+Integrating FormalGeo Symbolic System and Hypergraph Neural Network"](https://www.ijcai.org/proceedings/2025/527).
+We built a neural-symbolic system, called FGeo-HyperGNet, to automatically perform human-like geometric problem solving.
 
 <div>
     <img src="architecture.png" alt="overall architecture">
@@ -208,8 +207,15 @@ To cite HyperGNet in publications use:
 
 A BibTeX entry for LaTeX users is:
 > @inproceedings{zhang2025fgeohypergnet,  
-> title={FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo Symbolic System and Hypergraph Neural Network},  
-> author={Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhengbing and Leng, Tuo},  
-> booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence},  
-> year={2025},  
+> title = {FGeo-HyperGNet: Geometric Problem Solving Integrating FormalGeo Symbolic System and Hypergraph Neural Network},  
+> author = {Zhang, Xiaokai and Li, Yang and Zhu, Na and Qin, Cheng and Zeng, Zhenbing and Leng, Tuo},  
+> booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence, {IJCAI-25}},  
+> publisher = {International Joint Conferences on Artificial Intelligence Organization},  
+> editor = {James Kwok},  
+> pages = {4733--4741},  
+> year = {2025},  
+> month = {8},  
+> note = {Main Track},  
+> doi = {10.24963/ijcai.2025/527},  
+> url = {https://doi.org/10.24963/ijcai.2025/527}  
 > }
